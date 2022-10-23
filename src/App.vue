@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import {gql} from "@apollo/client";
-import {useQuery} from "@vue/apollo-composable";
-import {computed} from "vue";
-import type {Country} from "@/model/Country";
+import { gql } from "@apollo/client";
+import { useQuery } from "@vue/apollo-composable";
+import { computed } from "vue";
+import type { Country } from "@/model/Country";
 
 const COUNTRIES_QUERY = gql`
-  query Countries{
+  query Countries {
     countries {
       name
       code
@@ -13,7 +13,7 @@ const COUNTRIES_QUERY = gql`
   }
 `;
 
-const {result, error, loading} = useQuery(COUNTRIES_QUERY); // Already reactive objects
+const { result, error, loading } = useQuery(COUNTRIES_QUERY); // Already reactive objects
 /*
  * The following line makes the countries array to be typed. Hence, in the template you could use countries and each
  * element would be typed, meaning that code and name are recognized.
@@ -24,13 +24,11 @@ const countries = computed<Country[]>(() => result.value?.countries ?? []);
 </script>
 
 <template>
-  <div v-if="loading"> Loading....</div>
+  <div v-if="loading">Loading....</div>
   <div v-else-if="error">Error: {{ error.message }}</div>
   <ul v-else>
-    <li v-for="country in countries">{{ country.code }}: {{ country.name }}</li>
+    <li v-for="country in countries" :key="country.code">{{ country.code }}: {{ country.name }}</li>
   </ul>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
