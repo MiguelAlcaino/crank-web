@@ -2,7 +2,7 @@
 import { gql } from "@apollo/client";
 import { useQuery } from "@vue/apollo-composable";
 import { computed } from "vue";
-import type { Country } from "@/model/Country";
+import type {Country} from "./gql/graphql"
 
 const COUNTRIES_QUERY = gql`
   query Countries {
