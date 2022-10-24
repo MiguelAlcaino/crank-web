@@ -2,7 +2,7 @@
 import { gql } from "@apollo/client";
 import { useQuery } from "@vue/apollo-composable";
 import { computed } from "vue";
-import type {Country} from "./gql/graphql"
+import type { Country } from "./gql/graphql";
 
 const COUNTRIES_QUERY = gql`
   query Countries {
@@ -27,7 +27,9 @@ const countries = computed<Country[]>(() => result.value?.countries ?? []);
   <div v-if="loading">Loading....</div>
   <div v-else-if="error">Error: {{ error.message }}</div>
   <ul v-else>
-    <li v-for="country in countries" :key="country.code">{{ country.code }}: {{ country.name }}</li>
+    <li v-for="country in countries" :key="country.code">
+      {{ country.code }}: {{ country.name }}
+    </li>
   </ul>
 </template>
 
