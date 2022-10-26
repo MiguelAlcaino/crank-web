@@ -1,34 +1,42 @@
 <script setup lang="ts">
-import { gql } from "@apollo/client";
-import { useQuery } from "@vue/apollo-composable";
-import { computed } from "vue";
-import type {Country} from "./gql/graphql"
-
-const COUNTRIES_QUERY = gql`
-  query Countries {
-    countries {
-      name
-      code
-    }
-  }
-`;
-
-const { result, error, loading } = useQuery(COUNTRIES_QUERY); // Already reactive objects
-/*
- * The following line makes the countries array to be typed. Hence, in the template you could use countries and each
- * element would be typed, meaning that code and name are recognized.
- * The simpler way is to avoid the following line and use result.countries on the template, but the properties of each
- * element would be unknown.
- */
-const countries = computed<Country[]>(() => result.value?.countries ?? []);
+import {RouterLink, RouterView} from "vue-router";
+import {authService} from "@/services/authService";
 </script>
 
 <template>
-  <div v-if="loading">Loading....</div>
-  <div v-else-if="error">Error: {{ error.message }}</div>
-  <ul v-else>
-    <li v-for="country in countries" :key="country.code">{{ country.code }}: {{ country.name }}</li>
-  </ul>
+  <!-- START NAV -->
+  <nav class="navbar is-black mb-5">
+    <div class="container">
+      <div class="navbar-brand">
+        <div class="navbar-burger burger" data-target="navMenu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <!-- END NAV -->
+  <div class="container">
+    <div class="columns">
+      <div class="column is-3">
+        <aside class="menu is-hidden-mobile">
+          <p class="menu-label">General</p>
+          <ul class="menu-list">
+            <li v-if="!authService.isLoggedId()">
+              <RouterLink :to="{ name: 'login' }">Login</RouterLink>
+            </li>
+            <li v-if="authService.isLoggedId()">
+              <a @click="authService.logout()">Logout</a>
+            </li>
+          </ul>
+        </aside>
+      </div>
+      <div class="column is-9">
+        <RouterView/>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped></style>

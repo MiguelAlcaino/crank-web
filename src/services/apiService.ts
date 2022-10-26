@@ -1,11 +1,10 @@
-import {useMutation} from "@vue/apollo-composable";
 import {gql, createHttpLink} from "@apollo/client";
 import type {
     Country, RegisterUserInput, SiteEnum, User, ClassStat,
     CalendarClassesParams, Class, ClassInfo,
-    CurrentUserEnrollmentsParams, Enrollment,Purchase
+    CurrentUserEnrollmentsParams, Enrollment, Purchase
 } from "@/gql/graphql";
-import {ApolloClient, InMemoryCache} from "@apollo/client/core";
+import {ApolloClient, InMemoryCache, ApolloError} from "@apollo/client/core";
 import {setContext} from '@apollo/client/link/context';
 import {useAuthenticationStore} from "@/stores/authToken";
 
@@ -32,7 +31,7 @@ const authLink = setContext((_, {headers}) => {
 
 const authApiClient = new ApolloClient({
     link: authLink.concat(httpLink),
-    cache: new InMemoryCache()
+    cache: new InMemoryCache(),
 });
 
 export const apiService = {
@@ -188,7 +187,6 @@ export const apiService = {
             return [];
         }
     },
-
     async getCountries(): Promise<Country[]> {
         const COUNTRIES_QUERY = gql`
       query Countries {
@@ -310,30 +308,38 @@ export const apiService = {
             return null;
         }
     },
-    async registerUser(site: SiteEnum, input: RegisterUserInput) {
+    async registerUser(site: SiteEnum, input: RegisterUserInput): Promise<string> {
         const REGISTER_USER_MUTATION = gql`
-      mutation registerUser($site: SiteEnum!, $input: RegisterUserInput!) {
-        registerUser(site: $site, input: $input) {
-          email
-        }
-      }
-    `;
-
-        const {
-            mutate: registerUser,
-            loading,
-            onDone,
-        } = useMutation(REGISTER_USER_MUTATION);
+              mutation registerUser($site: SiteEnum!, $input: RegisterUserInput!) {
+                registerUser(site: $site, input: $input) {
+                  email
+                }
+              }
+            `;
 
         try {
-            const response = await registerUser({
-                site: site,
-                input: input,
+            await apiClient.mutate({
+                mutation: REGISTER_USER_MUTATION,
+                variables: {
+                    site: site,
+                    input: input,
+                },
             });
-
-            console.log(response);
-        } catch (e) {
-            console.log(e);
+            return "SuccessRegistration";
+        } catch (error) {
+            if (error instanceof ApolloError) {
+                if (error.graphQLErrors[0].message === 'register.user_already_registered') {
+                    return "RegisterUserAlreadyRegisteredException";
+                } else if (error.graphQLErrors[0].message === 'minimum_password_length_is_four_chars') {
+                    return "MinimumPasswordLengthException";
+                } else if (error.graphQLErrors[0].message === 'password_must_contain_letter_or_number') {
+                    return "PasswordMustContainLetterOrNumberException";
+                } else {
+                    return "UnknownError";
+                }
+            } else {
+                return "UnknownError";
+            }
         }
     },
 };
