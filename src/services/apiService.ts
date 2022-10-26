@@ -1,12 +1,24 @@
-import {gql, createHttpLink} from "@apollo/client";
+import {createHttpLink, gql} from "@apollo/client";
 import type {
-    Country, RegisterUserInput, SiteEnum, User, ClassStat,
-    CalendarClassesParams, Class, ClassInfo,
-    CurrentUserEnrollmentsParams, Enrollment, Purchase
+    CalendarClassesParams,
+    Class,
+    ClassInfo,
+    ClassStat,
+    Country,
+    CurrentUserEnrollmentsParams,
+    Enrollment,
+    Purchase,
+    RegisterUserInput,
+    SiteEnum,
+    User,
 } from "@/gql/graphql";
-import {ApolloClient, InMemoryCache, ApolloError} from "@apollo/client/core";
+import {EnrollmentTypeEnum, type SiteSetting} from "@/gql/graphql";
+import {ApolloClient, ApolloError, InMemoryCache} from "@apollo/client/core";
 import {setContext} from '@apollo/client/link/context';
 import {useAuthenticationStore} from "@/stores/authToken";
+import {date} from "yup";
+import moment from "moment/moment";
+import {CalendarClasses} from "@/model/calendarClasses";
 
 const httpLink = createHttpLink({
     uri: "/api/graphql/",
@@ -33,6 +45,7 @@ const authApiClient = new ApolloClient({
     link: authLink.concat(httpLink),
     cache: new InMemoryCache(),
 });
+
 
 export const apiService = {
     async getMyself(): Promise<User | null> {
@@ -262,6 +275,110 @@ export const apiService = {
         } catch (error) {
             console.error(error);
             return [];
+        }
+    },
+    async getCustomCalendarClasses(site: SiteEnum, startDate: Date, endDate: Date): Promise<CalendarClasses | null> {
+        const CUSTOM_CALENDAR_CLASSES_QUERY = gql`
+                  query customCalendarClasses($site: SiteEnum!, 
+                                        $params: CalendarClassesParams, 
+                                        $enrollmentsWaitlistParams: CurrentUserEnrollmentsParams, 
+                                        $enrollmentsUpcomingParams: CurrentUserEnrollmentsParams) {
+                    siteSettings(site: $site) {
+                       siteDateTimeNow
+                    }
+                    calendarClasses(site: $site, params: $params) {
+                          id
+                          name
+                          description
+                          instructorName
+                          start
+                          startWithNoTimeZone
+                          duration
+                          waitListAvailable  
+                    }
+                    enrollmentsWaitlist:
+                        currentUserEnrollments(site: $site, params: $enrollmentsWaitlistParams) {
+                          enrollmentInfo {
+                            id
+                            enrollmentStatus
+                            enrollmentDateTime                            
+                          }
+                          class {
+                            id
+                            name
+                            description
+                            instructorName
+                            isSubstitute
+                            start
+                            startWithNoTimeZone
+                            duration
+                            waitListAvailable                
+                          }
+                        }
+                        enrollmentsUpcoming:
+                            currentUserEnrollments(site: $site, params: $enrollmentsUpcomingParams) {
+                            enrollmentInfo {
+                                id
+                                enrollmentStatus
+                                enrollmentDateTime                
+                              }
+                            class {
+                              id
+                              name
+                              description
+                              instructorName
+                              isSubstitute
+                              start
+                              startWithNoTimeZone
+                              duration
+                              waitListAvailable              
+                            }
+                      }
+                  }
+                `;
+
+        const stgStartDate = moment(startDate).format("YYYY-MM-DD");
+        const stgEndDate = moment(endDate).format("YYYY-MM-DD");
+
+        const params: CalendarClassesParams = {
+            startDate: stgStartDate,
+            endDate: stgEndDate,
+        };
+
+        const enrollmentsWaitlistParams: CurrentUserEnrollmentsParams = {
+            enrollmentType: EnrollmentTypeEnum.Waitlist,
+            startDate: stgStartDate,
+            endDate: stgEndDate,
+        };
+
+        const enrollmentsUpcomingParams: CurrentUserEnrollmentsParams = {
+            enrollmentType: EnrollmentTypeEnum.Upcoming,
+            startDate: stgStartDate,
+            endDate: stgEndDate
+        };
+
+        try {
+            const queryResult = await authApiClient.query({
+                query: CUSTOM_CALENDAR_CLASSES_QUERY,
+                variables: {
+                    site: site,
+                    params: params,
+                    enrollmentsWaitlistParams: enrollmentsWaitlistParams,
+                    enrollmentsUpcomingParams: enrollmentsUpcomingParams,
+                }
+            });
+
+            const siteSettings = queryResult.data.siteSettings as SiteSetting;
+            const calendarClasses = queryResult.data.calendarClasses as Class[];
+            const enrollmentsWaitlist = queryResult.data.enrollmentsWaitlist as Enrollment[];
+            const enrollmentsUpcoming = queryResult.data.enrollmentsUpcoming as Enrollment[];
+
+            const customCalendarClasses = new CalendarClasses(siteSettings, calendarClasses, enrollmentsWaitlist, enrollmentsUpcoming);
+
+            return customCalendarClasses;
+        } catch (error) {
+            console.error(error);
+            return null;
         }
     },
     async getClassInfo(site: SiteEnum, id: string): Promise<ClassInfo | null> {

@@ -6,6 +6,7 @@ import {apiService} from "@/services/apiService";
 import {SiteEnum, CalendarClassesParams, CurrentUserEnrollmentsParams, EnrollmentTypeEnum} from "@/gql/graphql";
 
 onMounted(async () => {
+  /*
   let country = await apiService.getCountry("AE");
   console.log("country", country);
 
@@ -35,6 +36,14 @@ onMounted(async () => {
 
   let currentUserPurchases = await apiService.getCurrentUserPurchases(SiteEnum.Dubai);
   console.log("currentUserPurchases", currentUserPurchases);
+*/
+
+  let customCalendarClasses = await apiService.getCustomCalendarClasses(
+      SiteEnum.Dubai,
+      new Date(2020, 9, 24),
+      new Date(2020, 9, 30));
+  console.log("customCalendarClasses", customCalendarClasses);
+
 });
 
 </script>

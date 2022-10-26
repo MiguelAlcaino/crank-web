@@ -21,6 +21,7 @@
     "@vuelidate/validators": "^2.0.0",
     "graphql": "^16.6.0",
     "graphql-tag": "^2.12.6",
+    "moment": "^2.29.4",
     "pinia": "^2.0.21",
     "react": "^18.2.0",
     "vue": "^3.2.38",
