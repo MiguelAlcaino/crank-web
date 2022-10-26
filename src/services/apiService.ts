@@ -16,8 +16,9 @@ import {EnrollmentTypeEnum, type SiteSetting} from "@/gql/graphql";
 import {ApolloClient, ApolloError, InMemoryCache} from "@apollo/client/core";
 import {setContext} from '@apollo/client/link/context';
 import {useAuthenticationStore} from "@/stores/authToken";
+import {date} from "yup";
 import moment from "moment/moment";
-import {CustomCalendarClasses} from "@/model/CustomCalendarClasses";
+import {CalendarClasses} from "@/model/calendarClasses";
 
 const httpLink = createHttpLink({
     uri: "/api/graphql/",
@@ -276,7 +277,7 @@ export const apiService = {
             return [];
         }
     },
-    async getCustomCalendarClasses(site: SiteEnum, startDate: Date, endDate: Date): Promise<CustomCalendarClasses | null> {
+    async getCustomCalendarClasses(site: SiteEnum, startDate: Date, endDate: Date): Promise<CalendarClasses | null> {
         const CUSTOM_CALENDAR_CLASSES_QUERY = gql`
                   query customCalendarClasses($site: SiteEnum!, 
                                         $params: CalendarClassesParams, 
@@ -372,7 +373,9 @@ export const apiService = {
             const enrollmentsWaitlist = queryResult.data.enrollmentsWaitlist as Enrollment[];
             const enrollmentsUpcoming = queryResult.data.enrollmentsUpcoming as Enrollment[];
 
-            return new CustomCalendarClasses(siteSettings, calendarClasses, enrollmentsWaitlist, enrollmentsUpcoming);
+            const customCalendarClasses = new CalendarClasses(siteSettings, calendarClasses, enrollmentsWaitlist, enrollmentsUpcoming);
+
+            return customCalendarClasses;
         } catch (error) {
             console.error(error);
             return null;
