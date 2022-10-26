@@ -1,6 +1,6 @@
 import type {SiteSetting, Class, Enrollment} from "@/gql/graphql";
 
-export class CalendarClasses {
+export class CustomCalendarClasses {
     siteSettings: SiteSetting;
     calendarClasses: Class[];
     enrollmentsWaitlist: Enrollment[];
