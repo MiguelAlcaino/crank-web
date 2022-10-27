@@ -10,7 +10,7 @@ import type {
     Purchase,
     RegisterUserInput,
     SiteEnum,
-    User,
+    User, UserInput,
 } from "@/gql/graphql";
 import {EnrollmentTypeEnum, type SiteSetting} from "@/gql/graphql";
 import {ApolloClient, ApolloError, InMemoryCache} from "@apollo/client/core";
@@ -456,6 +456,28 @@ export const apiService = {
             } else {
                 return "UnknownError";
             }
+        }
+    },
+    async updateCurrentUser(input: UserInput): Promise<string> {
+        console.log("UserInput", input);
+        const UPDATE_CURRENT_USER_MUTATION = gql`
+              mutation updateCurrentUser($input: UserInput!) {
+                updateCurrentUser(input: $input) {
+                  email
+                }
+              }
+            `;
+
+        try {
+            await authApiClient.mutate({
+                mutation: UPDATE_CURRENT_USER_MUTATION,
+                variables: {
+                    input: input,
+                },
+            });
+            return "UpdateProfileSuccess";
+        } catch (error) {
+            return "UnknownError";
         }
     },
 };

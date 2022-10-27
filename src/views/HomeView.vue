@@ -3,7 +3,13 @@
 import TheWelcome from "../components/TheWelcome.vue";
 import {onMounted} from "vue";
 import {apiService} from "@/services/apiService";
-import {SiteEnum, CalendarClassesParams, CurrentUserEnrollmentsParams, EnrollmentTypeEnum} from "@/gql/graphql";
+import {
+  SiteEnum,
+  CalendarClassesParams,
+  CurrentUserEnrollmentsParams,
+  EnrollmentTypeEnum,
+  UserInput
+} from "@/gql/graphql";
 
 onMounted(async () => {
   /*
@@ -36,13 +42,41 @@ onMounted(async () => {
 
   let currentUserPurchases = await apiService.getCurrentUserPurchases(SiteEnum.Dubai);
   console.log("currentUserPurchases", currentUserPurchases);
-*/
+
 
   let customCalendarClasses = await apiService.getCustomCalendarClasses(
       SiteEnum.Dubai,
       new Date(2020, 9, 24),
       new Date(2020, 9, 30));
   console.log("customCalendarClasses", customCalendarClasses);
+*/
+  let mySelf = await apiService.getMyself();
+  console.log("mySelf", mySelf);
+
+  if (mySelf) {
+    const userInput: UserInput = {
+      address1: mySelf.address1,
+      address2: mySelf.address2,
+      birthdate: mySelf.birthdate,
+      city: mySelf.state?.code,
+      country: mySelf.country.code,
+      emergencyContactName: mySelf.emergencyContactName,
+      emergencyContactPhone: mySelf.emergencyContactPhone,
+      emergencyContactRelationship: mySelf.emergencyContactRelationship,
+      firstName: mySelf.firstName,
+      gender: mySelf.gender,
+      hideMetrics: mySelf.hideMetrics ?? true,
+      lastName: mySelf.lastName,
+      leaderboardUsername: mySelf.leaderboardUsername,
+      phone: mySelf.phone,
+      state: mySelf.state?.code,
+      weight: mySelf.weight,
+      zipCode: mySelf.zipCode,
+    };
+    const user = await apiService.updateCurrentUser(userInput);
+    console.log("updateCurrentUser", user);
+  }
+
 
 });
 
