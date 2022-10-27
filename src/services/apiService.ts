@@ -1,16 +1,7 @@
 import {createHttpLink, gql} from "@apollo/client";
 import type {
-    CalendarClassesParams,
-    Class,
-    ClassInfo,
-    ClassStat,
-    Country,
-    CurrentUserEnrollmentsParams,
-    Enrollment,
-    Purchase,
-    RegisterUserInput,
-    SiteEnum,
-    User, UserInput,
+    CalendarClassesParams, Class, ClassInfo, ClassStat, Country, CurrentUserEnrollmentsParams, Enrollment, Purchase,
+    RegisterUserInput, SiteEnum, User, UserInput, BookClassInput
 } from "@/gql/graphql";
 import {EnrollmentTypeEnum, type SiteSetting} from "@/gql/graphql";
 import {ApolloClient, ApolloError, InMemoryCache} from "@apollo/client/core";
@@ -18,6 +9,8 @@ import {setContext} from '@apollo/client/link/context';
 import {useAuthenticationStore} from "@/stores/authToken";
 import moment from "moment/moment";
 import {CustomCalendarClasses} from "@/model/CustomCalendarClasses";
+
+
 
 const httpLink = createHttpLink({
     uri: "/api/graphql/",
@@ -477,6 +470,30 @@ export const apiService = {
             });
             return "UpdateProfileSuccess";
         } catch (error) {
+            return "UnknownError";
+        }
+    },
+    async bookClass(site: SiteEnum, input: BookClassInput): Promise<string> {
+        const BOOK_CLASS_MUTATION = gql`
+              mutation bookClass($site: SiteEnum!, $input: BookClassInput!) {
+                bookClass(site: $site, input: $input) {
+                  __typename
+                }
+              }
+            `;
+
+        try {
+            const result = await authApiClient.mutate({
+                mutation: BOOK_CLASS_MUTATION,
+                variables: {
+                    site: site,
+                    input: input,
+                },
+            });
+            console.log(result.data);
+            return result.data.bookClass.__typename;
+        } catch (error) {
+            console.log(error);
             return "UnknownError";
         }
     },

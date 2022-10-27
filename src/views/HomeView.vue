@@ -8,7 +8,8 @@ import {
   CalendarClassesParams,
   CurrentUserEnrollmentsParams,
   EnrollmentTypeEnum,
-  UserInput
+  UserInput,
+  BookClassInput
 } from "@/gql/graphql";
 
 onMounted(async () => {
@@ -49,7 +50,8 @@ onMounted(async () => {
       new Date(2020, 9, 24),
       new Date(2020, 9, 30));
   console.log("customCalendarClasses", customCalendarClasses);
-*/
+
+
   let mySelf = await apiService.getMyself();
   console.log("mySelf", mySelf);
 
@@ -76,7 +78,10 @@ onMounted(async () => {
     const user = await apiService.updateCurrentUser(userInput);
     console.log("updateCurrentUser", user);
   }
-
+*/
+  const bookClassInput: BookClassInput = {classId: "580", isWaitlistBooking: false, spotNumber: 1};
+  let responseBookClassInput = await apiService.bookClass(SiteEnum.Dubai, bookClassInput);
+  console.log("responseBookClassInput", responseBookClassInput);
 
 });
 
