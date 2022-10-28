@@ -2,27 +2,23 @@
 
 import {onMounted, reactive, ref, computed} from "vue";
 import useVuelidate from "@vuelidate/core";
-import {required, email, minLength, sameAs, maxLength, helpers} from "@vuelidate/validators";
-import {GenderEnum, SiteEnum, type RegisterUserInput, Country, type State} from "@/gql/graphql";
+import {required, maxLength, helpers, minValue} from "@vuelidate/validators";
+import {GenderEnum, Country, type State, UserInput} from "@/gql/graphql";
 
 import {apiService} from "@/services/apiService";
-import {authService} from "@/services/authService";
 import router from "@/router";
 
 const isSaving = ref(false);
-const isLoggingIn = ref(false);
 const countries = ref([] as Country[]);
 const countryStates = ref([] as State[]);
 
 const formData = reactive({
   firstName: "",
   lastName: "",
-  email: "",
-  password: "",
-  confirmPassword: "",
   gender: "",
   birthdate: "",
-  country: "AE",
+  weight: 0,
+  country: "",
   cityState: "",
   address1: "",
   address2: "",
@@ -31,10 +27,9 @@ const formData = reactive({
   emergencyContactPhone: "",
   emergencyContactRelationship: "",
   leaderboardUsername: "",
-  acceptTermsAndConditions: false,
+  hideMetrics: false
 });
 
-const checkPass = helpers.regex(/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/);
 const rules = computed(() => {
   return {
     firstName: {
@@ -45,24 +40,15 @@ const rules = computed(() => {
       required: helpers.withMessage('Last Name is required', required),
       maxLength: maxLength(50)
     },
-    email: {
-      required: helpers.withMessage('Email is required', required),
-      email: helpers.withMessage('The email address is not valid', email)
-    },
-    password: {
-      required: helpers.withMessage('Field is required', required),
-      minLength: helpers.withMessage('The password must contain at least 8 characters', minLength(8)),
-      checkPass: helpers.withMessage('The password must contain a letter and a number', checkPass),
-    },
-    confirmPassword: {
-      required: helpers.withMessage('Field is required', required),
-      sameAs: helpers.withMessage('The password confirmation does not match', sameAs(formData.password))
-    },
     gender: {
       required: helpers.withMessage('Gender required', required)
     },
     birthdate: {
       required: helpers.withMessage('Date of Birth is required', required)
+    },
+    weight: {
+      required: helpers.withMessage('Weight is required', required),
+      minValue: helpers.withMessage('Weight must be higher than 1', minValue(1))
     },
     country: {
       required: helpers.withMessage('Country is required', required)
@@ -87,19 +73,43 @@ const rules = computed(() => {
     leaderboardUsername: {
       required: helpers.withMessage('Leaderboard Nickname is required', required)
     },
-    acceptTermsAndConditions: {
-      sameAs: helpers.withMessage('You must accept the terms and conditions', sameAs(true))
-    },
+    hideMetrics: {
+      required: helpers.withMessage('Field is required', required)
+    }
   }
 });
 
 const v$ = useVuelidate(rules, formData);
 
-
 onMounted(() => {
   getCountries();
-  getCountryStates("AE");
+  getMyself();
 });
+
+async function getMyself(): Promise<void> {
+  const user = await apiService.getMyself();
+
+  if (user !== null) {
+    await getCountryStates(user.country.code);
+
+    formData.firstName = user.firstName;
+    formData.lastName = user.lastName;
+    formData.gender = user.gender !== null ? user.gender!.toString() : GenderEnum.N.toString();
+    formData.birthdate = user.birthdate;
+    formData.weight = user.weight !== null ? user.weight! : 0;
+    formData.country = user.country.code;
+    formData.cityState = user.state!.code;
+    formData.address1 = user.address1;
+    formData.address2 = user.address2!;
+    formData.phone = user.phone;
+    formData.emergencyContactName = user.emergencyContactName;
+    formData.emergencyContactPhone = user.emergencyContactPhone;
+    formData.emergencyContactRelationship = user.emergencyContactRelationship!;
+    formData.leaderboardUsername = user.leaderboardUsername!;
+    formData.hideMetrics = user.hideMetrics !== null ? user.hideMetrics! : false;
+  }
+}
+
 
 const submitForm = async () => {
   const isValid = await v$.value.$validate();
@@ -112,13 +122,13 @@ const submitForm = async () => {
     if (formData.gender === "M") gender = GenderEnum.M;
     else if (formData.gender === "F") gender = GenderEnum.F;
 
-    const input: RegisterUserInput = {
+    const input: UserInput = {
       address1: formData.address1 == "" ? "-" : formData.address1,
       address2: formData.address2,
       birthdate: formData.birthdate,
       city: formData.cityState,
       country: formData.country,
-      email: formData.email,
+      hideMetrics: formData.hideMetrics,
       emergencyContactName: formData.emergencyContactName,
       emergencyContactPhone: formData.emergencyContactPhone,
       emergencyContactRelationship: formData.emergencyContactRelationship,
@@ -126,38 +136,22 @@ const submitForm = async () => {
       gender: gender,
       lastName: formData.lastName,
       leaderboardUsername: formData.leaderboardUsername,
-      password: formData.password,
       phone: formData.phone,
       state: formData.cityState,
-      weight: null,
+      weight: formData.weight,
       zipCode: "0000",
     };
 
-    const response = await apiService.registerUser(SiteEnum.Dubai, input);
+    const response = await apiService.updateCurrentUser(input);
     isSaving.value = false;
 
-    if (response === "SuccessRegistration") {
-      //logging
-      isLoggingIn.value = true;
-
-      try {
-        await authService.login(formData.email, formData.password, SiteEnum.Dubai);
-        await router.push({name: 'home'})
-      } catch (error) {
-        console.log(error);
-      }
-
-      isLoggingIn.value = false;
-    } else if (response === "PasswordMustContainLetterOrNumberException") {
-      console.error("Error registering user", "The password must contain a letter and a number");
-    } else if (response === "MinimumPasswordLengthException") {
-      console.error("Error registering user", "The password must contain at least 8 characters");
-    } else if (response === "RegisterUserAlreadyRegisteredException") {
-      console.error("ERROR", "Email address already registered");
+    if (response === "UpdateProfileSuccess") {
+      console.log("UpdateProfileSuccess");
     } else {
-      console.error("Error registering user", "Ups! Sorry, we didn't see that coming!. Please try again or communicate with the team to resolve this issue.")
+      console.error("Error updating profile", "Ups! Sorry, we didn't see that coming!. Please try again or communicate with the team to resolve this issue.")
     }
   } else {
+    console.log(formData);
     console.error("error form");
   }
 };
@@ -183,37 +177,20 @@ function onChangeCountry() {
 
 <template>
   <form @submit.prevent="submitForm" autocomplete="off">
-    <h1>Registration</h1>
-    <h3>Location</h3>
+    <h1>My Profile</h1>
 
-    <h3>Profile Information</h3>
-    <!--email-->
     <div class="field">
-      <p>
-        <input class="input" v-model="formData.email" type="text" placeholder="Email *" maxlength="200"/>
-      </p>
-      <p><span v-for="error in v$.email.$errors" :key="error.$uid" style="color: red">{{ error.$message }}</span></p>
-    </div>
-    <!--password-->
-    <div class="field">
-      <p>
-        <input class="input" v-model="formData.password" type="password" placeholder="Password *"
-               maxlength="200"/>
-      </p>
-      <p><span v-for="error in v$.password.$errors" :key="error.$uid" style="color: red">{{ error.$message }}</span></p>
-    </div>
-    <!--confirmPassword-->
-    <div class="field">
-      <p>
-        <input class="input" v-model="formData.confirmPassword" type="password"
-               placeholder="Confirm Password *" maxlength="200"/>
-      </p>
-      <p><span v-for="error in v$.confirmPassword.$errors" :key="error.$uid" style="color: red">{{
-          error.$message
-        }}</span></p>
+      <button type="button">Change Password</button>
     </div>
 
-    <h3>Profile Information</h3>
+    <div class="field">
+      <input type="checkbox" v-model="formData.hideMetrics">
+      <label class="custom-control-label" for="customSwitch1">Display my info on all performance leaderboards</label>
+      <p><span v-for="error in v$.hideMetrics.$errors" :key="error.$uid" style="color: red">{{ error.$message }}</span>
+      </p>
+    </div>
+
+    <h3>Personal Information</h3>
     <!--firstName-->
     <div class="field">
       <p>
@@ -257,6 +234,15 @@ function onChangeCountry() {
         <input class="input" v-model="formData.birthdate" type="date" placeholder="Date of Birth *"/>
       </p>
       <p><span v-for="error in v$.birthdate.$errors" :key="error.$uid" style="color: red">{{ error.$message }}</span>
+      </p>
+    </div>
+
+    <!--weight-->
+    <div class="field">
+      <p>
+        <input class="input" v-model="formData.weight" type="number" placeholder="Weight *"/>
+      </p>
+      <p><span v-for="error in v$.weight.$errors" :key="error.$uid" style="color: red">{{ error.$message }}</span>
       </p>
     </div>
 
@@ -341,18 +327,8 @@ function onChangeCountry() {
       <p><span v-for="error in v$.emergencyContactRelationship.$errors" :key="error.$uid"
                style="color: red">{{ error.$message }}</span></p>
     </div>
-    <!--acceptTermsAndConditions-->
-    <div class="field">
-      <label>
-        <input type="checkbox" v-model="formData.acceptTermsAndConditions">
-        I understand and accept the <b><a href="https://www.crank-fit.com/terms-conditions" target="_blank">Terms &
-        Conditions</a></b>
-      </label>
-      <p><span v-for="error in v$.acceptTermsAndConditions.$errors" :key="error.$uid"
-               style="color: red">{{ error.$message }}</span></p>
-    </div>
 
     <!--submit button-->
-    <button type="submit" :disabled='isSaving'>Next</button>
+    <button type="submit" :disabled='isSaving'>Save Profile</button>
   </form>
 </template>

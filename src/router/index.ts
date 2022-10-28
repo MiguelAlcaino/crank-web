@@ -2,6 +2,9 @@ import {createRouter, createWebHistory} from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import LoginView from "../views/LoginView.vue"
 import RegisterView from "../views/RegisterView.vue"
+import BookingCalendarView from "../views/BookingCalendarView.vue"
+import ProfileView from "../views/ProfileView.vue"
+
 import {authService} from "@/services/authService";
 
 const router = createRouter({
@@ -21,6 +24,16 @@ const router = createRouter({
             path: "/register",
             name: "register",
             component: RegisterView,
+        },
+        {
+            path: "/profile",
+            name: "profile",
+            component: ProfileView,
+        },
+        {
+            path: "/calendar",
+            name: "calendar",
+            component: BookingCalendarView,
         },
         {
             path: "/about",

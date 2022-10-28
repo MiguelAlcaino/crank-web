@@ -1,7 +1,18 @@
 import {createHttpLink, gql} from "@apollo/client";
 import type {
-    CalendarClassesParams, Class, ClassInfo, ClassStat, Country, CurrentUserEnrollmentsParams, Enrollment, Purchase,
-    RegisterUserInput, SiteEnum, User, UserInput, BookClassInput
+    BookClassInput,
+    CalendarClassesParams,
+    Class,
+    ClassInfo,
+    ClassStat,
+    Country,
+    CurrentUserEnrollmentsParams,
+    Enrollment,
+    Purchase,
+    RegisterUserInput,
+    SiteEnum,
+    User,
+    UserInput
 } from "@/gql/graphql";
 import {EnrollmentTypeEnum, type SiteSetting} from "@/gql/graphql";
 import {ApolloClient, ApolloError, InMemoryCache} from "@apollo/client/core";
@@ -9,7 +20,6 @@ import {setContext} from '@apollo/client/link/context';
 import {useAuthenticationStore} from "@/stores/authToken";
 import moment from "moment/moment";
 import {CustomCalendarClasses} from "@/model/CustomCalendarClasses";
-
 
 
 const httpLink = createHttpLink({
@@ -239,7 +249,8 @@ export const apiService = {
             return null;
         }
     },
-    async getCalendarClasses(site: SiteEnum, params: CalendarClassesParams): Promise<Class[]> {
+    async getCalendarClasses(site: SiteEnum, startDate: Date, endDate: Date): Promise<Class[]> {
+
         const CALENDAR_CLASSES_QUERY = gql`
                   query calendarClasses($site: SiteEnum!, $params: CalendarClassesParams) {
                     calendarClasses(site: $site, params: $params) {
@@ -255,6 +266,16 @@ export const apiService = {
                   }
                 `;
         try {
+            const stgStartDate = moment(startDate).format("YYYY-MM-DD");
+            const stgEndDate = moment(endDate).format("YYYY-MM-DD");
+
+            const params: CalendarClassesParams = {
+                startDate: stgStartDate,
+                endDate: stgEndDate,
+            };
+
+            console.log(params);
+
             const queryResult = await authApiClient.query({
                 query: CALENDAR_CLASSES_QUERY,
                 variables: {
@@ -365,9 +386,7 @@ export const apiService = {
             const enrollmentsWaitlist = queryResult.data.enrollmentsWaitlist as Enrollment[];
             const enrollmentsUpcoming = queryResult.data.enrollmentsUpcoming as Enrollment[];
 
-            const customCalendarClasses = new CustomCalendarClasses(siteSettings, calendarClasses, enrollmentsWaitlist, enrollmentsUpcoming);
-
-            return customCalendarClasses;
+            return new CustomCalendarClasses(siteSettings, calendarClasses, enrollmentsWaitlist, enrollmentsUpcoming);
         } catch (error) {
             console.error(error);
             return null;
