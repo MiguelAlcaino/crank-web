@@ -18,8 +18,8 @@ import {EnrollmentTypeEnum, type SiteSetting} from "@/gql/graphql";
 import {ApolloClient, ApolloError, InMemoryCache} from "@apollo/client/core";
 import {setContext} from '@apollo/client/link/context';
 import {useAuthenticationStore} from "@/stores/authToken";
-import moment from "moment/moment";
 import {CustomCalendarClasses} from "@/model/CustomCalendarClasses";
+import dayjs from "dayjs";
 
 
 const httpLink = createHttpLink({
@@ -266,8 +266,8 @@ export const apiService = {
                   }
                 `;
         try {
-            const stgStartDate = moment(startDate).format("YYYY-MM-DD");
-            const stgEndDate = moment(endDate).format("YYYY-MM-DD");
+            const stgStartDate = dayjs(startDate).format("YYYY-MM-DD");
+            const stgEndDate = dayjs(endDate).format("YYYY-MM-DD");
 
             const params: CalendarClassesParams = {
                 startDate: stgStartDate,
@@ -350,8 +350,8 @@ export const apiService = {
                   }
                 `;
 
-        const stgStartDate = moment(startDate).format("YYYY-MM-DD");
-        const stgEndDate = moment(endDate).format("YYYY-MM-DD");
+        const stgStartDate = dayjs(startDate).format("YYYY-MM-DD");
+        const stgEndDate = dayjs(endDate).format("YYYY-MM-DD");
 
         const params: CalendarClassesParams = {
             startDate: stgStartDate,

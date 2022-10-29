@@ -5,6 +5,7 @@ import { DefaultApolloClient } from "@vue/apollo-composable";
 import App from "./App.vue";
 import router from "./router";
 import "./assets/main.css";
+import "bootstrap/dist/css/bootstrap.min.css"
 
 const apolloClient = new ApolloClient({
   uri: "https://payments2.crank-fit.com/api/graphql/",
