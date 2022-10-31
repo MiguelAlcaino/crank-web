@@ -4,6 +4,7 @@ import LoginView from "../views/LoginView.vue"
 import RegisterView from "../views/RegisterView.vue"
 import BookingCalendarView from "../views/BookingCalendarView.vue"
 import ProfileView from "../views/ProfileView.vue"
+import ClassView from "../views/ClassView.vue"
 
 import {authService} from "@/services/authService";
 
@@ -34,6 +35,11 @@ const router = createRouter({
             path: "/calendar",
             name: "calendar",
             component: BookingCalendarView,
+        },
+        {
+            path: "/class/:id",
+            name: "class",
+            component: ClassView,
         },
         {
             path: "/about",

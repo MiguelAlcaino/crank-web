@@ -6,6 +6,9 @@ import App from "./App.vue";
 import router from "./router";
 import "./assets/main.css";
 import "bootstrap/dist/css/bootstrap.min.css"
+import dayjs from 'dayjs'
+
+dayjs.Ls.en.weekStart = 1;
 
 const apolloClient = new ApolloClient({
   uri: "https://payments2.crank-fit.com/api/graphql/",
@@ -21,5 +24,6 @@ const app = createApp({
 
 app.use(createPinia());
 app.use(router);
+app.config.globalProperties.$dayjs = dayjs;
 
 app.mount("#app");
