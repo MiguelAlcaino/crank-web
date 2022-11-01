@@ -56,8 +56,6 @@ async function getClassesOfTheWeek(): Promise<void> {
   const firstDayWeek = appStore().calendarStartDate;
   const lastDayWeek = appStore().calendarEndDate;
 
-  console.log(firstDayWeek, lastDayWeek)
-
   let customCalendarClasses = await apiService.getCustomCalendarClasses(SiteEnum.Dubai, firstDayWeek, lastDayWeek);
 
   if (customCalendarClasses != null) {

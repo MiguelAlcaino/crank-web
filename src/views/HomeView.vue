@@ -2,15 +2,6 @@
 
 import TheWelcome from "../components/TheWelcome.vue";
 import {onMounted} from "vue";
-import {apiService} from "@/services/apiService";
-import {
-  SiteEnum,
-  CalendarClassesParams,
-  CurrentUserEnrollmentsParams,
-  EnrollmentTypeEnum,
-  UserInput,
-  BookClassInput
-} from "@/gql/graphql";
 
 onMounted(async () => {
   /*
@@ -78,10 +69,10 @@ onMounted(async () => {
     const user = await apiService.updateCurrentUser(userInput);
     console.log("updateCurrentUser", user);
   }
-*/
+
   const bookClassInput: BookClassInput = {classId: "580", isWaitlistBooking: false, spotNumber: 1};
   let responseBookClassInput = await apiService.bookClass(SiteEnum.Dubai, bookClassInput);
-  console.log("responseBookClassInput", responseBookClassInput);
+  console.log("responseBookClassInput", responseBookClassInput);*/
 
 });
 

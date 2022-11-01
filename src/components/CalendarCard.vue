@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {type Class,} from "@/gql/graphql";
-import {onMounted, ref} from "vue";
 import dayjs from 'dayjs'
 import IconCalendarCard from "@/components/icons/IconCalendarCard.vue";
 import router from "@/router";
@@ -10,9 +9,6 @@ const props = defineProps<{
   isEnrolled?: boolean,
 }>();
 const emits = defineEmits<{}>();
-
-onMounted(() => {
-});
 
 async function selectClass() {
   await router.push('/class/' + props.classInfo!.id);
