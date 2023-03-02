@@ -26,7 +26,7 @@ import {authService} from "@/services/authService";
               <RouterLink :to="{ name: 'login' }">Login</RouterLink>
             </li>
             <li v-if="authService.isLoggedId()">
-              <a @click="authService.logout()">Logout</a>
+              <a href="#" @click="authService.logout()">logout</a>
             </li>
           </ul>
         </aside>

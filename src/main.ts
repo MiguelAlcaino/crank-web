@@ -9,11 +9,7 @@ import "./assets/main.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import dayjs from "dayjs";
 
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faUser, faTv, faFan } from "@fortawesome/free-solid-svg-icons";
-
-library.add(faUser, faTv, faFan);
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 dayjs.Ls.en.weekStart = 1;
 
@@ -32,6 +28,5 @@ const app = createApp({
 app.use(createPinia());
 app.use(router);
 app.config.globalProperties.$dayjs = dayjs;
-app.component("font-awesome-icon", FontAwesomeIcon);
 
 app.mount("#app");

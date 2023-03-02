@@ -1,4 +1,5 @@
 <script setup lang="ts">
+
 import { onMounted, ref } from "vue";
 import type { BookableSpot, ClassPositionInterface, IconPosition } from "@/gql/graphql";
 import { SpotPosition } from "@/model/SpotPosition";

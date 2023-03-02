@@ -7,17 +7,17 @@ const props = defineProps<{
 
 <template>
   <div>
-    <div v-if="iconName=== 'instructor'">
-      <font-awesome-icon icon="fa-solid fa-user"/>
+    <div v-if="iconName === 'instructor'">
+      <i class="bi bi-person-fill" style="font-size: 1.8rem;"></i>
     </div>
-    <div v-else-if="iconName=== 'speaker'">
-      {{ iconName }}
+    <div v-else-if="iconName === 'speaker'">
+      <i class="bi bi-speaker" style="font-size: 1.8rem;"></i>
     </div>
-    <div v-else-if="iconName=== 'fan'">
-      <font-awesome-icon icon="fa-solid fa-fan"/>
+    <div v-else-if="iconName === 'fan'">
+      <i class="bi bi-fan" style="font-size: 1.8rem;"></i>
     </div>
-    <div v-else-if="iconName=== 'tv'">
-      <font-awesome-icon icon="fa-solid fa-tv"/>
+    <div v-else-if="iconName === 'tv'">
+      <i class="bi bi-tv"  style="font-size: 1.8rem;"></i>
     </div>
   </div>
 </template>
