@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {onMounted, ref} from "vue";
-import {Class} from "@/gql/graphql";
+import { onMounted, ref } from "vue";
+import type { Class } from "@/gql/graphql";
 
 const props = defineProps<{
   classInfo: Class,
@@ -24,10 +24,11 @@ function bookClass(): void {
   <div>
     <div class="text-center">
       <a id="ReserveSpotButton" type="button" @click="bookClass()"
-         class="btn btn-primary btn-cons waves-effect waves-light" style="">
+        class="btn btn-primary btn-cons waves-effect waves-light" style="">
         <i class="fa fa-bullseye" aria-hidden="true"></i>
         <div>Sign up for this class</div>
-      </a></div>
+      </a>
+    </div>
   </div>
 </template>
 

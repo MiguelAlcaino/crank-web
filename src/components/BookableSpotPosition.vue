@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import {type SpotInfo} from "@/gql/graphql";
+import type { SpotInfo } from "@/gql/graphql";
 
 const props = defineProps<{
   spotInfo?: SpotInfo | null
 }>();
 
-function selectSpot(spotNumber: number) {
+function selectSpot(spotNumber?: number) {
   console.log(spotNumber);
 }
 
@@ -13,8 +13,8 @@ function selectSpot(spotNumber: number) {
 
 <template>
   <div>
-    <div v-if="spotInfo.isBooked" class="disabledSpot">{{ spotInfo.spotNumber }}</div>
-    <div v-else class="enabledSpot" @click="selectSpot(spotInfo.spotNumber )">{{ spotInfo.spotNumber }}</div>
+    <div v-if="spotInfo?.isBooked" class="disabledSpot">{{ spotInfo.spotNumber }}</div>
+    <div v-else class="enabledSpot" @click="selectSpot(spotInfo?.spotNumber)">{{ spotInfo?.spotNumber }}</div>
   </div>
 </template>
 
@@ -51,5 +51,4 @@ function selectSpot(spotNumber: number) {
   font-weight: 400;
   font-size: 14px;
 }
-
 </style>

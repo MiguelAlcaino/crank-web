@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {type Class,} from "@/gql/graphql";
+import type { Class } from "@/gql/graphql";
 import dayjs from 'dayjs'
 import IconCalendarCard from "@/components/icons/IconCalendarCard.vue";
 import router from "@/router";
