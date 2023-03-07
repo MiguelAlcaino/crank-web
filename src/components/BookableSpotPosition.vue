@@ -1,5 +1,28 @@
 <script setup lang="ts">
+import { useVfm } from 'vue-final-modal';
 import type { SpotInfo } from "@/gql/graphql";
+import { ModalsContainer, useModal } from 'vue-final-modal'
+
+import ModalConfirm from './ModalConfirm.vue';
+
+const { open, close } = useModal({
+  component: ModalConfirm,
+  attrs: {
+    title: 'BOOK THIS CLASS',
+    onConfirm() {
+      console.log("onConfirm")
+      close();
+    },
+    onCancel() {
+      console.log("onCancel")
+      close();
+    }
+  },
+  slots: {
+    default: '<p>WOULD YOU LIKE TO BOOK THIS CLASS?</p>',
+  },
+})
+
 
 const props = defineProps<{
   spotInfo?: SpotInfo | null
@@ -7,8 +30,8 @@ const props = defineProps<{
 
 function selectSpot(spotNumber?: number) {
   console.log(spotNumber);
+  open();
 }
-
 </script>
 
 <template>
