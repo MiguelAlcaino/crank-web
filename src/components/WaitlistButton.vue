@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
 import type { Class } from "@/gql/graphql";
 
 const props = defineProps<{
@@ -7,24 +6,19 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits<{
-    (event: 'bookClass'): void
+    (event: "clickBookWaitList", classId: string, spotNumber: number | null, isWaitlistBooking: boolean | null): void
 }>();
 
-const showModal = ref(false);
-
-function bookClass(): void {
-    //TODO: try to enroll on the waiting list
-    showModal.value = true;
-    console.log("bookClass");
+function onClickWaitListButton(): void {
+    emits("clickBookWaitList", props.classInfo.id, null, true);
 }
-
-
 </script>
 
 <template>
     <div>
         <div class="text-center">
-            <a type="button" @click="bookClass()" class="btn btn-primary btn-cons waves-effect waves-light" style="">
+            <a type="button" @click="onClickWaitListButton()" class="btn btn-primary btn-cons waves-effect waves-light"
+                style="">
                 <i class="fa fa-bullseye" aria-hidden="true"></i>
                 <div>Enroll on the WaitList</div>
             </a>

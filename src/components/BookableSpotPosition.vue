@@ -1,43 +1,46 @@
 <script setup lang="ts">
-import { useVfm } from 'vue-final-modal';
+
 import type { SpotInfo } from "@/gql/graphql";
-import { ModalsContainer, useModal } from 'vue-final-modal'
+// import { useModal } from 'vue-final-modal'
 
-import ModalConfirm from './ModalConfirm.vue';
-
-const { open, close } = useModal({
-  component: ModalConfirm,
-  attrs: {
-    title: 'BOOK THIS CLASS',
-    onConfirm() {
-      console.log("onConfirm")
-      close();
-    },
-    onCancel() {
-      console.log("onCancel")
-      close();
-    }
-  },
-  slots: {
-    default: '<p>WOULD YOU LIKE TO BOOK THIS CLASS?</p>',
-  },
-})
+// import ModalConfirm from './ModalConfirm.vue';
 
 
 const props = defineProps<{
   spotInfo?: SpotInfo | null
 }>();
 
-function selectSpot(spotNumber?: number) {
-  console.log(spotNumber);
-  open();
+const emits = defineEmits<{
+  (e: 'clickSpot', spotNumber: number): void,
+}>();
+
+// const { open, close } = useModal({
+//   component: ModalConfirm,
+//   attrs: {
+//     title: 'BOOK YOUR SPOT',
+//     onConfirm() {
+//       emits("clickSpot", { classId: "", spotNumber: props.spotInfo!.spotNumber });
+//       close();
+//     },
+//     onCancel() {
+//       console.log("onCancel")
+//       close();
+//     }
+//   },
+//   slots: {
+//     default: "<p>WOULD YOU LIKE TO BOOK SPOT " + props.spotInfo?.spotNumber + "?</p>",
+//   },
+// });
+
+function selectSpot() {
+  emits("clickSpot", props.spotInfo!.spotNumber);
 }
 </script>
 
 <template>
   <div>
     <div v-if="spotInfo?.isBooked" class="disabledSpot">{{ spotInfo.spotNumber }}</div>
-    <div v-else class="enabledSpot" @click="selectSpot(spotInfo?.spotNumber)">{{ spotInfo?.spotNumber }}</div>
+    <div v-else class="enabledSpot" @click="selectSpot()">{{ spotInfo?.spotNumber }}</div>
   </div>
 </template>
 

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
 import type { Class } from "@/gql/graphql";
 
 const props = defineProps<{
@@ -7,24 +6,18 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits<{
-  (event: 'bookClass'): void
+  (event: "clickBookClass", classId: string, spotNumber: number | null, isWaitlistBooking: boolean | null): void
 }>();
 
-const showModal = ref(false);
-
-function bookClass(): void {
-  showModal.value = true;
-  console.log("bookClass");
+function onClickBookClassBtn(): void {
+  emits("clickBookClass", props.classInfo!.id, null, null)
 }
-
-
 </script>
 
 <template>
   <div>
     <div class="text-center">
-      <a id="ReserveSpotButton" type="button" @click="bookClass()"
-        class="btn btn-primary btn-cons waves-effect waves-light" style="">
+      <a type="button" @click="onClickBookClassBtn()" class="btn btn-primary btn-cons waves-effect waves-light" style="">
         <i class="fa fa-bullseye" aria-hidden="true"></i>
         <div>Sign up for this class</div>
       </a>

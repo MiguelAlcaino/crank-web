@@ -1,13 +1,18 @@
 <script setup lang="ts">
 
 import { onMounted, ref } from "vue";
-import type { BookableSpot, ClassPositionInterface, IconPosition } from "@/gql/graphql";
+import type { BookableSpot, Class, ClassPositionInterface, IconPosition } from "@/gql/graphql";
 import { SpotPosition } from "@/model/SpotPosition";
 import BookableSpotPosition from "@/components/BookableSpotPosition.vue"
 import IconPositionNotBookable from "@/components/icons/IconPositionNotBookable.vue"
 
 const props = defineProps<{
+  classInfo: Class,
   matrix: Array<ClassPositionInterface> | undefined
+}>();
+
+const emits = defineEmits<{
+  (event: 'clickSpot', classId: string, spotNumber: number | null, isWaitlistBooking: boolean | null): void
 }>();
 
 const spotsTable = ref<Array<Array<SpotPosition>>>([]);
@@ -24,7 +29,7 @@ function getSpotTable() {
   if (props.matrix) {
     for (let i = 0; i < props.matrix.length; i++) {
 
-      let typename: string = props.matrix[i]["__typename"];
+      let typename: string | undefined = props.matrix[i]["__typename"];
 
       if (typename === "BookableSpot") {
         let classPosition = props.matrix[i] as BookableSpot;
@@ -60,6 +65,11 @@ function getSpotTable() {
   spotsTable.value.push(spotsTableRow);
 }
 
+function onClickSpotBtn(spotNumber: number) {
+  console.log("matrix");
+  emits("clickSpot", props.classInfo!.id, spotNumber, null)
+}
+
 </script>
 
 <template>
@@ -68,7 +78,7 @@ function getSpotTable() {
       <tbody>
         <tr v-for="(colRow, key) in spotsTable" :key="key">
           <td v-for="(spot, key) in colRow" :key="key">
-            <BookableSpotPosition v-if="spot.positionType === 'BookableSpot'" :spotInfo="spot.spotInfo">
+            <BookableSpotPosition v-if="spot.positionType === 'BookableSpot'" :spotInfo="spot.spotInfo" :on-click-spot="onClickSpotBtn">
             </BookableSpotPosition>
 
             <IconPositionNotBookable v-if="spot.positionType === 'IconPosition'" :iconName="spot.positionIcon">

@@ -33,10 +33,52 @@ async function getClassInfo() {
   const classId = route.params.id as string;
   classInfo.value = await apiService.getClassInfo(SiteEnum.Dubai, classId);
 
-  console.log(classInfo.value);
-
   isLoading.value = false;
 }
+
+function confirmBook(classId: string, spotNumber: number | null, isWaitlistBooking: boolean | null): void {
+  //TODO: show confirm modal
+
+  console.log("classId", classId, "spotNumber", spotNumber, "isWaitlistBooking", isWaitlistBooking);
+}
+
+async function bookClass(classId: string, spotNumber?: number, isWaitlistBooking?: boolean) {
+  var response = await apiService.bookClass(
+    SiteEnum.Dubai,
+    {
+      classId: classId,
+      spotNumber: spotNumber,
+      isWaitlistBooking: isWaitlistBooking
+    });
+
+  if (response === "BookClassSuccess") {
+    //TODO: BookClassSuccess action
+  }
+  else if (response === "PaymentRequiredError") {
+    //TODO: PaymentRequiredError action
+  }
+  else if (response === "ClientIsAlreadyBookedError") {
+    //TODO: ClientIsAlreadyBookedError action
+  }
+  else if (response === "ClientIsOutsideSchedulingWindowError") {
+    //TODO: ClientIsOutsideSchedulingWindowError action
+  }
+  else if (response === "SpotAlreadyReservedError") {
+    //TODO: SpotAlreadyReservedError action
+  }
+  else if (response === "BookedButInOtherSpotError") {
+    //TODO: BookedButInOtherSpotError action
+  }
+  else if (response === "ClassIsFullError") {
+    //TODO: ClassIsFullError action
+  }
+  else if (response === "UnknownError") {
+    //TODO: UnknownError action
+  }
+}
+
+
+
 </script>
 
 <template>
@@ -58,9 +100,13 @@ async function getClassInfo() {
     <hr>
     <div class="row">
       <div class="col-12 text-center">
-        <WaitlistButton v-if="classInfo !== null && classInfo.class.waitListAvailable" :classInfo="classInfo.class"></WaitlistButton>
-        <SpotMatrix v-if="classInfo !== null && classInfo.matrix !== null" :matrix="classInfo.matrix"></SpotMatrix>
-        <ReserveSpotButton v-if="classInfo !== null && classInfo.matrix === null" :classInfo="classInfo.class">
+        <WaitlistButton v-if="classInfo !== null && classInfo.class.waitListAvailable" :classInfo="classInfo.class"
+          :on-click-book-wait-list="confirmBook">
+        </WaitlistButton>
+        <SpotMatrix v-if="classInfo !== null && classInfo.matrix !== null" :classInfo="classInfo.class"
+          :matrix="classInfo.matrix" :on-click-spot="confirmBook"></SpotMatrix>
+        <ReserveSpotButton v-if="classInfo !== null && classInfo.matrix === null" :classInfo="classInfo.class"
+          :on-click-book-class="confirmBook">
         </ReserveSpotButton>
       </div>
     </div>
