@@ -1,10 +1,6 @@
 <script setup lang="ts">
 
 import type { SpotInfo } from "@/gql/graphql";
-// import { useModal } from 'vue-final-modal'
-
-// import ModalConfirm from './ModalConfirm.vue';
-
 
 const props = defineProps<{
   spotInfo?: SpotInfo | null
@@ -13,24 +9,6 @@ const props = defineProps<{
 const emits = defineEmits<{
   (e: 'clickSpot', spotNumber: number): void,
 }>();
-
-// const { open, close } = useModal({
-//   component: ModalConfirm,
-//   attrs: {
-//     title: 'BOOK YOUR SPOT',
-//     onConfirm() {
-//       emits("clickSpot", { classId: "", spotNumber: props.spotInfo!.spotNumber });
-//       close();
-//     },
-//     onCancel() {
-//       console.log("onCancel")
-//       close();
-//     }
-//   },
-//   slots: {
-//     default: "<p>WOULD YOU LIKE TO BOOK SPOT " + props.spotInfo?.spotNumber + "?</p>",
-//   },
-// });
 
 function selectSpot() {
   emits("clickSpot", props.spotInfo!.spotNumber);

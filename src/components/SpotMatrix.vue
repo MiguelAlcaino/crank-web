@@ -66,7 +66,6 @@ function getSpotTable() {
 }
 
 function onClickSpotBtn(spotNumber: number) {
-  console.log("matrix");
   emits("clickSpot", props.classInfo!.id, spotNumber, null)
 }
 
@@ -78,7 +77,7 @@ function onClickSpotBtn(spotNumber: number) {
       <tbody>
         <tr v-for="(colRow, key) in spotsTable" :key="key">
           <td v-for="(spot, key) in colRow" :key="key">
-            <BookableSpotPosition v-if="spot.positionType === 'BookableSpot'" :spotInfo="spot.spotInfo" :on-click-spot="onClickSpotBtn">
+            <BookableSpotPosition v-if="spot.positionType === 'BookableSpot'" :spotInfo="spot.spotInfo" @click-spot="onClickSpotBtn">
             </BookableSpotPosition>
 
             <IconPositionNotBookable v-if="spot.positionType === 'IconPosition'" :iconName="spot.positionIcon">

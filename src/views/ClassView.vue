@@ -101,12 +101,12 @@ async function bookClass(classId: string, spotNumber?: number, isWaitlistBooking
     <div class="row">
       <div class="col-12 text-center">
         <WaitlistButton v-if="classInfo !== null && classInfo.class.waitListAvailable" :classInfo="classInfo.class"
-          :on-click-book-wait-list="confirmBook">
+          @click-book-wait-list="confirmBook">
         </WaitlistButton>
         <SpotMatrix v-if="classInfo !== null && classInfo.matrix !== null" :classInfo="classInfo.class"
-          :matrix="classInfo.matrix" :on-click-spot="confirmBook"></SpotMatrix>
+          :matrix="classInfo.matrix" @click-spot="confirmBook"></SpotMatrix>
         <ReserveSpotButton v-if="classInfo !== null && classInfo.matrix === null" :classInfo="classInfo.class"
-          :on-click-book-class="confirmBook">
+          @click-book-class="confirmBook">
         </ReserveSpotButton>
       </div>
     </div>
