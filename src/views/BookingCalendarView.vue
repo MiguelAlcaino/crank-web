@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import {onMounted, ref} from "vue";
-import {type Class, Enrollment, SiteEnum} from "@/gql/graphql";
+import {type Class, SiteEnum} from "@/gql/graphql";
 import {apiService} from "@/services/apiService";
 import {DayOfTheWeek} from "@/model/DayOfTheWeek";
 import {WeekCalendar} from "@/model/WeekCalendar";

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 
-import TheWelcome from "../components/TheWelcome.vue";
-import {onMounted} from "vue";
+import { onMounted } from "vue";
 
 onMounted(async () => {
   /*
@@ -80,6 +79,5 @@ onMounted(async () => {
 
 <template>
   <main>
-    <TheWelcome/>
   </main>
 </template>

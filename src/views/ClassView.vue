@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
 import { useRoute } from 'vue-router'
-import type { ClassInfo } from "@/gql/graphql";
-import { apiService } from "@/services/apiService";
-import { SiteEnum } from "@/gql/graphql";
+
 import dayjs from 'dayjs'
-import SpotMatrix from "@/components/SpotMatrix.vue";
+
+import { type ClassInfo, SiteEnum } from "@/gql/graphql";
+import { apiService } from "@/services/apiService";
+
 import ReserveSpotButton from "@/components/ReserveSpotButton.vue";
+import SpotMatrix from "@/components/SpotMatrix.vue";
+import WaitlistButton from "@/components/WaitlistButton.vue"
 
 const route = useRoute();
 
@@ -29,6 +32,8 @@ async function getClassInfo() {
 
   const classId = route.params.id as string;
   classInfo.value = await apiService.getClassInfo(SiteEnum.Dubai, classId);
+
+  console.log(classInfo.value);
 
   isLoading.value = false;
 }
@@ -53,6 +58,7 @@ async function getClassInfo() {
     <hr>
     <div class="row">
       <div class="col-12 text-center">
+        <WaitlistButton v-if="classInfo !== null && classInfo.class.waitListAvailable" :classInfo="classInfo.class"></WaitlistButton>
         <SpotMatrix v-if="classInfo !== null && classInfo.matrix !== null" :matrix="classInfo.matrix"></SpotMatrix>
         <ReserveSpotButton v-if="classInfo !== null && classInfo.matrix === null" :classInfo="classInfo.class">
         </ReserveSpotButton>
