@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
-import { useRoute } from 'vue-router'
+import {onMounted, ref, watch} from "vue";
+import {useRoute} from 'vue-router'
 
 import dayjs from 'dayjs'
 
-import { type ClassInfo, SiteEnum } from "@/gql/graphql";
-import { apiService } from "@/services/apiService";
+import {type ClassInfo, SiteEnum} from "@/gql/graphql";
+import {apiService} from "@/services/apiService";
 
 import ReserveSpotButton from "@/components/ReserveSpotButton.vue";
 import SpotMatrix from "@/components/SpotMatrix.vue";
@@ -16,15 +16,19 @@ const route = useRoute();
 const isLoading = ref<boolean>(false);
 const classInfo = ref<ClassInfo | null>(null);
 
+interface SpotClickedEvent {
+  spotNumber: number | null
+}
+
 onMounted(() => {
   getClassInfo();
 });
 
 watch(
-  () => route.params.id,
-  newId => {
-    getClassInfo();
-  }
+    () => route.params.id,
+    newId => {
+      getClassInfo();
+    }
 );
 
 async function getClassInfo() {
@@ -36,47 +40,37 @@ async function getClassInfo() {
   isLoading.value = false;
 }
 
-function confirmBook(classId: string, spotNumber: number | null, isWaitlistBooking: boolean | null): void {
-  //TODO: show confirm modal
-
-  console.log("classId", classId, "spotNumber", spotNumber, "isWaitlistBooking", isWaitlistBooking);
+function confirmBook(event: SpotClickedEvent): void {
+  console.log(event);
 }
 
 async function bookClass(classId: string, spotNumber?: number, isWaitlistBooking?: boolean) {
   var response = await apiService.bookClass(
-    SiteEnum.Dubai,
-    {
-      classId: classId,
-      spotNumber: spotNumber,
-      isWaitlistBooking: isWaitlistBooking
-    });
+      SiteEnum.Dubai,
+      {
+        classId: classId,
+        spotNumber: spotNumber,
+        isWaitlistBooking: isWaitlistBooking
+      });
 
   if (response === "BookClassSuccess") {
     //TODO: BookClassSuccess action
-  }
-  else if (response === "PaymentRequiredError") {
+  } else if (response === "PaymentRequiredError") {
     //TODO: PaymentRequiredError action
-  }
-  else if (response === "ClientIsAlreadyBookedError") {
+  } else if (response === "ClientIsAlreadyBookedError") {
     //TODO: ClientIsAlreadyBookedError action
-  }
-  else if (response === "ClientIsOutsideSchedulingWindowError") {
+  } else if (response === "ClientIsOutsideSchedulingWindowError") {
     //TODO: ClientIsOutsideSchedulingWindowError action
-  }
-  else if (response === "SpotAlreadyReservedError") {
+  } else if (response === "SpotAlreadyReservedError") {
     //TODO: SpotAlreadyReservedError action
-  }
-  else if (response === "BookedButInOtherSpotError") {
+  } else if (response === "BookedButInOtherSpotError") {
     //TODO: BookedButInOtherSpotError action
-  }
-  else if (response === "ClassIsFullError") {
+  } else if (response === "ClassIsFullError") {
     //TODO: ClassIsFullError action
-  }
-  else if (response === "UnknownError") {
+  } else if (response === "UnknownError") {
     //TODO: UnknownError action
   }
 }
-
 
 
 </script>
@@ -101,12 +95,12 @@ async function bookClass(classId: string, spotNumber?: number, isWaitlistBooking
     <div class="row">
       <div class="col-12 text-center">
         <WaitlistButton v-if="classInfo !== null && classInfo.class.waitListAvailable" :classInfo="classInfo.class"
-          @click-book-wait-list="confirmBook">
+                        @click-book-wait-list="confirmBook">
         </WaitlistButton>
         <SpotMatrix v-if="classInfo !== null && classInfo.matrix !== null" :classInfo="classInfo.class"
-          :matrix="classInfo.matrix" @click-spot="confirmBook"></SpotMatrix>
+                    :matrix="classInfo.matrix" @click-spot="confirmBook"></SpotMatrix>
         <ReserveSpotButton v-if="classInfo !== null && classInfo.matrix === null" :classInfo="classInfo.class"
-          @click-book-class="confirmBook">
+                           @click-book-class="confirmBook">
         </ReserveSpotButton>
       </div>
     </div>
