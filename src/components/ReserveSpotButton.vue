@@ -1,23 +1,18 @@
 <script setup lang="ts">
-import type { Class } from "@/gql/graphql";
-
-const props = defineProps<{
-  classInfo: Class,
-}>();
 
 const emits = defineEmits<{
-  (event: "clickBookClass", classId: string, spotNumber: number | null, isWaitlistBooking: boolean | null): void
+  (event: "clickBookClass"): void
 }>();
 
 function onClickBookClassBtn(): void {
-  emits("clickBookClass", props.classInfo!.id, null, null)
+  emits("clickBookClass")
 }
 </script>
 
 <template>
   <div>
     <div class="text-center">
-      <a type="button" @click="onClickBookClassBtn()" class="btn btn-primary btn-cons waves-effect waves-light" style="">
+      <a type="button" @click="onClickBookClassBtn()" class="btn btn-primary btn-cons waves-effect waves-light">
         <i class="fa fa-bullseye" aria-hidden="true"></i>
         <div>Sign up for this class</div>
       </a>
@@ -30,5 +25,11 @@ function onClickBookClassBtn(): void {
   color: #fff;
   background-color: #000000;
   border-color: #000000;
+}
+
+.btn-primary:hover {
+  color: #fff;
+  background-color: grey;
+  border-color: grey;  
 }
 </style>

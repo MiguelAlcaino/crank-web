@@ -2,29 +2,32 @@
 import { VueFinalModal } from 'vue-final-modal'
 
 defineProps<{
-    title: string,
+    title?: string,
+    message: string,
     textCancelBtn?: string,
-    textConfirmButton?: string,
+    textActionBtn?: string,
+    isLoading: boolean,
+    clickToClose: boolean
 }>();
 
 const emit = defineEmits<{
-    (e: 'confirm'): void,
+    (e: 'action'): void,
     (e: 'cancel'): void,
 }>();
 
 </script>
 <template>
-    <VueFinalModal class="confirm-modal" content-class="confirm-modal-content">
+    <VueFinalModal class="confirm-modal" content-class="confirm-modal-content" :click-to-close="clickToClose">
         <h1 class="text-xl">
-            {{ title }}
+            {{ title ?? "ERROR" }}
         </h1>
-        <slot></slot>
+        <p>{{ message }}</p>
         <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" @click="emit('cancel')">
+            <button type="button" class="btn btn-secondary" @click="emit('cancel')" :disabled="isLoading">
                 {{ textCancelBtn ?? "CANCEL" }}
             </button>
-            <button type="button" class="btn btn-primary" @click="emit('confirm')">
-                {{ textConfirmButton ?? "OK" }}
+            <button type="button" class="btn btn-primary" @click="emit('action')" :disabled="isLoading">
+                {{ textActionBtn ?? "OK" }}
             </button>
         </div>
     </VueFinalModal>

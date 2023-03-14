@@ -1,16 +1,15 @@
 <script setup lang="ts">
-import type { Class } from "@/gql/graphql";
 
-const props = defineProps<{
-    classInfo: Class,
-}>();
+// defineProps<{
+//     classInfo: Class,
+// }>();
 
 const emits = defineEmits<{
-    (event: "clickBookWaitList", classId: string, spotNumber: number | null, isWaitlistBooking: boolean | null): void
+    (event: "clickBookWaitList"): void
 }>();
 
 function onClickWaitListButton(): void {
-    emits("clickBookWaitList", props.classInfo.id, null, true);
+    emits("clickBookWaitList");
 }
 </script>
 

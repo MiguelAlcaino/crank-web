@@ -4,25 +4,25 @@ import {onMounted, ref} from "vue";
 import BookableSpotPosition from "@/components/BookableSpotPosition.vue"
 import IconPositionNotBookable from "@/components/icons/IconPositionNotBookable.vue"
 
-interface SpotPosition {
+export interface SpotPosition {
   positionType: string
   positionIcon: string
   spotInfo?: SpotInfo
 }
 
-interface ClassPositionInterface {
+export interface ClassPositionInterface {
   __typename: string
   x: number
   y: number
   icon: string
 }
 
-interface BookableSpotClickedEvent {
+export interface BookableSpotClickedEvent {
   spotNumber: number | null
   isBooked: boolean
 }
 
-interface SpotInfo {
+export interface SpotInfo {
   isBooked: boolean
   spotNumber: number
 }
@@ -38,7 +38,7 @@ const BOOKABLE_SPOT_KEY = 'BookableSpot';
 const ICON_POSITION_KEY = 'IconPosition';
 
 const props = defineProps<{
-  matrix: Array<ClassPositionInterface> | undefined
+  matrix?: Array<ClassPositionInterface> | undefined
 }>();
 
 const emits = defineEmits<{
