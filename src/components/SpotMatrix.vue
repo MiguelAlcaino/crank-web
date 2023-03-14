@@ -3,11 +3,13 @@
 import {onMounted, ref} from "vue";
 import BookableSpotPosition from "@/components/BookableSpotPosition.vue"
 import IconPositionNotBookable from "@/components/icons/IconPositionNotBookable.vue"
+import AdminBookableSpotPosition from "@/components/AdminBookableSpotPosition.vue";
 
 interface SpotPosition {
   positionType: string
   positionIcon: string
   spotInfo?: SpotInfo
+  user?: User
 }
 
 interface ClassPositionInterface {
@@ -27,19 +29,30 @@ interface SpotInfo {
   spotNumber: number
 }
 
+interface User {
+  firstName: string
+  lastName: string
+}
+
 interface BookableSpot extends ClassPositionInterface {
   spotInfo: SpotInfo
+  user?: User
 }
 
 interface IconPosition extends ClassPositionInterface {
 }
 
+interface Props{
+  matrix?: Array<ClassPositionInterface>,
+  showUserInSpots: boolean
+}
+
 const BOOKABLE_SPOT_KEY = 'BookableSpot';
 const ICON_POSITION_KEY = 'IconPosition';
 
-const props = defineProps<{
-  matrix: Array<ClassPositionInterface> | undefined
-}>();
+const props = withDefaults(defineProps<Props>(), {
+  showUserInSpots: false
+});
 
 const emits = defineEmits<{
   (e: 'clickSpot', event: BookableSpotClickedEvent): void
@@ -51,8 +64,26 @@ onMounted(() => {
   getSpotTable();
 });
 
-function newSpotPosition(positionType: string, positionIcon: string, spotInfo?: SpotInfo): SpotPosition {
-  return {positionType: positionType, positionIcon: positionIcon, spotInfo: spotInfo}
+function newSpotPosition(classPosition: BookableSpot | IconPosition): SpotPosition {
+  if ('spotInfo' in classPosition) {
+    if ('user' in classPosition) {
+      return {
+        positionType: BOOKABLE_SPOT_KEY,
+        positionIcon: classPosition.icon,
+        spotInfo: classPosition.spotInfo,
+        user: classPosition.user
+      }
+    }
+    return {
+      positionType: BOOKABLE_SPOT_KEY,
+      positionIcon: classPosition.icon,
+      spotInfo: classPosition.spotInfo
+    }
+  }
+  return {
+    positionType: ICON_POSITION_KEY,
+    positionIcon: classPosition.icon,
+  }
 }
 
 function getSpotTable() {
@@ -69,28 +100,28 @@ function getSpotTable() {
         let classPosition = props.matrix[i] as BookableSpot;
 
         if (x == classPosition.x) {
-          spotsTableRow.push(newSpotPosition(BOOKABLE_SPOT_KEY, classPosition.icon, classPosition.spotInfo))
+          spotsTableRow.push(newSpotPosition(classPosition))
         } else {
           spotsTable.value.push(spotsTableRow);
 
           spotsTableRow = [];
           x = classPosition.x;
 
-          spotsTableRow.push(newSpotPosition(BOOKABLE_SPOT_KEY, classPosition.icon, classPosition.spotInfo));
+          spotsTableRow.push(newSpotPosition(classPosition));
         }
       }
       if (typename === ICON_POSITION_KEY) {
         let classPosition = props.matrix[i] as IconPosition;
 
         if (x == classPosition.x) {
-          spotsTableRow.push(newSpotPosition(ICON_POSITION_KEY, classPosition.icon));
+          spotsTableRow.push(newSpotPosition(classPosition));
         } else {
           spotsTable.value.push(spotsTableRow);
 
           spotsTableRow = [];
           x = classPosition.x;
 
-          spotsTableRow.push(newSpotPosition(ICON_POSITION_KEY, classPosition.icon));
+          spotsTableRow.push(newSpotPosition(classPosition));
         }
       }
     }
@@ -113,13 +144,14 @@ function onClickSpotBtn(spotNumber: number) {
       <tbody>
       <tr v-for="(colRow, key) in spotsTable" :key="key">
         <td v-for="(spot, key) in colRow" :key="key">
-          <BookableSpotPosition v-if="spot.positionType === BOOKABLE_SPOT_KEY"
-                                :spotInfo="spot.spotInfo"
-                                @click-spot="onClickSpotBtn">
-          </BookableSpotPosition>
+          <admin-bookable-spot-position v-if="showUserInSpots && spot.user !== undefined && spot.positionType === BOOKABLE_SPOT_KEY"
+                                        spot-info=""/>
+          <bookable-spot-position v-else-if="!showUserInSpots && spot.positionType === BOOKABLE_SPOT_KEY"
+                                  :spotInfo="spot.spotInfo"
+                                  @click-spot="onClickSpotBtn"/>
 
-          <IconPositionNotBookable v-else-if="spot.positionType === ICON_POSITION_KEY" :iconName="spot.positionIcon">
-          </IconPositionNotBookable>
+          <icon-position-not-bookable v-else-if="spot.positionType === ICON_POSITION_KEY"
+                                      :iconName="spot.positionIcon"/>
         </td>
       </tr>
       </tbody>
