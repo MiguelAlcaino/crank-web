@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {onMounted, ref} from "vue";
+import { onMounted, ref } from "vue";
 import BookableSpotPosition from "@/components/BookableSpotPosition.vue"
 import IconPositionNotBookable from "@/components/icons/IconPositionNotBookable.vue"
 
@@ -52,11 +52,11 @@ onMounted(() => {
 });
 
 function newSpotPosition(positionType: string, positionIcon: string, spotInfo?: SpotInfo): SpotPosition {
-  return {positionType: positionType, positionIcon: positionIcon, spotInfo: spotInfo}
+  return { positionType: positionType, positionIcon: positionIcon, spotInfo: spotInfo }
 }
 
 function getSpotTable() {
-  let x = 0;
+  let y = 0;
 
   let spotsTableRow: Array<SpotPosition> = [];
 
@@ -68,13 +68,13 @@ function getSpotTable() {
       if (typename === BOOKABLE_SPOT_KEY) {
         let classPosition = props.matrix[i] as BookableSpot;
 
-        if (x == classPosition.x) {
+        if (y == classPosition.y) {
           spotsTableRow.push(newSpotPosition(BOOKABLE_SPOT_KEY, classPosition.icon, classPosition.spotInfo))
         } else {
           spotsTable.value.push(spotsTableRow);
 
           spotsTableRow = [];
-          x = classPosition.x;
+          y = classPosition.y;
 
           spotsTableRow.push(newSpotPosition(BOOKABLE_SPOT_KEY, classPosition.icon, classPosition.spotInfo));
         }
@@ -82,13 +82,13 @@ function getSpotTable() {
       if (typename === ICON_POSITION_KEY) {
         let classPosition = props.matrix[i] as IconPosition;
 
-        if (x == classPosition.x) {
+        if (y == classPosition.y) {
           spotsTableRow.push(newSpotPosition(ICON_POSITION_KEY, classPosition.icon));
         } else {
           spotsTable.value.push(spotsTableRow);
 
           spotsTableRow = [];
-          x = classPosition.x;
+          y = classPosition.y;
 
           spotsTableRow.push(newSpotPosition(ICON_POSITION_KEY, classPosition.icon));
         }
@@ -109,22 +109,25 @@ function onClickSpotBtn(spotNumber: number) {
 
 <template>
   <div>
-    <table class="table table-borderless">
+    <table>
       <tbody>
-      <tr v-for="(colRow, key) in spotsTable" :key="key">
-        <td v-for="(spot, key) in colRow" :key="key">
-          <BookableSpotPosition v-if="spot.positionType === BOOKABLE_SPOT_KEY"
-                                :spotInfo="spot.spotInfo"
-                                @click-spot="onClickSpotBtn">
-          </BookableSpotPosition>
+        <tr v-for="(colRow, key) in spotsTable" :key="key">
+          <td v-for="(spot, key) in colRow" :key="key">
+            <BookableSpotPosition v-if="spot.positionType === BOOKABLE_SPOT_KEY" :spotInfo="spot.spotInfo"
+              @click-spot="onClickSpotBtn">
+            </BookableSpotPosition>
 
-          <IconPositionNotBookable v-else-if="spot.positionType === ICON_POSITION_KEY" :iconName="spot.positionIcon">
-          </IconPositionNotBookable>
-        </td>
-      </tr>
+            <IconPositionNotBookable v-else-if="spot.positionType === ICON_POSITION_KEY" :iconName="spot.positionIcon">
+            </IconPositionNotBookable>
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+td {
+  text-align: center;
+}
+</style>

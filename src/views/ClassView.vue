@@ -53,7 +53,15 @@ async function getClassInfo() {
   isLoading.value = true;
 
   const classId = route.params.id as string;
-  classInfo.value = await apiService.getClassInfo(SiteEnum.Dubai, classId);
+  var _classInfo = await apiService.getClassInfo(SiteEnum.Dubai, classId);
+
+  if (_classInfo?.matrix) {
+    _classInfo?.matrix.slice().sort(function (a, b) {
+      return a.y - b.y || a.x - b.x;
+    });
+  }
+
+  classInfo.value = _classInfo;
 
   isLoading.value = false;
 }
@@ -168,15 +176,17 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
       </div>
     </div>
     <hr>
-    <div class="row">
-      <div class="col-12 text-center">
-        <WaitlistButton v-if="classInfo !== null && classInfo.class.waitListAvailable"
-          @click-book-wait-list="confirmWaitList">
-        </WaitlistButton>
-        <SpotMatrix v-if="classInfo !== null && classInfo.matrix !== null" :matrix="classInfo.matrix"
-          @click-spot="confirmBookSpot"></SpotMatrix>
-        <ReserveSpotButton v-if="classInfo !== null && classInfo.matrix === null" @click-book-class="confirmBookClass">
-        </ReserveSpotButton>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-12">
+          <WaitlistButton v-if="classInfo !== null && classInfo.class.waitListAvailable"
+            @click-book-wait-list="confirmWaitList">
+          </WaitlistButton>
+          <SpotMatrix v-if="classInfo !== null && classInfo.matrix !== null" :matrix="classInfo.matrix"
+            @click-spot="confirmBookSpot"></SpotMatrix>
+          <ReserveSpotButton v-if="classInfo !== null && classInfo.matrix === null" @click-book-class="confirmBookClass">
+          </ReserveSpotButton>
+        </div>
       </div>
     </div>
   </div>
