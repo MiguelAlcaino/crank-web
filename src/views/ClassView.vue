@@ -35,7 +35,15 @@ async function getClassInfo() {
   isLoading.value = true;
 
   const classId = route.params.id as string;
-  classInfo.value = await apiService.getClassInfo(SiteEnum.Dubai, classId);
+  var _classInfo = await apiService.getClassInfo(SiteEnum.Dubai, classId);
+
+  if (_classInfo?.matrix) {
+    _classInfo?.matrix.slice().sort(function (a, b) {
+      return a.y - b.y || a.x - b.x;
+    });    
+  }
+
+  classInfo.value = _classInfo;
 
   isLoading.value = false;
 }

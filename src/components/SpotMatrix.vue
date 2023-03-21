@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {onMounted, ref} from "vue";
+import { onMounted, ref } from "vue";
 import BookableSpotPosition from "@/components/BookableSpotPosition.vue"
 import IconPositionNotBookable from "@/components/icons/IconPositionNotBookable.vue"
 import AdminBookableSpotPosition from "@/components/AdminBookableSpotPosition.vue";
@@ -87,7 +87,7 @@ function newSpotPosition(classPosition: BookableSpot | IconPosition): SpotPositi
 }
 
 function getSpotTable() {
-  let x = 0;
+  let y = 0;
 
   let spotsTableRow: Array<SpotPosition> = [];
 
@@ -99,13 +99,13 @@ function getSpotTable() {
       if (typename === BOOKABLE_SPOT_KEY) {
         let classPosition = props.matrix[i] as BookableSpot;
 
-        if (x == classPosition.x) {
+        if (y == classPosition.y) {
           spotsTableRow.push(newSpotPosition(classPosition))
         } else {
           spotsTable.value.push(spotsTableRow);
 
           spotsTableRow = [];
-          x = classPosition.x;
+          y = classPosition.y;
 
           spotsTableRow.push(newSpotPosition(classPosition));
         }
@@ -113,13 +113,13 @@ function getSpotTable() {
       if (typename === ICON_POSITION_KEY) {
         let classPosition = props.matrix[i] as IconPosition;
 
-        if (x == classPosition.x) {
+        if (y == classPosition.y) {
           spotsTableRow.push(newSpotPosition(classPosition));
         } else {
           spotsTable.value.push(spotsTableRow);
 
           spotsTableRow = [];
-          x = classPosition.x;
+          y = classPosition.y;
 
           spotsTableRow.push(newSpotPosition(classPosition));
         }
@@ -140,7 +140,7 @@ function onClickSpotBtn(spotNumber: number) {
 
 <template>
   <div>
-    <table class="table table-borderless">
+    <table>
       <tbody>
       <tr v-for="(colRow, key) in spotsTable" :key="key">
         <td v-for="(spot, key) in colRow" :key="key">
@@ -159,4 +159,8 @@ function onClickSpotBtn(spotNumber: number) {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+td {
+  text-align: center;
+}
+</style>
