@@ -58,7 +58,7 @@ async function getClassInfo() {
   if (_classInfo?.matrix) {
     _classInfo?.matrix.slice().sort(function (a, b) {
       return a.y - b.y || a.x - b.x;
-    });
+    });    
   }
 
   classInfo.value = _classInfo;
