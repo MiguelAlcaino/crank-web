@@ -40,7 +40,7 @@ function goToPrevWeek(): void {
 
   const actualDate = new Date();
 
-  if (dayjs(firstDayOfPrevWeek).isBefore(dayjs(actualDate), 'day'))
+  if (dayjs(lastDayOfPrevWeek).isBefore(dayjs(actualDate), 'day'))
     return;
 
   appStore().setCalendarDates(firstDayOfPrevWeek, lastDayOfPrevWeek);
