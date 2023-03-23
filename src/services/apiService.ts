@@ -1,4 +1,4 @@
-import {createHttpLink, gql} from "@apollo/client";
+import {createHttpLink, gql, useQuery} from "@apollo/client";
 import type {
     BookClassInput,
     CalendarClassesParams,
@@ -167,6 +167,7 @@ export const apiService = {
                     site: site,
                     params: params
                 },
+                fetchPolicy: 'network-only'
             });
 
             return queryResult.data.currentUserEnrollments as Enrollment[];

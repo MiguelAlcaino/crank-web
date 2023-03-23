@@ -213,5 +213,4 @@ function getPivot() {
 </template>
 
 <style>
-
 </style>

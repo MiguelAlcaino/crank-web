@@ -1,35 +1,46 @@
 <script setup lang="ts">
-import type { Class } from "@/gql/graphql";
 
-const props = defineProps<{
-    classInfo: Class,
+defineProps<{
+  enrollmentEnabled: boolean,
 }>();
 
 const emits = defineEmits<{
-    (event: "clickBookWaitList", classId: string, spotNumber: number | null, isWaitlistBooking: boolean | null): void
+  (event: "clickBookWaitList"): void
 }>();
 
 function onClickWaitListButton(): void {
-    emits("clickBookWaitList", props.classInfo.id, null, true);
+  emits("clickBookWaitList");
 }
 </script>
 
 <template>
-    <div>
-        <div class="text-center">
-            <a type="button" @click="onClickWaitListButton()" class="btn btn-primary btn-cons waves-effect waves-light"
-                style="">
-                <i class="fa fa-bullseye" aria-hidden="true"></i>
-                <div>Enroll on the WaitList</div>
-            </a>
-        </div>
+  <div>
+    <div class="text-center">
+      <a type="button" @click="onClickWaitListButton()" class="btn btn-primary btn-cons waves-effect waves-light"
+         :class="{disabled: !enrollmentEnabled}">
+        <i class="fa fa-bullseye" aria-hidden="true"></i>
+        <div>Enroll on the WaitList</div>
+      </a>
     </div>
+  </div>
 </template>
 
 <style scoped>
 .btn-primary {
-    color: #fff;
-    background-color: #000000;
-    border-color: #000000;
+  color: #fff;
+  background-color: #000000;
+  border-color: #000000;
+}
+
+.btn-primary:hover {
+  color: #fff;
+  background-color: grey;
+  border-color: grey;
+}
+
+.btn-primary:disabled {
+  color: #fff;
+  background-color: grey;
+  border-color: grey;
 }
 </style>
