@@ -31,4 +31,16 @@ function onClickWaitListButton(): void {
   background-color: #000000;
   border-color: #000000;
 }
+
+.btn-primary:hover {
+  color: #fff;
+  background-color: grey;
+  border-color: grey;
+}
+
+.btn-primary:disabled {
+  color: #fff;
+  background-color: grey;
+  border-color: grey;
+}
 </style>

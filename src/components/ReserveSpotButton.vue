@@ -16,7 +16,7 @@ function onClickBookClassBtn(): void {
 <template>
   <div>
     <div class="text-center">
-      <a type="button" @click="onClickBookClassBtn()" class="btn btn-primary btn-cons waves-effect waves-light"
+      <a type="button" @click="onClickBookClassBtn()" class="btn btn-primary"
          :class="{disabled: !enrollmentEnabled}">
         <i class="fa fa-bullseye" aria-hidden="true"></i>
         <div>Sign up for this class</div>

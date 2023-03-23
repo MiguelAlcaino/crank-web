@@ -65,7 +65,6 @@ watch(
 );
 
 async function getClassInfo() {
-
   isLoading.value = true;
 
   const classId = route.params.id as string;
@@ -78,10 +77,6 @@ async function getClassInfo() {
           startDate: dayjs(new Date(_classInfo.class.start)).format("YYYY-MM-DD"),
           endDate: dayjs(new Date(_classInfo.class.start)).format("YYYY-MM-DD")
         });
-
-    console.log("userEnrollments", userEnrollments);
-
-    console.log("classId", classId);
 
     for (let i = 0; i < userEnrollments.length; i++) {
       if (userEnrollments[i].class.id === classId) {
@@ -142,7 +137,7 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
 
   confirmModalData.value.isLoading = true;
 
-  var response = await apiService.bookClass(
+  const response = await apiService.bookClass(
       SiteEnum.Dubai,
       {
         classId: classId,
