@@ -5,9 +5,12 @@ import BookableSpotPosition from "@/components/BookableSpotPosition.vue"
 import IconPositionNotBookable from "@/components/icons/IconPositionNotBookable.vue"
 
 interface SpotPosition {
+  x: number
+  y: number
   positionType: string
   positionIcon: string
   spotInfo?: SpotInfo
+  user?: User
 }
 
 interface ClassPositionInterface {
@@ -27,8 +30,14 @@ interface SpotInfo {
   spotNumber: number
 }
 
+interface User {
+  firstName: string
+  lastName: string
+}
+
 interface BookableSpot extends ClassPositionInterface {
   spotInfo: SpotInfo
+  user?: User
 }
 
 interface IconPosition extends ClassPositionInterface {
@@ -62,6 +71,8 @@ function newSpotPosition(classPosition: BookableSpot | IconPosition): SpotPositi
   if ('spotInfo' in classPosition) {
     if ('user' in classPosition) {
       return {
+        x: classPosition.x,
+        y: classPosition.y,
         positionType: BOOKABLE_SPOT_KEY,
         positionIcon: classPosition.icon,
         spotInfo: classPosition.spotInfo,
@@ -69,12 +80,16 @@ function newSpotPosition(classPosition: BookableSpot | IconPosition): SpotPositi
       }
     }
     return {
+      x: classPosition.x,
+      y: classPosition.y,
       positionType: BOOKABLE_SPOT_KEY,
       positionIcon: classPosition.icon,
       spotInfo: classPosition.spotInfo
     }
   }
   return {
+    x: classPosition.x,
+    y: classPosition.y,
     positionType: ICON_POSITION_KEY,
     positionIcon: classPosition.icon,
   }
@@ -96,7 +111,22 @@ function getMatrixOfSpotPositions(matrix: Array<BookableSpot | IconPosition>): S
     }
   }
 
-  return rows;
+  let sortedRows: Array<Array<SpotPosition>> = [];
+  for (let i = 0; i < rows.length; i++) {
+    sortedRows.push(rows[i].sort((n1: SpotPosition, n2: SpotPosition) => {
+      if (n1.x > n2.x) {
+        return 1;
+      }
+
+      if (n1.x < n2.x) {
+        return -1;
+      }
+
+      return 0;
+    }))
+  }
+
+  return sortedRows;
 }
 
 function onClickSpotBtn(spotNumber: number) {
