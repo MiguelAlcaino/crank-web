@@ -45,15 +45,15 @@ interface IconPosition extends ClassPositionInterface {
 
 interface Props {
   matrix?: Array<ClassPositionInterface>,
-  showUserInSpots: boolean
+  showUserInSpots?: boolean
 }
 
 const BOOKABLE_SPOT_KEY = 'BookableSpot';
 const ICON_POSITION_KEY = 'IconPosition';
 
-const props = defineProps<{
-  matrix?: Array<ClassPositionInterface> | undefined
-}>();
+const props = withDefaults(defineProps<Props>(), {
+  showUserInSpots: false
+});
 
 const emits = defineEmits<{
   (e: 'clickSpot', event: BookableSpotClickedEvent): void
