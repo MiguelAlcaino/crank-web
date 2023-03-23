@@ -1,5 +1,9 @@
 <script setup lang="ts">
 
+defineProps<{
+  enrollmentEnabled: boolean,
+}>();
+
 const emits = defineEmits<{
   (event: "clickBookClass"): void
 }>();
@@ -12,7 +16,8 @@ function onClickBookClassBtn(): void {
 <template>
   <div>
     <div class="text-center">
-      <a type="button" @click="onClickBookClassBtn()" class="btn btn-primary btn-cons waves-effect waves-light">
+      <a type="button" @click="onClickBookClassBtn()" class="btn btn-primary btn-cons waves-effect waves-light"
+         :class="{disabled: !enrollmentEnabled}">
         <i class="fa fa-bullseye" aria-hidden="true"></i>
         <div>Sign up for this class</div>
       </a>
@@ -30,6 +35,12 @@ function onClickBookClassBtn(): void {
 .btn-primary:hover {
   color: #fff;
   background-color: grey;
-  border-color: grey;  
+  border-color: grey;
+}
+
+.btn.btn-primary:disabled {
+  color: #fff;
+  background-color: grey;
+  border-color: grey;
 }
 </style>

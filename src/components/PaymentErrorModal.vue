@@ -1,28 +1,25 @@
 <script setup lang="ts">
 import {VueFinalModal} from 'vue-final-modal'
 
-defineProps<{
-  title?: string,
-  message: string,
-  textCloseBtn?: string,
-  clickToClose: boolean
-}>();
-
 const emit = defineEmits<{
   (e: 'close'): void,
+  (e: 'buy'): void,
 }>();
-
 
 </script>
 <template>
-  <VueFinalModal class="confirm-modal" content-class="confirm-modal-content" :click-to-close="clickToClose">
+  <VueFinalModal class="confirm-modal" content-class="confirm-modal-content" :click-to-close="false">
     <h1 class="text-xl">
-      {{ title ?? "ERROR" }}
+      ERROR
     </h1>
-    <p>{{ message }}</p>
+    <p>YOU DO NOT HAVE SUFFICIENT CREDITS IN YOUR ACCOUNT.</p>
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary" @click="emit('close')">
-        {{ textCloseBtn ?? "CLOSE" }}
+        CANCEL
+      </button>
+
+      <button type="button" class="btn btn-primary" @click="emit('buy')">
+        {{ "BUY" }}
       </button>
     </div>
   </VueFinalModal>
