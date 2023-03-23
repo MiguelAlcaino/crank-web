@@ -4,29 +4,62 @@ import {useRoute} from 'vue-router'
 
 import dayjs from 'dayjs'
 
-import {type ClassInfo, SiteEnum} from "@/gql/graphql";
+import {
+  type ClassInfo,
+  EnrollmentTypeEnum,
+  SiteEnum
+} from "@/gql/graphql";
 import {apiService} from "@/services/apiService";
+
+import ConfirmModal from '@/components/ConfirmModal.vue';
+import SuccessModal from "@/components/SuccessModal.vue";
+import ErrorModal from "@/components/ErrorModal.vue";
 
 import ReserveSpotButton from "@/components/ReserveSpotButton.vue";
 import SpotMatrix from "@/components/SpotMatrix.vue";
 import WaitlistButton from "@/components/WaitlistButton.vue"
+import router from "@/router";
+import PaymentErrorModal from "@/components/PaymentErrorModal.vue";
+
 
 const route = useRoute();
 
+const classId = ref<string>("");
+const spotNumber = ref<number | null>(null);
+const isWaitlistBooking = ref<boolean | null>(null);
+
 const isLoading = ref<boolean>(false);
+const showSuccessModal = ref<boolean>(false);
+const showErrorModal = ref<boolean>(false);
+const showModal = ref<boolean>(false);
 const classInfo = ref<ClassInfo | null>(null);
+const enrollmentEnabled = ref<boolean>(true);
+
+const confirmModalData = ref<{ title: string, message: string, isLoading: boolean }>({
+  title: "",
+  message: "",
+  isLoading: false
+});
+const errorModalData = ref<{ title: string, message: string, isLoading: boolean }>({
+  title: "",
+  message: "",
+  isLoading: false
+});
+
+const paymentErrorModal = ref<boolean>(false);
 
 interface SpotClickedEvent {
   spotNumber: number | null
 }
 
 onMounted(() => {
+  classId.value = route.params.id as string;
   getClassInfo();
 });
 
 watch(
     () => route.params.id,
-    newId => {
+    Id => {
       getClassInfo();
     }
 );
@@ -35,12 +68,22 @@ async function getClassInfo() {
   isLoading.value = true;
 
   const classId = route.params.id as string;
-  var _classInfo = await apiService.getClassInfo(SiteEnum.Dubai, classId);
+  const _classInfo = await apiService.getClassInfo(SiteEnum.Dubai, classId);
 
-  if (_classInfo?.matrix) {
-    _classInfo?.matrix.slice().sort(function (a, b) {
-      return a.y - b.y || a.x - b.x;
-    });    
+  if (_classInfo) {
+    const userEnrollments = await apiService.getCurrentUserEnrollments(SiteEnum.Dubai,
+        {
+          enrollmentType: EnrollmentTypeEnum.All,
+          startDate: dayjs(new Date(_classInfo.class.start)).format("YYYY-MM-DD"),
+          endDate: dayjs(new Date(_classInfo.class.start)).format("YYYY-MM-DD")
+        });
+
+    for (let i = 0; i < userEnrollments.length; i++) {
+      if (userEnrollments[i].class.id === classId) {
+        enrollmentEnabled.value = false;
+        break;
+      }
+    }
   }
 
   classInfo.value = _classInfo;
@@ -48,12 +91,53 @@ async function getClassInfo() {
   isLoading.value = false;
 }
 
-function confirmBook(event: SpotClickedEvent): void {
-  console.log(event);
+function confirmBookSpot(event: SpotClickedEvent): void {
+  spotNumber.value = event.spotNumber;
+  isWaitlistBooking.value = false;
+
+  confirmModalData.value.isLoading = false;
+  confirmModalData.value.title = "BOOK YOUR SPOT";
+  confirmModalData.value.message = "WOULD YOU LIKE TO BOOK SPOT " + event.spotNumber + "?";
+
+  showModal.value = true;
 }
 
-async function bookClass(classId: string, spotNumber?: number, isWaitlistBooking?: boolean) {
-  var response = await apiService.bookClass(
+function confirmWaitList(): void {
+  spotNumber.value = null;
+  isWaitlistBooking.value = true;
+
+  confirmModalData.value.isLoading = false;
+  confirmModalData.value.title = "ENROLL ON THE WAITLIST";
+  confirmModalData.value.message = "WOULD YOU LIKE TO BOOK THIS CLASS?";
+
+  showModal.value = true;
+}
+
+function confirmBookClass(): void {
+  spotNumber.value = null;
+  isWaitlistBooking.value = false;
+
+  confirmModalData.value.isLoading = false;
+  confirmModalData.value.title = "BOOK THIS CLASS";
+  confirmModalData.value.message = "WOULD YOU LIKE TO BOOK THIS CLASS?";
+
+  showModal.value = true;
+}
+
+function acceptSuccessModal() {
+  showSuccessModal.value = false;
+  router.replace({name: "calendar"});
+}
+
+function goToThePackagesScreen() {
+  //TODO: go to the packages screen
+}
+
+async function bookClass(classId: string, spotNumber: number | null, isWaitlistBooking: boolean) {
+
+  confirmModalData.value.isLoading = true;
+
+  const response = await apiService.bookClass(
       SiteEnum.Dubai,
       {
         classId: classId,
@@ -61,25 +145,51 @@ async function bookClass(classId: string, spotNumber?: number, isWaitlistBooking
         isWaitlistBooking: isWaitlistBooking
       });
 
+  confirmModalData.value.isLoading = false;
+  showModal.value = false;
+
   if (response === "BookClassSuccess") {
-    //TODO: BookClassSuccess action
-  } else if (response === "PaymentRequiredError") {
-    //TODO: PaymentRequiredError action
-  } else if (response === "ClientIsAlreadyBookedError") {
-    //TODO: ClientIsAlreadyBookedError action
-  } else if (response === "ClientIsOutsideSchedulingWindowError") {
-    //TODO: ClientIsOutsideSchedulingWindowError action
-  } else if (response === "SpotAlreadyReservedError") {
-    //TODO: SpotAlreadyReservedError action
-  } else if (response === "BookedButInOtherSpotError") {
-    //TODO: BookedButInOtherSpotError action
-  } else if (response === "ClassIsFullError") {
-    //TODO: ClassIsFullError action
-  } else if (response === "UnknownError") {
-    //TODO: UnknownError action
+    showSuccessModal.value = true;
+  } else {
+    if (response === "PaymentRequiredError") {
+      paymentErrorModal.value = true;
+    } else if (response === "ClientIsAlreadyBookedError") {
+      errorModalData.value.message = "YOU ALREADY BOOKED IN THIS CLASS.";
+      showErrorModal.value = true;
+      enrollmentEnabled.value = false;
+    } else if (response === "ClientIsAlreadyOnWaitlistError") {
+      errorModalData.value.message = "YOU ALREADY BOOKED IN THIS WAITLIST.";
+      showErrorModal.value = true;
+      enrollmentEnabled.value = false;
+    } else if (response === "WaitlistFullError") {
+      errorModalData.value.message = "THE WAITING LIST IS FULL.";
+      showErrorModal.value = true;
+      enrollmentEnabled.value = false;
+    } else if (response === "ClientIsOutsideSchedulingWindowError") {
+      errorModalData.value.message = "THE CLASS IS OUTSIDE THE SCHEDULING WINDOW.";
+      showErrorModal.value = true;
+      enrollmentEnabled.value = false;
+    } else if (response === "SpotAlreadyReservedError") {
+      errorModalData.value.message = "THE SPOT HAS BEEN BOOKED BY ANOTHER USER.";
+      showErrorModal.value = true;
+      await getClassInfo();
+    } else if (response === "BookedButInOtherSpotError") {
+      //TODO: BookedButInOtherSpotError action
+      errorModalData.value.message = "BOOKED BUT IN OTHER SPOT ERROR.";
+      showErrorModal.value = true;
+    } else if (response === "ClassIsFullError") {
+      errorModalData.value.message = "THE CLASS IS FULL.";
+      showErrorModal.value = true;
+      enrollmentEnabled.value = false;
+    } else if (response === "UnknownError") {
+      errorModalData.value.message = "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE.";
+      showErrorModal.value = true;
+    } else {
+      errorModalData.value.message = "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE.";
+      showErrorModal.value = true;
+    }
   }
 }
-
 
 </script>
 
@@ -100,19 +210,37 @@ async function bookClass(classId: string, spotNumber?: number, isWaitlistBooking
       </div>
     </div>
     <hr>
-    <div class="row">
-      <div class="col-12 text-center">
-        <WaitlistButton v-if="classInfo !== null && classInfo.class.waitListAvailable" :classInfo="classInfo.class"
-                        @click-book-wait-list="confirmBook">
-        </WaitlistButton>
-        <SpotMatrix v-if="classInfo !== null && classInfo.matrix !== null" :classInfo="classInfo.class"
-                    :matrix="classInfo.matrix" @click-spot="confirmBook"></SpotMatrix>
-        <ReserveSpotButton v-if="classInfo !== null && classInfo.matrix === null" :classInfo="classInfo.class"
-                           @click-book-class="confirmBook">
-        </ReserveSpotButton>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-12">
+          <WaitlistButton v-if="classInfo !== null && classInfo.class.waitListAvailable"
+                          @click-book-wait-list="confirmWaitList" :enrollmentEnabled="enrollmentEnabled">
+          </WaitlistButton>
+          <SpotMatrix v-if="classInfo !== null && classInfo.matrix !== null" :matrix="classInfo.matrix"
+                      @click-spot="confirmBookSpot"></SpotMatrix>
+          <ReserveSpotButton v-if="classInfo !== null && classInfo.matrix === null"
+                             @click-book-class="confirmBookClass" :enrollmentEnabled="enrollmentEnabled">
+          </ReserveSpotButton>
+        </div>
       </div>
     </div>
   </div>
+
+  <ConfirmModal v-model="showModal" :title="confirmModalData.title" :isLoading="confirmModalData.isLoading"
+                @cancel="showModal = false" @confirm="bookClass(classId, spotNumber, isWaitlistBooking)"
+                :click-to-close="false">
+    <p>{{ confirmModalData.message }}</p>
+  </ConfirmModal>
+
+  <SuccessModal title="SUCCESS" message="YOUR BOOKING IS COMPLETE" :clickToClose="false" @accept="acceptSuccessModal"
+                v-model="showSuccessModal">
+  </SuccessModal>
+
+  <ErrorModal :is-loading="false" :message="errorModalData.message" :click-to-close="false" v-model="showErrorModal"
+              @close="showErrorModal = false"></ErrorModal>
+
+  <PaymentErrorModal v-model="paymentErrorModal" @close="paymentErrorModal = false"
+                     @buy="goToThePackagesScreen"></PaymentErrorModal>
 </template>
 
 <style scoped></style>
