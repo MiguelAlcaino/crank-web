@@ -10,10 +10,10 @@ const userErollments = ref<Enrollment[]>([]);
 
 const filterStartDate = ref<Date | null>(null);
 const filterEndDate = ref<Date | null>(null);
-const filterEnrollmentType = ref<EnrollmentTypeEnum>(EnrollmentTypeEnum.All);
+const filterEnrollmentType = ref<EnrollmentTypeEnum>(EnrollmentTypeEnum.Upcoming);
 
 onMounted(() => {
-
+  getUserErollments();
 });
 
 async function getUserErollments() {
@@ -39,9 +39,7 @@ async function getUserErollments() {
 
 <template>
   <h2>BOOKINGS</h2>
-  <div>Selected: {{ filterEnrollmentType }}</div>
   <select v-model="filterEnrollmentType">
-    <option :value="EnrollmentTypeEnum.All">All</option>
     <option :value="EnrollmentTypeEnum.Upcoming">Upcoming</option>
     <option :value="EnrollmentTypeEnum.Waitlist">Waitlist</option>
     <option :value="EnrollmentTypeEnum.Historical">Historical</option>
