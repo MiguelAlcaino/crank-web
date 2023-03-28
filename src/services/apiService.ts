@@ -1,7 +1,7 @@
-import {createHttpLink, gql, useQuery} from "@apollo/client";
+import {createHttpLink, gql} from "@apollo/client";
 import type {
     BookClassInput,
-    CalendarClassesParams,
+    CalendarClassesParams, CancelEnrollmentInput,
     Class,
     ClassInfo,
     ClassStat,
@@ -9,7 +9,7 @@ import type {
     CurrentUserEnrollmentsParams,
     Enrollment,
     Purchase,
-    RegisterUserInput,
+    RegisterUserInput, RemoveCurrentUserFromWaitlistInput,
     SiteEnum,
     User,
     UserInput
@@ -45,11 +45,43 @@ const authLink = setContext((_, {headers}) => {
 
 const authApiClient = new ApolloClient({
     link: authLink.concat(httpLink),
-    cache: new InMemoryCache(),
+    cache: new InMemoryCache({
+        typePolicies: {
+            Query: {
+                fields: {
+                    currentUserEnrollments: {
+                        merge: false,
+                    }
+                }
+            }
+        }
+    }),
 });
 
 
 export const apiService = {
+    async getSiteSettings(site: SiteEnum): Promise<SiteSetting | null> {
+        const SITE_SETTING_QUERY = gql`
+       query siteSettings($site: SiteEnum!){
+            siteSettings(site: $site) {
+              siteDateTimeNow
+            }
+          }
+    `;
+        try {
+            const queryResult = await authApiClient.query({
+                query: SITE_SETTING_QUERY,
+                variables: {
+                    site: site,
+                },
+                fetchPolicy: 'network-only'
+            });
+
+            return queryResult.data.siteSettings as SiteSetting;
+        } catch (error) {
+            return null;
+        }
+    },
     async getMyself(): Promise<User | null> {
         const CURRENT_USER_QUERY = gql`
       query currentUser {
@@ -92,7 +124,6 @@ export const apiService = {
 
             return queryResult.data.currentUser as User;
         } catch (error) {
-            console.error(error);
             return null;
         }
     },
@@ -130,7 +161,6 @@ export const apiService = {
 
             return queryResult.data.currentUserWorkoutStats as ClassStat;
         } catch (error) {
-            console.error(error);
             return null;
         }
     },
@@ -172,7 +202,6 @@ export const apiService = {
 
             return queryResult.data.currentUserEnrollments as Enrollment[];
         } catch (error) {
-            console.error(error);
             return [];
         }
     },
@@ -199,7 +228,6 @@ export const apiService = {
 
             return queryResult.data.currentUserPurchases as Purchase[];
         } catch (error) {
-            console.error(error);
             return [];
         }
     },
@@ -219,7 +247,6 @@ export const apiService = {
 
             return queryResult.data.countries as Country[];
         } catch (error) {
-            console.error(error);
             return [];
         }
     },
@@ -246,7 +273,6 @@ export const apiService = {
 
             return queryResult.data.country as Country;
         } catch (error) {
-            console.error(error);
             return null;
         }
     },
@@ -275,8 +301,6 @@ export const apiService = {
                 endDate: stgEndDate,
             };
 
-            console.log(params);
-
             const queryResult = await authApiClient.query({
                 query: CALENDAR_CLASSES_QUERY,
                 variables: {
@@ -287,7 +311,6 @@ export const apiService = {
 
             return queryResult.data.calendarClasses as Class[];
         } catch (error) {
-            console.error(error);
             return [];
         }
     },
@@ -389,7 +412,6 @@ export const apiService = {
 
             return new CustomCalendarClasses(siteSettings, calendarClasses, enrollmentsWaitlist, enrollmentsUpcoming);
         } catch (error) {
-            console.error(error);
             return null;
         }
     },
@@ -433,7 +455,6 @@ export const apiService = {
 
             return queryResult.data.classInfo as ClassInfo;
         } catch (error) {
-            console.error(error);
             return null;
         }
     },
@@ -472,7 +493,6 @@ export const apiService = {
         }
     },
     async updateCurrentUser(input: UserInput): Promise<string> {
-        console.log("UserInput", input);
         const UPDATE_CURRENT_USER_MUTATION = gql`
               mutation updateCurrentUser($input: UserInput!) {
                 updateCurrentUser(input: $input) {
@@ -510,11 +530,63 @@ export const apiService = {
                     input: input,
                 },
             });
-            console.log(result.data);
+
             return result.data.bookClass.__typename;
         } catch (error) {
-            console.log(error);
             return "UnknownError";
+        }
+    },
+    async cancelCurrentUserEnrollment(site: SiteEnum, input: CancelEnrollmentInput): Promise<string> {
+        const CANCEL_CURRENT_USER_ENROLLMENT_MUTATION = gql`
+              mutation cancelCurrentUserEnrollment($site: SiteEnum!, $input: CancelEnrollmentInput!) {
+                cancelCurrentUserEnrollment(site: $site, input: $input) {
+                  __typename
+                }
+              }
+            `;
+
+        try {
+            const result = await authApiClient.mutate({
+                mutation: CANCEL_CURRENT_USER_ENROLLMENT_MUTATION,
+                variables: {
+                    site: site,
+                    input: input,
+                },
+                fetchPolicy: 'network-only'
+            });
+
+            return result.data.cancelCurrentUserEnrollment.__typename;
+        } catch (error) {
+            return "UnknownError";
+        }
+    },
+    async removeCurrentUserFromWaitlist(site: SiteEnum, input: RemoveCurrentUserFromWaitlistInput): Promise<any> {
+        const REMOVE_CURRENT_USER_FROM_WAITLIST_MUTATION = gql`
+              mutation removeCurrentUserFromWaitlist($site: SiteEnum!, $input: RemoveCurrentUserFromWaitlistInput!) {
+                removeCurrentUserFromWaitlist(site: $site, input: $input) {
+                    ... on RemoveFromWaitlistResult{
+                      success
+                    }
+                    ... on WaitlistEntryNotFoundError{
+                      code
+                    }
+                }
+              }
+            `;
+
+        try {
+            const result = await authApiClient.mutate({
+                mutation: REMOVE_CURRENT_USER_FROM_WAITLIST_MUTATION,
+                variables: {
+                    site: site,
+                    input: input,
+                },
+                fetchPolicy: 'network-only'
+            });
+
+            return result.data.removeCurrentUserFromWaitlist;
+        } catch (error) {
+            return {"__typename": "UnknownError"};
         }
     },
 };

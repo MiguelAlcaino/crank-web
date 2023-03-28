@@ -1,17 +1,31 @@
 <script setup lang="ts">
 import dayjs from "dayjs";
 
-import {Enrollment} from "@/gql/graphql";
+import {Enrollment, EnrollmentTypeEnum} from "@/gql/graphql";
+import CancelEnrollmentButton from "@/components/CancelEnrollmentButton.vue";
+import RemoveFromWaitlistButton from "@/components/RemoveFromWaitlistButton.vue";
 
 defineProps<{
   enrollments: Enrollment[],
+  enrollmentType: EnrollmentTypeEnum;
+  siteDateTimeNow: Date,
   isLoading: boolean
 }>();
 
 const emits = defineEmits<{
-  (e: 'cancel'): void
-  (e: 'changeSpot'): void
+  (e: 'changeSpot'): void,
+  (e: 'clickCancelEnrollment', enrollmentId: string, isLateCancel: boolean): void,
+  (e: 'clickRemoveFromWaitlist', waitlistEntryId: string): void
 }>();
+
+function clickCancelEnrollment(enrollmentId: string, isLateCancel: boolean): void {
+  emits('clickCancelEnrollment', enrollmentId, isLateCancel);
+}
+
+function clickRemoveFromWaitlist(waitlistEntryId: string): void {
+  emits('clickRemoveFromWaitlist', waitlistEntryId);
+}
+
 
 </script>
 
@@ -34,13 +48,31 @@ const emits = defineEmits<{
       <td>{{ dayjs(new Date(enrollment.enrollmentInfo.enrollmentDateTime)).format("YYYY-MM-DD h:mm a") }}</td>
       <td>{{ enrollment.enrollmentInfo.enrollmentStatus }}</td>
       <td>
-        <button type="button" @click="emits('cancel')" :disabled="isLoading">EARLY CANCEL</button>
-        <button type="button" @click="emits('changeSpot')" :disabled="isLoading">CHANGE SPOT</button>
+        <CancelEnrollmentButton v-if="enrollmentType === EnrollmentTypeEnum.Upcoming"
+                                :disabled="isLoading"
+                                :siteDateTimeNow="siteDateTimeNow"
+                                :startOfClass="new Date(enrollment.class.start)"
+                                :enrollmentId="enrollment.enrollmentInfo.id"
+                                @clickCancelEnrollment="clickCancelEnrollment">
+        </CancelEnrollmentButton>
+        <RemoveFromWaitlistButton v-if="enrollmentType === EnrollmentTypeEnum.Waitlist"
+                                  :disabled="false"
+                                  :enrollmentId="enrollment.enrollmentInfo.id"
+                                  @clickRemoveFromWaitlist="clickRemoveFromWaitlist"
+        ></RemoveFromWaitlistButton>
+        <button type="button"
+                @click="emits('changeSpot')"
+                :disabled="isLoading"
+                v-if="enrollmentType === EnrollmentTypeEnum.Historical && dayjs(enrollment.class.start) > dayjs(siteDateTimeNow)">
+          CHANGE SPOT
+        </button>
       </td>
     </tr>
     <tr v-if="enrollments.length === 0 && !isLoading">
       <td colspan="7">
-        empty
+        <p v-if="enrollmentType === EnrollmentTypeEnum.Upcoming">YOU HAVE NO UPCOMING BOOKINGS</p>
+        <p v-if="enrollmentType === EnrollmentTypeEnum.Waitlist">YOU HAVE NO WAITLIST BOOKINGS</p>
+        <p v-if="enrollmentType === EnrollmentTypeEnum.Historical">YOU HAVE NO HISTORICAL BOOKINGS</p>
       </td>
     </tr>
     <tr v-if="isLoading">

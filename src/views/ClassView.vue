@@ -46,6 +46,12 @@ const errorModalData = ref<{ title: string, message: string, isLoading: boolean 
   isLoading: false
 });
 
+const successModalData = ref<{ title: string, message: string, isLoading: boolean }>({
+  title: "",
+  message: "",
+  isLoading: false
+});
+
 const paymentErrorModal = ref<boolean>(false);
 
 interface SpotClickedEvent {
@@ -102,13 +108,13 @@ function confirmBookSpot(event: SpotClickedEvent): void {
   showModal.value = true;
 }
 
-function confirmWaitList(): void {
+function clickBookWaitList(): void {
   spotNumber.value = null;
   isWaitlistBooking.value = true;
 
   confirmModalData.value.isLoading = false;
   confirmModalData.value.title = "ENROLL ON THE WAITLIST";
-  confirmModalData.value.message = "WOULD YOU LIKE TO BOOK THIS CLASS?";
+  confirmModalData.value.message = "WOULD YOU LIKE TO ENROLL ON THE WAITLIST?";
 
   showModal.value = true;
 }
@@ -149,6 +155,12 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
   showModal.value = false;
 
   if (response === "BookClassSuccess") {
+    successModalData.value.title = "SUCCESS";
+    successModalData.value.message = "YOUR BOOKING IS COMPLETE";
+    showSuccessModal.value = true;
+  } else if (response === "AddedToWaitlistSuccess") {
+    successModalData.value.title = "SUCCESS";
+    successModalData.value.message = "YOU HAVE ADDED TO THE WAITLIST OF CLASS. YOU WILL BE NOTIFIED IF YOU ARE ADDED TO THE CLASS.";
     showSuccessModal.value = true;
   } else {
     if (response === "PaymentRequiredError") {
@@ -214,33 +226,46 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
       <div class="row justify-content-center">
         <div class="col-12">
           <WaitlistButton v-if="classInfo !== null && classInfo.class.waitListAvailable"
-                          @click-book-wait-list="confirmWaitList" :enrollmentEnabled="enrollmentEnabled">
+                          @clickBookWaitList="clickBookWaitList" :enrollmentEnabled="enrollmentEnabled">
           </WaitlistButton>
-          <SpotMatrix v-if="classInfo !== null && classInfo.matrix !== null" :matrix="classInfo.matrix"
+          <SpotMatrix v-if="classInfo !== null && classInfo.matrix !== null && !classInfo.class.waitListAvailable"
+                      :matrix="classInfo.matrix"
                       @click-spot="confirmBookSpot"></SpotMatrix>
-          <ReserveSpotButton v-if="classInfo !== null && classInfo.matrix === null"
-                             @click-book-class="confirmBookClass" :enrollmentEnabled="enrollmentEnabled">
+          <ReserveSpotButton
+              v-if="classInfo !== null && classInfo.matrix === null && !classInfo.class.waitListAvailable"
+              @click-book-class="confirmBookClass" :enrollmentEnabled="enrollmentEnabled">
           </ReserveSpotButton>
         </div>
       </div>
     </div>
   </div>
 
-  <ConfirmModal v-model="showModal" :title="confirmModalData.title" :isLoading="confirmModalData.isLoading"
-                @cancel="showModal = false" @confirm="bookClass(classId, spotNumber, isWaitlistBooking)"
-                :click-to-close="false">
-    <p>{{ confirmModalData.message }}</p>
+  <ConfirmModal v-model="showModal"
+                :title="confirmModalData.title"
+                :message="confirmModalData.message"
+                :isLoading="confirmModalData.isLoading"
+                @cancel="showModal = false"
+                @confirm="bookClass(classId, spotNumber, isWaitlistBooking)"
+                :clickToClose="false">
   </ConfirmModal>
 
-  <SuccessModal title="SUCCESS" message="YOUR BOOKING IS COMPLETE" :clickToClose="false" @accept="acceptSuccessModal"
+  <SuccessModal :title="successModalData.title"
+                :message="successModalData.message"
+                :clickToClose="false"
+                @accept="acceptSuccessModal"
                 v-model="showSuccessModal">
   </SuccessModal>
 
-  <ErrorModal :is-loading="false" :message="errorModalData.message" :click-to-close="false" v-model="showErrorModal"
+  <ErrorModal :is-loading="false"
+              :message="errorModalData.message"
+              :clickToClose="false"
+              v-model="showErrorModal"
               @close="showErrorModal = false"></ErrorModal>
 
-  <PaymentErrorModal v-model="paymentErrorModal" @close="paymentErrorModal = false"
-                     @buy="goToThePackagesScreen"></PaymentErrorModal>
+  <PaymentErrorModal v-model="paymentErrorModal"
+                     @close="paymentErrorModal = false"
+                     @buy="goToThePackagesScreen">
+  </PaymentErrorModal>
 </template>
 
 <style scoped></style>
