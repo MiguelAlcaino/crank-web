@@ -49,8 +49,9 @@ function clickRemoveFromWaitlist(waitlistEntryId: string): void {
       <td>{{ enrollment.enrollmentInfo.enrollmentStatus }}</td>
       <td>
         <CancelEnrollmentButton v-if="enrollmentType === EnrollmentTypeEnum.Upcoming"
-                                :disabled="isLoading || enrollment.enrollmentInfo.enrollmentStatus.toUpperCase() !== 'ACTIVE'"
+                                :disabled="isLoading"
                                 :siteDateTimeNow="siteDateTimeNow"
+                                :enrollmentStatus="enrollment.enrollmentInfo.enrollmentStatus"
                                 :startOfClass="new Date(enrollment.class.start)"
                                 :enrollmentId="enrollment.enrollmentInfo.id"
                                 @clickCancelEnrollment="clickCancelEnrollment">

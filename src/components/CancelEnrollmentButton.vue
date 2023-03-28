@@ -1,6 +1,6 @@
 <template>
   <button type="button" @click="clickCancelEnrollment"
-          :disabled="disabled">{{ buttonText }}
+          :disabled="disabled  || enrollmentStatus.toUpperCase() !== 'ACTIVE'">{{ buttonText }}
   </button>
 </template>
 
@@ -12,7 +12,8 @@ const props = defineProps<{
   siteDateTimeNow: Date,
   disabled: boolean,
   enrollmentId: string,
-  startOfClass: Date
+  startOfClass: Date,
+  enrollmentStatus: string
 }>();
 
 const emits = defineEmits<{
