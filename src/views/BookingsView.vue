@@ -218,7 +218,7 @@ async function acceptSuccessModal() {
                 :isLoading="isCancellingCurrentUserEnrollment"
                 :clickToClose="true"
                 v-model="confirmModalData.isVisible"
-                @cancel="modalConfirmRemoveFromWaitlistisVisible = false"
+                @cancel="confirmModalData.isVisible = false"
                 @confirm="cancelCurrentUserEnrollment(enrollmentIdToRemove, enrollmentIsLateCancel)"
   ></ConfirmModal>
 
