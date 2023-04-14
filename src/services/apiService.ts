@@ -1,4 +1,4 @@
-import {createHttpLink, gql} from "@apollo/client";
+import {gql} from "@apollo/client";
 import type {
     BookClassInput,
     CalendarClassesParams, CancelEnrollmentInput,
@@ -15,51 +15,18 @@ import type {
     UserInput
 } from "@/gql/graphql";
 import {EnrollmentTypeEnum, type SiteSetting} from "@/gql/graphql";
-import {ApolloClient, ApolloError, InMemoryCache} from "@apollo/client/core";
-import {setContext} from '@apollo/client/link/context';
-import {useAuthenticationStore} from "@/stores/authToken";
+import {ApolloClient, ApolloError} from "@apollo/client/core";
 import {CustomCalendarClasses} from "@/model/CustomCalendarClasses";
 import dayjs from "dayjs";
 
-
-const httpLink = createHttpLink({
-    uri: "/api/graphql/",
-});
-
-const apiClient = new ApolloClient({
-    link: httpLink,
-    cache: new InMemoryCache(),
-});
-
-const authLink = setContext((_, {headers}) => {
-    // get the authentication token from local storage if it exists
-    const token = useAuthenticationStore().token;
-    // return the headers to the context so httpLink can read them
-    return {
-        headers: {
-            ...headers,
-            authorization: token ? `Bearer ${token}` : "",
-        }
+export class ApiService{
+    authApiClient: ApolloClient<any>
+    anonymousApiClient: ApolloClient<any>
+    constructor(authApiClient: ApolloClient<any>, anonymousApiClient: ApolloClient<any>) {
+        this.authApiClient = authApiClient;
+        this.anonymousApiClient = anonymousApiClient;
     }
-});
 
-const authApiClient = new ApolloClient({
-    link: authLink.concat(httpLink),
-    cache: new InMemoryCache({
-        typePolicies: {
-            Query: {
-                fields: {
-                    currentUserEnrollments: {
-                        merge: false,
-                    }
-                }
-            }
-        }
-    }),
-});
-
-
-export const apiService = {
     async getSiteSettings(site: SiteEnum): Promise<SiteSetting | null> {
         const SITE_SETTING_QUERY = gql`
        query siteSettings($site: SiteEnum!){
@@ -69,7 +36,7 @@ export const apiService = {
           }
     `;
         try {
-            const queryResult = await authApiClient.query({
+            const queryResult = await this.authApiClient.query({
                 query: SITE_SETTING_QUERY,
                 variables: {
                     site: site,
@@ -81,7 +48,7 @@ export const apiService = {
         } catch (error) {
             return null;
         }
-    },
+    }
     async getMyself(): Promise<User | null> {
         const CURRENT_USER_QUERY = gql`
       query currentUser {
@@ -118,7 +85,7 @@ export const apiService = {
       }
     `;
         try {
-            const queryResult = await authApiClient.query({
+            const queryResult = await this.authApiClient.query({
                 query: CURRENT_USER_QUERY
             });
 
@@ -126,7 +93,7 @@ export const apiService = {
         } catch (error) {
             return null;
         }
-    },
+    }
     async getCurrentUserWorkoutStats(site: SiteEnum): Promise<ClassStat | null> {
         const CURRENT_USER_WORKOUT_STATS_QUERY = gql`
       query currentUserWorkoutStats($site: SiteEnum!) {
@@ -152,7 +119,7 @@ export const apiService = {
       }
     `;
         try {
-            const queryResult = await authApiClient.query({
+            const queryResult = await this.authApiClient.query({
                 query: CURRENT_USER_WORKOUT_STATS_QUERY,
                 variables: {
                     site: site,
@@ -163,7 +130,7 @@ export const apiService = {
         } catch (error) {
             return null;
         }
-    },
+    }
     async getCurrentUserEnrollments(site: SiteEnum, params: CurrentUserEnrollmentsParams): Promise<Enrollment[]> {
         const CURRENT_USER_ENROLLMENTS_QUERY = gql`
               query currentUserEnrollments($site: SiteEnum!, $params: CurrentUserEnrollmentsParams) {
@@ -191,7 +158,7 @@ export const apiService = {
               }
             `;
         try {
-            const queryResult = await authApiClient.query({
+            const queryResult = await this.authApiClient.query({
                 query: CURRENT_USER_ENROLLMENTS_QUERY,
                 variables: {
                     site: site,
@@ -204,7 +171,7 @@ export const apiService = {
         } catch (error) {
             return [];
         }
-    },
+    }
     async getCurrentUserPurchases(site: SiteEnum): Promise<Purchase[]> {
         const CURRENT_USER_PURCHASES_QUERY = gql`
               query currentUserPurchases($site: SiteEnum!) {
@@ -219,7 +186,7 @@ export const apiService = {
               }
             `;
         try {
-            const queryResult = await authApiClient.query({
+            const queryResult = await this.authApiClient.query({
                 query: CURRENT_USER_PURCHASES_QUERY,
                 variables: {
                     site: site,
@@ -230,7 +197,7 @@ export const apiService = {
         } catch (error) {
             return [];
         }
-    },
+    }
     async getCountries(): Promise<Country[]> {
         const COUNTRIES_QUERY = gql`
       query Countries {
@@ -241,7 +208,7 @@ export const apiService = {
       }
     `;
         try {
-            const queryResult = await apiClient.query({
+            const queryResult = await this.anonymousApiClient.query({
                 query: COUNTRIES_QUERY
             });
 
@@ -249,7 +216,7 @@ export const apiService = {
         } catch (error) {
             return [];
         }
-    },
+    }
     async getCountry(countryCode: string): Promise<Country | null> {
         const COUNTRY_QUERY = gql`
       query country($countryCode: String!) {
@@ -264,7 +231,7 @@ export const apiService = {
       }
     `;
         try {
-            const queryResult = await apiClient.query({
+            const queryResult = await this.anonymousApiClient.query({
                 query: COUNTRY_QUERY,
                 variables: {
                     countryCode: countryCode,
@@ -275,7 +242,7 @@ export const apiService = {
         } catch (error) {
             return null;
         }
-    },
+    }
     async getCalendarClasses(site: SiteEnum, startDate: Date, endDate: Date): Promise<Class[]> {
 
         const CALENDAR_CLASSES_QUERY = gql`
@@ -301,7 +268,7 @@ export const apiService = {
                 endDate: stgEndDate,
             };
 
-            const queryResult = await authApiClient.query({
+            const queryResult = await this.authApiClient.query({
                 query: CALENDAR_CLASSES_QUERY,
                 variables: {
                     site: site,
@@ -313,7 +280,7 @@ export const apiService = {
         } catch (error) {
             return [];
         }
-    },
+    }
     async getCustomCalendarClasses(site: SiteEnum, startDate: Date, endDate: Date): Promise<CustomCalendarClasses | null> {
         const CUSTOM_CALENDAR_CLASSES_QUERY = gql`
                   query customCalendarClasses($site: SiteEnum!, 
@@ -395,7 +362,7 @@ export const apiService = {
         };
 
         try {
-            const queryResult = await authApiClient.query({
+            const queryResult = await this.authApiClient.query({
                 query: CUSTOM_CALENDAR_CLASSES_QUERY,
                 variables: {
                     site: site,
@@ -414,7 +381,7 @@ export const apiService = {
         } catch (error) {
             return null;
         }
-    },
+    }
     async getClassInfo(site: SiteEnum, id: string): Promise<ClassInfo | null> {
         const CLASS_INFO_QUERY = gql`
               query classInfo($site: SiteEnum!, $id: ID!) {
@@ -445,7 +412,7 @@ export const apiService = {
               }
             `;
         try {
-            const queryResult = await authApiClient.query({
+            const queryResult = await this.authApiClient.query({
                 query: CLASS_INFO_QUERY,
                 variables: {
                     site: site,
@@ -457,7 +424,7 @@ export const apiService = {
         } catch (error) {
             return null;
         }
-    },
+    }
     async registerUser(site: SiteEnum, input: RegisterUserInput): Promise<string> {
         const REGISTER_USER_MUTATION = gql`
               mutation registerUser($site: SiteEnum!, $input: RegisterUserInput!) {
@@ -468,7 +435,7 @@ export const apiService = {
             `;
 
         try {
-            await apiClient.mutate({
+            await this.anonymousApiClient.mutate({
                 mutation: REGISTER_USER_MUTATION,
                 variables: {
                     site: site,
@@ -491,7 +458,7 @@ export const apiService = {
                 return "UnknownError";
             }
         }
-    },
+    }
     async updateCurrentUser(input: UserInput): Promise<string> {
         const UPDATE_CURRENT_USER_MUTATION = gql`
               mutation updateCurrentUser($input: UserInput!) {
@@ -502,7 +469,7 @@ export const apiService = {
             `;
 
         try {
-            await authApiClient.mutate({
+            await this.authApiClient.mutate({
                 mutation: UPDATE_CURRENT_USER_MUTATION,
                 variables: {
                     input: input,
@@ -512,7 +479,7 @@ export const apiService = {
         } catch (error) {
             return "UnknownError";
         }
-    },
+    }
     async bookClass(site: SiteEnum, input: BookClassInput): Promise<string> {
         const BOOK_CLASS_MUTATION = gql`
               mutation bookClass($site: SiteEnum!, $input: BookClassInput!) {
@@ -523,7 +490,7 @@ export const apiService = {
             `;
 
         try {
-            const result = await authApiClient.mutate({
+            const result = await this.authApiClient.mutate({
                 mutation: BOOK_CLASS_MUTATION,
                 variables: {
                     site: site,
@@ -535,7 +502,7 @@ export const apiService = {
         } catch (error) {
             return "UnknownError";
         }
-    },
+    }
     async cancelCurrentUserEnrollment(site: SiteEnum, input: CancelEnrollmentInput): Promise<string> {
         const CANCEL_CURRENT_USER_ENROLLMENT_MUTATION = gql`
               mutation cancelCurrentUserEnrollment($site: SiteEnum!, $input: CancelEnrollmentInput!) {
@@ -546,7 +513,7 @@ export const apiService = {
             `;
 
         try {
-            const result = await authApiClient.mutate({
+            const result = await this.authApiClient.mutate({
                 mutation: CANCEL_CURRENT_USER_ENROLLMENT_MUTATION,
                 variables: {
                     site: site,
@@ -559,7 +526,7 @@ export const apiService = {
         } catch (error) {
             return "UnknownError";
         }
-    },
+    }
     async removeCurrentUserFromWaitlist(site: SiteEnum, input: RemoveCurrentUserFromWaitlistInput): Promise<any> {
         const REMOVE_CURRENT_USER_FROM_WAITLIST_MUTATION = gql`
               mutation removeCurrentUserFromWaitlist($site: SiteEnum!, $input: RemoveCurrentUserFromWaitlistInput!) {
@@ -575,7 +542,7 @@ export const apiService = {
             `;
 
         try {
-            const result = await authApiClient.mutate({
+            const result = await this.authApiClient.mutate({
                 mutation: REMOVE_CURRENT_USER_FROM_WAITLIST_MUTATION,
                 variables: {
                     site: site,
@@ -588,5 +555,5 @@ export const apiService = {
         } catch (error) {
             return {"__typename": "UnknownError"};
         }
-    },
-};
+    }
+}

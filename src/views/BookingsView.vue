@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import {onMounted, ref} from "vue";
-import {apiService} from "@/services/apiService";
+import {inject, onMounted, ref} from "vue";
 import {
   CancelEnrollmentInput,
   CurrentUserEnrollmentsParams,
@@ -15,6 +14,7 @@ import BookingsTable from "@/components/BookingsTable.vue";
 import ConfirmModal from "@/components/ConfirmModal.vue";
 import SuccessModal from "@/components/SuccessModal.vue";
 import ErrorModal from "@/components/ErrorModal.vue";
+import {ApiService} from "@/services/apiService";
 
 const isLoading = ref<boolean>(false);
 const userErollments = ref<Enrollment[]>([]);
@@ -52,6 +52,8 @@ const confirmModalData = ref<{ title: string, message: string, textConfirmButton
   isLoading: false,
   isVisible: false
 });
+
+const apiService = inject<ApiService>('gqlApiService')!;
 
 
 onMounted(() => {

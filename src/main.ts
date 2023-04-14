@@ -1,7 +1,5 @@
 import {createApp, h, provide} from "vue";
 import {createPinia} from "pinia";
-import {ApolloClient, InMemoryCache} from "@apollo/client/core";
-import {DefaultApolloClient} from "@vue/apollo-composable";
 import {createVfm} from "vue-final-modal";
 import App from "./App.vue";
 import router from "./router";
@@ -11,30 +9,27 @@ import dayjs from "dayjs";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "vue-final-modal/style.css";
 import {authService} from "@/services/authService";
+import {ApiService} from "@/services/apiService";
+import {apiClient, authApiClient} from "@/services/graphqlClient";
 
 startApp();
 
 async function startApp() {
     dayjs.Ls.en.weekStart = 1;
 
-    const apolloClient = new ApolloClient({
-        uri: "https://payments2.crank-fit.com/api/graphql/",
-        cache: new InMemoryCache(),
-    });
-
     const app = createApp({
-        setup() {
-            provide(DefaultApolloClient, apolloClient);
+        setup(){
+            provide('gqlApiService', new ApiService(authApiClient,apiClient))
         },
         render: () => h(App),
     });
 
-    app.use(createPinia());
-    app.use(router);
-    app.config.globalProperties.$dayjs = dayjs;
+    app
+        .use(createPinia())
+        .use(router)
+        .use(createVfm());
 
-    const vfm = createVfm();
-    app.use(vfm);
+    app.config.globalProperties.$dayjs = dayjs;
 
     await authService.refreshToken()
 

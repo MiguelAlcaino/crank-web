@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {onMounted, ref, watch} from "vue";
+import {inject, onMounted, ref, watch} from "vue";
 import {useRoute} from 'vue-router'
 
 import dayjs from 'dayjs'
@@ -9,7 +9,6 @@ import {
   EnrollmentTypeEnum,
   SiteEnum
 } from "@/gql/graphql";
-import {apiService} from "@/services/apiService";
 
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import SuccessModal from "@/components/SuccessModal.vue";
@@ -20,6 +19,7 @@ import SpotMatrix from "@/components/SpotMatrix.vue";
 import WaitlistButton from "@/components/WaitlistButton.vue"
 import router from "@/router";
 import PaymentErrorModal from "@/components/PaymentErrorModal.vue";
+import {ApiService} from "@/services/apiService";
 
 
 const route = useRoute();
@@ -57,6 +57,8 @@ const paymentErrorModal = ref<boolean>(false);
 interface SpotClickedEvent {
   spotNumber: number | null
 }
+
+const apiService = inject<ApiService>('gqlApiService')!;
 
 onMounted(() => {
   classId.value = route.params.id as string;

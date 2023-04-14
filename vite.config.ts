@@ -2,6 +2,7 @@ import { fileURLToPath, URL } from "node:url";
 
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
+import {Config} from "./src/model/Config";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -14,7 +15,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "https://payments2.crank-fit.com",
+        target: Config.AUTH_SERVICE_HOST,
         changeOrigin: true,
         secure: false,
         ws: true,

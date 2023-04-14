@@ -3,6 +3,7 @@ import {useAuthenticationStore} from "@/stores/authToken";
 import {IncorrectCredentialsLoginError} from "@/model/Exception";
 import router from "@/router";
 import jwt_decode from 'jwt-decode';
+import dayjs from "dayjs";
 
 interface JwtTokenPayload {
     exp: number
@@ -10,7 +11,19 @@ interface JwtTokenPayload {
 
 export const authService = {
     isLoggedId(): boolean {
-        return useAuthenticationStore().token !== null;
+        const store = useAuthenticationStore();
+        if (store.token !== null) {
+            let decoded = jwt_decode<JwtTokenPayload>(store.token);
+            const now = dayjs().unix();
+            if (now < decoded.exp) {
+                return true;
+            }
+            store.deleteSession();
+
+            return false;
+        }
+
+        return false;
     },
     async login(email: string, password: string, site: string) {
         try {
@@ -37,8 +50,13 @@ export const authService = {
         useAuthenticationStore().setRefreshTokenTimeout(setTimeout(this.refreshToken, timeout));
     },
     async refreshToken() {
-        let response = await axios.post('/api/token/refresh');
-        useAuthenticationStore().setSession(response.data.token);
+        try {
+            let response = await axios.post('/api/token/refresh');
+            useAuthenticationStore().setSession(response.data.token);
+        } catch (e) {
+            useAuthenticationStore().deleteSession();
+            return;
+        }
     },
     async logout() {
         useAuthenticationStore().deleteSession();
