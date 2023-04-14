@@ -15,8 +15,6 @@ import {apiClient, authApiClient} from "@/services/graphqlClient";
 startApp();
 
 async function startApp() {
-    dayjs.Ls.en.weekStart = 1;
-
     const app = createApp({
         setup(){
             provide('gqlApiService', new ApiService(authApiClient,apiClient))
@@ -28,8 +26,6 @@ async function startApp() {
         .use(createPinia())
         .use(router)
         .use(createVfm());
-
-    app.config.globalProperties.$dayjs = dayjs;
 
     await authService.refreshToken()
 
