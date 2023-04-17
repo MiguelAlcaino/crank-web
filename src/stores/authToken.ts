@@ -1,30 +1,29 @@
-import { defineStore } from "pinia";
+import {defineStore} from "pinia";
 
-interface AuthenticationState {
-  token: string | null;
-  refreshToken: string | null;
+interface State {
+    token: string | null;
+    refreshTokenTimeout: number | null
 }
 
 export const useAuthenticationStore = defineStore({
-  id: "authToken",
-  state: (): AuthenticationState => ({
-    token: localStorage.getItem("authToken"),
-    refreshToken: localStorage.getItem("refreshToken"),
-  }),
-  actions: {
-    setSession(token: string, refreshToken: string) {
-      localStorage.setItem("authToken", token);
-      this.token = token;
-
-      localStorage.setItem("refreshToken", refreshToken);
-      this.refreshToken = refreshToken;
+    id: "authToken",
+    state: (): State => ({
+        token: localStorage.getItem("authToken"),
+        refreshTokenTimeout: null
+    }),
+    actions: {
+        setSession(token: string) {
+            localStorage.setItem("authToken", token);
+            this.token = token;
+        },
+        setRefreshTokenTimeout(timeoutId: number) {
+            this.refreshTokenTimeout = timeoutId;
+        },
+        deleteSession() {
+            localStorage.removeItem("authToken");
+            this.token = null;
+            clearTimeout(this.refreshTokenTimeout!);
+            this.refreshTokenTimeout = null;
+        },
     },
-    deleteSession() {
-      localStorage.removeItem("authToken");
-      this.token = null;
-
-      localStorage.removeItem("refreshToken");
-      this.refreshToken = null;
-    },
-  },
 });

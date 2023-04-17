@@ -1,14 +1,14 @@
 <script setup lang="ts">
 
-import {onMounted, ref} from "vue";
+import {inject, onMounted, ref} from "vue";
 import {type Class, SiteEnum} from "@/gql/graphql";
-import {apiService} from "@/services/apiService";
 import {DayOfTheWeek} from "@/model/DayOfTheWeek";
 import {WeekCalendar} from "@/model/WeekCalendar";
 import dayjs from 'dayjs'
 import CalendarCard from "@/components/CalendarCard.vue";
 import IconCalendarCard from "@/components/icons/IconCalendarCard.vue";
 import {appStore} from "@/stores/appStorage";
+import type {ApiService} from "@/services/apiService";
 
 const columnsNames = ref<string[]>([]);
 const calendarDays = ref<WeekCalendar[]>([]);
@@ -16,6 +16,7 @@ const siteDateTimeNow = ref<Date>(new Date);
 const calendarIsLoading = ref<boolean>(false);
 const hasPreviousWeek = ref<boolean>(false);
 const daysOfTheWeek = ref<DayOfTheWeek[]>([]);
+const apiService = inject<ApiService>('gqlApiService')!;
 
 onMounted(() => {
   getClassesOfTheWeek();

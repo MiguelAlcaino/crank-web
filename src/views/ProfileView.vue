@@ -1,12 +1,10 @@
 <script setup lang="ts">
 
-import {onMounted, reactive, ref, computed} from "vue";
+import {onMounted, reactive, ref, computed, inject} from "vue";
 import useVuelidate from "@vuelidate/core";
 import {required, maxLength, helpers, minValue} from "@vuelidate/validators";
 import {GenderEnum, Country, type State, UserInput} from "@/gql/graphql";
-
-import {apiService} from "@/services/apiService";
-import router from "@/router";
+import {ApiService} from "@/services/apiService";
 
 const isSaving = ref(false);
 const countries = ref([] as Country[]);
@@ -80,6 +78,7 @@ const rules = computed(() => {
 });
 
 const v$ = useVuelidate(rules, formData);
+const apiService = inject<ApiService>('gqlApiService')!;
 
 onMounted(() => {
   getCountries();
