@@ -3,7 +3,6 @@ import {useAuthenticationStore} from "@/stores/authToken";
 import {IncorrectCredentialsLoginError} from "@/model/Exception";
 import router from "@/router";
 import jwt_decode from 'jwt-decode';
-import dayjs from "dayjs";
 
 interface JwtTokenPayload {
     exp: number
@@ -12,20 +11,9 @@ interface JwtTokenPayload {
 export const authService = {
     isLoggedId(): boolean {
         const store = useAuthenticationStore();
-        if (store.token !== null) {
-            let decoded = jwt_decode<JwtTokenPayload>(store.token);
-            const now = dayjs().unix();
-            if (now < decoded.exp) {
-                return true;
-            }
-            store.deleteSession();
-
-            return false;
-        }
-
-        return false;
+        return store.token !== null;
     },
-    async login(email: string, password: string, site: string) {
+    async login(email: string, password: string, site: string): Promise<void> {
         try {
             const response = await axios.post("/api/login_check?site=" + site, {
                 username: email,
@@ -42,23 +30,27 @@ export const authService = {
             throw new IncorrectCredentialsLoginError();
         }
     },
-    startRefreshTokenTimer() {
+    startRefreshTokenTimer(): void {
         let decoded = jwt_decode<JwtTokenPayload>(useAuthenticationStore().token!);
 
         const expires = new Date(decoded.exp * 1000);
-        const timeout = expires.getTime() - Date.now() - (60 * 1000);
-        useAuthenticationStore().setRefreshTokenTimeout(setTimeout(this.refreshToken, timeout));
+        const now = Date.now();
+        const timeout = expires.getTime() - now - (60 * 1000); // 1 minute before it expires
+        const self = this;
+        useAuthenticationStore().setRefreshTokenTimeout(setTimeout(async function () {
+            try {
+                await self.refreshToken();
+                self.startRefreshTokenTimer();
+            } catch (e) {
+                await self.logout();
+            }
+        }, timeout));
     },
-    async refreshToken() {
-        try {
-            let response = await axios.post('/api/token/refresh');
-            useAuthenticationStore().setSession(response.data.token);
-        } catch (e) {
-            useAuthenticationStore().deleteSession();
-            return;
-        }
+    async refreshToken(): Promise<void> {
+        let response = await axios.post('/api/token/refresh');
+        useAuthenticationStore().setSession(response.data.token);
     },
-    async logout() {
+    async logout(): Promise<void> {
         useAuthenticationStore().deleteSession();
         await router.push({name: "login"});
     },

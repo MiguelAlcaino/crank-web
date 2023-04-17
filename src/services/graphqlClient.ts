@@ -1,7 +1,9 @@
-import {createHttpLink} from "@apollo/client";
+import {createHttpLink, Observable} from "@apollo/client";
 import {ApolloClient, InMemoryCache} from "@apollo/client/core";
 import {setContext} from "@apollo/client/link/context";
 import {useAuthenticationStore} from "@/stores/authToken";
+import {onError} from "@apollo/client/link/error";
+import {authService} from "@/services/authService";
 
 const httpLink = createHttpLink({
     uri: "/api/graphql/",
@@ -24,8 +26,42 @@ const authLink = setContext((_, {headers}) => {
     }
 });
 
+const errorLink = onError(
+    ({graphQLErrors, networkError, operation, forward}) => {
+        if (graphQLErrors) {
+            for (let err of graphQLErrors) {
+                switch (err.message) {
+                    case 'jwt.expired_access_token':
+                        return new Observable<any>(
+                            (observer) => {
+                                // used an annonymous function for using an async function
+                                (async () => {
+                                    try {
+                                        await authService.refreshToken();
+                                        // Retry the failed request
+                                        const subscriber = {
+                                            next: observer.next.bind(observer),
+                                            error: observer.error.bind(observer),
+                                            complete: observer.complete.bind(observer),
+                                        };
+
+                                        forward(operation).subscribe(subscriber);
+                                    } catch (err) {
+                                        observer.error(err);
+                                    }
+                                })();
+                            }
+                        );
+                }
+            }
+        }
+
+        if (networkError) console.log(`[Network error]: ${networkError}`);
+    }
+);
+
 const authApiClient = new ApolloClient({
-    link: authLink.concat(httpLink),
+    link: authLink.concat(errorLink).concat(httpLink),
     cache: new InMemoryCache({
         typePolicies: {
             Query: {

@@ -11,13 +11,14 @@ import "vue-final-modal/style.css";
 import {authService} from "@/services/authService";
 import {ApiService} from "@/services/apiService";
 import {apiClient, authApiClient} from "@/services/graphqlClient";
+import {useAuthenticationStore} from "@/stores/authToken";
 
 startApp();
 
 async function startApp() {
     const app = createApp({
-        setup(){
-            provide('gqlApiService', new ApiService(authApiClient,apiClient))
+        setup() {
+            provide('gqlApiService', new ApiService(authApiClient, apiClient))
         },
         render: () => h(App),
     });
@@ -27,7 +28,12 @@ async function startApp() {
         .use(router)
         .use(createVfm());
 
-    await authService.refreshToken()
+    try {
+        await authService.startRefreshTokenTimer()
+    } catch (e) {
+        // In case the refresh token is invalid
+        useAuthenticationStore().deleteSession();
+    }
 
     app.mount("#app");
 }
