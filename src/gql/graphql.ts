@@ -18,6 +18,17 @@ export type Scalars = {
   DateTimeWithoutTimeZone: any;
 };
 
+export type AcceptLateCancelledSpotInClassInput = {
+  waitlistEntryId: Scalars['ID'];
+};
+
+export type AcceptLateCancelledSpotInClassResultUnion = AcceptLateCancelledSpotInClassSuccess;
+
+export type AcceptLateCancelledSpotInClassSuccess = {
+  __typename?: 'AcceptLateCancelledSpotInClassSuccess';
+  code: Scalars['String'];
+};
+
 export type AddedToWaitlistSuccess = {
   __typename?: 'AddedToWaitlistSuccess';
   status: Scalars['Boolean'];
@@ -29,7 +40,7 @@ export type BookClassInput = {
   spotNumber?: InputMaybe<Scalars['Int']>;
 };
 
-export type BookClassResultUnion = AddedToWaitlistSuccess | BookClassSuccess | BookedButInOtherSpotError | ClassIsFullError | ClientIsAlreadyBookedError | ClientIsOutsideSchedulingWindowError | PaymentRequiredError | SpotAlreadyReservedError | UnknownError | WaitlistFullError;
+export type BookClassResultUnion = AddedToWaitlistSuccess | BookClassSuccess | BookedButInOtherSpotError | ClassIsFullError | ClientIsAlreadyBookedError | ClientIsAlreadyOnWaitlistError | ClientIsOutsideSchedulingWindowError | PaymentRequiredError | SpotAlreadyReservedError | UnknownError | WaitlistFullError;
 
 export type BookClassSuccess = {
   __typename?: 'BookClassSuccess';
@@ -67,7 +78,7 @@ export type CancelEnrollmentInput = {
   lateCancel?: InputMaybe<Scalars['Boolean']>;
 };
 
-export type CancelEnrollmentResultUnion = CancelUserEnrollmentSuccess | LateCancellationRequiredError;
+export type CancelEnrollmentResultUnion = CancelUserEnrollmentSuccess | LateCancellationRequiredError | UnknownError;
 
 export type CancelUserEnrollmentSuccess = {
   __typename?: 'CancelUserEnrollmentSuccess';
@@ -145,6 +156,11 @@ export type ClientIsAlreadyBookedError = Error & {
   code: Scalars['String'];
 };
 
+export type ClientIsAlreadyOnWaitlistError = Error & {
+  __typename?: 'ClientIsAlreadyOnWaitlistError';
+  code: Scalars['String'];
+};
+
 /** Error returned when a client tries to book a class which is not permitted to book any longer. The booking window has passed. */
 export type ClientIsOutsideSchedulingWindowError = Error & {
   __typename?: 'ClientIsOutsideSchedulingWindowError';
@@ -173,7 +189,7 @@ export type EditEnrollmentInput = {
   newSpotNumber: Scalars['Int'];
 };
 
-export type EditEnrollmentResultUnion = Enrollment;
+export type EditEnrollmentResultUnion = ClientIsOutsideSchedulingWindowError | Enrollment | SpotAlreadyReservedError | TryToSwitchToSameSpotError;
 
 export type Enrollment = {
   __typename?: 'Enrollment';
@@ -242,6 +258,8 @@ export type LateCancellationRequiredError = Error & {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  /** Accepts a late-cancelled spot in a class */
+  acceptLateCancelledSpotInClass?: Maybe<AcceptLateCancelledSpotInClassResultUnion>;
   /** Adds a new device token to be used for device notifications */
   addDeviceTokenToCurrentUser?: Maybe<Scalars['Boolean']>;
   /** Books the current user in a class */
@@ -254,14 +272,26 @@ export type Mutation = {
   editCurrentUserEnrollment?: Maybe<EditEnrollmentResultUnion>;
   /** Registers a new user */
   registerUser?: Maybe<User>;
+  /** Rejects a late-cancelled spot in a class */
+  rejectLateCancelledSpotInClass?: Maybe<RejectLateBookingResultUnion>;
+  /** Removes the current user's waitlist entry from a class */
+  removeCurrentUserFromWaitlist?: Maybe<RemoveCurrentUserFromWaitlistUnion>;
   /** Request a reset password link */
   requestPasswordLink?: Maybe<ResetPasswordLinkResultUnion>;
+  /** Resets the current user's password */
+  resetPasswordForCurrentUser?: Maybe<ResetPasswordForCurrentUserUnion>;
   /** Updates the current user */
   updateCurrentUser?: Maybe<User>;
   /** Updates a user's password in all the sites */
   updateCurrentUserPassword?: Maybe<Scalars['Boolean']>;
   /** Validates a reset password token */
   validateResetPasswordToken?: Maybe<ValidateResetPasswordTokenResultUnion>;
+};
+
+
+export type MutationAcceptLateCancelledSpotInClassArgs = {
+  input: AcceptLateCancelledSpotInClassInput;
+  site?: InputMaybe<SiteEnum>;
 };
 
 
@@ -301,9 +331,26 @@ export type MutationRegisterUserArgs = {
 };
 
 
+export type MutationRejectLateCancelledSpotInClassArgs = {
+  input: RejectLateCancelledSpotInClassInput;
+  site?: InputMaybe<SiteEnum>;
+};
+
+
+export type MutationRemoveCurrentUserFromWaitlistArgs = {
+  input: RemoveCurrentUserFromWaitlistInput;
+  site: SiteEnum;
+};
+
+
 export type MutationRequestPasswordLinkArgs = {
   input?: InputMaybe<RequestPasswordLinkInput>;
   site: SiteEnum;
+};
+
+
+export type MutationResetPasswordForCurrentUserArgs = {
+  input?: InputMaybe<ResetPasswordForCurrentUserInput>;
 };
 
 
@@ -327,9 +374,19 @@ export type NotValidResetPasswordTokenError = Error & {
   code: Scalars['String'];
 };
 
+export type PasswordsDontMatchError = Error & {
+  __typename?: 'PasswordsDontMatchError';
+  code: Scalars['String'];
+};
+
 /** Error returned when a client does not have enough credit or allowance to book a class */
 export type PaymentRequiredError = Error & {
   __typename?: 'PaymentRequiredError';
+  code: Scalars['String'];
+};
+
+export type PositionAlreadyTakenError = Error & {
+  __typename?: 'PositionAlreadyTakenError';
   code: Scalars['String'];
 };
 
@@ -441,9 +498,38 @@ export type RegisterUserInput = {
   zipCode: Scalars['String'];
 };
 
+export type RejectLateBookingResultUnion = PositionAlreadyTakenError | RejectLateCancelledSpotInClassSuccess;
+
+export type RejectLateCancelledSpotInClassInput = {
+  waitlistEntryId: Scalars['ID'];
+};
+
+export type RejectLateCancelledSpotInClassSuccess = {
+  __typename?: 'RejectLateCancelledSpotInClassSuccess';
+  code: Scalars['String'];
+};
+
+export type RemoveCurrentUserFromWaitlistInput = {
+  waitlistEntryId: Scalars['ID'];
+};
+
+export type RemoveCurrentUserFromWaitlistUnion = RemoveFromWaitlistResult | WaitlistEntryNotFoundError;
+
+export type RemoveFromWaitlistResult = {
+  __typename?: 'RemoveFromWaitlistResult';
+  success: Scalars['Boolean'];
+};
+
 export type RequestPasswordLinkInput = {
   email: Scalars['String'];
 };
+
+export type ResetPasswordForCurrentUserInput = {
+  password: Scalars['String'];
+  repeatedPassword: Scalars['String'];
+};
+
+export type ResetPasswordForCurrentUserUnion = PasswordsDontMatchError | ResetPasswordSuccess;
 
 export type ResetPasswordLinkResultUnion = ResetPasswordLinkSentSuccessfully | TooManyResetPasswordLinkRequestsError;
 
@@ -452,9 +538,15 @@ export type ResetPasswordLinkSentSuccessfully = {
   status: Scalars['Boolean'];
 };
 
+export type ResetPasswordSuccess = {
+  __typename?: 'ResetPasswordSuccess';
+  status: Scalars['Boolean'];
+};
+
 export type ResetPasswordTokenValid = {
   __typename?: 'ResetPasswordTokenValid';
   accessToken: Scalars['String'];
+  refreshToken: Scalars['String'];
 };
 
 export enum SiteEnum {
@@ -488,6 +580,11 @@ export type State = {
 export type TooManyResetPasswordLinkRequestsError = Error & {
   __typename?: 'TooManyResetPasswordLinkRequestsError';
   availableAgainAt?: Maybe<Scalars['DateTime']>;
+  code: Scalars['String'];
+};
+
+export type TryToSwitchToSameSpotError = Error & {
+  __typename?: 'TryToSwitchToSameSpotError';
   code: Scalars['String'];
 };
 
@@ -565,15 +662,114 @@ export type ValidateResetPasswordTokenInput = {
 
 export type ValidateResetPasswordTokenResultUnion = ExpiredResetPasswordTokenError | NotValidResetPasswordTokenError | ResetPasswordTokenValid;
 
+export type WaitlistEntryNotFoundError = Error & {
+  __typename?: 'WaitlistEntryNotFoundError';
+  code: Scalars['String'];
+};
+
 export type WaitlistFullError = Error & {
   __typename?: 'WaitlistFullError';
   code: Scalars['String'];
 };
+
+export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', email: string, firstName: string, lastName: string, gender?: GenderEnum | null, birthdate?: any | null, city: string, address1: string, address2?: string | null, zipCode: string, phone: string, emergencyContactName: string, emergencyContactPhone: string, emergencyContactRelationship?: string | null, hideMetrics?: boolean | null, weight?: number | null, leaderboardUsername?: string | null, country: { __typename?: 'Country', name: string, code: string, states?: Array<{ __typename?: 'State', name: string, code: string } | null> | null }, state?: { __typename?: 'State', name: string, code: string } | null } | null };
+
+export type CurrentUserWorkoutStatsQueryVariables = Exact<{
+  site: SiteEnum;
+}>;
+
+
+export type CurrentUserWorkoutStatsQuery = { __typename?: 'Query', currentUserWorkoutStats: Array<{ __typename?: 'ClassStat', classId: string, className?: string | null, startDateTime: any, spotNumber?: number | null, averagePower?: number | null, highPower?: number | null, averageRpm?: number | null, highRpm?: number | null, totalEnergy?: number | null, calories?: number | null, distance?: number | null, duration?: number | null, adjustedChartPoints: Array<{ __typename?: 'ChartPoint', time?: number | null, rpm?: number | null, power?: number | null }> } | null> };
+
+export type CurrentUserEnrollmentsQueryVariables = Exact<{
+  site: SiteEnum;
+  params?: InputMaybe<CurrentUserEnrollmentsParams>;
+}>;
+
+
+export type CurrentUserEnrollmentsQuery = { __typename?: 'Query', currentUserEnrollments: Array<{ __typename?: 'Enrollment', enrollmentInfo: { __typename?: 'EnrollmentInfo', id: string, enrollmentStatus: EnrollmentStatusEnum, enrollmentDateTime: any, spotInfo?: { __typename?: 'SpotInfo', spotNumber: number, isBooked: boolean } | null }, class: { __typename?: 'Class', id: string, name: string, description: string, instructorName: string, start: any, startWithNoTimeZone: any, duration: number, waitListAvailable: boolean } }> };
+
+export type CurrentUserPurchasesQueryVariables = Exact<{
+  site: SiteEnum;
+}>;
+
+
+export type CurrentUserPurchasesQuery = { __typename?: 'Query', currentUserPurchases?: Array<{ __typename?: 'Purchase', packageName: string, allowanceObtained: number, allowanceRemaining: number, paymentDateTime: any, activationDateTime: any, expirationDateTime: any } | null> | null };
 
 export type CountriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type CountriesQuery = { __typename?: 'Query', countries?: Array<{ __typename?: 'Country', name: string, code: string } | null> | null };
 
+export type CountryQueryVariables = Exact<{
+  countryCode: Scalars['String'];
+}>;
 
+
+export type CountryQuery = { __typename?: 'Query', country?: { __typename?: 'Country', name: string, code: string, states?: Array<{ __typename?: 'State', name: string, code: string } | null> | null } | null };
+
+export type CalendarClassesQueryVariables = Exact<{
+  site: SiteEnum;
+  params?: InputMaybe<CalendarClassesParams>;
+}>;
+
+
+export type CalendarClassesQuery = { __typename?: 'Query', calendarClasses: Array<{ __typename?: 'Class', id: string, name: string, description: string, instructorName: string, start: any, startWithNoTimeZone: any, duration: number, waitListAvailable: boolean }> };
+
+export type CustomCalendarClassesQueryVariables = Exact<{
+  site: SiteEnum;
+  params?: InputMaybe<CalendarClassesParams>;
+  enrollmentsWaitlistParams?: InputMaybe<CurrentUserEnrollmentsParams>;
+  enrollmentsUpcomingParams?: InputMaybe<CurrentUserEnrollmentsParams>;
+}>;
+
+
+export type CustomCalendarClassesQuery = { __typename?: 'Query', siteSettings: { __typename?: 'SiteSetting', siteDateTimeNow?: any | null }, calendarClasses: Array<{ __typename?: 'Class', id: string, name: string, description: string, instructorName: string, start: any, startWithNoTimeZone: any, duration: number, waitListAvailable: boolean }>, enrollmentsWaitlist: Array<{ __typename?: 'Enrollment', enrollmentInfo: { __typename?: 'EnrollmentInfo', id: string, enrollmentStatus: EnrollmentStatusEnum, enrollmentDateTime: any }, class: { __typename?: 'Class', id: string, name: string, description: string, instructorName: string, isSubstitute: boolean, start: any, startWithNoTimeZone: any, duration: number, waitListAvailable: boolean } }>, enrollmentsUpcoming: Array<{ __typename?: 'Enrollment', enrollmentInfo: { __typename?: 'EnrollmentInfo', id: string, enrollmentStatus: EnrollmentStatusEnum, enrollmentDateTime: any }, class: { __typename?: 'Class', id: string, name: string, description: string, instructorName: string, isSubstitute: boolean, start: any, startWithNoTimeZone: any, duration: number, waitListAvailable: boolean } }> };
+
+export type ClassInfoQueryVariables = Exact<{
+  site: SiteEnum;
+  id: Scalars['ID'];
+}>;
+
+
+export type ClassInfoQuery = { __typename?: 'Query', classInfo?: { __typename?: 'ClassInfo', class: { __typename?: 'Class', id: string, name: string, description: string, instructorName: string, start: any, startWithNoTimeZone: any, duration: number, waitListAvailable: boolean }, matrix?: Array<{ __typename: 'BookableSpot', x: number, y: number, icon: PositionIconEnum, spotInfo: { __typename?: 'SpotInfo', spotNumber: number, isBooked: boolean } } | { __typename: 'IconPosition', x: number, y: number, icon: PositionIconEnum }> | null } | null };
+
+export type RegisterUserMutationVariables = Exact<{
+  site: SiteEnum;
+  input: RegisterUserInput;
+}>;
+
+
+export type RegisterUserMutation = { __typename?: 'Mutation', registerUser?: { __typename?: 'User', email: string } | null };
+
+export type UpdateCurrentUserMutationVariables = Exact<{
+  input: UserInput;
+}>;
+
+
+export type UpdateCurrentUserMutation = { __typename?: 'Mutation', updateCurrentUser?: { __typename?: 'User', email: string } | null };
+
+export type BookClassMutationVariables = Exact<{
+  site: SiteEnum;
+  input: BookClassInput;
+}>;
+
+
+export type BookClassMutation = { __typename?: 'Mutation', bookClass: { __typename: 'AddedToWaitlistSuccess' } | { __typename: 'BookClassSuccess' } | { __typename: 'BookedButInOtherSpotError' } | { __typename: 'ClassIsFullError' } | { __typename: 'ClientIsAlreadyBookedError' } | { __typename: 'ClientIsAlreadyOnWaitlistError' } | { __typename: 'ClientIsOutsideSchedulingWindowError' } | { __typename: 'PaymentRequiredError' } | { __typename: 'SpotAlreadyReservedError' } | { __typename: 'UnknownError' } | { __typename: 'WaitlistFullError' } };
+
+
+export const CurrentUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"currentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"gender"}},{"kind":"Field","name":{"kind":"Name","value":"birthdate"}},{"kind":"Field","name":{"kind":"Name","value":"country"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"states"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"state"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"address1"}},{"kind":"Field","name":{"kind":"Name","value":"address2"}},{"kind":"Field","name":{"kind":"Name","value":"zipCode"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"emergencyContactName"}},{"kind":"Field","name":{"kind":"Name","value":"emergencyContactPhone"}},{"kind":"Field","name":{"kind":"Name","value":"emergencyContactRelationship"}},{"kind":"Field","name":{"kind":"Name","value":"hideMetrics"}},{"kind":"Field","name":{"kind":"Name","value":"weight"}},{"kind":"Field","name":{"kind":"Name","value":"leaderboardUsername"}}]}}]}}]} as unknown as DocumentNode<CurrentUserQuery, CurrentUserQueryVariables>;
+export const CurrentUserWorkoutStatsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"currentUserWorkoutStats"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUserWorkoutStats"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"classId"}},{"kind":"Field","name":{"kind":"Name","value":"className"}},{"kind":"Field","name":{"kind":"Name","value":"startDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"spotNumber"}},{"kind":"Field","name":{"kind":"Name","value":"averagePower"}},{"kind":"Field","name":{"kind":"Name","value":"highPower"}},{"kind":"Field","name":{"kind":"Name","value":"averageRpm"}},{"kind":"Field","name":{"kind":"Name","value":"highRpm"}},{"kind":"Field","name":{"kind":"Name","value":"totalEnergy"}},{"kind":"Field","name":{"kind":"Name","value":"calories"}},{"kind":"Field","name":{"kind":"Name","value":"distance"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"adjustedChartPoints"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"amountOfPoints"},"value":{"kind":"IntValue","value":"62"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"time"}},{"kind":"Field","name":{"kind":"Name","value":"rpm"}},{"kind":"Field","name":{"kind":"Name","value":"power"}}]}}]}}]}}]} as unknown as DocumentNode<CurrentUserWorkoutStatsQuery, CurrentUserWorkoutStatsQueryVariables>;
+export const CurrentUserEnrollmentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"currentUserEnrollments"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"params"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CurrentUserEnrollmentsParams"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUserEnrollments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"params"},"value":{"kind":"Variable","name":{"kind":"Name","value":"params"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"enrollmentInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"enrollmentStatus"}},{"kind":"Field","name":{"kind":"Name","value":"enrollmentDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"spotInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"spotNumber"}},{"kind":"Field","name":{"kind":"Name","value":"isBooked"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"class"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"instructorName"}},{"kind":"Field","name":{"kind":"Name","value":"start"}},{"kind":"Field","name":{"kind":"Name","value":"startWithNoTimeZone"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"waitListAvailable"}}]}}]}}]}}]} as unknown as DocumentNode<CurrentUserEnrollmentsQuery, CurrentUserEnrollmentsQueryVariables>;
+export const CurrentUserPurchasesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"currentUserPurchases"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUserPurchases"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"packageName"}},{"kind":"Field","name":{"kind":"Name","value":"allowanceObtained"}},{"kind":"Field","name":{"kind":"Name","value":"allowanceRemaining"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"activationDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"expirationDateTime"}}]}}]}}]} as unknown as DocumentNode<CurrentUserPurchasesQuery, CurrentUserPurchasesQueryVariables>;
 export const CountriesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Countries"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"countries"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]} as unknown as DocumentNode<CountriesQuery, CountriesQueryVariables>;
+export const CountryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"country"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"countryCode"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"country"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"countryCode"},"value":{"kind":"Variable","name":{"kind":"Name","value":"countryCode"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"states"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}}]} as unknown as DocumentNode<CountryQuery, CountryQueryVariables>;
+export const CalendarClassesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"calendarClasses"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"params"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CalendarClassesParams"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"calendarClasses"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"params"},"value":{"kind":"Variable","name":{"kind":"Name","value":"params"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"instructorName"}},{"kind":"Field","name":{"kind":"Name","value":"start"}},{"kind":"Field","name":{"kind":"Name","value":"startWithNoTimeZone"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"waitListAvailable"}}]}}]}}]} as unknown as DocumentNode<CalendarClassesQuery, CalendarClassesQueryVariables>;
+export const CustomCalendarClassesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"customCalendarClasses"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"params"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CalendarClassesParams"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"enrollmentsWaitlistParams"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CurrentUserEnrollmentsParams"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"enrollmentsUpcomingParams"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CurrentUserEnrollmentsParams"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"siteSettings"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"siteDateTimeNow"}}]}},{"kind":"Field","name":{"kind":"Name","value":"calendarClasses"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"params"},"value":{"kind":"Variable","name":{"kind":"Name","value":"params"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"instructorName"}},{"kind":"Field","name":{"kind":"Name","value":"start"}},{"kind":"Field","name":{"kind":"Name","value":"startWithNoTimeZone"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"waitListAvailable"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"enrollmentsWaitlist"},"name":{"kind":"Name","value":"currentUserEnrollments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"params"},"value":{"kind":"Variable","name":{"kind":"Name","value":"enrollmentsWaitlistParams"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"enrollmentInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"enrollmentStatus"}},{"kind":"Field","name":{"kind":"Name","value":"enrollmentDateTime"}}]}},{"kind":"Field","name":{"kind":"Name","value":"class"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"instructorName"}},{"kind":"Field","name":{"kind":"Name","value":"isSubstitute"}},{"kind":"Field","name":{"kind":"Name","value":"start"}},{"kind":"Field","name":{"kind":"Name","value":"startWithNoTimeZone"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"waitListAvailable"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"enrollmentsUpcoming"},"name":{"kind":"Name","value":"currentUserEnrollments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"params"},"value":{"kind":"Variable","name":{"kind":"Name","value":"enrollmentsUpcomingParams"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"enrollmentInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"enrollmentStatus"}},{"kind":"Field","name":{"kind":"Name","value":"enrollmentDateTime"}}]}},{"kind":"Field","name":{"kind":"Name","value":"class"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"instructorName"}},{"kind":"Field","name":{"kind":"Name","value":"isSubstitute"}},{"kind":"Field","name":{"kind":"Name","value":"start"}},{"kind":"Field","name":{"kind":"Name","value":"startWithNoTimeZone"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"waitListAvailable"}}]}}]}}]}}]} as unknown as DocumentNode<CustomCalendarClassesQuery, CustomCalendarClassesQueryVariables>;
+export const ClassInfoDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"classInfo"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"classInfo"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"class"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"instructorName"}},{"kind":"Field","name":{"kind":"Name","value":"start"}},{"kind":"Field","name":{"kind":"Name","value":"startWithNoTimeZone"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"waitListAvailable"}}]}},{"kind":"Field","name":{"kind":"Name","value":"matrix"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"x"}},{"kind":"Field","name":{"kind":"Name","value":"y"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BookableSpot"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"spotInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"spotNumber"}},{"kind":"Field","name":{"kind":"Name","value":"isBooked"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<ClassInfoQuery, ClassInfoQueryVariables>;
+export const RegisterUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"registerUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RegisterUserInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerUser"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]} as unknown as DocumentNode<RegisterUserMutation, RegisterUserMutationVariables>;
+export const UpdateCurrentUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateCurrentUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UserInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateCurrentUser"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]} as unknown as DocumentNode<UpdateCurrentUserMutation, UpdateCurrentUserMutationVariables>;
+export const BookClassDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"bookClass"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BookClassInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bookClass"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}}]}}]} as unknown as DocumentNode<BookClassMutation, BookClassMutationVariables>;
