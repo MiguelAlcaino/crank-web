@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import dayjs from "dayjs";
 
-import {Enrollment, EnrollmentTypeEnum} from "@/gql/graphql";
+import {type Enrollment, EnrollmentTypeEnum} from "@/gql/graphql";
 import CancelEnrollmentButton from "@/components/CancelEnrollmentButton.vue";
 import RemoveFromWaitlistButton from "@/components/RemoveFromWaitlistButton.vue";
 

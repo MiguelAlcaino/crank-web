@@ -3,8 +3,8 @@
 import {onMounted, reactive, ref, computed, inject} from "vue";
 import useVuelidate from "@vuelidate/core";
 import {required, maxLength, helpers, minValue} from "@vuelidate/validators";
-import {GenderEnum, Country, type State, UserInput} from "@/gql/graphql";
-import {ApiService} from "@/services/apiService";
+import {GenderEnum, type Country, type State, type UserInput} from "@/gql/graphql";
+import type {ApiService} from "@/services/apiService";
 
 const isSaving = ref(false);
 const countries = ref([] as Country[]);

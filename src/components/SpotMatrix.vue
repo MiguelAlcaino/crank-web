@@ -14,7 +14,7 @@ interface SpotPosition {
 }
 
 interface ClassPositionInterface {
-  __typename: string
+  __typename?: string
   x: number
   y: number
   icon: string

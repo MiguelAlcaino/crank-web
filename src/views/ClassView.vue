@@ -19,7 +19,7 @@ import SpotMatrix from "@/components/SpotMatrix.vue";
 import WaitlistButton from "@/components/WaitlistButton.vue"
 import router from "@/router";
 import PaymentErrorModal from "@/components/PaymentErrorModal.vue";
-import {ApiService} from "@/services/apiService";
+import type {ApiService} from "@/services/apiService";
 
 
 const route = useRoute();
@@ -209,7 +209,6 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
 
 <template>
   <h2>RESERVE A SPOT</h2>
-
   <div class="container">
     <div class="row">
       <div class="col-12 text-center">
@@ -247,7 +246,7 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
                 :message="confirmModalData.message"
                 :isLoading="confirmModalData.isLoading"
                 @cancel="showModal = false"
-                @confirm="bookClass(classId, spotNumber, isWaitlistBooking)"
+                @confirm="bookClass(classId, spotNumber, isWaitlistBooking!)"
                 :clickToClose="false">
   </ConfirmModal>
 

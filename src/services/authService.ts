@@ -31,13 +31,13 @@ export const authService = {
         }
     },
     startRefreshTokenTimer(): void {
-        let decoded = jwt_decode<JwtTokenPayload>(useAuthenticationStore().token!);
+        const decoded = jwt_decode<JwtTokenPayload>(useAuthenticationStore().token!);
 
         const expires = new Date(decoded.exp * 1000);
         const now = Date.now();
         const timeout = expires.getTime() - now - (60 * 1000); // 1 minute before it expires
         const self = this;
-        useAuthenticationStore().setRefreshTokenTimeout(setTimeout(async function () {
+        useAuthenticationStore().setRefreshTokenTimeout(window.setTimeout(async function () {
             try {
                 await self.refreshToken();
                 self.startRefreshTokenTimer();
@@ -47,7 +47,7 @@ export const authService = {
         }, timeout));
     },
     async refreshToken(): Promise<void> {
-        let response = await axios.post('/api/token/refresh');
+        const response = await axios.post('/api/token/refresh');
         useAuthenticationStore().setSession(response.data.token);
     },
     async logout(): Promise<void> {
