@@ -1,23 +1,26 @@
 <script setup lang="ts">
-
 defineProps<{
-  enrollmentEnabled: boolean,
-}>();
+  enrollmentEnabled: boolean
+}>()
 
 const emits = defineEmits<{
-  (event: "clickBookClass"): void
-}>();
+  (event: 'clickBookClass'): void
+}>()
 
 function onClickBookClassBtn(): void {
-  emits("clickBookClass")
+  emits('clickBookClass')
 }
 </script>
 
 <template>
   <div>
     <div class="text-center">
-      <a type="button" @click="onClickBookClassBtn()" class="btn btn-primary"
-         :class="{disabled: !enrollmentEnabled}">
+      <a
+        type="button"
+        @click="onClickBookClassBtn()"
+        class="btn btn-primary"
+        :class="{ disabled: !enrollmentEnabled }"
+      >
         <i class="fa fa-bullseye" aria-hidden="true"></i>
         <div>Sign up for this class</div>
       </a>
