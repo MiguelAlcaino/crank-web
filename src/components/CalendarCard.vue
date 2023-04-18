@@ -8,7 +8,6 @@ const props = defineProps<{
   classInfo?: Class,
   isEnrolled?: boolean,
 }>();
-defineEmits<{}>();
 
 async function selectClass() {
   await router.push('/class/' + props.classInfo!.id);
