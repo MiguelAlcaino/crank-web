@@ -5,6 +5,7 @@ import RegisterView from "../views/RegisterView.vue"
 import BookingCalendarView from "../views/BookingCalendarView.vue"
 import ProfileView from "../views/ProfileView.vue"
 import ClassView from "../views/ClassView.vue"
+import BookingsView from "../views/BookingsView.vue"
 
 import {authService} from "@/services/authService";
 
@@ -40,6 +41,11 @@ const router = createRouter({
             path: "/class/:id",
             name: "class",
             component: ClassView,
+        },
+        {
+            path: "/bookings",
+            name: "bookings",
+            component: BookingsView,
         },
         {
             path: "/about",
