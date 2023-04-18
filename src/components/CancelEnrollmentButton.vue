@@ -17,7 +17,7 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits<{
-  (e: 'clickCancelEnrollment', enrollmentId: string, isLateCancel?: boolean): void
+  (e: 'clickCancelEnrollment', enrollmentId: string, isLateCancel: boolean): void
 }>();
 
 const buttonText = ref<string>("");

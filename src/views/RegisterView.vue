@@ -3,9 +3,9 @@
 import {onMounted, reactive, ref, computed, inject} from "vue";
 import useVuelidate from "@vuelidate/core";
 import {required, email, minLength, sameAs, maxLength, helpers} from "@vuelidate/validators";
-import {GenderEnum, SiteEnum, type RegisterUserInput, Country, type State} from "@/gql/graphql";
+import {GenderEnum, SiteEnum, type RegisterUserInput, type Country, type State} from "@/gql/graphql";
 
-import {ApiService} from "@/services/apiService";
+import type {ApiService} from "@/services/apiService";
 import {authService} from "@/services/authService";
 import router from "@/router";
 

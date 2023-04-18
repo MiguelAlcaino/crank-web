@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import {inject, onMounted, ref} from "vue";
 import {
-  CancelEnrollmentInput,
-  CurrentUserEnrollmentsParams,
-  Enrollment,
+  type CancelEnrollmentInput,
+  type CurrentUserEnrollmentsParams,
+  type Enrollment,
   EnrollmentTypeEnum,
-  RemoveCurrentUserFromWaitlistInput,
+  type RemoveCurrentUserFromWaitlistInput,
   SiteEnum
 } from "@/gql/graphql";
 import dayjs from "dayjs";
@@ -14,7 +14,7 @@ import BookingsTable from "@/components/BookingsTable.vue";
 import ConfirmModal from "@/components/ConfirmModal.vue";
 import SuccessModal from "@/components/SuccessModal.vue";
 import ErrorModal from "@/components/ErrorModal.vue";
-import {ApiService} from "@/services/apiService";
+import type {ApiService} from "@/services/apiService";
 
 const isLoading = ref<boolean>(false);
 const userErollments = ref<Enrollment[]>([]);
@@ -209,7 +209,7 @@ async function acceptSuccessModal() {
                 :clickToClose="true"
                 v-model="modalConfirmRemoveFromWaitlistisVisible"
                 @cancel="modalConfirmRemoveFromWaitlistisVisible = false"
-                @confirm="removeCurrentUserFromWaitlist(waitlistEntryIdToRemove)"
+                @confirm="removeCurrentUserFromWaitlist(waitlistEntryIdToRemove!)"
   ></ConfirmModal>
 
   <!-- CONFIRM CANCEL BOOKING modal -->
@@ -221,7 +221,7 @@ async function acceptSuccessModal() {
                 :clickToClose="true"
                 v-model="confirmModalData.isVisible"
                 @cancel="confirmModalData.isVisible = false"
-                @confirm="cancelCurrentUserEnrollment(enrollmentIdToRemove, enrollmentIsLateCancel)"
+                @confirm="cancelCurrentUserEnrollment(enrollmentIdToRemove!, enrollmentIsLateCancel)"
   ></ConfirmModal>
 
   <!-- SUCCESS modal -->

@@ -6,7 +6,7 @@ defineProps<{ letter: string }>();
   <span class="i-circle">{{ letter }}</span>
 </template>
 
-<style>
+<style scoped>
 .i-circle {
   margin-right: 5px;
   border-radius: 50px;
