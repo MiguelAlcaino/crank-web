@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import {authService} from "@/services/authService";
+import { authService } from '@/services/authService'
 import { ModalsContainer } from 'vue-final-modal'
-
 </script>
 
 <template>
@@ -34,7 +33,7 @@ import { ModalsContainer } from 'vue-final-modal'
         </aside>
       </div>
       <div class="column is-9">
-        <RouterView/>
+        <RouterView />
       </div>
     </div>
   </div>

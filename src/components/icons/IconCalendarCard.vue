@@ -1,12 +1,12 @@
 <script setup lang="ts">
-defineProps<{ letter: string }>();
+defineProps<{ letter: string }>()
 </script>
 
 <template>
   <span class="i-circle">{{ letter }}</span>
 </template>
 
-<style>
+<style scoped>
 .i-circle {
   margin-right: 5px;
   border-radius: 50px;

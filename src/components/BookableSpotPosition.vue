@@ -1,17 +1,16 @@
 <script setup lang="ts">
-
-import type { SpotInfo } from "@/gql/graphql";
+import type { SpotInfo } from '@/gql/graphql'
 
 const props = defineProps<{
   spotInfo?: SpotInfo | null
-}>();
+}>()
 
 const emits = defineEmits<{
-  (e: 'clickSpot', spotNumber: number): void,
-}>();
+  (e: 'clickSpot', spotNumber: number): void
+}>()
 
 function selectSpot() {
-  emits("clickSpot", props.spotInfo!.spotNumber);
+  emits('clickSpot', props.spotInfo!.spotNumber)
 }
 </script>
 

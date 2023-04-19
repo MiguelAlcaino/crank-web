@@ -1,23 +1,26 @@
 <script setup lang="ts">
-import {VueFinalModal} from 'vue-final-modal'
+import { VueFinalModal } from 'vue-final-modal'
 
 defineProps<{
-  title: string,
-  message: string,
-  textCancelBtn?: string,
-  textConfirmButton?: string,
-  isLoading: boolean,
+  title: string
+  message: string
+  textCancelBtn?: string
+  textConfirmButton?: string
+  isLoading: boolean
   clickToClose: boolean
-}>();
+}>()
 
 const emit = defineEmits<{
-  (e: 'confirm'): void,
-  (e: 'cancel'): void,
-}>();
-
+  (e: 'confirm'): void
+  (e: 'cancel'): void
+}>()
 </script>
 <template>
-  <VueFinalModal class="confirm-modal" content-class="confirm-modal-content" :click-to-close="clickToClose">
+  <VueFinalModal
+    class="confirm-modal"
+    content-class="confirm-modal-content"
+    :click-to-close="clickToClose"
+  >
     <h1 class="text-xl">
       {{ title }}
     </h1>
@@ -25,10 +28,10 @@ const emit = defineEmits<{
     <slot></slot>
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary" @click="emit('cancel')" :disabled="isLoading">
-        {{ textCancelBtn ?? "CANCEL" }}
+        {{ textCancelBtn ?? 'CANCEL' }}
       </button>
       <button type="button" class="btn btn-primary" @click="emit('confirm')" :disabled="isLoading">
-        {{ textConfirmButton ?? "OK" }}
+        {{ textConfirmButton ?? 'OK' }}
       </button>
     </div>
   </VueFinalModal>
@@ -46,7 +49,7 @@ const emit = defineEmits<{
   flex-direction: column;
   padding: 1rem;
   background: #fff;
-  border-radius: 0.0rem;
+  border-radius: 0rem;
 }
 
 .confirm-modal-content > * + * {
@@ -60,7 +63,7 @@ const emit = defineEmits<{
 .confirm-modal-content button {
   margin: 0.2rem;
   border: 0px solid;
-  border-radius: 0.0rem;
+  border-radius: 0rem;
 }
 
 .dark .confirm-modal-content {
@@ -72,6 +75,4 @@ const emit = defineEmits<{
   background-color: #000000;
   border-color: #000000;
 }
-
-
 </style>
