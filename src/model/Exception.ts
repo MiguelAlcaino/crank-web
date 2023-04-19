@@ -1,3 +1,1 @@
-export class IncorrectCredentialsLoginError extends Error {
-
-}
+export class IncorrectCredentialsLoginError extends Error {}

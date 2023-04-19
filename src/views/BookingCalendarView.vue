@@ -1,147 +1,169 @@
 <script setup lang="ts">
-
-import {inject, onMounted, ref} from "vue";
-import {type Class, SiteEnum} from "@/gql/graphql";
-import {DayOfTheWeek} from "@/model/DayOfTheWeek";
-import {WeekCalendar} from "@/model/WeekCalendar";
+import { inject, onMounted, ref } from 'vue'
+import { type Class, SiteEnum } from '@/gql/graphql'
+import { DayOfTheWeek } from '@/model/DayOfTheWeek'
+import { WeekCalendar } from '@/model/WeekCalendar'
 import dayjs from 'dayjs'
-import CalendarCard from "@/components/CalendarCard.vue";
-import IconCalendarCard from "@/components/icons/IconCalendarCard.vue";
-import {appStore} from "@/stores/appStorage";
-import type {ApiService} from "@/services/apiService";
+import CalendarCard from '@/components/CalendarCard.vue'
+import IconCalendarCard from '@/components/icons/IconCalendarCard.vue'
+import { appStore } from '@/stores/appStorage'
+import type { ApiService } from '@/services/apiService'
 
-const columnsNames = ref<string[]>([]);
-const calendarDays = ref<WeekCalendar[]>([]);
-const siteDateTimeNow = ref<Date>(new Date);
-const calendarIsLoading = ref<boolean>(false);
-const hasPreviousWeek = ref<boolean>(false);
-const daysOfTheWeek = ref<DayOfTheWeek[]>([]);
-const apiService = inject<ApiService>('gqlApiService')!;
+const columnsNames = ref<string[]>([])
+const calendarDays = ref<WeekCalendar[]>([])
+const siteDateTimeNow = ref<Date>(new Date())
+const calendarIsLoading = ref<boolean>(false)
+const hasPreviousWeek = ref<boolean>(false)
+const daysOfTheWeek = ref<DayOfTheWeek[]>([])
+const apiService = inject<ApiService>('gqlApiService')!
 
 onMounted(() => {
-  getClassesOfTheWeek();
-});
+  getClassesOfTheWeek()
+})
 
 function goToNextWeek(): void {
-  const date = dayjs(appStore().calendarStartDate);
+  const date = dayjs(appStore().calendarStartDate)
 
-  const firstDayOfNextWeek = date.add(1, 'weeks').startOf('week').toDate();
-  const lastDayOfNextWeek = date.add(1, 'weeks').endOf('week').toDate();
+  const firstDayOfNextWeek = date.add(1, 'weeks').startOf('week').toDate()
+  const lastDayOfNextWeek = date.add(1, 'weeks').endOf('week').toDate()
 
-  appStore().setCalendarDates(firstDayOfNextWeek, lastDayOfNextWeek);
+  appStore().setCalendarDates(firstDayOfNextWeek, lastDayOfNextWeek)
 
-  getClassesOfTheWeek();
+  getClassesOfTheWeek()
 }
 
 function goToPrevWeek(): void {
-  const date = dayjs(appStore().calendarStartDate);
+  const date = dayjs(appStore().calendarStartDate)
 
-  const firstDayOfPrevWeek = date.subtract(1, 'weeks').startOf('week').toDate();
-  const lastDayOfPrevWeek = date.subtract(1, 'weeks').endOf('week').toDate();
+  const firstDayOfPrevWeek = date.subtract(1, 'weeks').startOf('week').toDate()
+  const lastDayOfPrevWeek = date.subtract(1, 'weeks').endOf('week').toDate()
 
-  const actualDate = new Date();
+  const actualDate = new Date()
 
-  if (dayjs(lastDayOfPrevWeek).isBefore(dayjs(actualDate), 'day'))
-    return;
+  if (dayjs(lastDayOfPrevWeek).isBefore(dayjs(actualDate), 'day')) return
 
-  appStore().setCalendarDates(firstDayOfPrevWeek, lastDayOfPrevWeek);
+  appStore().setCalendarDates(firstDayOfPrevWeek, lastDayOfPrevWeek)
 
-  getClassesOfTheWeek();
+  getClassesOfTheWeek()
 }
 
 async function getClassesOfTheWeek(): Promise<void> {
-  calendarIsLoading.value = true;
-  hasPreviousWeek.value = false;
-  daysOfTheWeek.value = [];
+  calendarIsLoading.value = true
+  hasPreviousWeek.value = false
+  daysOfTheWeek.value = []
 
-  const firstDayWeek = appStore().calendarStartDate;
-  const lastDayWeek = appStore().calendarEndDate;
+  const firstDayWeek = appStore().calendarStartDate
+  const lastDayWeek = appStore().calendarEndDate
 
-  let customCalendarClasses = await apiService.getCustomCalendarClasses(SiteEnum.Dubai, firstDayWeek, lastDayWeek);
+  let customCalendarClasses = await apiService.getCustomCalendarClasses(
+    SiteEnum.Dubai,
+    firstDayWeek,
+    lastDayWeek
+  )
 
   if (customCalendarClasses != null) {
-    siteDateTimeNow.value = customCalendarClasses.siteSettings.siteDateTimeNow;
+    siteDateTimeNow.value = customCalendarClasses.siteSettings.siteDateTimeNow
 
     /*
         await _markClassesEnrolled(bookingCalendarData);
         await _markClassesInWaitlist(bookingCalendarData);
      */
 
-    columnsNames.value = [];
+    columnsNames.value = []
 
-    let dates: Date[] = [];
-    let day = dayjs(firstDayWeek);
+    let dates: Date[] = []
+    let day = dayjs(firstDayWeek)
     for (let i = 0; i < 7; i++) {
-      dates.push(day.toDate());
+      dates.push(day.toDate())
 
-      columnsNames.value.push(day.format("ddd DD.MM").toUpperCase());
-      day = day.add(1, 'day');
+      columnsNames.value.push(day.format('ddd DD.MM').toUpperCase())
+      day = day.add(1, 'day')
     }
 
-
-    const _actualDate = new Date();
-
+    const _actualDate = new Date()
 
     for (let i = 0; i < dates.length; i++) {
-      let date = dayjs(dates[i]);
+      let date = dayjs(dates[i])
 
-      const disabled: boolean = date.isBefore(_actualDate, 'day');
-      const selected: boolean = date.isSame(_actualDate, 'day');
+      const disabled: boolean = date.isBefore(_actualDate, 'day')
+      const selected: boolean = date.isSame(_actualDate, 'day')
 
-      const calendarClasses: Class[] = customCalendarClasses.calendarClasses.filter(x => dayjs(new Date(x.start)).isSame(date, "day"));
+      const calendarClasses: Class[] = customCalendarClasses.calendarClasses.filter((x) =>
+        dayjs(new Date(x.start)).isSame(date, 'day')
+      )
 
-      daysOfTheWeek.value.push(new DayOfTheWeek(selected, disabled, date.toDate(), calendarClasses));
+      daysOfTheWeek.value.push(new DayOfTheWeek(selected, disabled, date.toDate(), calendarClasses))
 
-      if (date.isSame(_actualDate, 'day'))
-        hasPreviousWeek.value = false;
+      if (date.isSame(_actualDate, 'day')) hasPreviousWeek.value = false
     }
 
-    getPivot();
+    getPivot()
 
-    calendarIsLoading.value = false;
+    calendarIsLoading.value = false
   }
 }
 
 function getPivot() {
-  calendarDays.value = [];
+  calendarDays.value = []
 
-  let maxClasses = 0;
+  let maxClasses = 0
 
   for (let i = 0; i < daysOfTheWeek.value.length; i++) {
     if (maxClasses < daysOfTheWeek.value[i].classes.length) {
-      maxClasses = daysOfTheWeek.value[i].classes.length;
+      maxClasses = daysOfTheWeek.value[i].classes.length
     }
   }
 
   for (let i = 0; i < maxClasses; i++) {
-    let rowCalendar: WeekCalendar = new WeekCalendar();
+    let rowCalendar: WeekCalendar = new WeekCalendar()
     for (let day = 0; day < 7; day++) {
       if (day === 0) {
-        if (typeof daysOfTheWeek.value[day] !== "undefined" && typeof daysOfTheWeek.value[day].classes[i] !== "undefined") {
-          rowCalendar.MON = daysOfTheWeek.value[day].classes[i];
+        if (
+          typeof daysOfTheWeek.value[day] !== 'undefined' &&
+          typeof daysOfTheWeek.value[day].classes[i] !== 'undefined'
+        ) {
+          rowCalendar.MON = daysOfTheWeek.value[day].classes[i]
         }
       } else if (day === 1) {
-        if (typeof daysOfTheWeek.value[day] !== "undefined" && typeof daysOfTheWeek.value[day].classes[i] !== "undefined")
-          rowCalendar.TUE = daysOfTheWeek.value[day].classes[i];
+        if (
+          typeof daysOfTheWeek.value[day] !== 'undefined' &&
+          typeof daysOfTheWeek.value[day].classes[i] !== 'undefined'
+        )
+          rowCalendar.TUE = daysOfTheWeek.value[day].classes[i]
       } else if (day === 2) {
-        if (typeof daysOfTheWeek.value[day] !== "undefined" && typeof daysOfTheWeek.value[day].classes[i] !== "undefined")
-          rowCalendar.WED = daysOfTheWeek.value[day].classes[i];
+        if (
+          typeof daysOfTheWeek.value[day] !== 'undefined' &&
+          typeof daysOfTheWeek.value[day].classes[i] !== 'undefined'
+        )
+          rowCalendar.WED = daysOfTheWeek.value[day].classes[i]
       } else if (day === 3) {
-        if (typeof daysOfTheWeek.value[day] !== "undefined" && typeof daysOfTheWeek.value[day].classes[i] !== "undefined")
-          rowCalendar.THU = daysOfTheWeek.value[day].classes[i];
+        if (
+          typeof daysOfTheWeek.value[day] !== 'undefined' &&
+          typeof daysOfTheWeek.value[day].classes[i] !== 'undefined'
+        )
+          rowCalendar.THU = daysOfTheWeek.value[day].classes[i]
       } else if (day === 4) {
-        if (typeof daysOfTheWeek.value[day] !== "undefined" && typeof daysOfTheWeek.value[day].classes[i] !== "undefined")
-          rowCalendar.FRI = daysOfTheWeek.value[day].classes[i];
+        if (
+          typeof daysOfTheWeek.value[day] !== 'undefined' &&
+          typeof daysOfTheWeek.value[day].classes[i] !== 'undefined'
+        )
+          rowCalendar.FRI = daysOfTheWeek.value[day].classes[i]
       } else if (day === 5) {
-        if (typeof daysOfTheWeek.value[day] !== "undefined" && typeof daysOfTheWeek.value[day].classes[i] !== "undefined")
-          rowCalendar.SAT = daysOfTheWeek.value[day].classes[i];
+        if (
+          typeof daysOfTheWeek.value[day] !== 'undefined' &&
+          typeof daysOfTheWeek.value[day].classes[i] !== 'undefined'
+        )
+          rowCalendar.SAT = daysOfTheWeek.value[day].classes[i]
       } else if (day === 6) {
-        if (typeof daysOfTheWeek.value[day] !== "undefined" && typeof daysOfTheWeek.value[day].classes[i] !== "undefined")
-          rowCalendar.SUN = daysOfTheWeek.value[day].classes[i];
+        if (
+          typeof daysOfTheWeek.value[day] !== 'undefined' &&
+          typeof daysOfTheWeek.value[day].classes[i] !== 'undefined'
+        )
+          rowCalendar.SUN = daysOfTheWeek.value[day].classes[i]
       }
     }
 
-    calendarDays.value.push(rowCalendar);
+    calendarDays.value.push(rowCalendar)
   }
 }
 </script>
@@ -194,7 +216,7 @@ function getPivot() {
       </div>
     </div>
     <!-- icons -->
-    <div class="row  gy-5">
+    <div class="row gy-5">
       <div class="col">
         <IconCalendarCard letter="E"></IconCalendarCard>
         Enrolled
@@ -209,9 +231,6 @@ function getPivot() {
       </div>
     </div>
   </div>
-
-
 </template>
 
-<style>
-</style>
+<style></style>
