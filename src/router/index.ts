@@ -8,6 +8,7 @@ import ClassView from '../views/ClassView.vue'
 import BookingsView from '../views/BookingsView.vue'
 
 import { authService } from '@/services/authService'
+import AdminClass from '@/views/admin/AdminClass.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -46,6 +47,11 @@ const router = createRouter({
       path: '/bookings',
       name: 'bookings',
       component: BookingsView
+    },
+    {
+      path: '/admin/class/:id',
+      name: 'admin_class',
+      component: AdminClass
     },
     {
       path: '/about',

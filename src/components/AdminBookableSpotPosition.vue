@@ -1,51 +1,49 @@
 <script setup lang="ts">
-
-interface User{
-  id: number
+interface User {
   firstName: string
   lastName: string
 }
-interface BookableSpot{
-  spotNumber: number,
-  isBooked: boolean
-  user: User
-}
 
+interface BookableSpot {
+  spotNumber: number
+  isBooked: boolean
+}
 
 const props = defineProps<{
   spotInfo: BookableSpot
-}>();
+  user: User
+}>()
 
 const emits = defineEmits<{
-  (e: 'clickSpot', spotNumber: BookableSpot): void,
-}>();
+  (e: 'clickSpot', spotNumber: BookableSpot): void
+}>()
 
 function selectSpot() {
-  emits('clickSpot', props.spotInfo);
+  emits('clickSpot', props.spotInfo)
 }
 </script>
 
 <template>
-  <div>
-    <div v-if="spotInfo?.isBooked" class="disabledSpot">{{ spotInfo.spotNumber }} {{ spotInfo.user.firstName }}</div>
-    <div v-else class="enabledSpot" @click="selectSpot()">{{ spotInfo.spotNumber }}</div>
+  <div v-if="spotInfo?.isBooked" class="disabledSpot">
+    {{ spotInfo.spotNumber }}<br />
+    {{ user.firstName }}
   </div>
+  <div v-else class="enabledSpot" @click="selectSpot()">{{ spotInfo.spotNumber }}</div>
 </template>
 
 <style scoped>
 .disabledSpot {
-  background: #888;
-  height: 40px;
-  width: 40px;
+  background: #ffffff;
+  height: 60px;
+  width: 60px;
   margin: 0 auto;
   display: flex;
   justify-content: center;
   align-items: center;
   color: #000;
-  border: 1px #888 solid;
+  border: 2px #000000 solid;
   font-weight: 400;
-  border-radius: 50%;
-  font-size: 14px;
+  font-size: 9px;
 }
 
 .enabledSpot {
@@ -56,7 +54,7 @@ function selectSpot() {
   background-color: #fff;
   text-align: center;
   border-radius: 50%;
-  border: 1px #333 solid;
+  border: 1px #000000 solid;
   color: #000;
   justify-content: center;
   align-items: center;

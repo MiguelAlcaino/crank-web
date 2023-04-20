@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue'
 import BookableSpotPosition from '@/components/BookableSpotPosition.vue'
 import IconPositionNotBookable from '@/components/icons/IconPositionNotBookable.vue'
+import AdminBookableSpotPosition from '@/components/AdminBookableSpotPosition.vue'
 
 interface SpotPosition {
   x: number
@@ -13,7 +14,7 @@ interface SpotPosition {
 }
 
 interface ClassPositionInterface {
-  __typename?: string
+  __typename: string
   x: number
   y: number
   icon: string
@@ -27,6 +28,11 @@ interface BookableSpotClickedEvent {
 interface SpotInfo {
   isBooked: boolean
   spotNumber: number
+  bookedSpotUserInfo: BookableSpotUserInfo
+}
+
+interface BookableSpotUserInfo {
+  user: User
 }
 
 interface User {
@@ -36,7 +42,6 @@ interface User {
 
 interface BookableSpot extends ClassPositionInterface {
   spotInfo: SpotInfo
-  user?: User
 }
 
 interface IconPosition extends ClassPositionInterface {}
@@ -67,15 +72,16 @@ onMounted(() => {
 
 function newSpotPosition(classPosition: BookableSpot | IconPosition): SpotPosition {
   if ('spotInfo' in classPosition) {
-    if ('user' in classPosition) {
-      return {
-        x: classPosition.x,
-        y: classPosition.y,
-        positionType: BOOKABLE_SPOT_KEY,
-        positionIcon: classPosition.icon,
-        spotInfo: classPosition.spotInfo,
-        user: classPosition.user
-      }
+    if ('bookedSpotUserInfo' in classPosition.spotInfo) {
+      if ('user' in classPosition.spotInfo.bookedSpotUserInfo)
+        return {
+          x: classPosition.x,
+          y: classPosition.y,
+          positionType: BOOKABLE_SPOT_KEY,
+          positionIcon: classPosition.icon,
+          spotInfo: classPosition.spotInfo,
+          user: classPosition.spotInfo.bookedSpotUserInfo.user
+        }
     }
     return {
       x: classPosition.x,
@@ -134,6 +140,15 @@ function onClickSpotBtn(spotNumber: number) {
     spotNumber: spotNumber
   } as BookableSpotClickedEvent)
 }
+
+function isSpotForAdmin(spot: SpotPosition): boolean {
+  return (
+    props.showUserInSpots &&
+    spot.spotInfo !== undefined &&
+    spot.user !== undefined &&
+    spot.positionType === BOOKABLE_SPOT_KEY
+  )
+}
 </script>
 
 <template>
@@ -141,9 +156,14 @@ function onClickSpotBtn(spotNumber: number) {
     <table>
       <tbody>
         <tr v-for="(colRow, rowKey) in spotsTable" :key="rowKey">
-          <td v-for="(spot, columnKey) in colRow" :key="columnKey">
+          <td class="class-position" v-for="(spot, columnKey) in colRow" :key="columnKey">
+            <admin-bookable-spot-position
+              v-if="isSpotForAdmin(spot)"
+              :spot-info="spot.spotInfo!"
+              :user="spot.user!"
+            />
             <bookable-spot-position
-              v-if="spot.positionType === BOOKABLE_SPOT_KEY"
+              v-else-if="!showUserInSpots && spot.positionType === BOOKABLE_SPOT_KEY"
               :spotInfo="spot.spotInfo"
               @click-spot="onClickSpotBtn"
             />
@@ -158,4 +178,8 @@ function onClickSpotBtn(spotNumber: number) {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+td.class-position {
+  padding: 5px;
+}
+</style>
