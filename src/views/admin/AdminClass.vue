@@ -7,6 +7,7 @@ const classInfo = {
       __typename: 'BookableSpot',
       x: 0,
       y: 1,
+      icon: "spot",
       spotInfo: {
         isBooked: true,
         spotNumber: 4,
@@ -22,6 +23,7 @@ const classInfo = {
       __typename: 'BookableSpot',
       x: 2,
       y: 0,
+      icon: "spot",
       spotInfo: {
         isBooked: true,
         spotNumber: 3,
@@ -37,6 +39,7 @@ const classInfo = {
       __typename: 'BookableSpot',
       x: 0,
       y: 0,
+      icon: "spot",
       spotInfo: {
         isBooked: true,
         spotNumber: 1,
@@ -52,6 +55,7 @@ const classInfo = {
       __typename: 'BookableSpot',
       x: 1,
       y: 0,
+      icon: "spot",
       spotInfo: {
         isBooked: true,
         spotNumber: 2,

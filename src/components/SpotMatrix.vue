@@ -14,7 +14,7 @@ interface SpotPosition {
 }
 
 interface ClassPositionInterface {
-  __typename: string
+  __typename?: string
   x: number
   y: number
   icon: string
@@ -47,7 +47,7 @@ interface BookableSpot extends ClassPositionInterface {
 interface IconPosition extends ClassPositionInterface {}
 
 interface Props {
-  matrix?: Array<ClassPositionInterface>
+  matrix?: Array<BookableSpot | IconPosition>
   showUserInSpots?: boolean
 }
 
