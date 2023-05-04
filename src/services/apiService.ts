@@ -8,6 +8,9 @@ import type {
   ClassStat,
   Country,
   CurrentUserEnrollmentsParams,
+  DisableEnableSpotInput,
+  DisableEnableSpotResult,
+  DisableEnableSpotResultUnion,
   Enrollment,
   Purchase,
   RegisterUserInput,
@@ -421,6 +424,7 @@ export class ApiService {
             y
             icon
             ... on BookableSpot {
+              enabled
               spotInfo {
                 spotNumber
                 isBooked
@@ -436,7 +440,8 @@ export class ApiService {
         variables: {
           site: site,
           id: id
-        }
+        },
+        fetchPolicy: 'network-only'
       })
 
       return queryResult.data.classInfo as ClassInfo
@@ -579,6 +584,101 @@ export class ApiService {
       return result.data.removeCurrentUserFromWaitlist
     } catch (error) {
       return { __typename: 'UnknownError' }
+    }
+  }
+  async disableSpot(classId: string, spotNumber?: number): Promise<string> {
+    const input = { classId: classId, spotNumber: spotNumber } as DisableEnableSpotInput
+
+    const DISABLE_SPOT_MUTATION = gql`
+      mutation disableSpot($input: DisableEnableSpotInput) {
+        disableSpot(input: $input) {
+          __typename
+          ... on DisableEnableSpotResult {
+            __typename
+            result
+          }
+          ... on SpotNotFoundError {
+            __typename
+            code
+          }
+        }
+      }
+    `
+
+    try {
+      const result = await this.authApiClient.mutate({
+        mutation: DISABLE_SPOT_MUTATION,
+        variables: {
+          input: input
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      const disableEnableSpotResultUnion = result.data.disableSpot as DisableEnableSpotResultUnion
+
+      if (disableEnableSpotResultUnion.__typename === 'DisableEnableSpotResult') {
+        const disableEnableSpotResult = disableEnableSpotResultUnion as DisableEnableSpotResult
+
+        if (disableEnableSpotResult.result === true) {
+          return 'Success'
+        } else {
+          return 'Error'
+        }
+      } else if (disableEnableSpotResultUnion.__typename === 'SpotNotFoundError') {
+        return 'SpotNotFoundError'
+      } else {
+        return 'UnknownError'
+      }
+    } catch (error) {
+      return 'UnknownError'
+    }
+  }
+  async enableSpot(classId: string, spotNumber?: number): Promise<string> {
+    const input = { classId: classId, spotNumber: spotNumber } as DisableEnableSpotInput
+
+    const ENABLE_SPOT_MUTATION = gql`
+      mutation enableSpot($input: DisableEnableSpotInput) {
+        enableSpot(input: $input) {
+          __typename
+          ... on DisableEnableSpotResult {
+            __typename
+            result
+          }
+          ... on SpotNotFoundError {
+            __typename
+            code
+          }
+        }
+      }
+    `
+
+    try {
+      const result = await this.authApiClient.mutate({
+        mutation: ENABLE_SPOT_MUTATION,
+        variables: {
+          input: input
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      const disableEnableSpotResultUnion = result.data.enableSpot as DisableEnableSpotResultUnion
+
+      if (disableEnableSpotResultUnion.__typename === 'DisableEnableSpotResult') {
+        const disableEnableSpotResult = disableEnableSpotResultUnion as DisableEnableSpotResult
+
+        if (disableEnableSpotResult.result === true) {
+          return 'Success'
+        } else {
+          return 'Error'
+        }
+      } else if (disableEnableSpotResultUnion.__typename === 'SpotNotFoundError') {
+        return 'SpotNotFoundError'
+      } else {
+        return 'UnknownError'
+      }
+    } catch (error) {
+      console.log(error)
+      return 'UnknownError'
     }
   }
 }
