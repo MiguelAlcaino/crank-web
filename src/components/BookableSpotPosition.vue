@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import type { SpotInfo } from '@/gql/graphql'
+interface BookableSpot {
+  spotNumber: number
+  isBooked: boolean
+}
 
 const props = defineProps<{
-  spotInfo?: SpotInfo | null
+  spotInfo?: BookableSpot | null
 }>()
 
 const emits = defineEmits<{
