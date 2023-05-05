@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import SpotMatrix from '@/components/SpotMatrix.vue'
-import { SiteEnum, type ClassInfo, type BookableSpot, type IconPosition } from '@/gql/graphql'
+import {
+  SiteEnum,
+  type ClassInfo,
+  type BookableSpot,
+  type IconPosition,
+  type IdentifiableUser
+} from '@/gql/graphql'
 import type { ApiService } from '@/services/apiService'
 import { inject, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
@@ -17,6 +23,12 @@ const apiService = inject<ApiService>('gqlApiService')!
 const classId = ref<string>('')
 const isLoading = ref<boolean>(false)
 const classInfo = ref<ClassInfo | null>(null)
+
+const assignUserToThisSpotVisible = ref<boolean>(false)
+const query = ref<string>('')
+const searchingUsers = ref<boolean>(false)
+const users = ref<IdentifiableUser[]>([])
+const selectedUserId = ref<string | null>(null)
 
 const errorModalData = ref<{
   title: string
@@ -149,6 +161,8 @@ async function getClassInfo() {
 }
 
 function spotClicked(event: BookableSpotClickedEvent) {
+  assignUserToThisSpotVisible.value = false
+
   for (let index = 0; index < classInfo.value!.matrix!.length; index++) {
     const element = classInfo.value!.matrix![index] as BookableSpot | IconPosition
 
@@ -220,7 +234,26 @@ async function clickRecoverFromMaintenance() {
 }
 
 function clickAssignUserToThisSpot() {
-  console.log('clickAssignUserToThisSpot')
+  assignUserToThisSpotVisible.value = true
+}
+
+async function searchUser() {
+  users.value = []
+  selectedUserId.value = null
+
+  if (query.value.length < 3) return
+
+  searchingUsers.value = true
+
+  users.value = await apiService.searchUser(SiteEnum.Dubai, query.value)
+
+  searchingUsers.value = false
+}
+
+function clickAssing() {
+  if (selectedUserId.value) {
+    console.log(selectedUserId.value)
+  }
 }
 </script>
 
@@ -253,6 +286,21 @@ function clickAssignUserToThisSpot() {
     <button>Swap Spot</button>
     <button>Check-In</button>
     <button>Go to Profile</button>
+  </div>
+
+  <div v-if="assignUserToThisSpotVisible">
+    <input v-model="query" @input="searchUser" placeholder="Please enter 3 or more characters" />
+    <select v-model="selectedUserId">
+      <option v-for="option in users" :key="option.id!" :value="option.id">
+        {{ option.user!.firstName + ' ' + option.user!.lastName + ' - ' + option.user!.email }}
+      </option>
+    </select>
+    <button
+      @click="clickAssing"
+      :disabled="selectedUserId === null || selectedUserId === undefined"
+    >
+      Assing
+    </button>
   </div>
 
   <!-- ERROR modal -->

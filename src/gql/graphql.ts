@@ -283,6 +283,12 @@ export type IconPosition = ClassPositionInterface & {
   y: Scalars['Int']
 }
 
+export type IdentifiableUser = {
+  __typename: 'IdentifiableUser'
+  id?: Maybe<Scalars['ID']>
+  user?: Maybe<User>
+}
+
 export type LateCancellationRequiredError = Error & {
   __typename: 'LateCancellationRequiredError'
   code: Scalars['String']
@@ -448,6 +454,8 @@ export type Query = {
   currentUserRankingInClass?: Maybe<UserInClassRanking>
   /** Get current user's workout stats */
   currentUserWorkoutStats: Array<Maybe<ClassStat>>
+  /** Returns the matched users given the query provided */
+  searchUser?: Maybe<Array<Maybe<IdentifiableUser>>>
   /** Settings of a site */
   siteSettings: SiteSetting
 }
@@ -482,6 +490,11 @@ export type QueryCurrentUserRankingInClassArgs = {
 
 export type QueryCurrentUserWorkoutStatsArgs = {
   site: SiteEnum
+}
+
+export type QuerySearchUserArgs = {
+  query?: InputMaybe<Scalars['String']>
+  site?: InputMaybe<SiteEnum>
 }
 
 export type QuerySiteSettingsArgs = {
@@ -938,6 +951,7 @@ export type ClassInfoQuery = {
     matrix?: Array<
       | {
           __typename: 'BookableSpot'
+          enabled?: boolean | null
           x: number
           y: number
           icon: PositionIconEnum
@@ -1013,6 +1027,30 @@ export type RemoveCurrentUserFromWaitlistMutation = {
   removeCurrentUserFromWaitlist?:
     | { __typename: 'RemoveFromWaitlistResult'; success: boolean }
     | { __typename: 'WaitlistEntryNotFoundError'; code: string }
+    | null
+}
+
+export type DisableSpotMutationVariables = Exact<{
+  input?: InputMaybe<DisableEnableSpotInput>
+}>
+
+export type DisableSpotMutation = {
+  __typename: 'Mutation'
+  disableSpot?:
+    | { __typename: 'DisableEnableSpotResult'; result?: boolean | null }
+    | { __typename: 'SpotNotFoundError'; code: string }
+    | null
+}
+
+export type EnableSpotMutationVariables = Exact<{
+  input?: InputMaybe<DisableEnableSpotInput>
+}>
+
+export type EnableSpotMutation = {
+  __typename: 'Mutation'
+  enableSpot?:
+    | { __typename: 'DisableEnableSpotResult'; result?: boolean | null }
+    | { __typename: 'SpotNotFoundError'; code: string }
     | null
 }
 
@@ -1760,6 +1798,7 @@ export const ClassInfoDocument = {
                         selectionSet: {
                           kind: 'SelectionSet',
                           selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'enabled' } },
                             {
                               kind: 'Field',
                               name: { kind: 'Name', value: 'spotInfo' },
@@ -2069,3 +2108,137 @@ export const RemoveCurrentUserFromWaitlistDocument = {
   RemoveCurrentUserFromWaitlistMutation,
   RemoveCurrentUserFromWaitlistMutationVariables
 >
+export const DisableSpotDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'disableSpot' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'DisableEnableSpotInput' } }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'disableSpot' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'DisableEnableSpotResult' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'result' } }
+                    ]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'SpotNotFoundError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'code' } }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<DisableSpotMutation, DisableSpotMutationVariables>
+export const EnableSpotDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'enableSpot' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'DisableEnableSpotInput' } }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'enableSpot' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'DisableEnableSpotResult' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'result' } }
+                    ]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'SpotNotFoundError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'code' } }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<EnableSpotMutation, EnableSpotMutationVariables>

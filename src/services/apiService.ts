@@ -12,6 +12,7 @@ import type {
   DisableEnableSpotResult,
   DisableEnableSpotResultUnion,
   Enrollment,
+  IdentifiableUser,
   Purchase,
   RegisterUserInput,
   RemoveCurrentUserFromWaitlistInput,
@@ -679,6 +680,36 @@ export class ApiService {
     } catch (error) {
       console.log(error)
       return 'UnknownError'
+    }
+  }
+  async searchUser(site: SiteEnum, query: string): Promise<IdentifiableUser[] | []> {
+    if (query.length < 3) return []
+
+    const SEARCH_USER_QUERY = gql`
+      query searchUser($site: SiteEnum!, $query: String) {
+        searchUser(site: $site, query: $query) {
+          id
+          user {
+            firstName
+            lastName
+            email
+          }
+        }
+      }
+    `
+    try {
+      const queryResult = await this.authApiClient.query({
+        query: SEARCH_USER_QUERY,
+        variables: {
+          site: site,
+          query: query
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      return queryResult.data.searchUser as IdentifiableUser[]
+    } catch (error) {
+      return []
     }
   }
 }

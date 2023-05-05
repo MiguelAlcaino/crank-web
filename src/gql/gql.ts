@@ -1,6 +1,6 @@
 /* eslint-disable */
 import * as types from './graphql'
-import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core'
+import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core'
 
 /**
  * Map of all GraphQL operations in the project.
@@ -31,7 +31,7 @@ const documents = {
     types.CalendarClassesDocument,
   '\n      query customCalendarClasses(\n        $site: SiteEnum!\n        $params: CalendarClassesParams\n        $enrollmentsWaitlistParams: CurrentUserEnrollmentsParams\n        $enrollmentsUpcomingParams: CurrentUserEnrollmentsParams\n      ) {\n        siteSettings(site: $site) {\n          siteDateTimeNow\n        }\n        calendarClasses(site: $site, params: $params) {\n          id\n          name\n          description\n          instructorName\n          start\n          startWithNoTimeZone\n          duration\n          waitListAvailable\n        }\n        enrollmentsWaitlist: currentUserEnrollments(\n          site: $site\n          params: $enrollmentsWaitlistParams\n        ) {\n          enrollmentInfo {\n            id\n            enrollmentStatus\n            enrollmentDateTime\n          }\n          class {\n            id\n            name\n            description\n            instructorName\n            isSubstitute\n            start\n            startWithNoTimeZone\n            duration\n            waitListAvailable\n          }\n        }\n        enrollmentsUpcoming: currentUserEnrollments(\n          site: $site\n          params: $enrollmentsUpcomingParams\n        ) {\n          enrollmentInfo {\n            id\n            enrollmentStatus\n            enrollmentDateTime\n          }\n          class {\n            id\n            name\n            description\n            instructorName\n            isSubstitute\n            start\n            startWithNoTimeZone\n            duration\n            waitListAvailable\n          }\n        }\n      }\n    ':
     types.CustomCalendarClassesDocument,
-  '\n      query classInfo($site: SiteEnum!, $id: ID!) {\n        classInfo(site: $site, id: $id) {\n          class {\n            id\n            name\n            description\n            instructorName\n            start\n            startWithNoTimeZone\n            duration\n            waitListAvailable\n          }\n          matrix {\n            __typename\n            x\n            y\n            icon\n            ... on BookableSpot {\n              spotInfo {\n                spotNumber\n                isBooked\n              }\n            }\n          }\n        }\n      }\n    ':
+  '\n      query classInfo($site: SiteEnum!, $id: ID!) {\n        classInfo(site: $site, id: $id) {\n          class {\n            id\n            name\n            description\n            instructorName\n            start\n            startWithNoTimeZone\n            duration\n            waitListAvailable\n          }\n          matrix {\n            __typename\n            x\n            y\n            icon\n            ... on BookableSpot {\n              enabled\n              spotInfo {\n                spotNumber\n                isBooked\n              }\n            }\n          }\n        }\n      }\n    ':
     types.ClassInfoDocument,
   '\n      mutation registerUser($site: SiteEnum!, $input: RegisterUserInput!) {\n        registerUser(site: $site, input: $input) {\n          email\n        }\n      }\n    ':
     types.RegisterUserDocument,
@@ -42,7 +42,11 @@ const documents = {
   '\n      mutation cancelCurrentUserEnrollment($site: SiteEnum!, $input: CancelEnrollmentInput!) {\n        cancelCurrentUserEnrollment(site: $site, input: $input) {\n          __typename\n        }\n      }\n    ':
     types.CancelCurrentUserEnrollmentDocument,
   '\n      mutation removeCurrentUserFromWaitlist(\n        $site: SiteEnum!\n        $input: RemoveCurrentUserFromWaitlistInput!\n      ) {\n        removeCurrentUserFromWaitlist(site: $site, input: $input) {\n          ... on RemoveFromWaitlistResult {\n            success\n          }\n          ... on WaitlistEntryNotFoundError {\n            code\n          }\n        }\n      }\n    ':
-    types.RemoveCurrentUserFromWaitlistDocument
+    types.RemoveCurrentUserFromWaitlistDocument,
+  '\n      mutation disableSpot($input: DisableEnableSpotInput) {\n        disableSpot(input: $input) {\n          __typename\n          ... on DisableEnableSpotResult {\n            __typename\n            result\n          }\n          ... on SpotNotFoundError {\n            __typename\n            code\n          }\n        }\n      }\n    ':
+    types.DisableSpotDocument,
+  '\n      mutation enableSpot($input: DisableEnableSpotInput) {\n        enableSpot(input: $input) {\n          __typename\n          ... on DisableEnableSpotResult {\n            __typename\n            result\n          }\n          ... on SpotNotFoundError {\n            __typename\n            code\n          }\n        }\n      }\n    ':
+    types.EnableSpotDocument
 }
 
 /**
@@ -117,8 +121,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: '\n      query classInfo($site: SiteEnum!, $id: ID!) {\n        classInfo(site: $site, id: $id) {\n          class {\n            id\n            name\n            description\n            instructorName\n            start\n            startWithNoTimeZone\n            duration\n            waitListAvailable\n          }\n          matrix {\n            __typename\n            x\n            y\n            icon\n            ... on BookableSpot {\n              spotInfo {\n                spotNumber\n                isBooked\n              }\n            }\n          }\n        }\n      }\n    '
-): (typeof documents)['\n      query classInfo($site: SiteEnum!, $id: ID!) {\n        classInfo(site: $site, id: $id) {\n          class {\n            id\n            name\n            description\n            instructorName\n            start\n            startWithNoTimeZone\n            duration\n            waitListAvailable\n          }\n          matrix {\n            __typename\n            x\n            y\n            icon\n            ... on BookableSpot {\n              spotInfo {\n                spotNumber\n                isBooked\n              }\n            }\n          }\n        }\n      }\n    ']
+  source: '\n      query classInfo($site: SiteEnum!, $id: ID!) {\n        classInfo(site: $site, id: $id) {\n          class {\n            id\n            name\n            description\n            instructorName\n            start\n            startWithNoTimeZone\n            duration\n            waitListAvailable\n          }\n          matrix {\n            __typename\n            x\n            y\n            icon\n            ... on BookableSpot {\n              enabled\n              spotInfo {\n                spotNumber\n                isBooked\n              }\n            }\n          }\n        }\n      }\n    '
+): (typeof documents)['\n      query classInfo($site: SiteEnum!, $id: ID!) {\n        classInfo(site: $site, id: $id) {\n          class {\n            id\n            name\n            description\n            instructorName\n            start\n            startWithNoTimeZone\n            duration\n            waitListAvailable\n          }\n          matrix {\n            __typename\n            x\n            y\n            icon\n            ... on BookableSpot {\n              enabled\n              spotInfo {\n                spotNumber\n                isBooked\n              }\n            }\n          }\n        }\n      }\n    ']
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -149,6 +153,18 @@ export function graphql(
 export function graphql(
   source: '\n      mutation removeCurrentUserFromWaitlist(\n        $site: SiteEnum!\n        $input: RemoveCurrentUserFromWaitlistInput!\n      ) {\n        removeCurrentUserFromWaitlist(site: $site, input: $input) {\n          ... on RemoveFromWaitlistResult {\n            success\n          }\n          ... on WaitlistEntryNotFoundError {\n            code\n          }\n        }\n      }\n    '
 ): (typeof documents)['\n      mutation removeCurrentUserFromWaitlist(\n        $site: SiteEnum!\n        $input: RemoveCurrentUserFromWaitlistInput!\n      ) {\n        removeCurrentUserFromWaitlist(site: $site, input: $input) {\n          ... on RemoveFromWaitlistResult {\n            success\n          }\n          ... on WaitlistEntryNotFoundError {\n            code\n          }\n        }\n      }\n    ']
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n      mutation disableSpot($input: DisableEnableSpotInput) {\n        disableSpot(input: $input) {\n          __typename\n          ... on DisableEnableSpotResult {\n            __typename\n            result\n          }\n          ... on SpotNotFoundError {\n            __typename\n            code\n          }\n        }\n      }\n    '
+): (typeof documents)['\n      mutation disableSpot($input: DisableEnableSpotInput) {\n        disableSpot(input: $input) {\n          __typename\n          ... on DisableEnableSpotResult {\n            __typename\n            result\n          }\n          ... on SpotNotFoundError {\n            __typename\n            code\n          }\n        }\n      }\n    ']
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n      mutation enableSpot($input: DisableEnableSpotInput) {\n        enableSpot(input: $input) {\n          __typename\n          ... on DisableEnableSpotResult {\n            __typename\n            result\n          }\n          ... on SpotNotFoundError {\n            __typename\n            code\n          }\n        }\n      }\n    '
+): (typeof documents)['\n      mutation enableSpot($input: DisableEnableSpotInput) {\n        enableSpot(input: $input) {\n          __typename\n          ... on DisableEnableSpotResult {\n            __typename\n            result\n          }\n          ... on SpotNotFoundError {\n            __typename\n            code\n          }\n        }\n      }\n    ']
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {}
