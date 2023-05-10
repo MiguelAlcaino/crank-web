@@ -1,6 +1,6 @@
 /* eslint-disable */
 import * as types from './graphql'
-import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core'
+import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core'
 
 /**
  * Map of all GraphQL operations in the project.
@@ -46,7 +46,9 @@ const documents = {
   '\n      mutation disableSpot($input: DisableEnableSpotInput) {\n        disableSpot(input: $input) {\n          __typename\n          ... on DisableEnableSpotResult {\n            __typename\n            result\n          }\n          ... on SpotNotFoundError {\n            __typename\n            code\n          }\n        }\n      }\n    ':
     types.DisableSpotDocument,
   '\n      mutation enableSpot($input: DisableEnableSpotInput) {\n        enableSpot(input: $input) {\n          __typename\n          ... on DisableEnableSpotResult {\n            __typename\n            result\n          }\n          ... on SpotNotFoundError {\n            __typename\n            code\n          }\n        }\n      }\n    ':
-    types.EnableSpotDocument
+    types.EnableSpotDocument,
+  '\n      query searchUser($site: SiteEnum!, $query: String) {\n        searchUser(site: $site, query: $query) {\n          id\n          user {\n            firstName\n            lastName\n            email\n          }\n        }\n      }\n    ':
+    types.SearchUserDocument
 }
 
 /**
@@ -165,6 +167,12 @@ export function graphql(
 export function graphql(
   source: '\n      mutation enableSpot($input: DisableEnableSpotInput) {\n        enableSpot(input: $input) {\n          __typename\n          ... on DisableEnableSpotResult {\n            __typename\n            result\n          }\n          ... on SpotNotFoundError {\n            __typename\n            code\n          }\n        }\n      }\n    '
 ): (typeof documents)['\n      mutation enableSpot($input: DisableEnableSpotInput) {\n        enableSpot(input: $input) {\n          __typename\n          ... on DisableEnableSpotResult {\n            __typename\n            result\n          }\n          ... on SpotNotFoundError {\n            __typename\n            code\n          }\n        }\n      }\n    ']
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n      query searchUser($site: SiteEnum!, $query: String) {\n        searchUser(site: $site, query: $query) {\n          id\n          user {\n            firstName\n            lastName\n            email\n          }\n        }\n      }\n    '
+): (typeof documents)['\n      query searchUser($site: SiteEnum!, $query: String) {\n        searchUser(site: $site, query: $query) {\n          id\n          user {\n            firstName\n            lastName\n            email\n          }\n        }\n      }\n    ']
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {}

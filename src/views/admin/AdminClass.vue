@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import SpotMatrix from '@/components/SpotMatrix.vue'
 import {
-  SiteEnum,
-  type ClassInfo,
   type BookableSpot,
+  type ClassInfo,
   type IconPosition,
-  type IdentifiableUser
+  type IdentifiableUser,
+  SiteEnum
 } from '@/gql/graphql'
 import type { ApiService } from '@/services/apiService'
 import { inject, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+
 import ErrorModal from '@/components/ErrorModal.vue'
+import ConfirmModal from '@/components/ConfirmModal.vue'
 
 interface BookableSpotClickedEvent {
   spotNumber: number | null
@@ -18,9 +20,10 @@ interface BookableSpotClickedEvent {
 }
 
 const route = useRoute()
-const apiService = inject<ApiService>('gqlApiService')!
 
-const classId = ref<string>('')
+const { id } = route.params as { id: string }
+
+const apiService = inject<ApiService>('gqlApiService')!
 const isLoading = ref<boolean>(false)
 const classInfo = ref<ClassInfo | null>(null)
 
@@ -29,6 +32,7 @@ const query = ref<string>('')
 const searchingUsers = ref<boolean>(false)
 const users = ref<IdentifiableUser[]>([])
 const selectedUserId = ref<string | null>(null)
+const assigningUserToClass = ref<boolean>(false)
 
 const errorModalData = ref<{
   title: string
@@ -42,121 +46,37 @@ const errorModalData = ref<{
   isVisible: false
 })
 
-/*
-const classInfo = {
-    matrix: [
-        {
-            __typename: 'BookableSpot',
-            x: 0,
-            y: 1,
-            icon: "spot",
-            enabled: true,
-            spotInfo: {
-                isBooked: true,
-                spotNumber: 4,
-                bookedSpotUserInfo: {
-                    user: {
-                        firstName: 'Gabriel',
-                        lastName: 'Correa'
-                    }
-                }
-            }
-        },
-        {
-            __typename: 'BookableSpot',
-            x: 2,
-            y: 0,
-            icon: "spot",
-            enabled: true,
-            spotInfo: {
-                isBooked: true,
-                spotNumber: 3,
-                bookedSpotUserInfo: {
-                    user: {
-                        firstName: 'Maria Jose',
-                        lastName: 'Henriquez'
-                    }
-                }
-            }
-        },
-        {
-            __typename: 'BookableSpot',
-            x: 0,
-            y: 0,
-            icon: "spot",
-            enabled: true,
-            spotInfo: {
-                isBooked: true,
-                spotNumber: 1,
-                bookedSpotUserInfo: {
-                    user: {
-                        firstName: 'Miguel',
-                        lastName: 'Alcaino'
-                    }
-                }
-            }
-        },
-        {
-            __typename: 'BookableSpot',
-            x: 1,
-            y: 0,
-            icon: "spot",
-            enabled: true,
-            spotInfo: {
-                isBooked: true,
-                spotNumber: 2,
-                bookedSpotUserInfo: {
-                    user: {
-                        firstName: 'Sebastian',
-                        lastName: 'Alcaino'
-                    }
-                }
-            }
-        },
-        {
-            __typename: 'IconPosition',
-            x: 1,
-            y: 1,
-            icon: 'speaker'
-        },
-        {
-            __typename: 'BookableSpot',
-            x: 2,
-            y: 1,
-            icon: "spot",
-            enabled: true,
-            spotInfo: {
-                isBooked: false,
-                spotNumber: 5,
-                bookedSpotUserInfo: null
-            }
-        },
-    ]
-}
-*/
+const confirmModalData = ref<{
+  title: string
+  message: string
+  isLoading: boolean
+  isVisible: boolean
+}>({
+  title: '',
+  message: '',
+  isLoading: false,
+  isVisible: false
+})
 
 const selectedSpot = ref<{
   spotNumber?: number | null
   isBooked?: boolean | null
   fullName?: string | null
-  enebled?: boolean | null
+  enabled?: boolean | null
 }>({
   spotNumber: null,
   isBooked: null,
   fullName: null,
-  enebled: null
+  enabled: null
 })
 
 onMounted(() => {
-  classId.value = route.params.id as string
   getClassInfo()
 })
 
 async function getClassInfo() {
   isLoading.value = true
-
-  const classId = route.params.id as string
-  classInfo.value = await apiService.getClassInfo(SiteEnum.Dubai, classId)
+  classInfo.value = await apiService.getClassInfo(SiteEnum.Dubai, id)
   isLoading.value = false
 }
 
@@ -167,17 +87,18 @@ function spotClicked(event: BookableSpotClickedEvent) {
     const element = classInfo.value!.matrix![index] as BookableSpot | IconPosition
 
     if (element.__typename == 'BookableSpot') {
-      var bookableSpot = element as BookableSpot
+      const bookableSpot = element as BookableSpot
 
       if (bookableSpot.spotInfo.spotNumber === event.spotNumber) {
+        console.log(bookableSpot)
         selectedSpot.value = {
           spotNumber: bookableSpot.spotInfo?.spotNumber,
           isBooked: bookableSpot.spotInfo?.isBooked,
           fullName:
-            bookableSpot.spotInfo?.bookedSpotUserInfo?.user?.firstName ??
-            '' + ' ' + bookableSpot?.spotInfo?.bookedSpotUserInfo?.user?.lastName ??
-            '',
-          enebled: bookableSpot.enabled
+            (bookableSpot.spotInfo?.bookedSpotUserInfo?.user?.firstName ?? '') +
+            ' ' +
+            (bookableSpot?.spotInfo?.bookedSpotUserInfo?.user?.lastName ?? ''),
+          enabled: bookableSpot.enabled
         }
         break
       }
@@ -188,17 +109,15 @@ function spotClicked(event: BookableSpotClickedEvent) {
 const isEnablingDisablingSpot = ref<boolean>(false)
 
 async function clickPutUnderMaintenance() {
-  const classId = route.params.id as string
-
   isEnablingDisablingSpot.value = true
 
-  const response = await apiService.disableSpot(classId, selectedSpot.value.spotNumber!)
+  const response = await apiService.disableSpot(id, selectedSpot.value.spotNumber!)
 
   isEnablingDisablingSpot.value = false
 
   if (response === 'Success') {
     await getClassInfo()
-    selectedSpot.value = { enebled: null, fullName: null, isBooked: null, spotNumber: null }
+    selectedSpot.value = { enabled: null, fullName: null, isBooked: null, spotNumber: null }
   } else if (response === 'SpotNotFoundError') {
     errorModalData.value.message =
       'The spot was not found in the list of disabled spots. This error is very unlikely to happen.'
@@ -211,17 +130,15 @@ async function clickPutUnderMaintenance() {
 }
 
 async function clickRecoverFromMaintenance() {
-  const classId = route.params.id as string
-
   isEnablingDisablingSpot.value = true
 
-  const response = await apiService.enableSpot(classId, selectedSpot.value.spotNumber!)
+  const response = await apiService.enableSpot(id, selectedSpot.value.spotNumber!)
 
   isEnablingDisablingSpot.value = false
 
   if (response === 'Success') {
     await getClassInfo()
-    selectedSpot.value = { enebled: null, fullName: null, isBooked: null, spotNumber: null }
+    selectedSpot.value = { enabled: null, fullName: null, isBooked: null, spotNumber: null }
   } else if (response === 'SpotNotFoundError') {
     errorModalData.value.message =
       'The spot was not found in the list of disabled spots. This error is very unlikely to happen.'
@@ -252,7 +169,53 @@ async function searchUser() {
 
 function clickAssing() {
   if (selectedUserId.value) {
-    console.log(selectedUserId.value)
+    bookUserIntoClass(id, selectedUserId.value, selectedSpot.value.spotNumber!, true)
+  }
+}
+
+async function bookUserIntoClass(
+  classId: string,
+  userId: string,
+  spotNumber: number,
+  isPaymentRequired: boolean
+) {
+  assigningUserToClass.value = true
+  confirmModalData.value.isLoading = true
+
+  const response = await apiService.bookUserIntoClass(
+    classId,
+    userId,
+    spotNumber,
+    isPaymentRequired,
+    false
+  )
+
+  assigningUserToClass.value = false
+  confirmModalData.value.isLoading = false
+
+  console.log(response)
+  if (response === 'BookClassSuccess') {
+    selectedSpot.value = { enabled: null, fullName: null, isBooked: null, spotNumber: null }
+    confirmModalData.value.isVisible = false
+    assignUserToThisSpotVisible.value = false
+    await getClassInfo()
+  } else if (response === 'PaymentRequiredError') {
+    //TODO: PaymentRequiredError
+    confirmModalData.value.isLoading = false
+    confirmModalData.value.title = 'Override'
+    confirmModalData.value.message =
+      'This user does not have any class packages purchases available for this class. Would you like to override the enrollment?'
+    confirmModalData.value.isVisible = true
+  } else if (response === 'ClientIsOutsideSchedulingWindowError') {
+    errorModalData.value.message = 'THE CLASS IS OUTSIDE THE SCHEDULING WINDOW.'
+    errorModalData.value.isVisible = true
+  } else if (response === 'ClientIsAlreadyBookedError') {
+    errorModalData.value.message = 'The user is already booked in this class.'
+    errorModalData.value.isVisible = true
+  } else {
+    errorModalData.value.message =
+      "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+    errorModalData.value.isVisible = true
   }
 }
 </script>
@@ -266,14 +229,14 @@ function clickAssing() {
   >
   </spot-matrix>
 
-  <div v-if="selectedSpot?.isBooked === false && selectedSpot.enebled === true">
+  <div v-if="selectedSpot?.isBooked === false && selectedSpot.enabled === true">
     <h1>Choose an action :</h1>
     <button @click="clickAssignUserToThisSpot">Assign User to this Spot</button>
     <button @click="clickPutUnderMaintenance" :disabled="isEnablingDisablingSpot">
       Put under maintenance
     </button>
   </div>
-  <div v-if="selectedSpot.enebled === false">
+  <div v-if="selectedSpot.enabled === false">
     <h1>Spot is under maintenance</h1>
     <button @click="clickRecoverFromMaintenance" :disabled="isEnablingDisablingSpot">
       Recover from maintenance
@@ -297,7 +260,7 @@ function clickAssing() {
     </select>
     <button
       @click="clickAssing"
-      :disabled="selectedUserId === null || selectedUserId === undefined"
+      :disabled="selectedUserId === null || selectedUserId === undefined || assigningUserToClass"
     >
       Assing
     </button>
@@ -312,4 +275,15 @@ function clickAssing() {
     @close="errorModalData.isVisible = false"
   >
   </ErrorModal>
+
+  <ConfirmModal
+    v-model="confirmModalData.isVisible"
+    :title="confirmModalData.title"
+    :message="confirmModalData.message"
+    :isLoading="confirmModalData.isLoading"
+    @cancel="confirmModalData.isVisible = false"
+    @confirm="bookUserIntoClass(id, selectedUserId!, selectedSpot.spotNumber!, false)"
+    :clickToClose="false"
+  >
+  </ConfirmModal>
 </template>

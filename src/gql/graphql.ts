@@ -59,6 +59,14 @@ export type BookClassSuccess = {
   status: Scalars['Boolean']
 }
 
+export type BookUserIntoClassInput = {
+  classId: Scalars['ID']
+  isPaymentRequired?: InputMaybe<Scalars['Boolean']>
+  isWaitlistBooking?: InputMaybe<Scalars['Boolean']>
+  spotNumber?: InputMaybe<Scalars['Int']>
+  userId: Scalars['ID']
+}
+
 export type BookableSpot = ClassPositionInterface & {
   __typename: 'BookableSpot'
   enabled?: Maybe<Scalars['Boolean']>
@@ -302,6 +310,8 @@ export type Mutation = {
   addDeviceTokenToCurrentUser?: Maybe<Scalars['Boolean']>
   /** Books the current user in a class */
   bookClass: BookClassResultUnion
+  /** Adds a user into a given class */
+  bookUserIntoClass?: Maybe<BookClassResultUnion>
   /** Cancels an enrollment done by the current user */
   cancelCurrentUserEnrollment?: Maybe<CancelEnrollmentResultUnion>
   /** Removes a devices token */
@@ -341,6 +351,10 @@ export type MutationAddDeviceTokenToCurrentUserArgs = {
 export type MutationBookClassArgs = {
   input: BookClassInput
   site: SiteEnum
+}
+
+export type MutationBookUserIntoClassArgs = {
+  input?: InputMaybe<BookUserIntoClassInput>
 }
 
 export type MutationCancelCurrentUserEnrollmentArgs = {
@@ -1052,6 +1066,20 @@ export type EnableSpotMutation = {
     | { __typename: 'DisableEnableSpotResult'; result?: boolean | null }
     | { __typename: 'SpotNotFoundError'; code: string }
     | null
+}
+
+export type SearchUserQueryVariables = Exact<{
+  site: SiteEnum
+  query?: InputMaybe<Scalars['String']>
+}>
+
+export type SearchUserQuery = {
+  __typename: 'Query'
+  searchUser?: Array<{
+    __typename: 'IdentifiableUser'
+    id?: string | null
+    user?: { __typename: 'User'; firstName: string; lastName: string; email: string } | null
+  } | null> | null
 }
 
 export const SiteSettingsDocument = {
@@ -2242,3 +2270,67 @@ export const EnableSpotDocument = {
     }
   ]
 } as unknown as DocumentNode<EnableSpotMutation, EnableSpotMutationVariables>
+export const SearchUserDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'searchUser' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'query' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'searchUser' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'query' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'query' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'user' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'firstName' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'lastName' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'email' } }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<SearchUserQuery, SearchUserQueryVariables>
