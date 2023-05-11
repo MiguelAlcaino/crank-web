@@ -50,7 +50,8 @@ interface IconPosition extends ClassPositionInterface {}
 
 interface Props {
   matrix?: Array<BookableSpot | IconPosition>
-  showUserInSpots?: boolean
+  showUserInSpots?: boolean,
+  selectedSpotNumber?: number | null;
 }
 
 const BOOKABLE_SPOT_KEY = 'BookableSpot'
@@ -184,7 +185,7 @@ function onClickSpotAdmin(spotNumber: number) {
               :user="spot.user!"
               :enabled="spot.enabled!"
               @click-spot="onClickSpotAdmin"
-              :selected="false"
+              :selected="props.selectedSpotNumber === spot?.spotInfo?.spotNumber"
             />
             <bookable-spot-position
               v-else-if="!showUserInSpots && spot.positionType === BOOKABLE_SPOT_KEY"

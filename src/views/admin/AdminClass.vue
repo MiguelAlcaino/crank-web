@@ -91,7 +91,6 @@ function spotClicked(event: BookableSpotClickedEvent) {
       const bookableSpot = element as BookableSpot
 
       if (bookableSpot.spotInfo.spotNumber === event.spotNumber) {
-        console.log(bookableSpot)
         selectedSpot.value = {
           spotNumber: bookableSpot.spotInfo?.spotNumber,
           isBooked: bookableSpot.spotInfo?.isBooked,
@@ -240,6 +239,7 @@ async function bookUserIntoClass(
     v-if="classInfo !== null && classInfo.matrix !== null"
     :matrix="classInfo.matrix"
     :show-user-in-spots="true"
+    :selectedSpotNumber="selectedSpot?.spotNumber"
     @click-spot="spotClicked"
   >
   </spot-matrix>
