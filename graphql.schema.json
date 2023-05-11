@@ -497,6 +497,18 @@
         "description": null,
         "fields": [
           {
+            "name": "enrollmentId",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "ID",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "user",
             "description": null,
             "args": [],
@@ -2727,6 +2739,31 @@
             "type": {
               "kind": "UNION",
               "name": "RemoveCurrentUserFromWaitlistUnion",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "removeUserFromClass",
+            "description": "Removes a user from a class",
+            "args": [
+              {
+                "name": "input",
+                "description": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "CancelEnrollmentInput",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "UNION",
+              "name": "CancelEnrollmentResultUnion",
               "ofType": null
             },
             "isDeprecated": false,
