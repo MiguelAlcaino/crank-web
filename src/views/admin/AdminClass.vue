@@ -224,16 +224,24 @@ async function bookUserIntoClass(
   <div>
     <h4>
       {{ classInfo?.class?.name }} - {{ classInfo?.class.instructorName }} ({{
-        dayjs(classInfo?.class.startWithNoTimeZone).format('DD/MM/YYYY') }}) | Total Signed In : 0 | ClassID:
+        dayjs(classInfo?.class.startWithNoTimeZone).format('DD/MM/YYYY')
+      }}) | Total Signed In : 0 | ClassID:
       {{ classInfo?.class.id }}
     </h4>
-    <h4>Time : {{dayjs(classInfo?.class.startWithNoTimeZone).format('hh:mm A')}} | Duration : {{ classInfo?.class?.duration }} mins</h4>
+    <h4>
+      Time : {{ dayjs(classInfo?.class.startWithNoTimeZone).format('hh:mm A') }} | Duration :
+      {{ classInfo?.class?.duration }} mins
+    </h4>
 
     <h6 v-html="classInfo?.class?.description"></h6>
   </div>
-  <hr>
-  <spot-matrix v-if="classInfo !== null && classInfo.matrix !== null" :matrix="classInfo.matrix"
-    :show-user-in-spots="true" @click-spot="spotClicked">
+  <hr />
+  <spot-matrix
+    v-if="classInfo !== null && classInfo.matrix !== null"
+    :matrix="classInfo.matrix"
+    :show-user-in-spots="true"
+    @click-spot="spotClicked"
+  >
   </spot-matrix>
 
   <div v-if="selectedSpot?.isBooked === false && selectedSpot.enabled === true">
@@ -265,19 +273,32 @@ async function bookUserIntoClass(
         {{ option.user!.firstName + ' ' + option.user!.lastName + ' - ' + option.user!.email }}
       </option>
     </select>
-    <button @click="clickAssing"
-      :disabled="selectedUserId === null || selectedUserId === undefined || assigningUserToClass">
+    <button
+      @click="clickAssing"
+      :disabled="selectedUserId === null || selectedUserId === undefined || assigningUserToClass"
+    >
       Assing
     </button>
   </div>
 
   <!-- ERROR modal -->
-  <ErrorModal :isLoading="false" :message="errorModalData.message" :clickToClose="false"
-    v-model="errorModalData.isVisible" @close="errorModalData.isVisible = false">
+  <ErrorModal
+    :isLoading="false"
+    :message="errorModalData.message"
+    :clickToClose="false"
+    v-model="errorModalData.isVisible"
+    @close="errorModalData.isVisible = false"
+  >
   </ErrorModal>
 
-  <ConfirmModal v-model="confirmModalData.isVisible" :title="confirmModalData.title" :message="confirmModalData.message"
-    :isLoading="confirmModalData.isLoading" @cancel="confirmModalData.isVisible = false"
-    @confirm="bookUserIntoClass(id, selectedUserId!, selectedSpot.spotNumber!, false)" :clickToClose="false">
+  <ConfirmModal
+    v-model="confirmModalData.isVisible"
+    :title="confirmModalData.title"
+    :message="confirmModalData.message"
+    :isLoading="confirmModalData.isLoading"
+    @cancel="confirmModalData.isVisible = false"
+    @confirm="bookUserIntoClass(id, selectedUserId!, selectedSpot.spotNumber!, false)"
+    :clickToClose="false"
+  >
   </ConfirmModal>
 </template>

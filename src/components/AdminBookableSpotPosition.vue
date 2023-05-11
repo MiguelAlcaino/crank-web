@@ -30,10 +30,16 @@ function selectSpot() {
     {{ spotInfo.spotNumber }}<br />
     {{ user?.firstName }}
   </div>
-  <div v-else-if="enabled" :class="['enabledSpot']" @click="selectSpot()">
+  <div
+    v-else-if="enabled"
+    :class="['enabledSpot', selected ? 'selectedSpot' : '']"
+    @click="selectSpot()"
+  >
     {{ spotInfo.spotNumber }}
   </div>
-  <div v-else :class="['disabledSpot']" @click="selectSpot()">{{ spotInfo.spotNumber }}</div>
+  <div v-else :class="['disabledSpot', selected ? 'selectedSpot' : '']" @click="selectSpot()">
+    {{ spotInfo.spotNumber }}
+  </div>
 </template>
 
 <style scoped>
@@ -65,5 +71,9 @@ function selectSpot() {
   font-weight: 400;
   font-size: 9px;
   cursor: pointer;
+}
+
+.selectedSpot {
+  border: 2px dashed !important;
 }
 </style>
