@@ -50,8 +50,8 @@ interface IconPosition extends ClassPositionInterface {}
 
 interface Props {
   matrix?: Array<BookableSpot | IconPosition>
-  showUserInSpots?: boolean,
-  selectedSpotNumber?: number | null;
+  showUserInSpots?: boolean
+  selectedSpotNumber?: number | null
 }
 
 const BOOKABLE_SPOT_KEY = 'BookableSpot'

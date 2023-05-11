@@ -755,7 +755,7 @@ export class ApiService {
     } as BookUserIntoClassInput
 
     const BOOK_USER_INTO_CLASS_MUTATION = gql`
-      mutation bookUserIntoClass($input: BookUserIntoClassInput) {
+      mutation bookUserIntoClass($input: BookUserIntoClassInput!) {
         bookUserIntoClass(input: $input) {
           __typename
         }
@@ -772,6 +772,33 @@ export class ApiService {
       })
 
       return result.data.bookUserIntoClass.__typename
+    } catch (error) {
+      return 'UnknownError'
+    }
+  }
+
+  async removeUserFromClass(enrollmentId: string, lateCancel?: boolean): Promise<string> {
+
+    const input = { enrollmentId: enrollmentId, lateCancel: lateCancel } as CancelEnrollmentInput;
+
+    const REMOVE_USER_FROM_CLASS_MUTATION = gql`
+      mutation removeUserFromClass($input: CancelEnrollmentInput!) {
+        removeUserFromClass(input: $input) {
+          __typename
+        }
+      }
+    `
+
+    try {
+      const result = await this.authApiClient.mutate({
+        mutation: REMOVE_USER_FROM_CLASS_MUTATION,
+        variables: {  
+          input: input
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      return result.data.removeUserFromClass.__typename
     } catch (error) {
       return 'UnknownError'
     }

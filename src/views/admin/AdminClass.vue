@@ -201,7 +201,7 @@ async function bookUserIntoClass(
   } else if (response === 'PaymentRequiredError') {
     //TODO: PaymentRequiredError
     confirmModalData.value.isLoading = false
-    confirmModalData.value.title = 'Override'
+    confirmModalData.value.title = 'Warning'
     confirmModalData.value.message =
       'This user does not have any class packages purchases available for this class. Would you like to override the enrollment?'
     confirmModalData.value.isVisible = true
@@ -260,10 +260,10 @@ async function bookUserIntoClass(
   <div v-if="selectedSpot?.isBooked === true">
     <h1>Spot is reserved for - {{ selectedSpot.fullName }}</h1>
     <button>Cancel Member's Reservation</button>
-    <button>Change Member's Spot</button>
-    <button>Swap Spot</button>
-    <button>Check-In</button>
-    <button>Go to Profile</button>
+    <button :disabled="true">Change Member's Spot</button>
+    <button :disabled="true">Swap Spot</button>
+    <button :disabled="true">Check-In</button>
+    <button :disabled="true">Go to Profile</button>
   </div>
 
   <div v-if="assignUserToThisSpotVisible">

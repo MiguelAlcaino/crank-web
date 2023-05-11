@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts">
 interface User {
   firstName: string
   lastName: string
@@ -8,6 +8,9 @@ interface BookableSpot {
   spotNumber: number
   isBooked: boolean
 }
+</script>
+
+<script setup lang="ts">
 
 const props = defineProps<{
   spotInfo: BookableSpot
@@ -26,7 +29,7 @@ function selectSpot() {
 </script>
 
 <template>
-  <div v-if="spotInfo?.isBooked" @click="selectSpot()" :class="['enabledSpot']">
+  <div v-if="spotInfo?.isBooked" @click="selectSpot()" :class="['enabledSpot', selected ? 'selectedSpot' : '']">
     {{ spotInfo.spotNumber }}<br />
     {{ user?.firstName }}
   </div>
