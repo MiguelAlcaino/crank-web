@@ -59,16 +59,34 @@ const confirmModalData = ref<{
   isVisible: false
 })
 
+const confirmModalCancelReservationData = ref<{
+  isLoading: boolean
+  isVisible: boolean
+}>({
+  isLoading: false,
+  isVisible: false
+})
+
+const confirmModalLateCancelReservationData = ref<{
+  isLoading: boolean
+  isVisible: boolean
+}>({
+  isLoading: false,
+  isVisible: false
+})
+
 const selectedSpot = ref<{
   spotNumber?: number | null
   isBooked?: boolean | null
   fullName?: string | null
   enabled?: boolean | null
+  enrollmentId?: string | null
 }>({
   spotNumber: null,
   isBooked: null,
   fullName: null,
-  enabled: null
+  enabled: null,
+  enrollmentId: null
 })
 
 onMounted(() => {
@@ -98,7 +116,8 @@ function spotClicked(event: BookableSpotClickedEvent) {
             (bookableSpot.spotInfo?.bookedSpotUserInfo?.user?.firstName ?? '') +
             ' ' +
             (bookableSpot?.spotInfo?.bookedSpotUserInfo?.user?.lastName ?? ''),
-          enabled: bookableSpot.enabled
+          enabled: bookableSpot.enabled,
+          enrollmentId: bookableSpot?.spotInfo?.bookedSpotUserInfo?.enrollmentId
         }
         break
       }
@@ -194,12 +213,17 @@ async function bookUserIntoClass(
   confirmModalData.value.isLoading = false
 
   if (response === 'BookClassSuccess') {
-    selectedSpot.value = { enabled: null, fullName: null, isBooked: null, spotNumber: null }
+    selectedSpot.value = {
+      enabled: null,
+      fullName: null,
+      isBooked: null,
+      spotNumber: null,
+      enrollmentId: null
+    }
     confirmModalData.value.isVisible = false
     assignUserToThisSpotVisible.value = false
     await getClassInfo()
   } else if (response === 'PaymentRequiredError') {
-    //TODO: PaymentRequiredError
     confirmModalData.value.isLoading = false
     confirmModalData.value.title = 'Warning'
     confirmModalData.value.message =
@@ -211,6 +235,67 @@ async function bookUserIntoClass(
   } else if (response === 'ClientIsAlreadyBookedError') {
     errorModalData.value.message = 'The user is already booked in this class.'
     errorModalData.value.isVisible = true
+  } else {
+    errorModalData.value.message =
+      "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+    errorModalData.value.isVisible = true
+  }
+}
+
+function clickCancelMembersReservation() {
+  confirmModalCancelReservationData.value.isLoading = false
+  confirmModalCancelReservationData.value.isVisible = true
+}
+
+async function removeUserFromClass() {
+  confirmModalCancelReservationData.value.isLoading = true
+
+  const response = await apiService.removeUserFromClass(selectedSpot.value.enrollmentId!, false)
+
+  confirmModalCancelReservationData.value.isLoading = false
+
+  confirmModalCancelReservationData.value.isVisible = false
+
+  if (response === 'CancelUserEnrollmentSuccess') {
+    selectedSpot.value = {
+      enabled: null,
+      fullName: null,
+      isBooked: null,
+      spotNumber: null,
+      enrollmentId: null
+    }
+    await getClassInfo()
+  } else if (response === 'LateCancellationRequiredError') {
+    confirmModalLateCancelReservationData.value.isLoading = false
+    confirmModalLateCancelReservationData.value.isVisible = true
+  } else {
+    errorModalData.value.message =
+      "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+    errorModalData.value.isVisible = true
+  }
+}
+
+async function confirmLateCancelation() {
+  confirmModalLateCancelReservationData.value.isLoading = true
+
+  const response = await apiService.removeUserFromClass(selectedSpot.value.enrollmentId!, true)
+
+  confirmModalLateCancelReservationData.value.isLoading = false
+
+  confirmModalLateCancelReservationData.value.isVisible = false
+
+  if (response === 'CancelUserEnrollmentSuccess') {
+    selectedSpot.value = {
+      enabled: null,
+      fullName: null,
+      isBooked: null,
+      spotNumber: null,
+      enrollmentId: null
+    }
+    await getClassInfo()
+  } else if (response === 'LateCancellationRequiredError') {
+    confirmModalLateCancelReservationData.value.isLoading = false
+    confirmModalLateCancelReservationData.value.isVisible = true
   } else {
     errorModalData.value.message =
       "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
@@ -259,7 +344,7 @@ async function bookUserIntoClass(
   </div>
   <div v-if="selectedSpot?.isBooked === true">
     <h1>Spot is reserved for - {{ selectedSpot.fullName }}</h1>
-    <button>Cancel Member's Reservation</button>
+    <button @click="clickCancelMembersReservation">Cancel Member's Reservation</button>
     <button :disabled="true">Change Member's Spot</button>
     <button :disabled="true">Swap Spot</button>
     <button :disabled="true">Check-In</button>
@@ -298,6 +383,29 @@ async function bookUserIntoClass(
     :isLoading="confirmModalData.isLoading"
     @cancel="confirmModalData.isVisible = false"
     @confirm="bookUserIntoClass(id, selectedUserId!, selectedSpot.spotNumber!, false)"
+    :clickToClose="false"
+  >
+  </ConfirmModal>
+
+  <ConfirmModal
+    v-model="confirmModalCancelReservationData.isVisible"
+    title="Cancel Reservation?"
+    message="Are you sure, you want to cancel the reservation?"
+    :isLoading="confirmModalCancelReservationData.isLoading"
+    @cancel="confirmModalCancelReservationData.isVisible = false"
+    @confirm="removeUserFromClass()"
+    :clickToClose="false"
+  >
+  </ConfirmModal>
+
+  <ConfirmModal
+    v-model="confirmModalLateCancelReservationData.isVisible"
+    title="Warning"
+    message="You are outsade the early cancellation window. you can only make a late cancellaiton."
+    :isLoading="confirmModalLateCancelReservationData.isLoading"
+    @cancel="confirmModalLateCancelReservationData.isVisible = false"
+    textConfirmButton="CONFIRM"
+    @confirm="confirmLateCancelation()"
     :clickToClose="false"
   >
   </ConfirmModal>

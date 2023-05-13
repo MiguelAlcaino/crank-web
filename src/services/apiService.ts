@@ -441,6 +441,7 @@ export class ApiService {
                 spotNumber
                 isBooked
                 bookedSpotUserInfo {
+                  enrollmentId
                   user {
                     firstName
                     lastName
@@ -462,7 +463,7 @@ export class ApiService {
         },
         fetchPolicy: 'network-only'
       })
-      console.log(queryResult.data.classInfo)
+
       return queryResult.data.classInfo as ClassInfo
     } catch (error) {
       return null
@@ -778,8 +779,7 @@ export class ApiService {
   }
 
   async removeUserFromClass(enrollmentId: string, lateCancel?: boolean): Promise<string> {
-
-    const input = { enrollmentId: enrollmentId, lateCancel: lateCancel } as CancelEnrollmentInput;
+    const input = { enrollmentId: enrollmentId, lateCancel: lateCancel } as CancelEnrollmentInput
 
     const REMOVE_USER_FROM_CLASS_MUTATION = gql`
       mutation removeUserFromClass($input: CancelEnrollmentInput!) {
@@ -792,7 +792,7 @@ export class ApiService {
     try {
       const result = await this.authApiClient.mutate({
         mutation: REMOVE_USER_FROM_CLASS_MUTATION,
-        variables: {  
+        variables: {
           input: input
         },
         fetchPolicy: 'network-only'
