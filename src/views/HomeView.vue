@@ -1,6 +1,5 @@
 <script setup lang="ts">
-
-import { onMounted } from "vue";
+import { onMounted } from 'vue'
 
 onMounted(async () => {
   /*
@@ -72,12 +71,9 @@ onMounted(async () => {
   const bookClassInput: BookClassInput = {classId: "580", isWaitlistBooking: false, spotNumber: 1};
   let responseBookClassInput = await apiService.bookClass(SiteEnum.Dubai, bookClassInput);
   console.log("responseBookClassInput", responseBookClassInput);*/
-
-});
-
+})
 </script>
 
 <template>
-  <main>
-  </main>
+  <main></main>
 </template>

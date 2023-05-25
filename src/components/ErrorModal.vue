@@ -1,28 +1,30 @@
 <script setup lang="ts">
-import {VueFinalModal} from 'vue-final-modal'
+import { VueFinalModal } from 'vue-final-modal'
 
 defineProps<{
-  title?: string,
-  message: string,
-  textCloseBtn?: string,
+  title?: string
+  message: string
+  textCloseBtn?: string
   clickToClose: boolean
-}>();
+}>()
 
 const emit = defineEmits<{
-  (e: 'close'): void,
-}>();
-
-
+  (e: 'close'): void
+}>()
 </script>
 <template>
-  <VueFinalModal class="confirm-modal" content-class="confirm-modal-content" :click-to-close="clickToClose">
+  <VueFinalModal
+    class="confirm-modal"
+    content-class="confirm-modal-content"
+    :click-to-close="clickToClose"
+  >
     <h1 class="text-xl">
-      {{ title ?? "ERROR" }}
+      {{ title ?? 'ERROR' }}
     </h1>
     <p>{{ message }}</p>
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary" @click="emit('close')">
-        {{ textCloseBtn ?? "CLOSE" }}
+        {{ textCloseBtn ?? 'CLOSE' }}
       </button>
     </div>
   </VueFinalModal>
@@ -40,7 +42,7 @@ const emit = defineEmits<{
   flex-direction: column;
   padding: 1rem;
   background: #fff;
-  border-radius: 0.0rem;
+  border-radius: 0rem;
 }
 
 .confirm-modal-content > * + * {
@@ -54,7 +56,7 @@ const emit = defineEmits<{
 .confirm-modal-content button {
   margin: 0.2rem;
   border: 0px solid;
-  border-radius: 0.0rem;
+  border-radius: 0rem;
 }
 
 .dark .confirm-modal-content {

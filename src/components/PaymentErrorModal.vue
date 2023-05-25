@@ -1,25 +1,24 @@
 <script setup lang="ts">
-import {VueFinalModal} from 'vue-final-modal'
+import { VueFinalModal } from 'vue-final-modal'
 
 const emit = defineEmits<{
-  (e: 'close'): void,
-  (e: 'buy'): void,
-}>();
-
+  (e: 'close'): void
+  (e: 'buy'): void
+}>()
 </script>
 <template>
-  <VueFinalModal class="confirm-modal" content-class="confirm-modal-content" :click-to-close="false">
-    <h1 class="text-xl">
-      ERROR
-    </h1>
+  <VueFinalModal
+    class="confirm-modal"
+    content-class="confirm-modal-content"
+    :click-to-close="false"
+  >
+    <h1 class="text-xl">ERROR</h1>
     <p>YOU DO NOT HAVE SUFFICIENT CREDITS IN YOUR ACCOUNT.</p>
     <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" @click="emit('close')">
-        CANCEL
-      </button>
+      <button type="button" class="btn btn-secondary" @click="emit('close')">CANCEL</button>
 
       <button type="button" class="btn btn-primary" @click="emit('buy')">
-        {{ "BUY" }}
+        {{ 'BUY' }}
       </button>
     </div>
   </VueFinalModal>
@@ -37,7 +36,7 @@ const emit = defineEmits<{
   flex-direction: column;
   padding: 1rem;
   background: #fff;
-  border-radius: 0.0rem;
+  border-radius: 0rem;
 }
 
 .confirm-modal-content > * + * {
@@ -51,7 +50,7 @@ const emit = defineEmits<{
 .confirm-modal-content button {
   margin: 0.2rem;
   border: 0px solid;
-  border-radius: 0.0rem;
+  border-radius: 0rem;
 }
 
 .dark .confirm-modal-content {

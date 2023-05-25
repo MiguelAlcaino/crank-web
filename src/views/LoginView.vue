@@ -1,20 +1,19 @@
 <script setup lang="ts">
-import {computed, reactive, ref} from "vue";
-import router from "@/router";
-import {authService} from "@/services/authService";
-import {helpers, maxLength, minValue, required, email} from "@vuelidate/validators";
-import useVuelidate from "@vuelidate/core";
+import { computed, reactive, ref } from 'vue'
+import router from '@/router'
+import { authService } from '@/services/authService'
+import { helpers, maxLength, minValue, required, email } from '@vuelidate/validators'
+import useVuelidate from '@vuelidate/core'
 
-const displayLoginError = ref(false);
-const isSubmitting = ref(false);
-const selectedSite = ref("dubai");
-const sites = ["dubai", "abu_dhabi"];
-
+const displayLoginError = ref(false)
+const isSubmitting = ref(false)
+const selectedSite = ref('dubai')
+const sites = ['dubai', 'abu_dhabi']
 
 const formData = reactive({
-  email: "",
-  password: "",
-});
+  email: '',
+  password: ''
+})
 
 const rules = computed(() => {
   return {
@@ -23,30 +22,28 @@ const rules = computed(() => {
       email: helpers.withMessage('The email address is not valid', email)
     },
     password: {
-      required: helpers.withMessage('Password is required', required),
-    },
+      required: helpers.withMessage('Password is required', required)
+    }
   }
-});
+})
 
-const v$ = useVuelidate(rules, formData);
+const v$ = useVuelidate(rules, formData)
 
 async function login() {
-  const isValid = await v$.value.$validate();
+  const isValid = await v$.value.$validate()
 
   if (isValid) {
-    isSubmitting.value = true;
-    displayLoginError.value = false;
-
+    isSubmitting.value = true
+    displayLoginError.value = false
 
     try {
-      await authService.login(formData.email, formData.password, selectedSite.value);
-      await router.push({name: 'home'})
+      await authService.login(formData.email, formData.password, selectedSite.value)
+      await router.push({ name: 'home' })
     } catch (error) {
-      displayLoginError.value = true;
+      displayLoginError.value = true
     }
-    isSubmitting.value = false;
+    isSubmitting.value = false
   }
-
 }
 </script>
 
@@ -61,29 +58,42 @@ async function login() {
     <!--email-->
     <div class="field">
       <p>
-        <input class="input" v-model="formData.email" type="text" placeholder="Email *" maxlength="200"/>
+        <input
+          class="input"
+          v-model="formData.email"
+          type="text"
+          placeholder="Email *"
+          maxlength="200"
+        />
       </p>
-      <p><span v-for="error in v$.email.$errors" :key="error.$uid" style="color: red">{{ error.$message }}</span></p>
+      <p>
+        <span v-for="error in v$.email.$errors" :key="error.$uid" style="color: red">{{
+          error.$message
+        }}</span>
+      </p>
     </div>
     <!--password-->
     <div class="field">
       <p>
-        <input class="input" v-model="formData.password" type="password" placeholder="Password *"
-               maxlength="200"/>
+        <input
+          class="input"
+          v-model="formData.password"
+          type="password"
+          placeholder="Password *"
+          maxlength="200"
+        />
       </p>
-      <p><span v-for="error in v$.password.$errors" :key="error.$uid" style="color: red">{{ error.$message }}</span></p>
+      <p>
+        <span v-for="error in v$.password.$errors" :key="error.$uid" style="color: red">{{
+          error.$message
+        }}</span>
+      </p>
     </div>
 
-    <p class="help is-danger" v-if="displayLoginError">
-      This email or password
-    </p>
+    <p class="help is-danger" v-if="displayLoginError">This email or password</p>
     <div class="field">
       <p class="control">
-        <button
-            type="submit"
-            class="button is-success"
-            :class="{ 'is-loading': isSubmitting }"
-        >
+        <button type="submit" class="button is-success" :class="{ 'is-loading': isSubmitting }">
           Login
         </button>
       </p>
