@@ -25,12 +25,12 @@ export type AcceptLateCancelledSpotInClassInput = {
 export type AcceptLateCancelledSpotInClassResultUnion = AcceptLateCancelledSpotInClassSuccess
 
 export type AcceptLateCancelledSpotInClassSuccess = {
-  __typename?: 'AcceptLateCancelledSpotInClassSuccess'
+  __typename: 'AcceptLateCancelledSpotInClassSuccess'
   code: Scalars['String']
 }
 
 export type AddedToWaitlistSuccess = {
-  __typename?: 'AddedToWaitlistSuccess'
+  __typename: 'AddedToWaitlistSuccess'
   status: Scalars['Boolean']
 }
 
@@ -50,16 +50,26 @@ export type BookClassResultUnion =
   | ClientIsOutsideSchedulingWindowError
   | PaymentRequiredError
   | SpotAlreadyReservedError
+  | SpotIsDisabledError
   | UnknownError
   | WaitlistFullError
 
 export type BookClassSuccess = {
-  __typename?: 'BookClassSuccess'
+  __typename: 'BookClassSuccess'
   status: Scalars['Boolean']
 }
 
+export type BookUserIntoClassInput = {
+  classId: Scalars['ID']
+  isPaymentRequired?: InputMaybe<Scalars['Boolean']>
+  isWaitlistBooking?: InputMaybe<Scalars['Boolean']>
+  spotNumber?: InputMaybe<Scalars['Int']>
+  userId: Scalars['ID']
+}
+
 export type BookableSpot = ClassPositionInterface & {
-  __typename?: 'BookableSpot'
+  __typename: 'BookableSpot'
+  enabled?: Maybe<Scalars['Boolean']>
   icon: PositionIconEnum
   spotInfo: SpotInfo
   x: Scalars['Int']
@@ -67,14 +77,20 @@ export type BookableSpot = ClassPositionInterface & {
 }
 
 export type BookedButInOtherSpotError = Error & {
-  __typename?: 'BookedButInOtherSpotError'
+  __typename: 'BookedButInOtherSpotError'
   code: Scalars['String']
   givenSpot: Scalars['Int']
   requiredSpot: Scalars['Int']
 }
 
+export type BookedSpotUserInfo = {
+  __typename: 'BookedSpotUserInfo'
+  enrollmentId?: Maybe<Scalars['ID']>
+  user?: Maybe<User>
+}
+
 export type BookingWindow = {
-  __typename?: 'BookingWindow'
+  __typename: 'BookingWindow'
   endDateTime: Scalars['DateTime']
   startDateTime: Scalars['DateTime']
 }
@@ -95,19 +111,19 @@ export type CancelEnrollmentResultUnion =
   | UnknownError
 
 export type CancelUserEnrollmentSuccess = {
-  __typename?: 'CancelUserEnrollmentSuccess'
+  __typename: 'CancelUserEnrollmentSuccess'
   status?: Maybe<Scalars['Boolean']>
 }
 
 export type ChartPoint = {
-  __typename?: 'ChartPoint'
+  __typename: 'ChartPoint'
   power?: Maybe<Scalars['Int']>
   rpm?: Maybe<Scalars['Int']>
   time?: Maybe<Scalars['Int']>
 }
 
 export type Class = {
-  __typename?: 'Class'
+  __typename: 'Class'
   bookingWindow: BookingWindow
   description: Scalars['String']
   duration: Scalars['Int']
@@ -121,13 +137,14 @@ export type Class = {
 }
 
 export type ClassInfo = {
-  __typename?: 'ClassInfo'
+  __typename: 'ClassInfo'
   class: Class
+  currentUserEnrollmentInfo?: Maybe<EnrollmentInfo>
   matrix?: Maybe<Array<ClassPositionInterface>>
 }
 
 export type ClassIsFullError = Error & {
-  __typename?: 'ClassIsFullError'
+  __typename: 'ClassIsFullError'
   code: Scalars['String']
 }
 
@@ -138,7 +155,7 @@ export type ClassPositionInterface = {
 }
 
 export type ClassStat = {
-  __typename?: 'ClassStat'
+  __typename: 'ClassStat'
   /** Amount of chart points adjusted to the amount of the requested ones. Values for each points are the average of each interval */
   adjustedChartPoints: Array<ChartPoint>
   averagePower?: Maybe<Scalars['Float']>
@@ -165,23 +182,23 @@ export type ClassStatAdjustedChartPointsArgs = {
 
 /** Error returned when a client is already booked in a class */
 export type ClientIsAlreadyBookedError = Error & {
-  __typename?: 'ClientIsAlreadyBookedError'
+  __typename: 'ClientIsAlreadyBookedError'
   code: Scalars['String']
 }
 
 export type ClientIsAlreadyOnWaitlistError = Error & {
-  __typename?: 'ClientIsAlreadyOnWaitlistError'
+  __typename: 'ClientIsAlreadyOnWaitlistError'
   code: Scalars['String']
 }
 
 /** Error returned when a client tries to book a class which is not permitted to book any longer. The booking window has passed. */
 export type ClientIsOutsideSchedulingWindowError = Error & {
-  __typename?: 'ClientIsOutsideSchedulingWindowError'
+  __typename: 'ClientIsOutsideSchedulingWindowError'
   code: Scalars['String']
 }
 
 export type Country = {
-  __typename?: 'Country'
+  __typename: 'Country'
   code: Scalars['String']
   name: Scalars['String']
   states?: Maybe<Array<Maybe<State>>>
@@ -197,6 +214,18 @@ export type DeviceTokenInput = {
   deviceToken: Scalars['String']
 }
 
+export type DisableEnableSpotInput = {
+  classId: Scalars['ID']
+  spotNumber?: InputMaybe<Scalars['Int']>
+}
+
+export type DisableEnableSpotResult = {
+  __typename: 'DisableEnableSpotResult'
+  result?: Maybe<Scalars['Boolean']>
+}
+
+export type DisableEnableSpotResultUnion = DisableEnableSpotResult | SpotNotFoundError
+
 export type EditEnrollmentInput = {
   enrollmentId: Scalars['ID']
   newSpotNumber: Scalars['Int']
@@ -209,13 +238,13 @@ export type EditEnrollmentResultUnion =
   | TryToSwitchToSameSpotError
 
 export type Enrollment = {
-  __typename?: 'Enrollment'
+  __typename: 'Enrollment'
   class: Class
   enrollmentInfo: EnrollmentInfo
 }
 
 export type EnrollmentInfo = {
-  __typename?: 'EnrollmentInfo'
+  __typename: 'EnrollmentInfo'
   enrollmentDateTime: Scalars['DateTime']
   enrollmentStatus: EnrollmentStatusEnum
   id: Scalars['ID']
@@ -241,11 +270,6 @@ export type Error = {
   code: Scalars['String']
 }
 
-export type ExpiredResetPasswordTokenError = Error & {
-  __typename?: 'ExpiredResetPasswordTokenError'
-  code: Scalars['String']
-}
-
 export enum GenderEnum {
   /** Feminine */
   F = 'F',
@@ -256,43 +280,57 @@ export enum GenderEnum {
 }
 
 export type GenderRanking = {
-  __typename?: 'GenderRanking'
+  __typename: 'GenderRanking'
   gender?: Maybe<GenderEnum>
   ranking?: Maybe<UserRanking>
 }
 
 export type IconPosition = ClassPositionInterface & {
-  __typename?: 'IconPosition'
+  __typename: 'IconPosition'
   icon: PositionIconEnum
   x: Scalars['Int']
   y: Scalars['Int']
 }
 
+export type IdentifiableUser = {
+  __typename: 'IdentifiableUser'
+  id?: Maybe<Scalars['ID']>
+  user?: Maybe<User>
+}
+
 export type LateCancellationRequiredError = Error & {
-  __typename?: 'LateCancellationRequiredError'
+  __typename: 'LateCancellationRequiredError'
   code: Scalars['String']
 }
 
 export type Mutation = {
-  __typename?: 'Mutation'
+  __typename: 'Mutation'
   /** Accepts a late-cancelled spot in a class */
   acceptLateCancelledSpotInClass?: Maybe<AcceptLateCancelledSpotInClassResultUnion>
   /** Adds a new device token to be used for device notifications */
   addDeviceTokenToCurrentUser?: Maybe<Scalars['Boolean']>
   /** Books the current user in a class */
   bookClass: BookClassResultUnion
+  /** Adds a user into a given class */
+  bookUserIntoClass?: Maybe<BookClassResultUnion>
   /** Cancels an enrollment done by the current user */
   cancelCurrentUserEnrollment?: Maybe<CancelEnrollmentResultUnion>
   /** Removes a devices token */
   deleteDeviceTokenToCurrentUser?: Maybe<Scalars['Boolean']>
+  /** Disables a spot in a class */
+  disableSpot?: Maybe<DisableEnableSpotResultUnion>
   /** Edits an enrollment made by the current user */
   editCurrentUserEnrollment?: Maybe<EditEnrollmentResultUnion>
+  /** Enabled a spot in a class */
+  enableSpot?: Maybe<DisableEnableSpotResultUnion>
   /** Registers a new user */
   registerUser?: Maybe<User>
   /** Rejects a late-cancelled spot in a class */
   rejectLateCancelledSpotInClass?: Maybe<RejectLateBookingResultUnion>
   /** Removes the current user's waitlist entry from a class */
   removeCurrentUserFromWaitlist?: Maybe<RemoveCurrentUserFromWaitlistUnion>
+  /** Removes a user from a class */
+  removeUserFromClass?: Maybe<CancelEnrollmentResultUnion>
   /** Request a reset password link */
   requestPasswordLink?: Maybe<ResetPasswordLinkResultUnion>
   /** Resets the current user's password */
@@ -301,8 +339,6 @@ export type Mutation = {
   updateCurrentUser?: Maybe<User>
   /** Updates a user's password in all the sites */
   updateCurrentUserPassword?: Maybe<Scalars['Boolean']>
-  /** Validates a reset password token */
-  validateResetPasswordToken?: Maybe<ValidateResetPasswordTokenResultUnion>
 }
 
 export type MutationAcceptLateCancelledSpotInClassArgs = {
@@ -320,6 +356,10 @@ export type MutationBookClassArgs = {
   site: SiteEnum
 }
 
+export type MutationBookUserIntoClassArgs = {
+  input?: InputMaybe<BookUserIntoClassInput>
+}
+
 export type MutationCancelCurrentUserEnrollmentArgs = {
   input: CancelEnrollmentInput
   site: SiteEnum
@@ -330,9 +370,17 @@ export type MutationDeleteDeviceTokenToCurrentUserArgs = {
   site?: InputMaybe<SiteEnum>
 }
 
+export type MutationDisableSpotArgs = {
+  input?: InputMaybe<DisableEnableSpotInput>
+}
+
 export type MutationEditCurrentUserEnrollmentArgs = {
   input: EditEnrollmentInput
   site: SiteEnum
+}
+
+export type MutationEnableSpotArgs = {
+  input?: InputMaybe<DisableEnableSpotInput>
 }
 
 export type MutationRegisterUserArgs = {
@@ -348,6 +396,10 @@ export type MutationRejectLateCancelledSpotInClassArgs = {
 export type MutationRemoveCurrentUserFromWaitlistArgs = {
   input: RemoveCurrentUserFromWaitlistInput
   site: SiteEnum
+}
+
+export type MutationRemoveUserFromClassArgs = {
+  input?: InputMaybe<CancelEnrollmentInput>
 }
 
 export type MutationRequestPasswordLinkArgs = {
@@ -368,28 +420,19 @@ export type MutationUpdateCurrentUserPasswordArgs = {
   site: SiteEnum
 }
 
-export type MutationValidateResetPasswordTokenArgs = {
-  input?: InputMaybe<ValidateResetPasswordTokenInput>
-}
-
-export type NotValidResetPasswordTokenError = Error & {
-  __typename?: 'NotValidResetPasswordTokenError'
-  code: Scalars['String']
-}
-
 export type PasswordsDontMatchError = Error & {
-  __typename?: 'PasswordsDontMatchError'
+  __typename: 'PasswordsDontMatchError'
   code: Scalars['String']
 }
 
 /** Error returned when a client does not have enough credit or allowance to book a class */
 export type PaymentRequiredError = Error & {
-  __typename?: 'PaymentRequiredError'
+  __typename: 'PaymentRequiredError'
   code: Scalars['String']
 }
 
 export type PositionAlreadyTakenError = Error & {
-  __typename?: 'PositionAlreadyTakenError'
+  __typename: 'PositionAlreadyTakenError'
   code: Scalars['String']
 }
 
@@ -403,7 +446,7 @@ export enum PositionIconEnum {
 }
 
 export type Purchase = {
-  __typename?: 'Purchase'
+  __typename: 'Purchase'
   activationDateTime: Scalars['DateTime']
   allowanceObtained: Scalars['Int']
   allowanceRemaining: Scalars['Int']
@@ -413,7 +456,7 @@ export type Purchase = {
 }
 
 export type Query = {
-  __typename?: 'Query'
+  __typename: 'Query'
   /** Get next classes */
   calendarClasses: Array<Class>
   /** Get a single class information */
@@ -432,6 +475,8 @@ export type Query = {
   currentUserRankingInClass?: Maybe<UserInClassRanking>
   /** Get current user's workout stats */
   currentUserWorkoutStats: Array<Maybe<ClassStat>>
+  /** Returns the matched users given the query provided */
+  searchUser?: Maybe<Array<Maybe<IdentifiableUser>>>
   /** Settings of a site */
   siteSettings: SiteSetting
 }
@@ -468,6 +513,11 @@ export type QueryCurrentUserWorkoutStatsArgs = {
   site: SiteEnum
 }
 
+export type QuerySearchUserArgs = {
+  query?: InputMaybe<Scalars['String']>
+  site?: InputMaybe<SiteEnum>
+}
+
 export type QuerySiteSettingsArgs = {
   site?: InputMaybe<SiteEnum>
 }
@@ -502,7 +552,7 @@ export type RejectLateCancelledSpotInClassInput = {
 }
 
 export type RejectLateCancelledSpotInClassSuccess = {
-  __typename?: 'RejectLateCancelledSpotInClassSuccess'
+  __typename: 'RejectLateCancelledSpotInClassSuccess'
   code: Scalars['String']
 }
 
@@ -515,7 +565,7 @@ export type RemoveCurrentUserFromWaitlistUnion =
   | WaitlistEntryNotFoundError
 
 export type RemoveFromWaitlistResult = {
-  __typename?: 'RemoveFromWaitlistResult'
+  __typename: 'RemoveFromWaitlistResult'
   success: Scalars['Boolean']
 }
 
@@ -535,19 +585,13 @@ export type ResetPasswordLinkResultUnion =
   | TooManyResetPasswordLinkRequestsError
 
 export type ResetPasswordLinkSentSuccessfully = {
-  __typename?: 'ResetPasswordLinkSentSuccessfully'
+  __typename: 'ResetPasswordLinkSentSuccessfully'
   status: Scalars['Boolean']
 }
 
 export type ResetPasswordSuccess = {
-  __typename?: 'ResetPasswordSuccess'
+  __typename: 'ResetPasswordSuccess'
   status: Scalars['Boolean']
-}
-
-export type ResetPasswordTokenValid = {
-  __typename?: 'ResetPasswordTokenValid'
-  accessToken: Scalars['String']
-  refreshToken: Scalars['String']
 }
 
 export enum SiteEnum {
@@ -556,41 +600,52 @@ export enum SiteEnum {
 }
 
 export type SiteSetting = {
-  __typename?: 'SiteSetting'
+  __typename: 'SiteSetting'
   siteDateTimeNow?: Maybe<Scalars['DateTime']>
 }
 
 /** Error returned when trying to book a class with a spot that is already booked */
 export type SpotAlreadyReservedError = Error & {
-  __typename?: 'SpotAlreadyReservedError'
+  __typename: 'SpotAlreadyReservedError'
   code: Scalars['String']
 }
 
 export type SpotInfo = {
-  __typename?: 'SpotInfo'
+  __typename: 'SpotInfo'
+  bookedSpotUserInfo?: Maybe<BookedSpotUserInfo>
   isBooked: Scalars['Boolean']
   spotNumber: Scalars['Int']
 }
 
+export type SpotIsDisabledError = Error & {
+  __typename: 'SpotIsDisabledError'
+  code: Scalars['String']
+}
+
+export type SpotNotFoundError = Error & {
+  __typename: 'SpotNotFoundError'
+  code: Scalars['String']
+}
+
 export type State = {
-  __typename?: 'State'
+  __typename: 'State'
   code: Scalars['String']
   name: Scalars['String']
 }
 
 export type TooManyResetPasswordLinkRequestsError = Error & {
-  __typename?: 'TooManyResetPasswordLinkRequestsError'
+  __typename: 'TooManyResetPasswordLinkRequestsError'
   availableAgainAt?: Maybe<Scalars['DateTime']>
   code: Scalars['String']
 }
 
 export type TryToSwitchToSameSpotError = Error & {
-  __typename?: 'TryToSwitchToSameSpotError'
+  __typename: 'TryToSwitchToSameSpotError'
   code: Scalars['String']
 }
 
 export type UnknownError = Error & {
-  __typename?: 'UnknownError'
+  __typename: 'UnknownError'
   code: Scalars['String']
 }
 
@@ -600,7 +655,7 @@ export type UpdateCurrentUserPasswordInput = {
 }
 
 export type User = {
-  __typename?: 'User'
+  __typename: 'User'
   address1: Scalars['String']
   address2?: Maybe<Scalars['String']>
   birthdate?: Maybe<Scalars['Date']>
@@ -622,7 +677,7 @@ export type User = {
 }
 
 export type UserInClassRanking = {
-  __typename?: 'UserInClassRanking'
+  __typename: 'UserInClassRanking'
   genderRanking?: Maybe<GenderRanking>
   totalRanking: UserRanking
 }
@@ -652,7 +707,7 @@ export type UserInput = {
 }
 
 export type UserRanking = {
-  __typename?: 'UserRanking'
+  __typename: 'UserRanking'
   positionInRanking?: Maybe<Scalars['Int']>
   totalMembersInRanking?: Maybe<Scalars['Int']>
 }
@@ -661,27 +716,31 @@ export type ValidateResetPasswordTokenInput = {
   token: Scalars['String']
 }
 
-export type ValidateResetPasswordTokenResultUnion =
-  | ExpiredResetPasswordTokenError
-  | NotValidResetPasswordTokenError
-  | ResetPasswordTokenValid
-
 export type WaitlistEntryNotFoundError = Error & {
-  __typename?: 'WaitlistEntryNotFoundError'
+  __typename: 'WaitlistEntryNotFoundError'
   code: Scalars['String']
 }
 
 export type WaitlistFullError = Error & {
-  __typename?: 'WaitlistFullError'
+  __typename: 'WaitlistFullError'
   code: Scalars['String']
+}
+
+export type SiteSettingsQueryVariables = Exact<{
+  site: SiteEnum
+}>
+
+export type SiteSettingsQuery = {
+  __typename: 'Query'
+  siteSettings: { __typename: 'SiteSetting'; siteDateTimeNow?: any | null }
 }
 
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never }>
 
 export type CurrentUserQuery = {
-  __typename?: 'Query'
+  __typename: 'Query'
   currentUser?: {
-    __typename?: 'User'
+    __typename: 'User'
     email: string
     firstName: string
     lastName: string
@@ -699,12 +758,12 @@ export type CurrentUserQuery = {
     weight?: number | null
     leaderboardUsername?: string | null
     country: {
-      __typename?: 'Country'
+      __typename: 'Country'
       name: string
       code: string
-      states?: Array<{ __typename?: 'State'; name: string; code: string } | null> | null
+      states?: Array<{ __typename: 'State'; name: string; code: string } | null> | null
     }
-    state?: { __typename?: 'State'; name: string; code: string } | null
+    state?: { __typename: 'State'; name: string; code: string } | null
   } | null
 }
 
@@ -713,9 +772,9 @@ export type CurrentUserWorkoutStatsQueryVariables = Exact<{
 }>
 
 export type CurrentUserWorkoutStatsQuery = {
-  __typename?: 'Query'
+  __typename: 'Query'
   currentUserWorkoutStats: Array<{
-    __typename?: 'ClassStat'
+    __typename: 'ClassStat'
     classId: string
     className?: string | null
     startDateTime: any
@@ -729,7 +788,7 @@ export type CurrentUserWorkoutStatsQuery = {
     distance?: number | null
     duration?: number | null
     adjustedChartPoints: Array<{
-      __typename?: 'ChartPoint'
+      __typename: 'ChartPoint'
       time?: number | null
       rpm?: number | null
       power?: number | null
@@ -743,18 +802,18 @@ export type CurrentUserEnrollmentsQueryVariables = Exact<{
 }>
 
 export type CurrentUserEnrollmentsQuery = {
-  __typename?: 'Query'
+  __typename: 'Query'
   currentUserEnrollments: Array<{
-    __typename?: 'Enrollment'
+    __typename: 'Enrollment'
     enrollmentInfo: {
-      __typename?: 'EnrollmentInfo'
+      __typename: 'EnrollmentInfo'
       id: string
       enrollmentStatus: EnrollmentStatusEnum
       enrollmentDateTime: any
-      spotInfo?: { __typename?: 'SpotInfo'; spotNumber: number; isBooked: boolean } | null
+      spotInfo?: { __typename: 'SpotInfo'; spotNumber: number; isBooked: boolean } | null
     }
     class: {
-      __typename?: 'Class'
+      __typename: 'Class'
       id: string
       name: string
       description: string
@@ -772,9 +831,9 @@ export type CurrentUserPurchasesQueryVariables = Exact<{
 }>
 
 export type CurrentUserPurchasesQuery = {
-  __typename?: 'Query'
+  __typename: 'Query'
   currentUserPurchases?: Array<{
-    __typename?: 'Purchase'
+    __typename: 'Purchase'
     packageName: string
     allowanceObtained: number
     allowanceRemaining: number
@@ -787,8 +846,8 @@ export type CurrentUserPurchasesQuery = {
 export type CountriesQueryVariables = Exact<{ [key: string]: never }>
 
 export type CountriesQuery = {
-  __typename?: 'Query'
-  countries?: Array<{ __typename?: 'Country'; name: string; code: string } | null> | null
+  __typename: 'Query'
+  countries?: Array<{ __typename: 'Country'; name: string; code: string } | null> | null
 }
 
 export type CountryQueryVariables = Exact<{
@@ -796,12 +855,12 @@ export type CountryQueryVariables = Exact<{
 }>
 
 export type CountryQuery = {
-  __typename?: 'Query'
+  __typename: 'Query'
   country?: {
-    __typename?: 'Country'
+    __typename: 'Country'
     name: string
     code: string
-    states?: Array<{ __typename?: 'State'; name: string; code: string } | null> | null
+    states?: Array<{ __typename: 'State'; name: string; code: string } | null> | null
   } | null
 }
 
@@ -811,9 +870,9 @@ export type CalendarClassesQueryVariables = Exact<{
 }>
 
 export type CalendarClassesQuery = {
-  __typename?: 'Query'
+  __typename: 'Query'
   calendarClasses: Array<{
-    __typename?: 'Class'
+    __typename: 'Class'
     id: string
     name: string
     description: string
@@ -833,10 +892,10 @@ export type CustomCalendarClassesQueryVariables = Exact<{
 }>
 
 export type CustomCalendarClassesQuery = {
-  __typename?: 'Query'
-  siteSettings: { __typename?: 'SiteSetting'; siteDateTimeNow?: any | null }
+  __typename: 'Query'
+  siteSettings: { __typename: 'SiteSetting'; siteDateTimeNow?: any | null }
   calendarClasses: Array<{
-    __typename?: 'Class'
+    __typename: 'Class'
     id: string
     name: string
     description: string
@@ -847,15 +906,15 @@ export type CustomCalendarClassesQuery = {
     waitListAvailable: boolean
   }>
   enrollmentsWaitlist: Array<{
-    __typename?: 'Enrollment'
+    __typename: 'Enrollment'
     enrollmentInfo: {
-      __typename?: 'EnrollmentInfo'
+      __typename: 'EnrollmentInfo'
       id: string
       enrollmentStatus: EnrollmentStatusEnum
       enrollmentDateTime: any
     }
     class: {
-      __typename?: 'Class'
+      __typename: 'Class'
       id: string
       name: string
       description: string
@@ -868,15 +927,15 @@ export type CustomCalendarClassesQuery = {
     }
   }>
   enrollmentsUpcoming: Array<{
-    __typename?: 'Enrollment'
+    __typename: 'Enrollment'
     enrollmentInfo: {
-      __typename?: 'EnrollmentInfo'
+      __typename: 'EnrollmentInfo'
       id: string
       enrollmentStatus: EnrollmentStatusEnum
       enrollmentDateTime: any
     }
     class: {
-      __typename?: 'Class'
+      __typename: 'Class'
       id: string
       name: string
       description: string
@@ -896,11 +955,11 @@ export type ClassInfoQueryVariables = Exact<{
 }>
 
 export type ClassInfoQuery = {
-  __typename?: 'Query'
+  __typename: 'Query'
   classInfo?: {
-    __typename?: 'ClassInfo'
+    __typename: 'ClassInfo'
     class: {
-      __typename?: 'Class'
+      __typename: 'Class'
       id: string
       name: string
       description: string
@@ -913,10 +972,24 @@ export type ClassInfoQuery = {
     matrix?: Array<
       | {
           __typename: 'BookableSpot'
+          enabled?: boolean | null
           x: number
           y: number
           icon: PositionIconEnum
-          spotInfo: { __typename?: 'SpotInfo'; spotNumber: number; isBooked: boolean }
+          spotInfo: {
+            __typename: 'SpotInfo'
+            spotNumber: number
+            isBooked: boolean
+            bookedSpotUserInfo?: {
+              __typename: 'BookedSpotUserInfo'
+              user?: {
+                __typename: 'User'
+                firstName: string
+                lastName: string
+                email: string
+              } | null
+            } | null
+          }
         }
       | { __typename: 'IconPosition'; x: number; y: number; icon: PositionIconEnum }
     > | null
@@ -929,8 +1002,8 @@ export type RegisterUserMutationVariables = Exact<{
 }>
 
 export type RegisterUserMutation = {
-  __typename?: 'Mutation'
-  registerUser?: { __typename?: 'User'; email: string } | null
+  __typename: 'Mutation'
+  registerUser?: { __typename: 'User'; email: string } | null
 }
 
 export type UpdateCurrentUserMutationVariables = Exact<{
@@ -938,8 +1011,8 @@ export type UpdateCurrentUserMutationVariables = Exact<{
 }>
 
 export type UpdateCurrentUserMutation = {
-  __typename?: 'Mutation'
-  updateCurrentUser?: { __typename?: 'User'; email: string } | null
+  __typename: 'Mutation'
+  updateCurrentUser?: { __typename: 'User'; email: string } | null
 }
 
 export type BookClassMutationVariables = Exact<{
@@ -948,7 +1021,7 @@ export type BookClassMutationVariables = Exact<{
 }>
 
 export type BookClassMutation = {
-  __typename?: 'Mutation'
+  __typename: 'Mutation'
   bookClass:
     | { __typename: 'AddedToWaitlistSuccess' }
     | { __typename: 'BookClassSuccess' }
@@ -959,10 +1032,138 @@ export type BookClassMutation = {
     | { __typename: 'ClientIsOutsideSchedulingWindowError' }
     | { __typename: 'PaymentRequiredError' }
     | { __typename: 'SpotAlreadyReservedError' }
+    | { __typename: 'SpotIsDisabledError' }
     | { __typename: 'UnknownError' }
     | { __typename: 'WaitlistFullError' }
 }
 
+export type CancelCurrentUserEnrollmentMutationVariables = Exact<{
+  site: SiteEnum
+  input: CancelEnrollmentInput
+}>
+
+export type CancelCurrentUserEnrollmentMutation = {
+  __typename: 'Mutation'
+  cancelCurrentUserEnrollment?:
+    | { __typename: 'CancelUserEnrollmentSuccess' }
+    | { __typename: 'LateCancellationRequiredError' }
+    | { __typename: 'UnknownError' }
+    | null
+}
+
+export type RemoveCurrentUserFromWaitlistMutationVariables = Exact<{
+  site: SiteEnum
+  input: RemoveCurrentUserFromWaitlistInput
+}>
+
+export type RemoveCurrentUserFromWaitlistMutation = {
+  __typename: 'Mutation'
+  removeCurrentUserFromWaitlist?:
+    | { __typename: 'RemoveFromWaitlistResult'; success: boolean }
+    | { __typename: 'WaitlistEntryNotFoundError'; code: string }
+    | null
+}
+
+export type DisableSpotMutationVariables = Exact<{
+  input?: InputMaybe<DisableEnableSpotInput>
+}>
+
+export type DisableSpotMutation = {
+  __typename: 'Mutation'
+  disableSpot?:
+    | { __typename: 'DisableEnableSpotResult'; result?: boolean | null }
+    | { __typename: 'SpotNotFoundError'; code: string }
+    | null
+}
+
+export type EnableSpotMutationVariables = Exact<{
+  input?: InputMaybe<DisableEnableSpotInput>
+}>
+
+export type EnableSpotMutation = {
+  __typename: 'Mutation'
+  enableSpot?:
+    | { __typename: 'DisableEnableSpotResult'; result?: boolean | null }
+    | { __typename: 'SpotNotFoundError'; code: string }
+    | null
+}
+
+export type SearchUserQueryVariables = Exact<{
+  site: SiteEnum
+  query?: InputMaybe<Scalars['String']>
+}>
+
+export type SearchUserQuery = {
+  __typename: 'Query'
+  searchUser?: Array<{
+    __typename: 'IdentifiableUser'
+    id?: string | null
+    user?: { __typename: 'User'; firstName: string; lastName: string; email: string } | null
+  } | null> | null
+}
+
+export type BookUserIntoClassMutationVariables = Exact<{
+  input?: InputMaybe<BookUserIntoClassInput>
+}>
+
+export type BookUserIntoClassMutation = {
+  __typename: 'Mutation'
+  bookUserIntoClass?:
+    | { __typename: 'AddedToWaitlistSuccess' }
+    | { __typename: 'BookClassSuccess' }
+    | { __typename: 'BookedButInOtherSpotError' }
+    | { __typename: 'ClassIsFullError' }
+    | { __typename: 'ClientIsAlreadyBookedError' }
+    | { __typename: 'ClientIsAlreadyOnWaitlistError' }
+    | { __typename: 'ClientIsOutsideSchedulingWindowError' }
+    | { __typename: 'PaymentRequiredError' }
+    | { __typename: 'SpotAlreadyReservedError' }
+    | { __typename: 'SpotIsDisabledError' }
+    | { __typename: 'UnknownError' }
+    | { __typename: 'WaitlistFullError' }
+    | null
+}
+
+export const SiteSettingsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'siteSettings' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'siteSettings' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'Field', name: { kind: 'Name', value: 'siteDateTimeNow' } }]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<SiteSettingsQuery, SiteSettingsQueryVariables>
 export const CurrentUserDocument = {
   kind: 'Document',
   definitions: [
@@ -1667,6 +1868,7 @@ export const ClassInfoDocument = {
                         selectionSet: {
                           kind: 'SelectionSet',
                           selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'enabled' } },
                             {
                               kind: 'Field',
                               name: { kind: 'Name', value: 'spotInfo' },
@@ -1674,7 +1876,37 @@ export const ClassInfoDocument = {
                                 kind: 'SelectionSet',
                                 selections: [
                                   { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } },
-                                  { kind: 'Field', name: { kind: 'Name', value: 'isBooked' } }
+                                  { kind: 'Field', name: { kind: 'Name', value: 'isBooked' } },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'bookedSpotUserInfo' },
+                                    selectionSet: {
+                                      kind: 'SelectionSet',
+                                      selections: [
+                                        {
+                                          kind: 'Field',
+                                          name: { kind: 'Name', value: 'user' },
+                                          selectionSet: {
+                                            kind: 'SelectionSet',
+                                            selections: [
+                                              {
+                                                kind: 'Field',
+                                                name: { kind: 'Name', value: 'firstName' }
+                                              },
+                                              {
+                                                kind: 'Field',
+                                                name: { kind: 'Name', value: 'lastName' }
+                                              },
+                                              {
+                                                kind: 'Field',
+                                                name: { kind: 'Name', value: 'email' }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
                                 ]
                               }
                             }
@@ -1838,3 +2070,376 @@ export const BookClassDocument = {
     }
   ]
 } as unknown as DocumentNode<BookClassMutation, BookClassMutationVariables>
+export const CancelCurrentUserEnrollmentDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'cancelCurrentUserEnrollment' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'CancelEnrollmentInput' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'cancelCurrentUserEnrollment' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'Field', name: { kind: 'Name', value: '__typename' } }]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  CancelCurrentUserEnrollmentMutation,
+  CancelCurrentUserEnrollmentMutationVariables
+>
+export const RemoveCurrentUserFromWaitlistDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'removeCurrentUserFromWaitlist' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'RemoveCurrentUserFromWaitlistInput' }
+            }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'removeCurrentUserFromWaitlist' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'RemoveFromWaitlistResult' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'success' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'WaitlistEntryNotFoundError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  RemoveCurrentUserFromWaitlistMutation,
+  RemoveCurrentUserFromWaitlistMutationVariables
+>
+export const DisableSpotDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'disableSpot' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'DisableEnableSpotInput' } }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'disableSpot' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'DisableEnableSpotResult' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'result' } }
+                    ]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'SpotNotFoundError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'code' } }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<DisableSpotMutation, DisableSpotMutationVariables>
+export const EnableSpotDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'enableSpot' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'DisableEnableSpotInput' } }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'enableSpot' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'DisableEnableSpotResult' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'result' } }
+                    ]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'SpotNotFoundError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'code' } }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<EnableSpotMutation, EnableSpotMutationVariables>
+export const SearchUserDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'searchUser' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'query' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'searchUser' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'query' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'query' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'user' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'firstName' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'lastName' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'email' } }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<SearchUserQuery, SearchUserQueryVariables>
+export const BookUserIntoClassDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'bookUserIntoClass' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'BookUserIntoClassInput' } }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'bookUserIntoClass' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'Field', name: { kind: 'Name', value: '__typename' } }]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<BookUserIntoClassMutation, BookUserIntoClassMutationVariables>

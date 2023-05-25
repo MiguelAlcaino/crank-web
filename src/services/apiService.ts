@@ -1,6 +1,7 @@
 import { gql } from '@apollo/client'
 import type {
   BookClassInput,
+  BookUserIntoClassInput,
   CalendarClassesParams,
   CancelEnrollmentInput,
   Class,
@@ -8,7 +9,11 @@ import type {
   ClassStat,
   Country,
   CurrentUserEnrollmentsParams,
+  DisableEnableSpotInput,
+  DisableEnableSpotResult,
+  DisableEnableSpotResultUnion,
   Enrollment,
+  IdentifiableUser,
   Purchase,
   RegisterUserInput,
   RemoveCurrentUserFromWaitlistInput,
@@ -24,6 +29,7 @@ import dayjs from 'dayjs'
 export class ApiService {
   authApiClient: ApolloClient<any>
   anonymousApiClient: ApolloClient<any>
+
   constructor(authApiClient: ApolloClient<any>, anonymousApiClient: ApolloClient<any>) {
     this.authApiClient = authApiClient
     this.anonymousApiClient = anonymousApiClient
@@ -51,6 +57,7 @@ export class ApiService {
       return null
     }
   }
+
   async getMyself(): Promise<User | null> {
     const CURRENT_USER_QUERY = gql`
       query currentUser {
@@ -96,6 +103,7 @@ export class ApiService {
       return null
     }
   }
+
   async getCurrentUserWorkoutStats(site: SiteEnum): Promise<ClassStat | null> {
     const CURRENT_USER_WORKOUT_STATS_QUERY = gql`
       query currentUserWorkoutStats($site: SiteEnum!) {
@@ -133,6 +141,7 @@ export class ApiService {
       return null
     }
   }
+
   async getCurrentUserEnrollments(
     site: SiteEnum,
     params: CurrentUserEnrollmentsParams
@@ -177,6 +186,7 @@ export class ApiService {
       return []
     }
   }
+
   async getCurrentUserPurchases(site: SiteEnum): Promise<Purchase[]> {
     const CURRENT_USER_PURCHASES_QUERY = gql`
       query currentUserPurchases($site: SiteEnum!) {
@@ -203,6 +213,7 @@ export class ApiService {
       return []
     }
   }
+
   async getCountries(): Promise<Country[]> {
     const COUNTRIES_QUERY = gql`
       query Countries {
@@ -222,6 +233,7 @@ export class ApiService {
       return []
     }
   }
+
   async getCountry(countryCode: string): Promise<Country | null> {
     const COUNTRY_QUERY = gql`
       query country($countryCode: String!) {
@@ -248,6 +260,7 @@ export class ApiService {
       return null
     }
   }
+
   async getCalendarClasses(site: SiteEnum, startDate: Date, endDate: Date): Promise<Class[]> {
     const CALENDAR_CLASSES_QUERY = gql`
       query calendarClasses($site: SiteEnum!, $params: CalendarClassesParams) {
@@ -285,6 +298,7 @@ export class ApiService {
       return []
     }
   }
+
   async getCustomCalendarClasses(
     site: SiteEnum,
     startDate: Date,
@@ -401,6 +415,7 @@ export class ApiService {
       return null
     }
   }
+
   async getClassInfo(site: SiteEnum, id: string): Promise<ClassInfo | null> {
     const CLASS_INFO_QUERY = gql`
       query classInfo($site: SiteEnum!, $id: ID!) {
@@ -421,9 +436,18 @@ export class ApiService {
             y
             icon
             ... on BookableSpot {
+              enabled
               spotInfo {
                 spotNumber
                 isBooked
+                bookedSpotUserInfo {
+                  enrollmentId
+                  user {
+                    firstName
+                    lastName
+                    email
+                  }
+                }
               }
             }
           }
@@ -436,7 +460,8 @@ export class ApiService {
         variables: {
           site: site,
           id: id
-        }
+        },
+        fetchPolicy: 'network-only'
       })
 
       return queryResult.data.classInfo as ClassInfo
@@ -444,6 +469,7 @@ export class ApiService {
       return null
     }
   }
+
   async registerUser(site: SiteEnum, input: RegisterUserInput): Promise<string> {
     const REGISTER_USER_MUTATION = gql`
       mutation registerUser($site: SiteEnum!, $input: RegisterUserInput!) {
@@ -478,6 +504,7 @@ export class ApiService {
       }
     }
   }
+
   async updateCurrentUser(input: UserInput): Promise<string> {
     const UPDATE_CURRENT_USER_MUTATION = gql`
       mutation updateCurrentUser($input: UserInput!) {
@@ -499,6 +526,7 @@ export class ApiService {
       return 'UnknownError'
     }
   }
+
   async bookClass(site: SiteEnum, input: BookClassInput): Promise<string> {
     const BOOK_CLASS_MUTATION = gql`
       mutation bookClass($site: SiteEnum!, $input: BookClassInput!) {
@@ -522,6 +550,7 @@ export class ApiService {
       return 'UnknownError'
     }
   }
+
   async cancelCurrentUserEnrollment(site: SiteEnum, input: CancelEnrollmentInput): Promise<string> {
     const CANCEL_CURRENT_USER_ENROLLMENT_MUTATION = gql`
       mutation cancelCurrentUserEnrollment($site: SiteEnum!, $input: CancelEnrollmentInput!) {
@@ -546,6 +575,7 @@ export class ApiService {
       return 'UnknownError'
     }
   }
+
   async removeCurrentUserFromWaitlist(
     site: SiteEnum,
     input: RemoveCurrentUserFromWaitlistInput
@@ -579,6 +609,198 @@ export class ApiService {
       return result.data.removeCurrentUserFromWaitlist
     } catch (error) {
       return { __typename: 'UnknownError' }
+    }
+  }
+
+  async disableSpot(classId: string, spotNumber?: number): Promise<string> {
+    const input = { classId: classId, spotNumber: spotNumber } as DisableEnableSpotInput
+
+    const DISABLE_SPOT_MUTATION = gql`
+      mutation disableSpot($input: DisableEnableSpotInput) {
+        disableSpot(input: $input) {
+          __typename
+          ... on DisableEnableSpotResult {
+            __typename
+            result
+          }
+          ... on SpotNotFoundError {
+            __typename
+            code
+          }
+        }
+      }
+    `
+
+    try {
+      const result = await this.authApiClient.mutate({
+        mutation: DISABLE_SPOT_MUTATION,
+        variables: {
+          input: input
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      const disableEnableSpotResultUnion = result.data.disableSpot as DisableEnableSpotResultUnion
+
+      if (disableEnableSpotResultUnion.__typename === 'DisableEnableSpotResult') {
+        const disableEnableSpotResult = disableEnableSpotResultUnion as DisableEnableSpotResult
+
+        if (disableEnableSpotResult.result === true) {
+          return 'Success'
+        } else {
+          return 'Error'
+        }
+      } else if (disableEnableSpotResultUnion.__typename === 'SpotNotFoundError') {
+        return 'SpotNotFoundError'
+      } else {
+        return 'UnknownError'
+      }
+    } catch (error) {
+      return 'UnknownError'
+    }
+  }
+
+  async enableSpot(classId: string, spotNumber?: number): Promise<string> {
+    const input = { classId: classId, spotNumber: spotNumber } as DisableEnableSpotInput
+
+    const ENABLE_SPOT_MUTATION = gql`
+      mutation enableSpot($input: DisableEnableSpotInput) {
+        enableSpot(input: $input) {
+          __typename
+          ... on DisableEnableSpotResult {
+            __typename
+            result
+          }
+          ... on SpotNotFoundError {
+            __typename
+            code
+          }
+        }
+      }
+    `
+
+    try {
+      const result = await this.authApiClient.mutate({
+        mutation: ENABLE_SPOT_MUTATION,
+        variables: {
+          input: input
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      const disableEnableSpotResultUnion = result.data.enableSpot as DisableEnableSpotResultUnion
+
+      if (disableEnableSpotResultUnion.__typename === 'DisableEnableSpotResult') {
+        const disableEnableSpotResult = disableEnableSpotResultUnion as DisableEnableSpotResult
+
+        if (disableEnableSpotResult.result === true) {
+          return 'Success'
+        } else {
+          return 'Error'
+        }
+      } else if (disableEnableSpotResultUnion.__typename === 'SpotNotFoundError') {
+        return 'SpotNotFoundError'
+      } else {
+        return 'UnknownError'
+      }
+    } catch (error) {
+      console.log(error)
+      return 'UnknownError'
+    }
+  }
+
+  async searchUser(site: SiteEnum, query: string): Promise<IdentifiableUser[] | []> {
+    if (query.length < 3) return []
+
+    const SEARCH_USER_QUERY = gql`
+      query searchUser($site: SiteEnum!, $query: String) {
+        searchUser(site: $site, query: $query) {
+          id
+          user {
+            firstName
+            lastName
+            email
+          }
+        }
+      }
+    `
+    try {
+      const queryResult = await this.authApiClient.query({
+        query: SEARCH_USER_QUERY,
+        variables: {
+          site: site,
+          query: query
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      return queryResult.data.searchUser as IdentifiableUser[]
+    } catch (error) {
+      return []
+    }
+  }
+
+  async bookUserIntoClass(
+    classId: string,
+    userId: string,
+    spotNumber: number,
+    isPaymentRequired: boolean,
+    isWaitlistBooking: boolean
+  ): Promise<string> {
+    const input = {
+      classId: classId,
+      spotNumber: spotNumber,
+      userId: userId,
+      isPaymentRequired: isPaymentRequired,
+      isWaitlistBooking: isWaitlistBooking
+    } as BookUserIntoClassInput
+
+    const BOOK_USER_INTO_CLASS_MUTATION = gql`
+      mutation bookUserIntoClass($input: BookUserIntoClassInput!) {
+        bookUserIntoClass(input: $input) {
+          __typename
+        }
+      }
+    `
+
+    try {
+      const result = await this.authApiClient.mutate({
+        mutation: BOOK_USER_INTO_CLASS_MUTATION,
+        variables: {
+          input: input
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      return result.data.bookUserIntoClass.__typename
+    } catch (error) {
+      return 'UnknownError'
+    }
+  }
+
+  async removeUserFromClass(enrollmentId: string, lateCancel?: boolean): Promise<string> {
+    const input = { enrollmentId: enrollmentId, lateCancel: lateCancel } as CancelEnrollmentInput
+
+    const REMOVE_USER_FROM_CLASS_MUTATION = gql`
+      mutation removeUserFromClass($input: CancelEnrollmentInput!) {
+        removeUserFromClass(input: $input) {
+          __typename
+        }
+      }
+    `
+
+    try {
+      const result = await this.authApiClient.mutate({
+        mutation: REMOVE_USER_FROM_CLASS_MUTATION,
+        variables: {
+          input: input
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      return result.data.removeUserFromClass.__typename
+    } catch (error) {
+      return 'UnknownError'
     }
   }
 }
