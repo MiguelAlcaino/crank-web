@@ -14,6 +14,7 @@ import { useRoute } from 'vue-router'
 
 import ErrorModal from '@/components/ErrorModal.vue'
 import ConfirmModal from '@/components/ConfirmModal.vue'
+import router from '@/router'
 
 interface BookableSpotClickedEvent {
   spotNumber: number | null
@@ -22,7 +23,7 @@ interface BookableSpotClickedEvent {
 
 const route = useRoute()
 
-const { id } = route.params as { id: string }
+// const { id } = route.params as { id: string }
 
 const apiService = inject<ApiService>('gqlApiService')!
 const isLoading = ref<boolean>(false)
@@ -95,8 +96,19 @@ onMounted(() => {
 
 async function getClassInfo() {
   isLoading.value = true
-  classInfo.value = await apiService.getClassInfo(SiteEnum.Dubai, id)
+  classInfo.value = await apiService.getClassInfo(SiteEnum.Dubai, getClassId())
   isLoading.value = false
+}
+
+function getClassId(): string{
+  let mindbodyClass = inject<any|undefined>('mindbodyClass')
+  if (mindbodyClass !== undefined){
+    console.log("ESTAMOS DENTRO!!!!")
+    console.log(mindbodyClass)
+    return mindbodyClass.id as string
+  }
+
+  return route.params.id as string
 }
 
 function spotClicked(event: BookableSpotClickedEvent) {
@@ -130,7 +142,7 @@ const isEnablingDisablingSpot = ref<boolean>(false)
 async function clickPutUnderMaintenance() {
   isEnablingDisablingSpot.value = true
 
-  const response = await apiService.disableSpot(id, selectedSpot.value.spotNumber!)
+  const response = await apiService.disableSpot(getClassId(), selectedSpot.value.spotNumber!)
 
   isEnablingDisablingSpot.value = false
 
@@ -151,7 +163,7 @@ async function clickPutUnderMaintenance() {
 async function clickRecoverFromMaintenance() {
   isEnablingDisablingSpot.value = true
 
-  const response = await apiService.enableSpot(id, selectedSpot.value.spotNumber!)
+  const response = await apiService.enableSpot(getClassId(), selectedSpot.value.spotNumber!)
 
   isEnablingDisablingSpot.value = false
 
@@ -188,7 +200,7 @@ async function searchUser() {
 
 function clickAssing() {
   if (selectedUserId.value) {
-    bookUserIntoClass(id, selectedUserId.value, selectedSpot.value.spotNumber!, true)
+    bookUserIntoClass(getClassId(), selectedUserId.value, selectedSpot.value.spotNumber!, true)
   }
 }
 
@@ -382,7 +394,7 @@ async function confirmLateCancelation() {
     :message="confirmModalData.message"
     :isLoading="confirmModalData.isLoading"
     @cancel="confirmModalData.isVisible = false"
-    @confirm="bookUserIntoClass(id, selectedUserId!, selectedSpot.spotNumber!, false)"
+    @confirm="bookUserIntoClass(getClassId(), selectedUserId!, selectedSpot.spotNumber!, false)"
     :clickToClose="false"
   >
   </ConfirmModal>
