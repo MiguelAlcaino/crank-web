@@ -3,6 +3,7 @@ import { useAuthenticationStore } from '@/stores/authToken'
 import { IncorrectCredentialsLoginError } from '@/model/Exception'
 import router from '@/router'
 import jwt_decode from 'jwt-decode'
+import { Config } from '@/model/Config'
 
 interface JwtTokenPayload {
   exp: number
@@ -15,7 +16,7 @@ export const authService = {
   },
   async login(email: string, password: string, site: string): Promise<void> {
     try {
-      const response = await axios.post('/api/login_check?site=' + site, {
+      const response = await axios.post(Config.AUTH_SERVICE_HOST + '/api/login_check?site=' + site, {
         username: email,
         password: password
       })
@@ -49,7 +50,7 @@ export const authService = {
     )
   },
   async refreshToken(): Promise<void> {
-    const response = await axios.post('/api/token/refresh')
+    const response = await axios.post(Config.AUTH_SERVICE_HOST + '/api/token/refresh')
     useAuthenticationStore().setSession(response.data.token)
   },
   async logout(): Promise<void> {
