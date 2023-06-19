@@ -1,18 +1,20 @@
-import { createHttpLink, Observable } from '@apollo/client'
+import { ApolloLink, createHttpLink, Observable } from '@apollo/client'
 import { ApolloClient, InMemoryCache } from '@apollo/client/core'
 import { setContext } from '@apollo/client/link/context'
 import { useAuthenticationStore } from '@/stores/authToken'
 import { onError } from '@apollo/client/link/error'
 import { authService } from '@/services/authService'
 
-const httpLink = createHttpLink({
-  uri: '/api/graphql/'
-})
+function newAnonymousClient(gqlUrl: string): ApolloClient<any> {
+  const httpLink2 = createHttpLink({
+    uri: gqlUrl
+  })
 
-const apiClient = new ApolloClient({
-  link: httpLink,
-  cache: new InMemoryCache()
-})
+  return new ApolloClient({
+    link: httpLink2,
+    cache: new InMemoryCache()
+  })
+}
 
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
@@ -56,19 +58,24 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
   if (networkError) console.log(`[Network error]: ${networkError}`)
 })
 
-const authApiClient = new ApolloClient({
-  link: authLink.concat(errorLink).concat(httpLink),
-  cache: new InMemoryCache({
-    typePolicies: {
-      Query: {
-        fields: {
-          currentUserEnrollments: {
-            merge: false
+function newAuthenticatedApolloClient(gqlUrl: string): ApolloClient<any> {
+  const httpLink2 = createHttpLink({
+    uri: gqlUrl
+  })
+  return new ApolloClient({
+    link: authLink.concat(errorLink).concat(httpLink2),
+    cache: new InMemoryCache({
+      typePolicies: {
+        Query: {
+          fields: {
+            currentUserEnrollments: {
+              merge: false
+            }
           }
         }
       }
-    }
+    })
   })
-})
+}
 
-export { authApiClient, apiClient }
+export { newAuthenticatedApolloClient, newAnonymousClient }
