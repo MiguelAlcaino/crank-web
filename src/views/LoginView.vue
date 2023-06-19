@@ -38,7 +38,7 @@ async function login() {
 
     try {
       await authService.login(formData.email, formData.password, selectedSite.value)
-      await router.push({ name: 'home' })
+      await router.push({ name: 'calendar' })
     } catch (error) {
       displayLoginError.value = true
     }
