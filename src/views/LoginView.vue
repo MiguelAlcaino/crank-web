@@ -99,4 +99,5 @@ async function login() {
       </p>
     </div>
   </form>
+  <p>New to CRANK? <router-link to="/register">Sign up now.</router-link></p>
 </template>
