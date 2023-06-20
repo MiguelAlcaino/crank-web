@@ -10,7 +10,6 @@ import { SiteEnum } from '@/gql/graphql'
 const displayLoginError = ref(false)
 const isSubmitting = ref(false)
 const selectedSite = ref('dubai')
-const sites = ['dubai', 'abu_dhabi']
 
 const formData = reactive({
   email: '',
