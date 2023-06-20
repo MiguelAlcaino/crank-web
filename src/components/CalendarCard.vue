@@ -23,13 +23,13 @@ async function selectClass() {
       <div class="col-4 colIcon"></div>
     </div>
     <div class="row">
-      <div class="col-8">{{ classInfo?.['instructorName'] }}</div>
+      <div class="col-8">{{ classInfo?.instructorName }}</div>
       <div class="col-4 colIcon">
-        <IconCalendarCard v-if="classInfo?.['isSubstitute']" letter="S"></IconCalendarCard>
+        <IconCalendarCard v-if="classInfo?.isSubstitute" letter="S"></IconCalendarCard>
       </div>
     </div>
     <div class="row">
-      <div class="col-8">{{ dayjs(classInfo?.['startWithNoTimeZone']).format('h:mm a') }}</div>
+      <div class="col-8">{{ dayjs(classInfo?.startWithNoTimeZone).format('h:mm a') }}</div>
       <div class="col-4 colIcon">
         <IconCalendarCard v-if="isEnrolled" letter="E"></IconCalendarCard>
       </div>
@@ -37,7 +37,7 @@ async function selectClass() {
     <div class="row">
       <div class="col-8">{{ classInfo?.['duration'] + ' .mins' }}</div>
       <div class="col-4 colIcon">
-        <IconCalendarCard v-if="classInfo?.['waitListAvailable']" letter="W"></IconCalendarCard>
+        <IconCalendarCard v-if="classInfo?.waitListAvailable" letter="W"></IconCalendarCard>
       </div>
     </div>
   </div>

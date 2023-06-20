@@ -323,6 +323,7 @@ export class ApiService {
           startWithNoTimeZone
           duration
           waitListAvailable
+          isSubstitute
         }
         enrollmentsWaitlist: currentUserEnrollments(
           site: $site
