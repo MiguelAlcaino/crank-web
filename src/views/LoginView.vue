@@ -2,8 +2,10 @@
 import { computed, reactive, ref } from 'vue'
 import router from '@/router'
 import { authService } from '@/services/authService'
-import { helpers, maxLength, minValue, required, email } from '@vuelidate/validators'
+import { helpers, required, email } from '@vuelidate/validators'
 import useVuelidate from '@vuelidate/core'
+
+import { SiteEnum } from '@/gql/graphql'
 
 const displayLoginError = ref(false)
 const isSubmitting = ref(false)
@@ -49,12 +51,10 @@ async function login() {
 
 <template>
   <form @submit.prevent="login" autocomplete="off">
-    <select v-model="selectedSite">
-      <option v-for="site in sites" :value="site" :key="site">
-        {{ site }}
-      </option>
+    <select class="input" v-model="selectedSite">
+      <option :value="SiteEnum.Dubai">Dubai</option>
+      <option :value="SiteEnum.AbuDhabi">Abu Dhabi</option>
     </select>
-
     <!--email-->
     <div class="field">
       <p>
