@@ -2,7 +2,13 @@
 import { onMounted, reactive, ref, computed, inject } from 'vue'
 import useVuelidate from '@vuelidate/core'
 import { required, email, minLength, sameAs, maxLength, helpers } from '@vuelidate/validators'
-import { GenderEnum, type RegisterUserInput, type Country, type State, SiteEnum } from '@/gql/graphql'
+import {
+  GenderEnum,
+  type RegisterUserInput,
+  type Country,
+  type State,
+  SiteEnum
+} from '@/gql/graphql'
 
 import type { ApiService } from '@/services/apiService'
 import { authService } from '@/services/authService'
@@ -199,11 +205,11 @@ function onChangeCountry() {
     <h3>Location</h3>
     <div class="field">
       <p>
-        <select class="input" v-model="location" disabled>      
+        <select class="input" v-model="location" disabled>
           <option :value="SiteEnum.Dubai">Dubai</option>
           <option :value="SiteEnum.AbuDhabi">Abu Dhabi</option>
         </select>
-      </p> 
+      </p>
     </div>
     <h3>Profile Information</h3>
     <!--email-->
