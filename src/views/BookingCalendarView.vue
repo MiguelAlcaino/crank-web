@@ -17,6 +17,8 @@ const hasPreviousWeek = ref<boolean>(false)
 const daysOfTheWeek = ref<DayOfTheWeek[]>([])
 const apiService = inject<ApiService>('gqlApiService')!
 
+const enrollmentClassIds = ref<string[]>([])
+
 onMounted(() => {
   getClassesOfTheWeek()
 })
@@ -51,6 +53,7 @@ async function getClassesOfTheWeek(): Promise<void> {
   calendarIsLoading.value = true
   hasPreviousWeek.value = false
   daysOfTheWeek.value = []
+  enrollmentClassIds.value = []
 
   const firstDayWeek = appStore().calendarStartDate
   const lastDayWeek = appStore().calendarEndDate
@@ -64,10 +67,12 @@ async function getClassesOfTheWeek(): Promise<void> {
   if (customCalendarClasses != null) {
     siteDateTimeNow.value = customCalendarClasses.siteSettings.siteDateTimeNow
 
-    /*
-        await _markClassesEnrolled(bookingCalendarData);
-        await _markClassesInWaitlist(bookingCalendarData);
-     */
+    for (let index = 0; index < customCalendarClasses.enrollmentsUpcoming.length; index++) {
+      const enrollment = customCalendarClasses.enrollmentsUpcoming[index]
+      if (enrollment?.class) {
+        enrollmentClassIds.value.push(enrollment?.class.id)
+      }
+    }
 
     columnsNames.value = []
 
@@ -191,25 +196,61 @@ function getPivot() {
           </div>
           <div class="row" v-for="(colRow, key) in calendarDays" :key="key">
             <div class="col">
-              <CalendarCard :classInfo="colRow.MON" :isEnrolled="false"></CalendarCard>
+              <CalendarCard
+                :classInfo="colRow.MON"
+                :isEnrolled="
+                  colRow.MON != null && enrollmentClassIds.indexOf(colRow.MON?.id) !== -1
+                "
+              ></CalendarCard>
             </div>
             <div class="col">
-              <CalendarCard :classInfo="colRow.TUE" :isEnrolled="false"></CalendarCard>
+              <CalendarCard
+                :classInfo="colRow.TUE"
+                :isEnrolled="
+                  colRow.TUE != null && enrollmentClassIds.indexOf(colRow.TUE?.id) !== -1
+                "
+              ></CalendarCard>
             </div>
             <div class="col">
-              <CalendarCard :classInfo="colRow.WED" :isEnrolled="false"></CalendarCard>
+              <CalendarCard
+                :classInfo="colRow.WED"
+                :isEnrolled="
+                  colRow.WED != null && enrollmentClassIds.indexOf(colRow.WED?.id) !== -1
+                "
+              ></CalendarCard>
             </div>
             <div class="col">
-              <CalendarCard :classInfo="colRow.THU" :isEnrolled="false">></CalendarCard>
+              <CalendarCard
+                :classInfo="colRow.THU"
+                :isEnrolled="
+                  colRow.THU != null && enrollmentClassIds.indexOf(colRow.THU?.id) !== -1
+                "
+                >></CalendarCard
+              >
             </div>
             <div class="col">
-              <CalendarCard :classInfo="colRow.FRI" :isEnrolled="false"></CalendarCard>
+              <CalendarCard
+                :classInfo="colRow.FRI"
+                :isEnrolled="
+                  colRow.FRI != null && enrollmentClassIds.indexOf(colRow.FRI?.id) !== -1
+                "
+              ></CalendarCard>
             </div>
             <div class="col">
-              <CalendarCard :classInfo="colRow.SAT" :isEnrolled="false"></CalendarCard>
+              <CalendarCard
+                :classInfo="colRow.SAT"
+                :isEnrolled="
+                  colRow.SAT != null && enrollmentClassIds.indexOf(colRow.SAT?.id) !== -1
+                "
+              ></CalendarCard>
             </div>
             <div class="col">
-              <CalendarCard :classInfo="colRow.SUN" :isEnrolled="false"></CalendarCard>
+              <CalendarCard
+                :classInfo="colRow.SUN"
+                :isEnrolled="
+                  colRow.SUN != null && enrollmentClassIds.indexOf(colRow.SUN?.id) !== -1
+                "
+              ></CalendarCard>
             </div>
           </div>
         </div>
