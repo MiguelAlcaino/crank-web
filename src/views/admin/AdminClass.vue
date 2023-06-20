@@ -1,20 +1,15 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import SpotMatrix from '@/components/SpotMatrix.vue'
-import {
-  type BookableSpot,
-  type ClassInfo,
-  type IconPosition,
-  type IdentifiableUser,
-  SiteEnum
-} from '@/gql/graphql'
+import type { BookableSpot, ClassInfo, IconPosition, IdentifiableUser } from '@/gql/graphql'
 import type { ApiService } from '@/services/apiService'
 import { inject, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
+import { appStore } from '@/stores/appStorage'
+
 import ErrorModal from '@/components/ErrorModal.vue'
 import ConfirmModal from '@/components/ConfirmModal.vue'
-import router from '@/router'
 
 interface BookableSpotClickedEvent {
   spotNumber: number | null
@@ -96,14 +91,14 @@ onMounted(() => {
 
 async function getClassInfo() {
   isLoading.value = true
-  classInfo.value = await apiService.getClassInfo(SiteEnum.Dubai, getClassId())
+  classInfo.value = await apiService.getClassInfo(appStore().site, getClassId())
   isLoading.value = false
 }
 
-function getClassId(): string{
-  let mindbodyClass = inject<any|undefined>('mindbodyClass')
-  if (mindbodyClass !== undefined){
-    console.log("ESTAMOS DENTRO!!!!")
+function getClassId(): string {
+  let mindbodyClass = inject<any | undefined>('mindbodyClass')
+  if (mindbodyClass !== undefined) {
+    console.log('ESTAMOS DENTRO!!!!')
     console.log(mindbodyClass)
     return mindbodyClass.id as string
   }
@@ -193,7 +188,7 @@ async function searchUser() {
 
   searchingUsers.value = true
 
-  users.value = await apiService.searchUser(SiteEnum.Dubai, query.value)
+  users.value = await apiService.searchUser(appStore().site, query.value)
 
   searchingUsers.value = false
 }

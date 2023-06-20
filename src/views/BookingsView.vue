@@ -5,8 +5,7 @@ import {
   type CurrentUserEnrollmentsParams,
   type Enrollment,
   EnrollmentTypeEnum,
-  type RemoveCurrentUserFromWaitlistInput,
-  SiteEnum
+  type RemoveCurrentUserFromWaitlistInput
 } from '@/gql/graphql'
 import dayjs from 'dayjs'
 
@@ -15,6 +14,7 @@ import ConfirmModal from '@/components/ConfirmModal.vue'
 import SuccessModal from '@/components/SuccessModal.vue'
 import ErrorModal from '@/components/ErrorModal.vue'
 import type { ApiService } from '@/services/apiService'
+import { appStore } from '@/stores/appStorage'
 
 const isLoading = ref<boolean>(false)
 const userErollments = ref<Enrollment[]>([])
@@ -79,7 +79,7 @@ onMounted(() => {
 async function getSiteDateTimeNow() {
   siteDateTimeNow.value = new Date()
 
-  const siteSetting = await apiService.getSiteSettings(SiteEnum.Dubai)
+  const siteSetting = await apiService.getSiteSettings(appStore().site)
 
   if (siteSetting) siteDateTimeNow.value = new Date(siteSetting.siteDateTimeNow)
 }
@@ -95,7 +95,7 @@ async function getUserErollments() {
 
   if (filterEndDate.value) params.endDate = dayjs(filterEndDate.value).format('YYYY-MM-DD')
 
-  userErollments.value = await apiService.getCurrentUserEnrollments(SiteEnum.Dubai, params)
+  userErollments.value = await apiService.getCurrentUserEnrollments(appStore().site, params)
 
   isLoading.value = false
 }
@@ -108,7 +108,7 @@ async function cancelCurrentUserEnrollment(
 
   const input = { enrollmentId: enrollmentId, lateCancel: lateCancel } as CancelEnrollmentInput
 
-  const response = await apiService.cancelCurrentUserEnrollment(SiteEnum.Dubai, input)
+  const response = await apiService.cancelCurrentUserEnrollment(appStore().site, input)
 
   isCancellingCurrentUserEnrollment.value = false
 
@@ -146,7 +146,7 @@ async function removeCurrentUserFromWaitlist(waitlistEntryId: string): Promise<v
 
   isCancellingCurrentUserEnrollment.value = true
 
-  const response = await apiService.removeCurrentUserFromWaitlist(SiteEnum.Dubai, input)
+  const response = await apiService.removeCurrentUserFromWaitlist(appStore().site, input)
 
   isCancellingCurrentUserEnrollment.value = false
 

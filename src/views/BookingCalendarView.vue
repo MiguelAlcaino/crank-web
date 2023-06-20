@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { inject, onMounted, ref } from 'vue'
-import { type Class, SiteEnum } from '@/gql/graphql'
+import type { Class } from '@/gql/graphql'
 import { DayOfTheWeek } from '@/model/DayOfTheWeek'
 import { WeekCalendar } from '@/model/WeekCalendar'
 import dayjs from 'dayjs'
@@ -56,7 +56,7 @@ async function getClassesOfTheWeek(): Promise<void> {
   const lastDayWeek = appStore().calendarEndDate
 
   let customCalendarClasses = await apiService.getCustomCalendarClasses(
-    SiteEnum.Dubai,
+    appStore().site,
     firstDayWeek,
     lastDayWeek
   )

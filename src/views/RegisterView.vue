@@ -2,16 +2,11 @@
 import { onMounted, reactive, ref, computed, inject } from 'vue'
 import useVuelidate from '@vuelidate/core'
 import { required, email, minLength, sameAs, maxLength, helpers } from '@vuelidate/validators'
-import {
-  GenderEnum,
-  SiteEnum,
-  type RegisterUserInput,
-  type Country,
-  type State
-} from '@/gql/graphql'
+import { GenderEnum, type RegisterUserInput, type Country, type State } from '@/gql/graphql'
 
 import type { ApiService } from '@/services/apiService'
 import { authService } from '@/services/authService'
+import { appStore } from '@/stores/appStorage'
 import router from '@/router'
 
 const isSaving = ref(false)
@@ -147,7 +142,7 @@ const submitForm = async () => {
       zipCode: '0000'
     }
 
-    const response = await apiService.registerUser(SiteEnum.Dubai, input)
+    const response = await apiService.registerUser(appStore().site, input)
     isSaving.value = false
 
     if (response === 'SuccessRegistration') {
@@ -155,7 +150,7 @@ const submitForm = async () => {
       isLoggingIn.value = true
 
       try {
-        await authService.login(formData.email, formData.password, SiteEnum.Dubai)
+        await authService.login(formData.email, formData.password, appStore().site)
         await router.push({ name: 'home' })
       } catch (error) {
         console.log(error)

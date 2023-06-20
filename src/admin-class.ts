@@ -21,10 +21,9 @@ async function startApp() {
   const app = createApp({
     setup() {
       provide('mindbodyClass', mindbodyClass)
-      provide('gqlApiService', new ApiService(
-          newAuthenticatedApolloClient(gqlUrl),
-          newAnonymousClient(gqlUrl)
-        )
+      provide(
+        'gqlApiService',
+        new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
       )
     },
     render: () => h(AdminClass)

@@ -18,9 +18,12 @@ startApp()
 async function startApp() {
   const app = createApp({
     setup() {
-      provide('gqlApiService', new ApiService(
-        newAuthenticatedApolloClient(Config.GRAPHQL_SERVICE_URL),
-        newAnonymousClient(Config.GRAPHQL_SERVICE_URL))
+      provide(
+        'gqlApiService',
+        new ApiService(
+          newAuthenticatedApolloClient(Config.GRAPHQL_SERVICE_URL),
+          newAnonymousClient(Config.GRAPHQL_SERVICE_URL)
+        )
       )
     },
     render: () => h(App)
