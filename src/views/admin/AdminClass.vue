@@ -31,6 +31,8 @@ const users = ref<IdentifiableUser[]>([])
 const selectedUserId = ref<string | null>(null)
 const assigningUserToClass = ref<boolean>(false)
 
+const classId = ref<string>('')
+
 const errorModalData = ref<{
   title: string
   message: string
@@ -86,12 +88,13 @@ const selectedSpot = ref<{
 })
 
 onMounted(() => {
+  classId.value = getClassId()
   getClassInfo()
 })
 
 async function getClassInfo() {
   isLoading.value = true
-  classInfo.value = await apiService.getClassInfo(appStore().site, getClassId())
+  classInfo.value = await apiService.getClassInfo(appStore().site, classId.value)
   isLoading.value = false
 }
 
@@ -137,7 +140,7 @@ const isEnablingDisablingSpot = ref<boolean>(false)
 async function clickPutUnderMaintenance() {
   isEnablingDisablingSpot.value = true
 
-  const response = await apiService.disableSpot(getClassId(), selectedSpot.value.spotNumber!)
+  const response = await apiService.disableSpot(classId.value, selectedSpot.value.spotNumber!)
 
   isEnablingDisablingSpot.value = false
 
@@ -158,7 +161,7 @@ async function clickPutUnderMaintenance() {
 async function clickRecoverFromMaintenance() {
   isEnablingDisablingSpot.value = true
 
-  const response = await apiService.enableSpot(getClassId(), selectedSpot.value.spotNumber!)
+  const response = await apiService.enableSpot(classId.value, selectedSpot.value.spotNumber!)
 
   isEnablingDisablingSpot.value = false
 
@@ -195,7 +198,7 @@ async function searchUser() {
 
 function clickAssing() {
   if (selectedUserId.value) {
-    bookUserIntoClass(getClassId(), selectedUserId.value, selectedSpot.value.spotNumber!, true)
+    bookUserIntoClass(classId.value, selectedUserId.value, selectedSpot.value.spotNumber!, true)
   }
 }
 
@@ -389,7 +392,7 @@ async function confirmLateCancelation() {
     :message="confirmModalData.message"
     :isLoading="confirmModalData.isLoading"
     @cancel="confirmModalData.isVisible = false"
-    @confirm="bookUserIntoClass(getClassId(), selectedUserId!, selectedSpot.spotNumber!, false)"
+    @confirm="bookUserIntoClass(classId, selectedUserId!, selectedSpot.spotNumber!, false)"
     :clickToClose="false"
   >
   </ConfirmModal>
