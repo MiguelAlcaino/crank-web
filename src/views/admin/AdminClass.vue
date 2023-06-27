@@ -2,6 +2,7 @@
 import dayjs from 'dayjs'
 import SpotMatrix from '@/components/SpotMatrix.vue'
 import type { BookableSpot, ClassInfo, IconPosition, IdentifiableUser } from '@/gql/graphql'
+import { PositionIconEnum } from '@/gql/graphql'
 import type { ApiService } from '@/services/apiService'
 import { inject, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
@@ -32,6 +33,7 @@ const selectedUserId = ref<string | null>(null)
 const assigningUserToClass = ref<boolean>(false)
 
 const classId = ref<string>('')
+const totalSignedIn = ref<number>(0)
 
 const errorModalData = ref<{
   title: string
@@ -95,6 +97,7 @@ onMounted(() => {
 async function getClassInfo() {
   isLoading.value = true
   classInfo.value = await apiService.getClassInfo(appStore().site, classId.value)
+  totalSignedIn.value = getTotalSignedIn()
   isLoading.value = false
 }
 
@@ -107,6 +110,22 @@ function getClassId(): string {
   }
 
   return route.params.id as string
+}
+
+function getTotalSignedIn(): number {
+  let totalSignedIn = 0
+  if (classInfo.value && classInfo.value.matrix && classInfo.value.matrix.length > 0)
+    for (let index = 0; index < classInfo.value.matrix.length; index++) {
+      const classPosition = classInfo.value.matrix[index] as BookableSpot | IconPosition
+
+      if ('spotInfo' in classPosition) {
+        if (classPosition.spotInfo.isBooked) {
+          totalSignedIn++
+        }
+      }
+    }
+
+  return totalSignedIn
 }
 
 function spotClicked(event: BookableSpotClickedEvent) {
@@ -319,7 +338,7 @@ async function confirmLateCancelation() {
     <h4>
       {{ classInfo?.class?.name }} - {{ classInfo?.class.instructorName }} ({{
         dayjs(classInfo?.class.startWithNoTimeZone).format('DD/MM/YYYY')
-      }}) | Total Signed In : 0 | ClassID:
+      }}) | Total Signed In : {{ totalSignedIn }} | ClassID:
       {{ classInfo?.class.id }}
     </h4>
     <h4>
