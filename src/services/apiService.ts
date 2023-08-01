@@ -12,11 +12,13 @@ import type {
   DisableEnableSpotInput,
   DisableEnableSpotResult,
   DisableEnableSpotResultUnion,
+  DoesRoomLayoutMatchResultUnion,
   Enrollment,
   IdentifiableUser,
   Purchase,
   RegisterUserInput,
   RemoveCurrentUserFromWaitlistInput,
+  RoomLayoutMatchResult,
   SiteEnum,
   User,
   UserInput
@@ -801,6 +803,58 @@ export class ApiService {
       })
 
       return result.data.removeUserFromClass.__typename
+    } catch (error) {
+      return 'UnknownError'
+    }
+  }
+
+  async doesClassMatchPIQLayout(site: SiteEnum, classId: string): Promise<string> {
+    const DOES_CLASS_MATCH_PIQ_LAYOUT_QUERY = gql`
+      query doesClassMatchPIQLayout($site: SiteEnum!, $classId: ID!) {
+        doesClassMatchPIQLayout(site: $site, classId: $classId) {
+          __typename
+          ... on PIQClassHasNoRoomLayoutError {
+            __typename
+            code
+          }
+          ... on PIQClassNotLinkedError {
+            __typename
+            code
+          }
+          ... on RoomLayoutMatchResult {
+            __typename
+            matchesPIQRoomLayout
+          }        
+        }
+      }
+    `
+    try {
+      const queryResult = await this.authApiClient.query({
+        query: DOES_CLASS_MATCH_PIQ_LAYOUT_QUERY,
+        variables: {
+          site: site,
+          classId: classId
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      const doesClassMatchPIQLayout = queryResult.data
+        .doesClassMatchPIQLayout as DoesRoomLayoutMatchResultUnion
+
+      if (doesClassMatchPIQLayout.__typename === 'PIQClassHasNoRoomLayoutError') {
+        return 'PIQClassHasNoRoomLayoutError';
+      } else if (doesClassMatchPIQLayout.__typename === 'RoomLayoutMatchResult') {
+        const roomLayoutMatchResult = doesClassMatchPIQLayout as RoomLayoutMatchResult
+        if (roomLayoutMatchResult.matchesPIQRoomLayout) {
+          return 'RoomLayoutMatchSuccess'
+        } else {
+          return 'RoomLayoutMatchError'
+        }
+      } else if (doesClassMatchPIQLayout.__typename === 'PIQClassNotLinkedError') {
+        return 'PIQClassNotLinkedError'
+      } else {
+        return 'UnknownError'
+      }
     } catch (error) {
       return 'UnknownError'
     }
