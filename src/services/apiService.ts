@@ -13,6 +13,7 @@ import type {
   DisableEnableSpotResult,
   DisableEnableSpotResultUnion,
   DoesRoomLayoutMatchResultUnion,
+  EditClassInput,
   Enrollment,
   IdentifiableUser,
   Purchase,
@@ -857,6 +858,32 @@ export class ApiService {
       }
     } catch (error) {
       return 'UnknownError'
+    }
+  }
+
+  async editClass(classId: string, roomLayoutId: string | null, piqClassId: string | null): Promise<boolean> {
+    const input = { classId: classId, roomLayoutId: roomLayoutId, piqClassId: piqClassId } as EditClassInput
+
+    const EDIT_CLASS_MUTATION = gql`
+      mutation editClass($input: EditClassInput!) {
+        editClass(input: $input) {
+          __typename
+        }
+      }
+    `
+
+    try {
+      const result = await this.authApiClient.mutate({
+        mutation: EDIT_CLASS_MUTATION,
+        variables: {
+          input: input
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      return result.data.editClass as boolean
+    } catch (error) {
+      return false
     }
   }
 }
