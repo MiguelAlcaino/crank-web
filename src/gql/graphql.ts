@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
+import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -221,7 +221,7 @@ export type EditClassInput = {
   roomLayoutId?: InputMaybe<Scalars['ID']>;
 };
 
-export type EditClassResultUnion = EditClassSuccessResult | PiqcLassNotFoundError;
+export type EditClassResultUnion = EditClassSuccessResult | PiqClassNotFoundError;
 
 export type EditClassSuccessResult = {
   __typename: 'EditClassSuccessResult';
@@ -443,13 +443,13 @@ export type MutationUpdateCurrentUserPasswordArgs = {
   site: SiteEnum;
 };
 
-export type PiqcLassNotFoundError = Error & {
-  __typename: 'PIQCLassNotFoundError';
+export type PiqClassHasNoRoomLayoutError = Error & {
+  __typename: 'PIQClassHasNoRoomLayoutError';
   code: Scalars['String'];
 };
 
-export type PiqClassHasNoRoomLayoutError = Error & {
-  __typename: 'PIQClassHasNoRoomLayoutError';
+export type PiqClassNotFoundError = Error & {
+  __typename: 'PIQClassNotFoundError';
   code: Scalars['String'];
 };
 

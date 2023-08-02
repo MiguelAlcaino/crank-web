@@ -1780,7 +1780,7 @@
           },
           {
             "kind": "OBJECT",
-            "name": "PIQCLassNotFoundError",
+            "name": "PIQClassNotFoundError",
             "ofType": null
           }
         ]
@@ -2134,12 +2134,12 @@
           },
           {
             "kind": "OBJECT",
-            "name": "PIQCLassNotFoundError",
+            "name": "PIQClassHasNoRoomLayoutError",
             "ofType": null
           },
           {
             "kind": "OBJECT",
-            "name": "PIQClassHasNoRoomLayoutError",
+            "name": "PIQClassNotFoundError",
             "ofType": null
           },
           {
@@ -3118,7 +3118,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "PIQCLassNotFoundError",
+        "name": "PIQClassHasNoRoomLayoutError",
         "description": null,
         "fields": [
           {
@@ -3151,7 +3151,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "PIQClassHasNoRoomLayoutError",
+        "name": "PIQClassNotFoundError",
         "description": null,
         "fields": [
           {
