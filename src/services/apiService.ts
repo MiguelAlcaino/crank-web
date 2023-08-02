@@ -14,6 +14,7 @@ import type {
   DisableEnableSpotResultUnion,
   DoesRoomLayoutMatchResultUnion,
   EditClassInput,
+  EditClassResultUnion,
   Enrollment,
   IdentifiableUser,
   Purchase,
@@ -825,7 +826,7 @@ export class ApiService {
           ... on RoomLayoutMatchResult {
             __typename
             matchesPIQRoomLayout
-          }        
+          }
         }
       }
     `
@@ -842,32 +843,43 @@ export class ApiService {
       const doesClassMatchPIQLayout = queryResult.data
         .doesClassMatchPIQLayout as DoesRoomLayoutMatchResultUnion
 
-      if (doesClassMatchPIQLayout.__typename === 'PIQClassHasNoRoomLayoutError') {
-        return 'PIQClassHasNoRoomLayoutError';
-      } else if (doesClassMatchPIQLayout.__typename === 'RoomLayoutMatchResult') {
+      if (doesClassMatchPIQLayout.__typename === 'RoomLayoutMatchResult') {
         const roomLayoutMatchResult = doesClassMatchPIQLayout as RoomLayoutMatchResult
         if (roomLayoutMatchResult.matchesPIQRoomLayout) {
           return 'RoomLayoutMatchSuccess'
         } else {
           return 'RoomLayoutMatchError'
         }
-      } else if (doesClassMatchPIQLayout.__typename === 'PIQClassNotLinkedError') {
-        return 'PIQClassNotLinkedError'
       } else {
-        return 'UnknownError'
+        return doesClassMatchPIQLayout.__typename
       }
     } catch (error) {
       return 'UnknownError'
     }
   }
 
-  async editClass(classId: string, roomLayoutId: string | null, piqClassId: string | null): Promise<boolean> {
-    const input = { classId: classId, roomLayoutId: roomLayoutId, piqClassId: piqClassId } as EditClassInput
+  async editClass(
+    classId: string,
+    roomLayoutId: string | null,
+    piqClassId: string | null
+  ): Promise<string> {
+    const input = {
+      classId: classId,
+      roomLayoutId: roomLayoutId,
+      piqClassId: piqClassId
+    } as EditClassInput
 
     const EDIT_CLASS_MUTATION = gql`
       mutation editClass($input: EditClassInput!) {
         editClass(input: $input) {
           __typename
+          ... on EditClassSuccessResult {
+            __typename
+            updated
+          }
+          ... on PIQClassNotFoundError {
+            __typename
+          }
         }
       }
     `
@@ -881,9 +893,81 @@ export class ApiService {
         fetchPolicy: 'network-only'
       })
 
-      return result.data.editClass as boolean
+      const editClassResultUnion = result.data.editClass as EditClassResultUnion
+
+      return editClassResultUnion.__typename
     } catch (error) {
-      return false
+      return 'UnknownError'
+    }
+  }
+
+  async editClassSetPiqClassId(classId: string, piqClassId: string): Promise<string> {
+    const input = { classId: classId, piqClassId: piqClassId } as EditClassInput
+
+    const EDIT_CLASS_MUTATION = gql`
+      mutation editClass($input: EditClassInput!) {
+        editClass(input: $input) {
+          __typename
+          ... on EditClassSuccessResult {
+            __typename
+            updated
+          }
+          ... on PIQClassNotFoundError {
+            __typename
+          }
+        }
+      }
+    `
+
+    try {
+      const result = await this.authApiClient.mutate({
+        mutation: EDIT_CLASS_MUTATION,
+        variables: {
+          input: input
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      const editClassResultUnion = result.data.editClass as EditClassResultUnion
+
+      return editClassResultUnion.__typename
+    } catch (error) {
+      return 'UnknownError'
+    }
+  }
+
+  async editClassSetRoomLayoutId(classId: string, roomLayoutId: string | null): Promise<string> {
+    const input = { classId: classId, roomLayoutId: roomLayoutId } as EditClassInput
+
+    const EDIT_CLASS_MUTATION = gql`
+      mutation editClass($input: EditClassInput!) {
+        editClass(input: $input) {
+          __typename
+          ... on EditClassSuccessResult {
+            __typename
+            updated
+          }
+          ... on PIQClassNotFoundError {
+            __typename
+          }
+        }
+      }
+    `
+
+    try {
+      const result = await this.authApiClient.mutate({
+        mutation: EDIT_CLASS_MUTATION,
+        variables: {
+          input: input
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      const editClassResultUnion = result.data.editClass as EditClassResultUnion
+
+      return editClassResultUnion.__typename
+    } catch (error) {
+      return 'UnknownError'
     }
   }
 }
