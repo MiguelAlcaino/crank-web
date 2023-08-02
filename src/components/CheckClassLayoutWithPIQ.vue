@@ -9,13 +9,13 @@ defineProps<{
 const emits = defineEmits<{
   (e: 'goToLayoutEditPage'): void
   (e: 'removeLayout'): void
-  (e: 'assignPiqId', piqId: string): void
+  (e: 'assignPiqId', piqClassId: string): void
 }>()
 
 const selectedPiqId = ref<string | null>(null)
 
 function assignPiqId() {
-  if (selectedPiqId.value) emits('assignPiqId', selectedPiqId.value)
+  if (selectedPiqId.value) emits('assignPiqId', selectedPiqId.value as string)
 }
 </script>
 <template>

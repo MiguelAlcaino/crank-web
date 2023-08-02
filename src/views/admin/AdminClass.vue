@@ -1,16 +1,20 @@
 <script setup lang="ts">
-import dayjs from 'dayjs'
-import SpotMatrix from '@/components/SpotMatrix.vue'
-import type { BookableSpot, ClassInfo, IconPosition, IdentifiableUser } from '@/gql/graphql'
-import { PositionIconEnum } from '@/gql/graphql'
-import type { ApiService } from '@/services/apiService'
 import { inject, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
+import dayjs from 'dayjs'
+
+import type { BookableSpot, ClassInfo, IconPosition, IdentifiableUser } from '@/gql/graphql'
+
+import type { ApiService } from '@/services/apiService'
+
 import { appStore } from '@/stores/appStorage'
 
-import ErrorModal from '@/components/ErrorModal.vue'
+import SpotMatrix from '@/components/SpotMatrix.vue'
+import CheckClassLayoutWithPIQ from '@/components/CheckClassLayoutWithPIQ.vue'
 import ConfirmModal from '@/components/ConfirmModal.vue'
+import ErrorModal from '@/components/ErrorModal.vue'
+import SuccessModal from '@/components/SuccessModal.vue'
 
 interface BookableSpotClickedEvent {
   spotNumber: number | null
@@ -23,6 +27,7 @@ const route = useRoute()
 
 const apiService = inject<ApiService>('gqlApiService')!
 const isLoading = ref<boolean>(false)
+const checkClassLayoutWithPIQIsLoading = ref<boolean>(false)
 const classInfo = ref<ClassInfo | null>(null)
 
 const assignUserToThisSpotVisible = ref<boolean>(false)
@@ -31,9 +36,12 @@ const searchingUsers = ref<boolean>(false)
 const users = ref<IdentifiableUser[]>([])
 const selectedUserId = ref<string | null>(null)
 const assigningUserToClass = ref<boolean>(false)
+const doesClassMatchPIQLayoutResponse = ref<string | null>(null)
 
 const classId = ref<string>('')
 const totalSignedIn = ref<number>(0)
+
+const roomLayoutEditUrl = ref<string | null>(null)
 
 const errorModalData = ref<{
   title: string
@@ -89,9 +97,22 @@ const selectedSpot = ref<{
   enrollmentId: null
 })
 
+const successModalData = ref<{
+  title: string
+  message: string
+  isLoading: boolean
+  isVisible: boolean
+}>({
+  title: '',
+  message: '',
+  isLoading: false,
+  isVisible: false
+})
+
 onMounted(() => {
   classId.value = getClassId()
   getClassInfo()
+  doesClassMatchPIQLayout()
 })
 
 async function getClassInfo() {
@@ -101,12 +122,26 @@ async function getClassInfo() {
   isLoading.value = false
 }
 
+async function doesClassMatchPIQLayout() {
+  checkClassLayoutWithPIQIsLoading.value = true
+  doesClassMatchPIQLayoutResponse.value = await apiService.doesClassMatchPIQLayout(
+    appStore().site,
+    classId.value
+  )
+  checkClassLayoutWithPIQIsLoading.value = false
+}
+
 function getClassId(): string {
   let mindbodyClass = inject<any | undefined>('mindbodyClass')
   if (mindbodyClass !== undefined) {
     console.log('ESTAMOS DENTRO!!!!')
     console.log(mindbodyClass)
+
     return mindbodyClass.id as string
+  }
+
+  if (mindbodyClass?.roomLayoutEditUrl) {
+    roomLayoutEditUrl.value = mindbodyClass.roomLayoutEditUrl
   }
 
   return route.params.id as string
@@ -331,6 +366,56 @@ async function confirmLateCancelation() {
     errorModalData.value.isVisible = true
   }
 }
+
+function goToLayoutEditPage() {
+  if (roomLayoutEditUrl.value) {
+    window.location.href = roomLayoutEditUrl.value
+  } else {
+    errorModalData.value.message = 'roomLayoutEditUrl is not configured.'
+    errorModalData.value.isVisible = true
+  }
+}
+
+async function removeLayout() {
+  checkClassLayoutWithPIQIsLoading.value = true
+  const result = await apiService.editClassSetRoomLayoutId(classId.value, null)
+  checkClassLayoutWithPIQIsLoading.value = false
+
+  if (result === 'EditClassSuccessResult') {
+    getClassInfo()
+    doesClassMatchPIQLayoutResponse.value = null
+
+    successModalData.value.title = 'SUCCESS'
+    successModalData.value.message = 'THE LAYOUT WA REMOVED SUCCESSFULLY.'
+    successModalData.value.isVisible = true
+  } else {
+    errorModalData.value.message =
+      "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+    errorModalData.value.isVisible = true
+  }
+}
+
+async function assignPiqId(piqClassId: string) {
+  checkClassLayoutWithPIQIsLoading.value = true
+  const result = await apiService.editClassSetPiqClassId(classId.value, piqClassId)
+  checkClassLayoutWithPIQIsLoading.value = false
+
+  if (result === 'EditClassSuccessResult') {
+    getClassInfo()
+    doesClassMatchPIQLayoutResponse.value = null
+
+    successModalData.value.title = 'SUCCESS'
+    successModalData.value.message = 'PIQ ID ASSIGNED SUCCESSFULLY.'
+    successModalData.value.isVisible = true
+  } else if (result === 'PIQClassNotFoundError') {
+    errorModalData.value.message = 'PIQ Class ID Not Found.'
+    errorModalData.value.isVisible = true
+  } else {
+    errorModalData.value.message =
+      "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+    errorModalData.value.isVisible = true
+  }
+}
 </script>
 
 <template>
@@ -348,6 +433,16 @@ async function confirmLateCancelation() {
 
     <h6 v-html="classInfo?.class?.description"></h6>
   </div>
+
+  <CheckClassLayoutWithPIQ
+    :checkLayoutError="doesClassMatchPIQLayoutResponse"
+    :isLoading="checkClassLayoutWithPIQIsLoading"
+    @goToLayoutEditPage="goToLayoutEditPage"
+    @removeLayout="removeLayout"
+    @assignPiqId="assignPiqId"
+  >
+  </CheckClassLayoutWithPIQ>
+
   <hr />
   <spot-matrix
     v-if="classInfo !== null && classInfo.matrix !== null"
@@ -438,4 +533,13 @@ async function confirmLateCancelation() {
     :clickToClose="false"
   >
   </ConfirmModal>
+
+  <SuccessModal
+    :title="successModalData.title"
+    :message="successModalData.message"
+    :clickToClose="false"
+    @accept="successModalData.isVisible = false"
+    v-model="successModalData.isVisible"
+  >
+  </SuccessModal>
 </template>
