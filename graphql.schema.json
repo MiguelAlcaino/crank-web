@@ -1791,15 +1791,15 @@
         "description": null,
         "fields": [
           {
-            "name": "success",
-            "description": null,
+            "name": "updated",
+            "description": "Whether the class was updated or not",
             "args": [],
             "type": {
               "kind": "NON_NULL",
               "name": null,
               "ofType": {
                 "kind": "SCALAR",
-                "name": "String",
+                "name": "Boolean",
                 "ofType": null
               }
             },

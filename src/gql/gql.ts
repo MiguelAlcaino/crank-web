@@ -1,6 +1,6 @@
 /* eslint-disable */
 import * as types from './graphql';
-import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
+import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 
 /**
  * Map of all GraphQL operations in the project.
@@ -33,8 +33,7 @@ const documents = {
     "\n      query searchUser($site: SiteEnum!, $query: String) {\n        searchUser(site: $site, query: $query) {\n          id\n          user {\n            firstName\n            lastName\n            email\n          }\n        }\n      }\n    ": types.SearchUserDocument,
     "\n      mutation bookUserIntoClass($input: BookUserIntoClassInput!) {\n        bookUserIntoClass(input: $input) {\n          __typename\n        }\n      }\n    ": types.BookUserIntoClassDocument,
     "\n      mutation removeUserFromClass($input: CancelEnrollmentInput!) {\n        removeUserFromClass(input: $input) {\n          __typename\n        }\n      }\n    ": types.RemoveUserFromClassDocument,
-    "\n      query doesClassMatchPIQLayout($site: SiteEnum!, $classId: ID!) {\n        doesClassMatchPIQLayout(site: $site, classId: $classId) {\n          __typename\n          ... on PIQClassHasNoRoomLayoutError {\n            __typename\n            code\n          }\n          ... on PIQClassNotLinkedError {\n            __typename\n            code\n          }\n          ... on RoomLayoutMatchResult {\n            __typename\n            matchesPIQRoomLayout\n          }        \n        }\n      }\n    ": types.DoesClassMatchPiqLayoutDocument,
-    "\n      mutation editClass($input: EditClassInput!) {\n        editClass(input: $input) {\n          __typename\n        }\n      }\n    ": types.EditClassDocument,
+    "\n      query doesClassMatchPIQLayout($site: SiteEnum!, $classId: ID!) {\n        doesClassMatchPIQLayout(site: $site, classId: $classId) {\n          __typename\n          ... on PIQClassHasNoRoomLayoutError {\n            __typename\n            code\n          }\n          ... on PIQClassNotLinkedError {\n            __typename\n            code\n          }\n          ... on RoomLayoutMatchResult {\n            __typename\n            matchesPIQRoomLayout\n          }\n        }\n      }\n    ": types.DoesClassMatchPiqLayoutDocument,
 };
 
 /**
@@ -134,11 +133,7 @@ export function graphql(source: "\n      mutation removeUserFromClass($input: Ca
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n      query doesClassMatchPIQLayout($site: SiteEnum!, $classId: ID!) {\n        doesClassMatchPIQLayout(site: $site, classId: $classId) {\n          __typename\n          ... on PIQClassHasNoRoomLayoutError {\n            __typename\n            code\n          }\n          ... on PIQClassNotLinkedError {\n            __typename\n            code\n          }\n          ... on RoomLayoutMatchResult {\n            __typename\n            matchesPIQRoomLayout\n          }        \n        }\n      }\n    "): (typeof documents)["\n      query doesClassMatchPIQLayout($site: SiteEnum!, $classId: ID!) {\n        doesClassMatchPIQLayout(site: $site, classId: $classId) {\n          __typename\n          ... on PIQClassHasNoRoomLayoutError {\n            __typename\n            code\n          }\n          ... on PIQClassNotLinkedError {\n            __typename\n            code\n          }\n          ... on RoomLayoutMatchResult {\n            __typename\n            matchesPIQRoomLayout\n          }        \n        }\n      }\n    "];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n      mutation editClass($input: EditClassInput!) {\n        editClass(input: $input) {\n          __typename\n        }\n      }\n    "): (typeof documents)["\n      mutation editClass($input: EditClassInput!) {\n        editClass(input: $input) {\n          __typename\n        }\n      }\n    "];
+export function graphql(source: "\n      query doesClassMatchPIQLayout($site: SiteEnum!, $classId: ID!) {\n        doesClassMatchPIQLayout(site: $site, classId: $classId) {\n          __typename\n          ... on PIQClassHasNoRoomLayoutError {\n            __typename\n            code\n          }\n          ... on PIQClassNotLinkedError {\n            __typename\n            code\n          }\n          ... on RoomLayoutMatchResult {\n            __typename\n            matchesPIQRoomLayout\n          }\n        }\n      }\n    "): (typeof documents)["\n      query doesClassMatchPIQLayout($site: SiteEnum!, $classId: ID!) {\n        doesClassMatchPIQLayout(site: $site, classId: $classId) {\n          __typename\n          ... on PIQClassHasNoRoomLayoutError {\n            __typename\n            code\n          }\n          ... on PIQClassNotLinkedError {\n            __typename\n            code\n          }\n          ... on RoomLayoutMatchResult {\n            __typename\n            matchesPIQRoomLayout\n          }\n        }\n      }\n    "];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
