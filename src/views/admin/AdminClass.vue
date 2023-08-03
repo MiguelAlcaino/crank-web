@@ -23,8 +23,8 @@ interface BookableSpotClickedEvent {
 
 interface DoesRoomLayoutMatchResult {
   __typename: string
-  currentRoomLayout ?: RoomLayout
-  suggestedRoomLayout ?: RoomLayout
+  currentRoomLayout?: RoomLayout
+  suggestedRoomLayout?: RoomLayout
   matchesPIQRoomLayout?: boolean
   urlToCreateRoomLayout?: string
 }
@@ -34,7 +34,6 @@ interface RoomLayout {
   id: string
   name: string
 }
-
 
 const route = useRoute()
 
@@ -369,11 +368,11 @@ async function confirmLateCancelation() {
 async function doesClassMatchPIQLayout() {
   checkClassLayoutWithPIQIsLoading.value = true
   try {
-    var result = await apiService.doesClassMatchPIQLayout(appStore().site,classId.value)
+    var result = await apiService.doesClassMatchPIQLayout(appStore().site, classId.value)
 
     doesRoomLayoutMatchResult.value = result as DoesRoomLayoutMatchResult
   } catch (error) {
-    doesRoomLayoutMatchResult.value = { __typename: "UnknownError" } as DoesRoomLayoutMatchResult
+    doesRoomLayoutMatchResult.value = { __typename: 'UnknownError' } as DoesRoomLayoutMatchResult
   } finally {
     checkClassLayoutWithPIQIsLoading.value = false
   }
@@ -436,7 +435,10 @@ async function assignPiqId(piqClassId: string) {
 async function assignRoomLayoutId(roomLayoutId: string) {
   if (roomLayoutId) {
     checkClassLayoutWithPIQIsLoading.value = true
-    const result = await apiService.editClass({ classId: classId.value, roomLayoutId: roomLayoutId })
+    const result = await apiService.editClass({
+      classId: classId.value,
+      roomLayoutId: roomLayoutId
+    })
     checkClassLayoutWithPIQIsLoading.value = false
 
     if (result.__typename === 'EditClassSuccessResult') {
@@ -447,7 +449,7 @@ async function assignRoomLayoutId(roomLayoutId: string) {
 
       successModalData.value.title = 'Success'
       successModalData.value.message = 'Room layout assigned successfully.'
-      successModalData.value.isVisible = true    
+      successModalData.value.isVisible = true
     } else {
       errorModalData.value.message =
         "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
@@ -459,7 +461,6 @@ async function assignRoomLayoutId(roomLayoutId: string) {
     errorModalData.value.isVisible = true
   }
 }
-
 </script>
 
 <template>
@@ -478,14 +479,24 @@ async function assignRoomLayoutId(roomLayoutId: string) {
     <h6 v-html="classInfo?.class?.description"></h6>
   </div>
 
-  <CheckClassLayoutWithPIQ :doesRoomLayoutMatchResult="doesRoomLayoutMatchResult"
-    :isLoading="checkClassLayoutWithPIQIsLoading" @goToLayoutEditPage="goToLayoutEditPage" @removeLayout="removeLayout"
-    @assignRoomLayoutId="assignRoomLayoutId" @assignPiqId="assignPiqId">
+  <CheckClassLayoutWithPIQ
+    :doesRoomLayoutMatchResult="doesRoomLayoutMatchResult"
+    :isLoading="checkClassLayoutWithPIQIsLoading"
+    @goToLayoutEditPage="goToLayoutEditPage"
+    @removeLayout="removeLayout"
+    @assignRoomLayoutId="assignRoomLayoutId"
+    @assignPiqId="assignPiqId"
+  >
   </CheckClassLayoutWithPIQ>
 
   <hr />
-  <spot-matrix v-if="classInfo !== null && classInfo.matrix !== null" :matrix="classInfo.matrix"
-    :show-user-in-spots="true" :selectedSpotNumber="selectedSpot?.spotNumber" @click-spot="spotClicked">
+  <spot-matrix
+    v-if="classInfo !== null && classInfo.matrix !== null"
+    :matrix="classInfo.matrix"
+    :show-user-in-spots="true"
+    :selectedSpotNumber="selectedSpot?.spotNumber"
+    @click-spot="spotClicked"
+  >
   </spot-matrix>
 
   <div v-if="selectedSpot?.isBooked === false && selectedSpot.enabled === true">
@@ -517,35 +528,64 @@ async function assignRoomLayoutId(roomLayoutId: string) {
         {{ option.user!.firstName + ' ' + option.user!.lastName + ' - ' + option.user!.email }}
       </option>
     </select>
-    <button @click="clickAssing"
-      :disabled="selectedUserId === null || selectedUserId === undefined || assigningUserToClass">
+    <button
+      @click="clickAssing"
+      :disabled="selectedUserId === null || selectedUserId === undefined || assigningUserToClass"
+    >
       Assing
     </button>
   </div>
 
   <!-- ERROR modal -->
-  <ErrorModal :isLoading="false" :message="errorModalData.message" :clickToClose="false"
-    v-model="errorModalData.isVisible" @close="errorModalData.isVisible = false">
+  <ErrorModal
+    :isLoading="false"
+    :message="errorModalData.message"
+    :clickToClose="false"
+    v-model="errorModalData.isVisible"
+    @close="errorModalData.isVisible = false"
+  >
   </ErrorModal>
 
-  <ConfirmModal v-model="confirmModalData.isVisible" :title="confirmModalData.title" :message="confirmModalData.message"
-    :isLoading="confirmModalData.isLoading" @cancel="confirmModalData.isVisible = false"
-    @confirm="bookUserIntoClass(classId, selectedUserId!, selectedSpot.spotNumber!, false)" :clickToClose="false">
+  <ConfirmModal
+    v-model="confirmModalData.isVisible"
+    :title="confirmModalData.title"
+    :message="confirmModalData.message"
+    :isLoading="confirmModalData.isLoading"
+    @cancel="confirmModalData.isVisible = false"
+    @confirm="bookUserIntoClass(classId, selectedUserId!, selectedSpot.spotNumber!, false)"
+    :clickToClose="false"
+  >
   </ConfirmModal>
 
-  <ConfirmModal v-model="confirmModalCancelReservationData.isVisible" title="Cancel Reservation?"
-    message="Are you sure, you want to cancel the reservation?" :isLoading="confirmModalCancelReservationData.isLoading"
-    @cancel="confirmModalCancelReservationData.isVisible = false" @confirm="removeUserFromClass()" :clickToClose="false">
+  <ConfirmModal
+    v-model="confirmModalCancelReservationData.isVisible"
+    title="Cancel Reservation?"
+    message="Are you sure, you want to cancel the reservation?"
+    :isLoading="confirmModalCancelReservationData.isLoading"
+    @cancel="confirmModalCancelReservationData.isVisible = false"
+    @confirm="removeUserFromClass()"
+    :clickToClose="false"
+  >
   </ConfirmModal>
 
-  <ConfirmModal v-model="confirmModalLateCancelReservationData.isVisible" title="Warning"
+  <ConfirmModal
+    v-model="confirmModalLateCancelReservationData.isVisible"
+    title="Warning"
     message="You are outsade the early cancellation window. you can only make a late cancellaiton."
     :isLoading="confirmModalLateCancelReservationData.isLoading"
-    @cancel="confirmModalLateCancelReservationData.isVisible = false" textConfirmButton="CONFIRM"
-    @confirm="confirmLateCancelation()" :clickToClose="false">
+    @cancel="confirmModalLateCancelReservationData.isVisible = false"
+    textConfirmButton="CONFIRM"
+    @confirm="confirmLateCancelation()"
+    :clickToClose="false"
+  >
   </ConfirmModal>
 
-  <SuccessModal :title="successModalData.title" :message="successModalData.message" :clickToClose="false"
-    @accept="successModalData.isVisible = false" v-model="successModalData.isVisible">
+  <SuccessModal
+    :title="successModalData.title"
+    :message="successModalData.message"
+    :clickToClose="false"
+    @accept="successModalData.isVisible = false"
+    v-model="successModalData.isVisible"
+  >
   </SuccessModal>
 </template>
