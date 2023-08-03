@@ -323,6 +323,7 @@ export class ApiService {
           startWithNoTimeZone
           duration
           waitListAvailable
+          isSubstitute
         }
         enrollmentsWaitlist: currentUserEnrollments(
           site: $site
@@ -392,6 +393,7 @@ export class ApiService {
     try {
       const queryResult = await this.authApiClient.query({
         query: CUSTOM_CALENDAR_CLASSES_QUERY,
+        fetchPolicy: 'network-only',
         variables: {
           site: site,
           params: params,

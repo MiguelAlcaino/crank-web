@@ -4,20 +4,22 @@ import useVuelidate from '@vuelidate/core'
 import { required, email, minLength, sameAs, maxLength, helpers } from '@vuelidate/validators'
 import {
   GenderEnum,
-  SiteEnum,
   type RegisterUserInput,
   type Country,
-  type State
+  type State,
+  SiteEnum
 } from '@/gql/graphql'
 
 import type { ApiService } from '@/services/apiService'
 import { authService } from '@/services/authService'
+import { appStore } from '@/stores/appStorage'
 import router from '@/router'
 
 const isSaving = ref(false)
 const isLoggingIn = ref(false)
 const countries = ref([] as Country[])
 const countryStates = ref([] as State[])
+const location = ref(SiteEnum.Dubai)
 
 const formData = reactive({
   firstName: '',
@@ -147,7 +149,7 @@ const submitForm = async () => {
       zipCode: '0000'
     }
 
-    const response = await apiService.registerUser(SiteEnum.Dubai, input)
+    const response = await apiService.registerUser(location.value, input)
     isSaving.value = false
 
     if (response === 'SuccessRegistration') {
@@ -155,7 +157,7 @@ const submitForm = async () => {
       isLoggingIn.value = true
 
       try {
-        await authService.login(formData.email, formData.password, SiteEnum.Dubai)
+        await authService.login(formData.email, formData.password, appStore().site)
         await router.push({ name: 'home' })
       } catch (error) {
         console.log(error)
@@ -201,7 +203,14 @@ function onChangeCountry() {
   <form @submit.prevent="submitForm" autocomplete="off">
     <h1>Registration</h1>
     <h3>Location</h3>
-
+    <div class="field">
+      <p>
+        <select class="input" v-model="location" disabled>
+          <option :value="SiteEnum.Dubai">Dubai</option>
+          <option :value="SiteEnum.AbuDhabi">Abu Dhabi</option>
+        </select>
+      </p>
+    </div>
     <h3>Profile Information</h3>
     <!--email-->
     <div class="field">

@@ -2,13 +2,14 @@
 import { computed, reactive, ref } from 'vue'
 import router from '@/router'
 import { authService } from '@/services/authService'
-import { helpers, maxLength, minValue, required, email } from '@vuelidate/validators'
+import { helpers, required, email } from '@vuelidate/validators'
 import useVuelidate from '@vuelidate/core'
+
+import { SiteEnum } from '@/gql/graphql'
 
 const displayLoginError = ref(false)
 const isSubmitting = ref(false)
 const selectedSite = ref('dubai')
-const sites = ['dubai', 'abu_dhabi']
 
 const formData = reactive({
   email: '',
@@ -38,7 +39,7 @@ async function login() {
 
     try {
       await authService.login(formData.email, formData.password, selectedSite.value)
-      await router.push({ name: 'home' })
+      await router.push({ name: 'calendar' })
     } catch (error) {
       displayLoginError.value = true
     }
@@ -49,12 +50,10 @@ async function login() {
 
 <template>
   <form @submit.prevent="login" autocomplete="off">
-    <select v-model="selectedSite">
-      <option v-for="site in sites" :value="site" :key="site">
-        {{ site }}
-      </option>
+    <select class="input" v-model="selectedSite">
+      <option :value="SiteEnum.Dubai">Dubai</option>
+      <option :value="SiteEnum.AbuDhabi">Abu Dhabi</option>
     </select>
-
     <!--email-->
     <div class="field">
       <p>
@@ -99,4 +98,5 @@ async function login() {
       </p>
     </div>
   </form>
+  <p>New to CRANK? <router-link to="/register">Sign up now.</router-link></p>
 </template>

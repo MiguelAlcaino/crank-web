@@ -1,16 +1,13 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import SpotMatrix from '@/components/SpotMatrix.vue'
-import {
-  type BookableSpot,
-  type ClassInfo,
-  type IconPosition,
-  type IdentifiableUser,
-  SiteEnum
-} from '@/gql/graphql'
+import type { BookableSpot, ClassInfo, IconPosition, IdentifiableUser } from '@/gql/graphql'
+import { PositionIconEnum } from '@/gql/graphql'
 import type { ApiService } from '@/services/apiService'
 import { inject, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+
+import { appStore } from '@/stores/appStorage'
 
 import ErrorModal from '@/components/ErrorModal.vue'
 import ConfirmModal from '@/components/ConfirmModal.vue'
@@ -22,7 +19,7 @@ interface BookableSpotClickedEvent {
 
 const route = useRoute()
 
-const { id } = route.params as { id: string }
+// const { id } = route.params as { id: string }
 
 const apiService = inject<ApiService>('gqlApiService')!
 const isLoading = ref<boolean>(false)
@@ -34,6 +31,9 @@ const searchingUsers = ref<boolean>(false)
 const users = ref<IdentifiableUser[]>([])
 const selectedUserId = ref<string | null>(null)
 const assigningUserToClass = ref<boolean>(false)
+
+const classId = ref<string>('')
+const totalSignedIn = ref<number>(0)
 
 const errorModalData = ref<{
   title: string
@@ -90,13 +90,42 @@ const selectedSpot = ref<{
 })
 
 onMounted(() => {
+  classId.value = getClassId()
   getClassInfo()
 })
 
 async function getClassInfo() {
   isLoading.value = true
-  classInfo.value = await apiService.getClassInfo(SiteEnum.Dubai, id)
+  classInfo.value = await apiService.getClassInfo(appStore().site, classId.value)
+  totalSignedIn.value = getTotalSignedIn()
   isLoading.value = false
+}
+
+function getClassId(): string {
+  let mindbodyClass = inject<any | undefined>('mindbodyClass')
+  if (mindbodyClass !== undefined) {
+    console.log('ESTAMOS DENTRO!!!!')
+    console.log(mindbodyClass)
+    return mindbodyClass.id as string
+  }
+
+  return route.params.id as string
+}
+
+function getTotalSignedIn(): number {
+  let totalSignedIn = 0
+  if (classInfo.value && classInfo.value.matrix && classInfo.value.matrix.length > 0)
+    for (let index = 0; index < classInfo.value.matrix.length; index++) {
+      const classPosition = classInfo.value.matrix[index] as BookableSpot | IconPosition
+
+      if ('spotInfo' in classPosition) {
+        if (classPosition.spotInfo.isBooked) {
+          totalSignedIn++
+        }
+      }
+    }
+
+  return totalSignedIn
 }
 
 function spotClicked(event: BookableSpotClickedEvent) {
@@ -130,7 +159,7 @@ const isEnablingDisablingSpot = ref<boolean>(false)
 async function clickPutUnderMaintenance() {
   isEnablingDisablingSpot.value = true
 
-  const response = await apiService.disableSpot(id, selectedSpot.value.spotNumber!)
+  const response = await apiService.disableSpot(classId.value, selectedSpot.value.spotNumber!)
 
   isEnablingDisablingSpot.value = false
 
@@ -151,7 +180,7 @@ async function clickPutUnderMaintenance() {
 async function clickRecoverFromMaintenance() {
   isEnablingDisablingSpot.value = true
 
-  const response = await apiService.enableSpot(id, selectedSpot.value.spotNumber!)
+  const response = await apiService.enableSpot(classId.value, selectedSpot.value.spotNumber!)
 
   isEnablingDisablingSpot.value = false
 
@@ -181,14 +210,14 @@ async function searchUser() {
 
   searchingUsers.value = true
 
-  users.value = await apiService.searchUser(SiteEnum.Dubai, query.value)
+  users.value = await apiService.searchUser(appStore().site, query.value)
 
   searchingUsers.value = false
 }
 
 function clickAssing() {
   if (selectedUserId.value) {
-    bookUserIntoClass(id, selectedUserId.value, selectedSpot.value.spotNumber!, true)
+    bookUserIntoClass(classId.value, selectedUserId.value, selectedSpot.value.spotNumber!, true)
   }
 }
 
@@ -309,7 +338,7 @@ async function confirmLateCancelation() {
     <h4>
       {{ classInfo?.class?.name }} - {{ classInfo?.class.instructorName }} ({{
         dayjs(classInfo?.class.startWithNoTimeZone).format('DD/MM/YYYY')
-      }}) | Total Signed In : 0 | ClassID:
+      }}) | Total Signed In : {{ totalSignedIn }} | ClassID:
       {{ classInfo?.class.id }}
     </h4>
     <h4>
@@ -382,7 +411,7 @@ async function confirmLateCancelation() {
     :message="confirmModalData.message"
     :isLoading="confirmModalData.isLoading"
     @cancel="confirmModalData.isVisible = false"
-    @confirm="bookUserIntoClass(id, selectedUserId!, selectedSpot.spotNumber!, false)"
+    @confirm="bookUserIntoClass(classId, selectedUserId!, selectedSpot.spotNumber!, false)"
     :clickToClose="false"
   >
   </ConfirmModal>

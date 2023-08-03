@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router'
 
 import dayjs from 'dayjs'
 
-import { type ClassInfo, EnrollmentTypeEnum, SiteEnum } from '@/gql/graphql'
+import { type ClassInfo, EnrollmentTypeEnum } from '@/gql/graphql'
 
 import ConfirmModal from '@/components/ConfirmModal.vue'
 import SuccessModal from '@/components/SuccessModal.vue'
@@ -16,6 +16,7 @@ import WaitlistButton from '@/components/WaitlistButton.vue'
 import router from '@/router'
 import PaymentErrorModal from '@/components/PaymentErrorModal.vue'
 import type { ApiService } from '@/services/apiService'
+import { appStore } from '@/stores/appStorage'
 
 const route = useRoute()
 
@@ -71,10 +72,10 @@ async function getClassInfo() {
   isLoading.value = true
 
   const classId = route.params.id as string
-  const _classInfo = await apiService.getClassInfo(SiteEnum.Dubai, classId)
+  const _classInfo = await apiService.getClassInfo(appStore().site, classId)
 
   if (_classInfo) {
-    const userEnrollments = await apiService.getCurrentUserEnrollments(SiteEnum.Dubai, {
+    const userEnrollments = await apiService.getCurrentUserEnrollments(appStore().site, {
       enrollmentType: EnrollmentTypeEnum.All,
       startDate: dayjs(new Date(_classInfo.class.start)).format('YYYY-MM-DD'),
       endDate: dayjs(new Date(_classInfo.class.start)).format('YYYY-MM-DD')
@@ -138,7 +139,7 @@ function goToThePackagesScreen() {
 async function bookClass(classId: string, spotNumber: number | null, isWaitlistBooking: boolean) {
   confirmModalData.value.isLoading = true
 
-  const response = await apiService.bookClass(SiteEnum.Dubai, {
+  const response = await apiService.bookClass(appStore().site, {
     classId: classId,
     spotNumber: spotNumber,
     isWaitlistBooking: isWaitlistBooking

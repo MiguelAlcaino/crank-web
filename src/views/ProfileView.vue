@@ -5,6 +5,9 @@ import { required, maxLength, helpers, minValue } from '@vuelidate/validators'
 import { GenderEnum, type Country, type State, type UserInput } from '@/gql/graphql'
 import type { ApiService } from '@/services/apiService'
 
+import SuccessModal from '@/components/SuccessModal.vue'
+import ErrorModal from '@/components/ErrorModal.vue'
+
 const isSaving = ref(false)
 const countries = ref([] as Country[])
 const countryStates = ref([] as State[])
@@ -79,6 +82,24 @@ const rules = computed(() => {
   }
 })
 
+const successModalData = ref<{
+  title: string
+  message: string
+  isLoading: boolean
+  isVisible: boolean
+}>({
+  title: '',
+  message: '',
+  isLoading: false,
+  isVisible: false
+})
+
+const errorModalData = ref<{
+  isVisible: boolean
+}>({
+  isVisible: false
+})
+
 const v$ = useVuelidate(rules, formData)
 const apiService = inject<ApiService>('gqlApiService')!
 
@@ -146,12 +167,9 @@ const submitForm = async () => {
     isSaving.value = false
 
     if (response === 'UpdateProfileSuccess') {
-      console.log('UpdateProfileSuccess')
+      successModalData.value.isVisible = true
     } else {
-      console.error(
-        'Error updating profile',
-        "Ups! Sorry, we didn't see that coming!. Please try again or communicate with the team to resolve this issue."
-      )
+      errorModalData.value.isVisible = true
     }
   } else {
     console.log(formData)
@@ -444,4 +462,22 @@ function onChangeCountry() {
     <!--submit button-->
     <button type="submit" :disabled="isSaving">Save Profile</button>
   </form>
+
+  <SuccessModal
+    :title="'Profile update'"
+    :message="'Your profile was successfully updated'"
+    :clickToClose="false"
+    @accept="successModalData.isVisible = false"
+    v-model="successModalData.isVisible"
+  >
+  </SuccessModal>
+
+  <ErrorModal
+    :isLoading="false"
+    message="Ups! Sorry, we didn't see that coming!. Please try again or communicate with the team to resolve this issue."
+    :clickToClose="false"
+    v-model="errorModalData.isVisible"
+    @close="errorModalData.isVisible = false"
+  >
+  </ErrorModal>
 </template>

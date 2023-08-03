@@ -1,42 +1,36 @@
 import { createApp, h, provide } from 'vue'
 import { createPinia } from 'pinia'
 import { createVfm } from 'vue-final-modal'
-import App from './App.vue'
-import router from './router'
-import './assets/main.css'
+import AdminClass from '@/views/admin/AdminClass.vue'
+import router from '@/router'
+import '@/assets/main.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import 'vue-final-modal/style.css'
-import { authService } from '@/services/authService'
 import { ApiService } from '@/services/apiService'
 import { newAnonymousClient, newAuthenticatedApolloClient } from '@/services/graphqlClient'
 import { useAuthenticationStore } from '@/stores/authToken'
-import { Config } from '@/model/Config'
 
 startApp()
 
 async function startApp() {
+  const selection = <HTMLElement | null>document.querySelector('#vue-app-admin-class')
+  let mindbodyClass = JSON.parse(selection?.dataset.mindbodyClass as string)
+  let token = selection?.dataset.token as string
+  let gqlUrl = selection?.dataset.gqlUrl as string
   const app = createApp({
     setup() {
+      provide('mindbodyClass', mindbodyClass)
       provide(
         'gqlApiService',
-        new ApiService(
-          newAuthenticatedApolloClient(Config.GRAPHQL_SERVICE_URL),
-          newAnonymousClient(Config.GRAPHQL_SERVICE_URL)
-        )
+        new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
       )
     },
-    render: () => h(App)
+    render: () => h(AdminClass)
   })
 
   app.use(createPinia()).use(router).use(createVfm())
-
-  try {
-    await authService.startRefreshTokenTimer()
-  } catch (e) {
-    // In case the refresh token is invalid
-    useAuthenticationStore().deleteSession()
-  }
+  useAuthenticationStore().setSession(token)
 
   app.mount('#app')
 }
