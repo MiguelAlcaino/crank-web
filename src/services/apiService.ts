@@ -12,6 +12,9 @@ import type {
   DisableEnableSpotInput,
   DisableEnableSpotResult,
   DisableEnableSpotResultUnion,
+  DoesRoomLayoutMatchResultUnion,
+  EditClassInput,
+  EditClassResultUnion,
   Enrollment,
   IdentifiableUser,
   Purchase,
@@ -804,5 +807,79 @@ export class ApiService {
     } catch (error) {
       return 'UnknownError'
     }
+  }
+
+  async doesClassMatchPIQLayout(
+    site: SiteEnum,
+    classId: string
+  ): Promise<DoesRoomLayoutMatchResultUnion> {
+    const DOES_CLASS_MATCH_PIQ_LAYOUT_QUERY = gql`
+      query doesClassMatchPIQLayout($site: SiteEnum!, $classId: ID!) {
+        doesClassMatchPIQLayout(site: $site, classId: $classId) {
+          __typename
+          ... on PIQClassHasNoRoomLayoutError {
+            __typename
+          }
+          ... on PIQClassNotLinkedError {
+            __typename
+          }
+          ... on RoomLayoutIdDoesNotMatchError {
+            __typename
+            urlToCreateRoomLayout
+            currentRoomLayout {
+              __typename
+              id
+              name
+            }
+            suggestedRoomLayout {
+              __typename
+              id
+              name
+            }
+          }
+          ... on RoomLayoutStructureMatchResult {
+            matchesPIQRoomLayout
+          }
+        }
+      }
+    `
+
+    const queryResult = await this.authApiClient.query({
+      query: DOES_CLASS_MATCH_PIQ_LAYOUT_QUERY,
+      variables: {
+        site: site,
+        classId: classId
+      },
+      fetchPolicy: 'network-only'
+    })
+
+    return queryResult.data.doesClassMatchPIQLayout as DoesRoomLayoutMatchResultUnion
+  }
+
+  async editClass(input: EditClassInput): Promise<EditClassResultUnion> {
+    const EDIT_CLASS_MUTATION = gql`
+      mutation editClass($input: EditClassInput!) {
+        editClass(input: $input) {
+          __typename
+          ... on EditClassSuccessResult {
+            __typename
+            updated
+          }
+          ... on PIQClassNotFoundError {
+            __typename
+          }
+        }
+      }
+    `
+
+    const result = await this.authApiClient.mutate({
+      mutation: EDIT_CLASS_MUTATION,
+      variables: {
+        input: input
+      },
+      fetchPolicy: 'network-only'
+    })
+
+    return result.data.editClass as EditClassResultUnion
   }
 }

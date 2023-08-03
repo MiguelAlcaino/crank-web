@@ -1,28 +1,45 @@
 <script setup lang="ts">
-import dayjs from 'dayjs'
-import SpotMatrix from '@/components/SpotMatrix.vue'
-import type { BookableSpot, ClassInfo, IconPosition, IdentifiableUser } from '@/gql/graphql'
-import { PositionIconEnum } from '@/gql/graphql'
-import type { ApiService } from '@/services/apiService'
 import { inject, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
+import dayjs from 'dayjs'
+
+import type { BookableSpot, ClassInfo, IconPosition, IdentifiableUser } from '@/gql/graphql'
+
+import type { ApiService } from '@/services/apiService'
+
 import { appStore } from '@/stores/appStorage'
 
-import ErrorModal from '@/components/ErrorModal.vue'
+import SpotMatrix from '@/components/SpotMatrix.vue'
+import CheckClassLayoutWithPIQ from '@/components/CheckClassLayoutWithPIQ.vue'
 import ConfirmModal from '@/components/ConfirmModal.vue'
+import ErrorModal from '@/components/ErrorModal.vue'
+import SuccessModal from '@/components/SuccessModal.vue'
 
 interface BookableSpotClickedEvent {
   spotNumber: number | null
   isBooked: boolean
 }
 
-const route = useRoute()
+interface DoesRoomLayoutMatchResult {
+  __typename: string
+  currentRoomLayout?: RoomLayout
+  suggestedRoomLayout?: RoomLayout
+  matchesPIQRoomLayout?: boolean
+  urlToCreateRoomLayout?: string
+}
 
-// const { id } = route.params as { id: string }
+interface RoomLayout {
+  __typename: 'RoomLayout'
+  id: string
+  name: string
+}
+
+const route = useRoute()
 
 const apiService = inject<ApiService>('gqlApiService')!
 const isLoading = ref<boolean>(false)
+const checkClassLayoutWithPIQIsLoading = ref<boolean>(false)
 const classInfo = ref<ClassInfo | null>(null)
 
 const assignUserToThisSpotVisible = ref<boolean>(false)
@@ -31,6 +48,7 @@ const searchingUsers = ref<boolean>(false)
 const users = ref<IdentifiableUser[]>([])
 const selectedUserId = ref<string | null>(null)
 const assigningUserToClass = ref<boolean>(false)
+const doesRoomLayoutMatchResult = ref<DoesRoomLayoutMatchResult | null>(null)
 
 const classId = ref<string>('')
 const totalSignedIn = ref<number>(0)
@@ -89,9 +107,22 @@ const selectedSpot = ref<{
   enrollmentId: null
 })
 
+const successModalData = ref<{
+  title: string
+  message: string
+  isLoading: boolean
+  isVisible: boolean
+}>({
+  title: '',
+  message: '',
+  isLoading: false,
+  isVisible: false
+})
+
 onMounted(() => {
   classId.value = getClassId()
   getClassInfo()
+  doesClassMatchPIQLayout()
 })
 
 async function getClassInfo() {
@@ -106,6 +137,7 @@ function getClassId(): string {
   if (mindbodyClass !== undefined) {
     console.log('ESTAMOS DENTRO!!!!')
     console.log(mindbodyClass)
+
     return mindbodyClass.id as string
   }
 
@@ -331,6 +363,104 @@ async function confirmLateCancelation() {
     errorModalData.value.isVisible = true
   }
 }
+
+// Match PIQ Layout
+async function doesClassMatchPIQLayout() {
+  checkClassLayoutWithPIQIsLoading.value = true
+  try {
+    var result = await apiService.doesClassMatchPIQLayout(appStore().site, classId.value)
+
+    doesRoomLayoutMatchResult.value = result as DoesRoomLayoutMatchResult
+  } catch (error) {
+    doesRoomLayoutMatchResult.value = { __typename: 'UnknownError' } as DoesRoomLayoutMatchResult
+  } finally {
+    checkClassLayoutWithPIQIsLoading.value = false
+  }
+}
+
+function goToLayoutEditPage(url: string) {
+  if (url) {
+    window.location.href = url
+  } else {
+    errorModalData.value.message = 'Redirect url is not configured.'
+    errorModalData.value.isVisible = true
+  }
+}
+
+async function removeLayout() {
+  checkClassLayoutWithPIQIsLoading.value = true
+  const result = await apiService.editClass({ classId: classId.value, roomLayoutId: null })
+  checkClassLayoutWithPIQIsLoading.value = false
+
+  if (result.__typename === 'EditClassSuccessResult') {
+    getClassInfo()
+    doesClassMatchPIQLayout()
+
+    doesRoomLayoutMatchResult.value = null
+
+    successModalData.value.title = 'Success'
+    successModalData.value.message = 'The layout was removed successfully.'
+    successModalData.value.isVisible = true
+  } else {
+    errorModalData.value.message =
+      "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+    errorModalData.value.isVisible = true
+  }
+}
+
+async function assignPiqId(piqClassId: string) {
+  checkClassLayoutWithPIQIsLoading.value = true
+  const result = await apiService.editClass({ classId: classId.value, piqClassId: piqClassId })
+  checkClassLayoutWithPIQIsLoading.value = false
+
+  if (result.__typename === 'EditClassSuccessResult') {
+    getClassInfo()
+    doesClassMatchPIQLayout()
+
+    doesRoomLayoutMatchResult.value = null
+
+    successModalData.value.title = 'Success'
+    successModalData.value.message = 'PIQ ID assigned successfully.'
+    successModalData.value.isVisible = true
+  } else if (result.__typename === 'PIQClassNotFoundError') {
+    errorModalData.value.message = 'PIQ Class ID Not Found.'
+    errorModalData.value.isVisible = true
+  } else {
+    errorModalData.value.message =
+      "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+    errorModalData.value.isVisible = true
+  }
+}
+
+async function assignRoomLayoutId(roomLayoutId: string) {
+  if (roomLayoutId) {
+    checkClassLayoutWithPIQIsLoading.value = true
+    const result = await apiService.editClass({
+      classId: classId.value,
+      roomLayoutId: roomLayoutId
+    })
+    checkClassLayoutWithPIQIsLoading.value = false
+
+    if (result.__typename === 'EditClassSuccessResult') {
+      getClassInfo()
+      doesClassMatchPIQLayout()
+
+      doesRoomLayoutMatchResult.value = null
+
+      successModalData.value.title = 'Success'
+      successModalData.value.message = 'Room layout assigned successfully.'
+      successModalData.value.isVisible = true
+    } else {
+      errorModalData.value.message =
+        "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+      errorModalData.value.isVisible = true
+    }
+  } else {
+    errorModalData.value.message =
+      "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+    errorModalData.value.isVisible = true
+  }
+}
 </script>
 
 <template>
@@ -348,6 +478,17 @@ async function confirmLateCancelation() {
 
     <h6 v-html="classInfo?.class?.description"></h6>
   </div>
+
+  <CheckClassLayoutWithPIQ
+    :doesRoomLayoutMatchResult="doesRoomLayoutMatchResult"
+    :isLoading="checkClassLayoutWithPIQIsLoading"
+    @goToLayoutEditPage="goToLayoutEditPage"
+    @removeLayout="removeLayout"
+    @assignRoomLayoutId="assignRoomLayoutId"
+    @assignPiqId="assignPiqId"
+  >
+  </CheckClassLayoutWithPIQ>
+
   <hr />
   <spot-matrix
     v-if="classInfo !== null && classInfo.matrix !== null"
@@ -438,4 +579,13 @@ async function confirmLateCancelation() {
     :clickToClose="false"
   >
   </ConfirmModal>
+
+  <SuccessModal
+    :title="successModalData.title"
+    :message="successModalData.message"
+    :clickToClose="false"
+    @accept="successModalData.isVisible = false"
+    v-model="successModalData.isVisible"
+  >
+  </SuccessModal>
 </template>
