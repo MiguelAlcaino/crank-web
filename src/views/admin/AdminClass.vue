@@ -21,9 +21,22 @@ interface BookableSpotClickedEvent {
   isBooked: boolean
 }
 
-const route = useRoute()
+interface DoesRoomLayoutMatchResult {
+  __typename: string
+  currentRoomLayout ?: RoomLayout
+  suggestedRoomLayout ?: RoomLayout
+  matchesPIQRoomLayout?: boolean
+  urlToCreateRoomLayout?: string
+}
 
-// const { id } = route.params as { id: string }
+interface RoomLayout {
+  __typename: 'RoomLayout'
+  id: string
+  name: string
+}
+
+
+const route = useRoute()
 
 const apiService = inject<ApiService>('gqlApiService')!
 const isLoading = ref<boolean>(false)
@@ -36,12 +49,10 @@ const searchingUsers = ref<boolean>(false)
 const users = ref<IdentifiableUser[]>([])
 const selectedUserId = ref<string | null>(null)
 const assigningUserToClass = ref<boolean>(false)
-const doesClassMatchPIQLayoutResponse = ref<string | null>(null)
+const doesRoomLayoutMatchResult = ref<DoesRoomLayoutMatchResult | null>(null)
 
 const classId = ref<string>('')
 const totalSignedIn = ref<number>(0)
-
-const roomLayoutEditUrl = ref<string | null>(null)
 
 const errorModalData = ref<{
   title: string
@@ -122,15 +133,6 @@ async function getClassInfo() {
   isLoading.value = false
 }
 
-async function doesClassMatchPIQLayout() {
-  checkClassLayoutWithPIQIsLoading.value = true
-  doesClassMatchPIQLayoutResponse.value = await apiService.doesClassMatchPIQLayout(
-    appStore().site,
-    classId.value
-  )
-  checkClassLayoutWithPIQIsLoading.value = false
-}
-
 function getClassId(): string {
   let mindbodyClass = inject<any | undefined>('mindbodyClass')
   if (mindbodyClass !== undefined) {
@@ -138,10 +140,6 @@ function getClassId(): string {
     console.log(mindbodyClass)
 
     return mindbodyClass.id as string
-  }
-
-  if (mindbodyClass?.roomLayoutEditUrl) {
-    roomLayoutEditUrl.value = mindbodyClass.roomLayoutEditUrl
   }
 
   return route.params.id as string
@@ -367,26 +365,42 @@ async function confirmLateCancelation() {
   }
 }
 
-function goToLayoutEditPage() {
-  if (roomLayoutEditUrl.value) {
-    window.location.href = roomLayoutEditUrl.value
+// Match PIQ Layout
+async function doesClassMatchPIQLayout() {
+  checkClassLayoutWithPIQIsLoading.value = true
+  try {
+    var result = await apiService.doesClassMatchPIQLayout(appStore().site,classId.value)
+
+    doesRoomLayoutMatchResult.value = result as DoesRoomLayoutMatchResult
+  } catch (error) {
+    doesRoomLayoutMatchResult.value = { __typename: "UnknownError" } as DoesRoomLayoutMatchResult
+  } finally {
+    checkClassLayoutWithPIQIsLoading.value = false
+  }
+}
+
+function goToLayoutEditPage(url: string) {
+  if (url) {
+    window.location.href = url
   } else {
-    errorModalData.value.message = 'roomLayoutEditUrl is not configured.'
+    errorModalData.value.message = 'Redirect url is not configured.'
     errorModalData.value.isVisible = true
   }
 }
 
 async function removeLayout() {
   checkClassLayoutWithPIQIsLoading.value = true
-  const result = await apiService.editClassSetRoomLayoutId(classId.value, null)
+  const result = await apiService.editClass({ classId: classId.value, roomLayoutId: null })
   checkClassLayoutWithPIQIsLoading.value = false
 
-  if (result === 'EditClassSuccessResult') {
+  if (result.__typename === 'EditClassSuccessResult') {
     getClassInfo()
-    doesClassMatchPIQLayoutResponse.value = null
+    doesClassMatchPIQLayout()
 
-    successModalData.value.title = 'SUCCESS'
-    successModalData.value.message = 'THE LAYOUT WA REMOVED SUCCESSFULLY.'
+    doesRoomLayoutMatchResult.value = null
+
+    successModalData.value.title = 'Success'
+    successModalData.value.message = 'The layout was removed successfully.'
     successModalData.value.isVisible = true
   } else {
     errorModalData.value.message =
@@ -397,17 +411,19 @@ async function removeLayout() {
 
 async function assignPiqId(piqClassId: string) {
   checkClassLayoutWithPIQIsLoading.value = true
-  const result = await apiService.editClassSetPiqClassId(classId.value, piqClassId)
+  const result = await apiService.editClass({ classId: classId.value, piqClassId: piqClassId })
   checkClassLayoutWithPIQIsLoading.value = false
 
-  if (result === 'EditClassSuccessResult') {
+  if (result.__typename === 'EditClassSuccessResult') {
     getClassInfo()
-    doesClassMatchPIQLayoutResponse.value = null
+    doesClassMatchPIQLayout()
 
-    successModalData.value.title = 'SUCCESS'
-    successModalData.value.message = 'PIQ ID ASSIGNED SUCCESSFULLY.'
+    doesRoomLayoutMatchResult.value = null
+
+    successModalData.value.title = 'Success'
+    successModalData.value.message = 'PIQ ID assigned successfully.'
     successModalData.value.isVisible = true
-  } else if (result === 'PIQClassNotFoundError') {
+  } else if (result.__typename === 'PIQClassNotFoundError') {
     errorModalData.value.message = 'PIQ Class ID Not Found.'
     errorModalData.value.isVisible = true
   } else {
@@ -416,6 +432,34 @@ async function assignPiqId(piqClassId: string) {
     errorModalData.value.isVisible = true
   }
 }
+
+async function assignRoomLayoutId(roomLayoutId: string) {
+  if (roomLayoutId) {
+    checkClassLayoutWithPIQIsLoading.value = true
+    const result = await apiService.editClass({ classId: classId.value, roomLayoutId: roomLayoutId })
+    checkClassLayoutWithPIQIsLoading.value = false
+
+    if (result.__typename === 'EditClassSuccessResult') {
+      getClassInfo()
+      doesClassMatchPIQLayout()
+
+      doesRoomLayoutMatchResult.value = null
+
+      successModalData.value.title = 'Success'
+      successModalData.value.message = 'Room layout assigned successfully.'
+      successModalData.value.isVisible = true    
+    } else {
+      errorModalData.value.message =
+        "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+      errorModalData.value.isVisible = true
+    }
+  } else {
+    errorModalData.value.message =
+      "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+    errorModalData.value.isVisible = true
+  }
+}
+
 </script>
 
 <template>
@@ -434,23 +478,14 @@ async function assignPiqId(piqClassId: string) {
     <h6 v-html="classInfo?.class?.description"></h6>
   </div>
 
-  <CheckClassLayoutWithPIQ
-    :checkLayoutError="doesClassMatchPIQLayoutResponse"
-    :isLoading="checkClassLayoutWithPIQIsLoading"
-    @goToLayoutEditPage="goToLayoutEditPage"
-    @removeLayout="removeLayout"
-    @assignPiqId="assignPiqId"
-  >
+  <CheckClassLayoutWithPIQ :doesRoomLayoutMatchResult="doesRoomLayoutMatchResult"
+    :isLoading="checkClassLayoutWithPIQIsLoading" @goToLayoutEditPage="goToLayoutEditPage" @removeLayout="removeLayout"
+    @assignRoomLayoutId="assignRoomLayoutId" @assignPiqId="assignPiqId">
   </CheckClassLayoutWithPIQ>
 
   <hr />
-  <spot-matrix
-    v-if="classInfo !== null && classInfo.matrix !== null"
-    :matrix="classInfo.matrix"
-    :show-user-in-spots="true"
-    :selectedSpotNumber="selectedSpot?.spotNumber"
-    @click-spot="spotClicked"
-  >
+  <spot-matrix v-if="classInfo !== null && classInfo.matrix !== null" :matrix="classInfo.matrix"
+    :show-user-in-spots="true" :selectedSpotNumber="selectedSpot?.spotNumber" @click-spot="spotClicked">
   </spot-matrix>
 
   <div v-if="selectedSpot?.isBooked === false && selectedSpot.enabled === true">
@@ -482,64 +517,35 @@ async function assignPiqId(piqClassId: string) {
         {{ option.user!.firstName + ' ' + option.user!.lastName + ' - ' + option.user!.email }}
       </option>
     </select>
-    <button
-      @click="clickAssing"
-      :disabled="selectedUserId === null || selectedUserId === undefined || assigningUserToClass"
-    >
+    <button @click="clickAssing"
+      :disabled="selectedUserId === null || selectedUserId === undefined || assigningUserToClass">
       Assing
     </button>
   </div>
 
   <!-- ERROR modal -->
-  <ErrorModal
-    :isLoading="false"
-    :message="errorModalData.message"
-    :clickToClose="false"
-    v-model="errorModalData.isVisible"
-    @close="errorModalData.isVisible = false"
-  >
+  <ErrorModal :isLoading="false" :message="errorModalData.message" :clickToClose="false"
+    v-model="errorModalData.isVisible" @close="errorModalData.isVisible = false">
   </ErrorModal>
 
-  <ConfirmModal
-    v-model="confirmModalData.isVisible"
-    :title="confirmModalData.title"
-    :message="confirmModalData.message"
-    :isLoading="confirmModalData.isLoading"
-    @cancel="confirmModalData.isVisible = false"
-    @confirm="bookUserIntoClass(classId, selectedUserId!, selectedSpot.spotNumber!, false)"
-    :clickToClose="false"
-  >
+  <ConfirmModal v-model="confirmModalData.isVisible" :title="confirmModalData.title" :message="confirmModalData.message"
+    :isLoading="confirmModalData.isLoading" @cancel="confirmModalData.isVisible = false"
+    @confirm="bookUserIntoClass(classId, selectedUserId!, selectedSpot.spotNumber!, false)" :clickToClose="false">
   </ConfirmModal>
 
-  <ConfirmModal
-    v-model="confirmModalCancelReservationData.isVisible"
-    title="Cancel Reservation?"
-    message="Are you sure, you want to cancel the reservation?"
-    :isLoading="confirmModalCancelReservationData.isLoading"
-    @cancel="confirmModalCancelReservationData.isVisible = false"
-    @confirm="removeUserFromClass()"
-    :clickToClose="false"
-  >
+  <ConfirmModal v-model="confirmModalCancelReservationData.isVisible" title="Cancel Reservation?"
+    message="Are you sure, you want to cancel the reservation?" :isLoading="confirmModalCancelReservationData.isLoading"
+    @cancel="confirmModalCancelReservationData.isVisible = false" @confirm="removeUserFromClass()" :clickToClose="false">
   </ConfirmModal>
 
-  <ConfirmModal
-    v-model="confirmModalLateCancelReservationData.isVisible"
-    title="Warning"
+  <ConfirmModal v-model="confirmModalLateCancelReservationData.isVisible" title="Warning"
     message="You are outsade the early cancellation window. you can only make a late cancellaiton."
     :isLoading="confirmModalLateCancelReservationData.isLoading"
-    @cancel="confirmModalLateCancelReservationData.isVisible = false"
-    textConfirmButton="CONFIRM"
-    @confirm="confirmLateCancelation()"
-    :clickToClose="false"
-  >
+    @cancel="confirmModalLateCancelReservationData.isVisible = false" textConfirmButton="CONFIRM"
+    @confirm="confirmLateCancelation()" :clickToClose="false">
   </ConfirmModal>
 
-  <SuccessModal
-    :title="successModalData.title"
-    :message="successModalData.message"
-    :clickToClose="false"
-    @accept="successModalData.isVisible = false"
-    v-model="successModalData.isVisible"
-  >
+  <SuccessModal :title="successModalData.title" :message="successModalData.message" :clickToClose="false"
+    @accept="successModalData.isVisible = false" v-model="successModalData.isVisible">
   </SuccessModal>
 </template>

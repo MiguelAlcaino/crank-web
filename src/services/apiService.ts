@@ -20,7 +20,6 @@ import type {
   Purchase,
   RegisterUserInput,
   RemoveCurrentUserFromWaitlistInput,
-  RoomLayoutMatchResult,
   SiteEnum,
   User,
   UserInput
@@ -810,65 +809,54 @@ export class ApiService {
     }
   }
 
-  async doesClassMatchPIQLayout(site: SiteEnum, classId: string): Promise<string> {
+  async doesClassMatchPIQLayout(
+    site: SiteEnum,
+    classId: string
+  ): Promise<DoesRoomLayoutMatchResultUnion> {
     const DOES_CLASS_MATCH_PIQ_LAYOUT_QUERY = gql`
       query doesClassMatchPIQLayout($site: SiteEnum!, $classId: ID!) {
         doesClassMatchPIQLayout(site: $site, classId: $classId) {
           __typename
           ... on PIQClassHasNoRoomLayoutError {
             __typename
-            code
           }
           ... on PIQClassNotLinkedError {
             __typename
-            code
           }
-          ... on RoomLayoutMatchResult {
+          ... on RoomLayoutIdDoesNotMatchError {
             __typename
+            urlToCreateRoomLayout
+            currentRoomLayout {
+              __typename
+              id
+              name
+            }
+            suggestedRoomLayout {
+              __typename
+              id
+              name
+            }
+          }
+          ... on RoomLayoutStructureMatchResult {
             matchesPIQRoomLayout
           }
         }
       }
     `
-    try {
-      const queryResult = await this.authApiClient.query({
-        query: DOES_CLASS_MATCH_PIQ_LAYOUT_QUERY,
-        variables: {
-          site: site,
-          classId: classId
-        },
-        fetchPolicy: 'network-only'
-      })
 
-      const doesClassMatchPIQLayout = queryResult.data
-        .doesClassMatchPIQLayout as DoesRoomLayoutMatchResultUnion
+    const queryResult = await this.authApiClient.query({
+      query: DOES_CLASS_MATCH_PIQ_LAYOUT_QUERY,
+      variables: {
+        site: site,
+        classId: classId
+      },
+      fetchPolicy: 'network-only'
+    })
 
-      if (doesClassMatchPIQLayout.__typename === 'RoomLayoutMatchResult') {
-        const roomLayoutMatchResult = doesClassMatchPIQLayout as RoomLayoutMatchResult
-        if (roomLayoutMatchResult.matchesPIQRoomLayout) {
-          return 'RoomLayoutMatchSuccess'
-        } else {
-          return 'RoomLayoutMatchError'
-        }
-      } else {
-        return doesClassMatchPIQLayout.__typename
-      }
-    } catch (error) {
-      return 'UnknownError'
-    }
+    return queryResult.data.doesClassMatchPIQLayout as DoesRoomLayoutMatchResultUnion
   }
 
-  async editClass(
-    classId: string,
-    roomLayoutId: string | null,
-    piqClassId: string | null
-  ): Promise<string> {
-    const input = {
-      classId: classId,
-      roomLayoutId: roomLayoutId,
-      piqClassId: piqClassId
-    } as EditClassInput
-
+  async editClass(input: EditClassInput): Promise<EditClassResultUnion> {
     const EDIT_CLASS_MUTATION = gql`
       mutation editClass($input: EditClassInput!) {
         editClass(input: $input) {
@@ -884,90 +872,14 @@ export class ApiService {
       }
     `
 
-    try {
-      const result = await this.authApiClient.mutate({
-        mutation: EDIT_CLASS_MUTATION,
-        variables: {
-          input: input
-        },
-        fetchPolicy: 'network-only'
-      })
+    const result = await this.authApiClient.mutate({
+      mutation: EDIT_CLASS_MUTATION,
+      variables: {
+        input: input
+      },
+      fetchPolicy: 'network-only'
+    })
 
-      const editClassResultUnion = result.data.editClass as EditClassResultUnion
-
-      return editClassResultUnion.__typename
-    } catch (error) {
-      return 'UnknownError'
-    }
-  }
-
-  async editClassSetPiqClassId(classId: string, piqClassId: string): Promise<string> {
-    const input = { classId: classId, piqClassId: piqClassId } as EditClassInput
-
-    const EDIT_CLASS_MUTATION = gql`
-      mutation editClass($input: EditClassInput!) {
-        editClass(input: $input) {
-          __typename
-          ... on EditClassSuccessResult {
-            __typename
-            updated
-          }
-          ... on PIQClassNotFoundError {
-            __typename
-          }
-        }
-      }
-    `
-
-    try {
-      const result = await this.authApiClient.mutate({
-        mutation: EDIT_CLASS_MUTATION,
-        variables: {
-          input: input
-        },
-        fetchPolicy: 'network-only'
-      })
-
-      const editClassResultUnion = result.data.editClass as EditClassResultUnion
-
-      return editClassResultUnion.__typename
-    } catch (error) {
-      return 'UnknownError'
-    }
-  }
-
-  async editClassSetRoomLayoutId(classId: string, roomLayoutId: string | null): Promise<string> {
-    const input = { classId: classId, roomLayoutId: roomLayoutId } as EditClassInput
-
-    const EDIT_CLASS_MUTATION = gql`
-      mutation editClass($input: EditClassInput!) {
-        editClass(input: $input) {
-          __typename
-          ... on EditClassSuccessResult {
-            __typename
-            updated
-          }
-          ... on PIQClassNotFoundError {
-            __typename
-          }
-        }
-      }
-    `
-
-    try {
-      const result = await this.authApiClient.mutate({
-        mutation: EDIT_CLASS_MUTATION,
-        variables: {
-          input: input
-        },
-        fetchPolicy: 'network-only'
-      })
-
-      const editClassResultUnion = result.data.editClass as EditClassResultUnion
-
-      return editClassResultUnion.__typename
-    } catch (error) {
-      return 'UnknownError'
-    }
+    return result.data.editClass as EditClassResultUnion
   }
 }

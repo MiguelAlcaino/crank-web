@@ -1713,7 +1713,7 @@
           },
           {
             "kind": "OBJECT",
-            "name": "RoomLayoutMatchResult",
+            "name": "RoomLayoutStructureMatchResult",
             "ofType": null
           }
         ]
@@ -1786,11 +1786,6 @@
           {
             "kind": "OBJECT",
             "name": "PIQClassNotFoundError",
-            "ofType": null
-          },
-          {
-            "kind": "OBJECT",
-            "name": "RoomLayoutNotFoundError",
             "ofType": null
           }
         ]
@@ -2175,11 +2170,6 @@
           {
             "kind": "OBJECT",
             "name": "RoomLayoutIdDoesNotMatchError",
-            "ofType": null
-          },
-          {
-            "kind": "OBJECT",
-            "name": "RoomLayoutNotFoundError",
             "ofType": null
           },
           {
@@ -4605,33 +4595,37 @@
             "deprecationReason": null
           },
           {
-            "name": "currentLayout",
+            "name": "currentRoomLayout",
             "description": null,
             "args": [],
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "RoomLayout",
-                "ofType": null
-              }
+              "kind": "OBJECT",
+              "name": "RoomLayout",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "suggestedLayout",
+            "name": "suggestedRoomLayout",
             "description": null,
             "args": [],
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "RoomLayout",
-                "ofType": null
-              }
+              "kind": "OBJECT",
+              "name": "RoomLayout",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "urlToCreateRoomLayout",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -4650,7 +4644,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "RoomLayoutMatchResult",
+        "name": "RoomLayoutStructureMatchResult",
         "description": null,
         "fields": [
           {
@@ -4672,55 +4666,6 @@
         ],
         "inputFields": null,
         "interfaces": [],
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "OBJECT",
-        "name": "RoomLayoutNotFoundError",
-        "description": null,
-        "fields": [
-          {
-            "name": "code",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "urlToCreateRoomLayout",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          }
-        ],
-        "inputFields": null,
-        "interfaces": [
-          {
-            "kind": "INTERFACE",
-            "name": "Error",
-            "ofType": null
-          }
-        ],
         "enumValues": null,
         "possibleTypes": null
       },
