@@ -100,8 +100,8 @@ function assignPiqId() {
             role="status"
             aria-hidden="true"
             v-if="isLoading"
-          ></span>
-          <span class="sr-only"> {{ isLoading ? 'Assigning...' : 'Assign' }}</span>
+          ></span
+          >{{ isLoading ? 'Assigning...' : 'Assign' }}
         </button>
         to fix
       </div>
@@ -127,7 +127,7 @@ function assignPiqId() {
           aria-hidden="true"
           v-if="isLoading"
         ></span>
-        <span class="sr-only"> {{ isLoading ? 'Removing Layout..' : 'Remove Layout' }}</span>
+        {{ isLoading ? 'Removing Layout..' : 'Remove Layout' }}
       </button>
     </p>
   </div>
@@ -154,8 +154,8 @@ function assignPiqId() {
           role="status"
           aria-hidden="true"
           v-if="isLoading"
-        ></span>
-        <span class="sr-only">Here</span>
+        ></span
+        >Here
       </button>
       to bring that room layout from PIQ and assign it to this class.
     </p>
@@ -183,8 +183,8 @@ function assignPiqId() {
           role="status"
           aria-hidden="true"
           v-if="isLoading"
-        ></span>
-        <span class="sr-only"> {{ isLoading ? 'Assigning Layout..' : 'Here' }}</span>
+        ></span
+        >{{ isLoading ? 'Assigning Layout..' : 'Here' }}
       </button>
       to assign <b>{{ doesRoomLayoutMatchResult?.suggestedRoomLayout?.name }}</b> to this class.
     </p>
