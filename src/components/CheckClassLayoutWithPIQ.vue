@@ -5,6 +5,7 @@ interface DoesRoomLayoutMatchResult {
   suggestedRoomLayout?: RoomLayout
   matchesPIQRoomLayout?: boolean
   urlToCreateRoomLayout?: string
+  urlToFixRoomLayout?: string
 }
 
 interface RoomLayout {
@@ -62,7 +63,7 @@ function assignPiqId() {
       <button
         type="button"
         class="btn btn-primary btn-sm"
-        @click="emits('goToLayoutEditPage', doesRoomLayoutMatchResult!.urlToCreateRoomLayout!)"
+        @click="emits('goToLayoutEditPage', doesRoomLayoutMatchResult!.urlToFixRoomLayout!)"
         :disabled="isLoading"
       >
         Edit Layout

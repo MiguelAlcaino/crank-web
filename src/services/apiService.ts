@@ -839,6 +839,7 @@ export class ApiService {
           }
           ... on RoomLayoutStructureMatchResult {
             matchesPIQRoomLayout
+            urlToFixRoomLayout
           }
         }
       }

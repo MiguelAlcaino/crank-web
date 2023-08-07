@@ -27,6 +27,7 @@ interface DoesRoomLayoutMatchResult {
   suggestedRoomLayout?: RoomLayout
   matchesPIQRoomLayout?: boolean
   urlToCreateRoomLayout?: string
+  urlToFixRoomLayout?: string
 }
 
 interface RoomLayout {
