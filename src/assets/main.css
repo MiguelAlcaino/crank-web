@@ -6,6 +6,13 @@
   border-color: #000;
 }
 
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary.focus {
+  background-color: #252525;
+  border-color: #252525;
+}
+
 .page-title {
   font-size: 26px;
 }

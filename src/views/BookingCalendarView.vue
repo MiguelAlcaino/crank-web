@@ -191,7 +191,10 @@ function getPivot() {
     <!-- calendar -->
     <div class="row gy-5">
       <div class="col-12">
-        <div v-if="calendarIsLoading">Loading....</div>
+        <div class="d-flex justify-content-center" v-if="calendarIsLoading">
+          <div class="spinner-border" role="status"></div>
+          &nbsp;&nbsp;Loading...
+        </div>
         <div v-else>
           <div class="row">
             <div class="col" v-for="(colName, key) in columnsNames" :key="key">
@@ -261,7 +264,7 @@ function getPivot() {
       </div>
     </div>
     <!-- icons -->
-    <div class="row gy-5">
+    <div class="row gy-5 mt-5">
       <div class="col">
         <IconCalendarCard letter="E"></IconCalendarCard>
         Enrolled
