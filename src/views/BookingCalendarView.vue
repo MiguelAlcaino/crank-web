@@ -183,8 +183,8 @@ function getPivot() {
         </button>
       </div>
       <div class="col-6" style="text-align: right">
-        <button  class="btn btn-primary" @click="goToNextWeek()">
-          Next&nbsp;&nbsp;&nbsp;<font-awesome-icon icon="fa fa-step-forward" />        
+        <button class="btn btn-primary" @click="goToNextWeek()">
+          Next&nbsp;&nbsp;&nbsp;<font-awesome-icon icon="fa fa-step-forward" />
         </button>
       </div>
     </div>

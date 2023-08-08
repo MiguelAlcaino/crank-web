@@ -11,10 +11,10 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 /* import specific icons */
-import { faStepBackward, faStepForward } from '@fortawesome/free-solid-svg-icons'
+import { faLeftLong, faStepBackward, faStepForward } from '@fortawesome/free-solid-svg-icons'
 
 /* add icons to the library */
-library.add(faStepBackward, faStepForward)
+library.add(faStepBackward, faStepForward, faLeftLong)
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'

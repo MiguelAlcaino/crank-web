@@ -1,7 +1,15 @@
-@import "./base.css";
+@import './base.css';
 
 .btn-primary {
   color: #fff;
   background-color: #000;
   border-color: #000;
+}
+
+.page-title {
+  font-size: 26px;
+}
+
+.btn-link {
+  color: #000000;
 }
