@@ -6,11 +6,16 @@
   border-color: #000;
 }
 
-.btn-primary:hover,
-.btn-primary:focus,
-.btn-primary.focus {
-  background-color: #252525;
-  border-color: #252525;
+.btn-primary:hover {
+  color: #fff;
+  background-color: grey;
+  border-color: grey;
+}
+
+.btn.btn-primary:disabled {
+  color: #fff;
+  background-color: grey;
+  border-color: grey;
 }
 
 .page-title {
