@@ -202,7 +202,20 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
 </script>
 
 <template>
-  <h2>RESERVE A SPOT</h2>
+  <div class="row">
+    <div class="col-md-6 col-sm-8">
+      <h1 class="page-title">RESERVE A SPOT</h1>
+    </div>
+    <div class="col-md-6 col-sm-4">
+      <div class="text-right">
+        <div class="form-group form-material">
+          <button type="button" class="btn btn-link" @click="$router.go(-1)">
+            <font-awesome-icon icon="fa-solid fa-left-long" />&nbsp;Back to Calendar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="container">
     <div class="row">
       <div class="col-12 text-center">

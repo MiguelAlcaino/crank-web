@@ -502,24 +502,36 @@ async function assignRoomLayoutId(roomLayoutId: string) {
 
   <div v-if="selectedSpot?.isBooked === false && selectedSpot.enabled === true">
     <h1>Choose an action :</h1>
-    <button @click="clickAssignUserToThisSpot">Assign User to this Spot</button>
-    <button @click="clickPutUnderMaintenance" :disabled="isEnablingDisablingSpot">
+    <button class="btn btn-primary" @click="clickAssignUserToThisSpot">
+      Assign User to this Spot
+    </button>
+    <button
+      class="btn btn-primary"
+      @click="clickPutUnderMaintenance"
+      :disabled="isEnablingDisablingSpot"
+    >
       Put under maintenance
     </button>
   </div>
   <div v-if="selectedSpot.enabled === false">
     <h1>Spot is under maintenance</h1>
-    <button @click="clickRecoverFromMaintenance" :disabled="isEnablingDisablingSpot">
+    <button
+      class="btn btn-primary"
+      @click="clickRecoverFromMaintenance"
+      :disabled="isEnablingDisablingSpot"
+    >
       Recover from maintenance
     </button>
   </div>
   <div v-if="selectedSpot?.isBooked === true">
     <h1>Spot is reserved for - {{ selectedSpot.fullName }}</h1>
-    <button @click="clickCancelMembersReservation">Cancel Member's Reservation</button>
-    <button :disabled="true">Change Member's Spot</button>
-    <button :disabled="true">Swap Spot</button>
-    <button :disabled="true">Check-In</button>
-    <button :disabled="true">Go to Profile</button>
+    <button class="btn btn-primary" @click="clickCancelMembersReservation">
+      Cancel Member's Reservation
+    </button>
+    <button class="btn btn-primary" :disabled="true">Change Member's Spot</button>
+    <button class="btn btn-primary" :disabled="true">Swap Spot</button>
+    <button class="btn btn-primary" :disabled="true">Check-In</button>
+    <button class="btn btn-primary" :disabled="true">Go to Profile</button>
   </div>
 
   <div v-if="assignUserToThisSpotVisible">
@@ -530,6 +542,7 @@ async function assignRoomLayoutId(roomLayoutId: string) {
       </option>
     </select>
     <button
+      class="btn btn-primary"
       @click="clickAssing"
       :disabled="selectedUserId === null || selectedUserId === undefined || assigningUserToClass"
     >
