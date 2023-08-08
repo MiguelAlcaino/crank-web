@@ -209,7 +209,7 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
     <div class="col-md-6 col-sm-4">
       <div class="text-right">
         <div class="form-group form-material">
-          <button type="button" class="btn btn-link" @click="$router.push('/calendar')">
+          <button type="button" class="btn btn-link" @click="$router.go(-1)">
             <font-awesome-icon icon="fa-solid fa-left-long" />&nbsp;Back to Calendar
           </button>
         </div>
