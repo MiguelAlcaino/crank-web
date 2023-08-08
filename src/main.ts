@@ -3,10 +3,13 @@ import { createPinia } from 'pinia'
 import { createVfm } from 'vue-final-modal'
 import App from './App.vue'
 import router from './router'
-import './assets/main.css'
+
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import 'vue-final-modal/style.css'
+import './assets/main.css'
+
+
 import { authService } from '@/services/authService'
 import { ApiService } from '@/services/apiService'
 import { newAnonymousClient, newAuthenticatedApolloClient } from '@/services/graphqlClient'
