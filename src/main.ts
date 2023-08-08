@@ -4,11 +4,22 @@ import { createVfm } from 'vue-final-modal'
 import App from './App.vue'
 import router from './router'
 
+/* import the fontawesome core */
+import { library } from '@fortawesome/fontawesome-svg-core'
+
+/* import font awesome icon component */
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+/* import specific icons */
+import { faStepBackward, faStepForward } from '@fortawesome/free-solid-svg-icons'
+
+/* add icons to the library */
+library.add(faStepBackward, faStepForward)
+
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import 'vue-final-modal/style.css'
 import './assets/main.css'
-
 
 import { authService } from '@/services/authService'
 import { ApiService } from '@/services/apiService'
@@ -30,7 +41,7 @@ async function startApp() {
       )
     },
     render: () => h(App)
-  })
+  }).component('font-awesome-icon', FontAwesomeIcon)
 
   app.use(createPinia()).use(router).use(createVfm())
 

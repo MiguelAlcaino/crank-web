@@ -178,10 +178,14 @@ function getPivot() {
     <!-- buttons -->
     <div class="row gy-5 p-3">
       <div class="col-6">
-        <button @click="goToPrevWeek()">Prev</button>
+        <button class="btn btn-primary" @click="goToPrevWeek()">
+          <font-awesome-icon icon="fa fa-step-backward" />&nbsp;&nbsp;&nbsp;Prev
+        </button>
       </div>
       <div class="col-6" style="text-align: right">
-        <button @click="goToNextWeek()">Next</button>
+        <button  class="btn btn-primary" @click="goToNextWeek()">
+          Next&nbsp;&nbsp;&nbsp;<font-awesome-icon icon="fa fa-step-forward" />        
+        </button>
       </div>
     </div>
     <!-- calendar -->
