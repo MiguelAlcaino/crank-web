@@ -15,6 +15,7 @@ import CheckClassLayoutWithPIQ from '@/components/CheckClassLayoutWithPIQ.vue'
 import ConfirmModal from '@/components/ConfirmModal.vue'
 import ErrorModal from '@/components/ErrorModal.vue'
 import SuccessModal from '@/components/SuccessModal.vue'
+import AdminBookedUsersList from '@/components/AdminBookedUsersList.vue'
 
 interface BookableSpotClickedEvent {
   spotNumber: number | null
@@ -499,6 +500,12 @@ async function assignRoomLayoutId(roomLayoutId: string) {
     @click-spot="spotClicked"
   >
   </spot-matrix>
+
+  <AdminBookedUsersList
+    v-if="classInfo !== null && classInfo.enrollments !== null"
+    :enrollments="classInfo.enrollments"
+    :isLoading="false"
+  ></AdminBookedUsersList>
 
   <div v-if="selectedSpot?.isBooked === false && selectedSpot.enabled === true">
     <h1>Choose an action :</h1>
