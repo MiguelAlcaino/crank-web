@@ -1,27 +1,54 @@
 @import './base.css';
 
-.btn-primary {
-  color: #fff;
-  background-color: #000;
-  border-color: #000;
-}
-
-.btn-primary:hover {
-  color: #fff;
-  background-color: grey;
-  border-color: grey;
-}
-
-.btn.btn-primary:disabled {
-  color: #fff;
-  background-color: grey;
-  border-color: grey;
-}
-
 .page-title {
   font-size: 26px;
 }
 
 .btn-link {
   color: #000000;
+}
+
+
+.btn.btn-primary {
+  color: #fff;
+  background-color: #000;
+  border-color: #000;
+}
+
+.btn.btn-primary.focus,
+.btn.btn-primary:focus {
+  color: #fff;
+  background-color: grey;
+  border-color: grey;
+  outline: none;
+  box-shadow: none;
+}
+
+.btn.btn-primary:hover {
+  color: #fff;
+  background-color: grey;
+  border-color: grey;
+  outline: none;
+  box-shadow: none;
+}
+
+.btn.btn-primary.active,
+.btn.btn-primary:active {
+  color: #fff;
+  background-color: grey;
+  border-color: grey;
+  outline: none;
+}
+
+.btn.btn-primary.active.focus,
+.btn.btn-primary.active:focus,
+.btn.btn-primary.active:hover,
+.btn.btn-primary:active.focus,
+.btn.btn-primary:active:focus,
+.btn.btn-primary:active:hover {
+  color: #fff;
+  background-color: grey;
+  border-color: grey;
+  outline: none;
+  box-shadow: none;
 }
