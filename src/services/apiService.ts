@@ -456,6 +456,23 @@ export class ApiService {
               }
             }
           }
+          enrollments {
+            id
+            enrollmentStatus
+            enrollmentDateTime
+            user {
+              __typename
+              firstName
+              lastName
+              email
+              leaderboardUsername
+            }
+            spotInfo {
+              __typename
+              isBooked
+              spotNumber
+            }
+          }
         }
       }
     `
