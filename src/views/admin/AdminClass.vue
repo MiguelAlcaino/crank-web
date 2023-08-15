@@ -16,6 +16,7 @@ import ConfirmModal from '@/components/ConfirmModal.vue'
 import ErrorModal from '@/components/ErrorModal.vue'
 import SuccessModal from '@/components/SuccessModal.vue'
 import AdminBookedUsersList from '@/components/AdminBookedUsersList.vue'
+import EnrollSelectedMemberComponent from '@/components/EnrollSelectedMemberComponent.vue'
 
 interface BookableSpotClickedEvent {
   spotNumber: number | null
@@ -148,9 +149,13 @@ function getClassId(): string {
 
 function getTotalSignedIn(): number {
   let totalSignedIn = 0
-  if (classInfo.value && classInfo.value.matrix && classInfo.value.matrix.length > 0)
-    for (let index = 0; index < classInfo.value.matrix.length; index++) {
-      const classPosition = classInfo.value.matrix[index] as BookableSpot | IconPosition
+  if (
+    classInfo.value &&
+    classInfo.value.roomLayout?.matrix &&
+    classInfo.value.roomLayout.matrix.length > 0
+  )
+    for (let index = 0; index < classInfo.value.roomLayout.matrix.length; index++) {
+      const classPosition = classInfo.value.roomLayout.matrix[index] as BookableSpot | IconPosition
 
       if ('spotInfo' in classPosition) {
         if (classPosition.spotInfo.isBooked) {
@@ -165,8 +170,8 @@ function getTotalSignedIn(): number {
 function spotClicked(event: BookableSpotClickedEvent) {
   assignUserToThisSpotVisible.value = false
 
-  for (let index = 0; index < classInfo.value!.matrix!.length; index++) {
-    const element = classInfo.value!.matrix![index] as BookableSpot | IconPosition
+  for (let index = 0; index < classInfo.value!.roomLayout!.matrix!.length; index++) {
+    const element = classInfo.value!.roomLayout!.matrix![index] as BookableSpot | IconPosition
 
     if (element.__typename == 'BookableSpot') {
       const bookableSpot = element as BookableSpot
@@ -493,18 +498,27 @@ async function assignRoomLayoutId(roomLayoutId: string) {
 
   <hr />
   <spot-matrix
-    v-if="classInfo !== null && classInfo.matrix !== null"
-    :matrix="classInfo.matrix"
+    v-if="
+      classInfo !== null && classInfo.roomLayout !== null && classInfo.roomLayout?.matrix !== null
+    "
+    :matrix="classInfo.roomLayout!.matrix!"
     :show-user-in-spots="true"
     :selectedSpotNumber="selectedSpot?.spotNumber"
     @click-spot="spotClicked"
   >
   </spot-matrix>
 
+  <EnrollSelectedMemberComponent
+    :class-id="classId"
+    v-if="classInfo !== null && classInfo.roomLayout === null && classInfo.enrollments !== null"
+    @after-enrolling="getClassInfo()"
+  ></EnrollSelectedMemberComponent>
+
   <AdminBookedUsersList
-    v-if="classInfo !== null && classInfo.enrollments !== null"
+    v-if="classInfo !== null && classInfo.roomLayout === null && classInfo.enrollments !== null"
     :enrollments="classInfo.enrollments"
     :isLoading="false"
+    @after-cancel-member-reservation="getClassInfo()"
   ></AdminBookedUsersList>
 
   <div v-if="selectedSpot?.isBooked === false && selectedSpot.enabled === true">
