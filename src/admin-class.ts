@@ -1,12 +1,10 @@
 import { createApp, h, provide } from 'vue'
 import { createPinia } from 'pinia'
-import { createVfm } from 'vue-final-modal'
 import AdminClass from '@/views/admin/AdminClass.vue'
 import router from '@/router'
 import '@/assets/main.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
-import 'vue-final-modal/style.css'
 import { ApiService } from '@/services/apiService'
 import { newAnonymousClient, newAuthenticatedApolloClient } from '@/services/graphqlClient'
 import { useAuthenticationStore } from '@/stores/authToken'
@@ -29,7 +27,7 @@ async function startApp() {
     render: () => h(AdminClass)
   })
 
-  app.use(createPinia()).use(router).use(createVfm())
+  app.use(createPinia()).use(router)
   useAuthenticationStore().setSession(token)
 
   app.mount('#app')

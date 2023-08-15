@@ -1,6 +1,5 @@
 import { createApp, h, provide } from 'vue'
 import { createPinia } from 'pinia'
-import { createVfm } from 'vue-final-modal'
 import App from './App.vue'
 import router from './router'
 
@@ -18,7 +17,6 @@ library.add(faStepBackward, faStepForward, faLeftLong)
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
-import 'vue-final-modal/style.css'
 import './assets/main.css'
 
 import { authService } from '@/services/authService'
@@ -43,7 +41,7 @@ async function startApp() {
     render: () => h(App)
   }).component('font-awesome-icon', FontAwesomeIcon)
 
-  app.use(createPinia()).use(router).use(createVfm())
+  app.use(createPinia()).use(router)
 
   try {
     await authService.startRefreshTokenTimer()
