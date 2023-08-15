@@ -1,27 +1,70 @@
 @import './base.css';
 
-.btn-primary {
-  color: #fff;
-  background-color: #000;
-  border-color: #000;
-}
-
-.btn-primary:hover {
-  color: #fff;
-  background-color: grey;
-  border-color: grey;
-}
-
-.btn.btn-primary:disabled {
-  color: #fff;
-  background-color: grey;
-  border-color: grey;
-}
-
 .page-title {
   font-size: 26px;
 }
 
 .btn-link {
   color: #000000;
+}
+
+.btn.btn-primary {
+  color: #fff;
+  background-color: #000;
+  border-color: #000;
+}
+
+.btn.btn-primary.focus,
+.btn.btn-primary:focus {
+  color: #fff;
+  background-color: grey;
+  border-color: grey;
+  outline: none;
+  box-shadow: none;
+}
+
+.btn.btn-primary:hover {
+  color: #fff;
+  background-color: grey;
+  border-color: grey;
+  outline: none;
+  box-shadow: none;
+}
+
+.btn.btn-primary.active,
+.btn.btn-primary:active {
+  color: #fff;
+  background-color: grey;
+  border-color: grey;
+  outline: none;
+}
+
+.btn.btn-primary.active.focus,
+.btn.btn-primary.active:focus,
+.btn.btn-primary.active:hover,
+.btn.btn-primary:active.focus,
+.btn.btn-primary:active:focus,
+.btn.btn-primary:active:hover {
+  color: #fff;
+  background-color: grey;
+  border-color: grey;
+  outline: none;
+  box-shadow: none;
+}
+
+.modal-mask {
+  position: fixed;
+  z-index: 9998;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: table;
+  transition: opacity 0.3s ease;
+}
+
+.modal-wrapper {
+  display: table-cell;
+  vertical-align: middle;
 }

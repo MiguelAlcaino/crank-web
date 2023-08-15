@@ -435,25 +435,46 @@ export class ApiService {
             duration
             waitListAvailable
           }
-          matrix {
-            __typename
-            x
-            y
-            icon
-            ... on BookableSpot {
-              enabled
-              spotInfo {
-                spotNumber
-                isBooked
-                bookedSpotUserInfo {
-                  enrollmentId
-                  user {
-                    firstName
-                    lastName
-                    email
+          roomLayout {
+            id
+            name
+            matrix {
+              __typename
+              x
+              y
+              icon
+              ... on BookableSpot {
+                enabled
+                spotInfo {
+                  spotNumber
+                  isBooked
+                  bookedSpotUserInfo {
+                    enrollmentId
+                    user {
+                      firstName
+                      lastName
+                      email
+                    }
                   }
                 }
               }
+            }
+          }
+          enrollments {
+            id
+            enrollmentStatus
+            enrollmentDateTime
+            user {
+              __typename
+              firstName
+              lastName
+              email
+              leaderboardUsername
+            }
+            spotInfo {
+              __typename
+              isBooked
+              spotNumber
             }
           }
         }
@@ -748,9 +769,9 @@ export class ApiService {
   async bookUserIntoClass(
     classId: string,
     userId: string,
-    spotNumber: number,
-    isPaymentRequired: boolean,
-    isWaitlistBooking: boolean
+    spotNumber?: number | null,
+    isPaymentRequired?: boolean | null,
+    isWaitlistBooking?: boolean | null
   ): Promise<string> {
     const input = {
       classId: classId,
@@ -759,6 +780,12 @@ export class ApiService {
       isPaymentRequired: isPaymentRequired,
       isWaitlistBooking: isWaitlistBooking
     } as BookUserIntoClassInput
+
+    if (spotNumber) input.spotNumber = spotNumber
+
+    if (isPaymentRequired) input.isPaymentRequired = isPaymentRequired
+
+    if (isWaitlistBooking) input.isPaymentRequired = isWaitlistBooking
 
     const BOOK_USER_INTO_CLASS_MUTATION = gql`
       mutation bookUserIntoClass($input: BookUserIntoClassInput!) {
