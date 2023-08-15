@@ -13,7 +13,6 @@ interface Props {
 </script>
 
 <script setup lang="ts">
-
 withDefaults(defineProps<Props>(), {
   cancelText: 'Cancel',
   okText: 'OK',
@@ -21,14 +20,13 @@ withDefaults(defineProps<Props>(), {
   cancelLoading: false,
   cancelDisabled: false,
   okDisabled: false,
-  closable: true,
+  closable: true
 })
 
 const emits = defineEmits<{
   (e: 'onOk'): void
   (e: 'onCancel'): void
 }>()
-
 </script>
 <template>
   <transition name="modal">
@@ -38,7 +36,13 @@ const emits = defineEmits<{
           <div class="modal-content">
             <div class="modal-header border-0">
               <h5 class="modal-title">{{ title }}</h5>
-              <button v-if="closable" type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <button
+                v-if="closable"
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
                 <span aria-hidden="true" @click="emits('onCancel')">&times;</span>
               </button>
             </div>
@@ -46,16 +50,35 @@ const emits = defineEmits<{
               <p>{{ message }}</p>
             </div>
             <div class="modal-footer border-0">
-              <button type="button" class="btn btn-default" v-if="cancelText !== null" @click="emits('onCancel')"
-                :disabled="cancelDisabled || cancelLoading">
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
-                  v-if="cancelLoading"></span>
+              <button
+                type="button"
+                class="btn btn-default"
+                v-if="cancelText !== null"
+                @click="emits('onCancel')"
+                :disabled="cancelDisabled || cancelLoading"
+              >
                 {{ cancelText }}
+                <span
+                  class="spinner-border spinner-border-sm"
+                  role="status"
+                  aria-hidden="true"
+                  v-if="cancelLoading"
+                ></span>
               </button>
-              <button class="btn btn-primary" type="button" v-if="okText !== null" :disabled="okLoading || okDisabled"
-                @click="emits('onOk')">
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" v-if="okLoading"></span>
+              <button
+                class="btn btn-primary"
+                type="button"
+                v-if="okText !== null"
+                :disabled="okLoading || okDisabled"
+                @click="emits('onOk')"
+              >
                 {{ okText }}
+                <span
+                  class="spinner-border spinner-border-sm"
+                  role="status"
+                  aria-hidden="true"
+                  v-if="okLoading"
+                ></span>
               </button>
             </div>
           </div>
