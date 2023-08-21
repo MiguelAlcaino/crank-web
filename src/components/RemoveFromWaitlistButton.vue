@@ -1,6 +1,7 @@
 <template>
   <button
     type="button"
+    class="btn btn-primary"
     :disabled="disabled"
     @click="emits('clickRemoveFromWaitlist', enrollmentId)"
   >

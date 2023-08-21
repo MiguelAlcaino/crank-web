@@ -76,6 +76,7 @@ function clickRemoveFromWaitlist(waitlistEntryId: string): void {
           </RemoveFromWaitlistButton>
           <button
             type="button"
+            class="btn btn-primary"
             @click="emits('changeSpot')"
             :disabled="isLoading"
             v-if="
