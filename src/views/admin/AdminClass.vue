@@ -124,7 +124,6 @@ const successModalData = ref<{
 onMounted(() => {
   classId.value = getClassId()
   getClassInfo()
-  doesClassMatchPIQLayout()
 })
 
 async function getClassInfo() {
@@ -137,9 +136,6 @@ async function getClassInfo() {
 function getClassId(): string {
   let mindbodyClass = inject<any | undefined>('mindbodyClass')
   if (mindbodyClass !== undefined) {
-    console.log('ESTAMOS DENTRO!!!!')
-    console.log(mindbodyClass)
-
     return mindbodyClass.id as string
   }
 
@@ -370,20 +366,6 @@ async function confirmLateCancelation() {
   }
 }
 
-// Match PIQ Layout
-async function doesClassMatchPIQLayout() {
-  checkClassLayoutWithPIQIsLoading.value = true
-  try {
-    var result = await apiService.doesClassMatchPIQLayout(appStore().site, classId.value)
-
-    doesRoomLayoutMatchResult.value = result as DoesRoomLayoutMatchResult
-  } catch (error) {
-    doesRoomLayoutMatchResult.value = { __typename: 'UnknownError' } as DoesRoomLayoutMatchResult
-  } finally {
-    checkClassLayoutWithPIQIsLoading.value = false
-  }
-}
-
 function goToLayoutEditPage(url: string) {
   if (url) {
     window.location.href = url
@@ -399,8 +381,7 @@ async function removeLayout() {
   checkClassLayoutWithPIQIsLoading.value = false
 
   if (result.__typename === 'EditClassSuccessResult') {
-    getClassInfo()
-    doesClassMatchPIQLayout()
+    await getClassInfo()
 
     doesRoomLayoutMatchResult.value = null
 
@@ -420,8 +401,7 @@ async function assignPiqId(piqClassId: string) {
   checkClassLayoutWithPIQIsLoading.value = false
 
   if (result.__typename === 'EditClassSuccessResult') {
-    getClassInfo()
-    doesClassMatchPIQLayout()
+    await getClassInfo()
 
     doesRoomLayoutMatchResult.value = null
 
@@ -448,8 +428,7 @@ async function assignRoomLayoutId(roomLayoutId: string) {
     checkClassLayoutWithPIQIsLoading.value = false
 
     if (result.__typename === 'EditClassSuccessResult') {
-      getClassInfo()
-      doesClassMatchPIQLayout()
+      await getClassInfo()
 
       doesRoomLayoutMatchResult.value = null
 
