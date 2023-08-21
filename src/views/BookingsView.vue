@@ -203,7 +203,12 @@ async function acceptSuccessModal() {
 
 <template>
   <h2>BOOKINGS</h2>
-  <select v-model="filterEnrollmentType" @change="getUserErollments()" :disabled="isLoading">
+  <select
+    class="custom-select"
+    v-model="filterEnrollmentType"
+    @change="getUserErollments()"
+    :disabled="isLoading"
+  >
     <option :value="EnrollmentTypeEnum.Upcoming">UPCOMING</option>
     <option :value="EnrollmentTypeEnum.Waitlist">WAITLIST</option>
     <option :value="EnrollmentTypeEnum.Historical">HISTORICAL</option>

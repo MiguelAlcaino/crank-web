@@ -1,6 +1,7 @@
 <template>
   <button
     type="button"
+    class="btn btn-primary"
     @click="clickCancelEnrollment"
     :disabled="disabled || enrollmentStatus.toUpperCase() !== 'ACTIVE'"
   >
