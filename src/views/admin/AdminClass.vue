@@ -366,20 +366,6 @@ async function confirmLateCancelation() {
   }
 }
 
-// Match PIQ Layout
-async function doesClassMatchPIQLayout() {
-  checkClassLayoutWithPIQIsLoading.value = true
-  try {
-    const result = await apiService.doesClassMatchPIQLayout(appStore().site, classId.value)
-
-    doesRoomLayoutMatchResult.value = result as DoesRoomLayoutMatchResult
-  } catch (error) {
-    doesRoomLayoutMatchResult.value = { __typename: 'UnknownError' } as DoesRoomLayoutMatchResult
-  } finally {
-    checkClassLayoutWithPIQIsLoading.value = false
-  }
-}
-
 function goToLayoutEditPage(url: string) {
   if (url) {
     window.location.href = url
