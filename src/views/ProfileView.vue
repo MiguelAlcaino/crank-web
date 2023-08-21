@@ -5,8 +5,7 @@ import { required, maxLength, helpers, minValue } from '@vuelidate/validators'
 import { GenderEnum, type Country, type State, type UserInput } from '@/gql/graphql'
 import type { ApiService } from '@/services/apiService'
 
-import SuccessModal from '@/components/SuccessModal.vue'
-import ErrorModal from '@/components/ErrorModal.vue'
+import ModalComponent from '@/components/ModalComponent.vue'
 
 const isSaving = ref(false)
 const countries = ref([] as Country[])
@@ -463,21 +462,21 @@ function onChangeCountry() {
     <button type="submit" :disabled="isSaving">Save Profile</button>
   </form>
 
-  <SuccessModal
+  <ModalComponent
     :title="'Profile update'"
     :message="'Your profile was successfully updated'"
-    :clickToClose="false"
-    @accept="successModalData.isVisible = false"
-    v-model="successModalData.isVisible"
+    :closable="false"
+    @on-ok="successModalData.isVisible = false"
+    v-if="successModalData.isVisible"
   >
-  </SuccessModal>
+  </ModalComponent>
 
-  <ErrorModal
-    :isLoading="false"
+  <ModalComponent
+    title="Error"
     message="Ups! Sorry, we didn't see that coming!. Please try again or communicate with the team to resolve this issue."
-    :clickToClose="false"
-    v-model="errorModalData.isVisible"
-    @close="errorModalData.isVisible = false"
+    :closable="false"
+    v-if="errorModalData.isVisible"
+    @on-ok="errorModalData.isVisible = false"
   >
-  </ErrorModal>
+  </ModalComponent>
 </template>

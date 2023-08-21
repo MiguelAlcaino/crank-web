@@ -12,9 +12,8 @@ import { appStore } from '@/stores/appStorage'
 
 import SpotMatrix from '@/components/SpotMatrix.vue'
 import CheckClassLayoutWithPIQ from '@/components/CheckClassLayoutWithPIQ.vue'
-import ConfirmModal from '@/components/ConfirmModal.vue'
-import ErrorModal from '@/components/ErrorModal.vue'
-import SuccessModal from '@/components/SuccessModal.vue'
+
+import ModalComponent from '@/components/ModalComponent.vue'
 import AdminBookedUsersList from '@/components/AdminBookedUsersList.vue'
 import EnrollSelectedMemberComponent from '@/components/EnrollSelectedMemberComponent.vue'
 
@@ -572,55 +571,55 @@ async function assignRoomLayoutId(roomLayoutId: string) {
   </div>
 
   <!-- ERROR modal -->
-  <ErrorModal
-    :isLoading="false"
+  <ModalComponent
+    title="Error"
     :message="errorModalData.message"
-    :clickToClose="false"
-    v-model="errorModalData.isVisible"
-    @close="errorModalData.isVisible = false"
+    :closable="false"
+    v-if="errorModalData.isVisible"
+    @on-ok="errorModalData.isVisible = false"
   >
-  </ErrorModal>
+  </ModalComponent>
 
-  <ConfirmModal
-    v-model="confirmModalData.isVisible"
+  <ModalComponent
+    v-if="confirmModalData.isVisible"
     :title="confirmModalData.title"
     :message="confirmModalData.message"
-    :isLoading="confirmModalData.isLoading"
-    @cancel="confirmModalData.isVisible = false"
-    @confirm="bookUserIntoClass(classId, selectedUserId!, selectedSpot.spotNumber!, false)"
-    :clickToClose="false"
+    :ok-loading="confirmModalData.isLoading"
+    @on-cancel="confirmModalData.isVisible = false"
+    @on-ok="bookUserIntoClass(classId, selectedUserId!, selectedSpot.spotNumber!, false)"
+    :closable="false"
   >
-  </ConfirmModal>
+  </ModalComponent>
 
-  <ConfirmModal
-    v-model="confirmModalCancelReservationData.isVisible"
+  <ModalComponent
+    v-if="confirmModalCancelReservationData.isVisible"
     title="Cancel Reservation?"
     message="Are you sure, you want to cancel the reservation?"
-    :isLoading="confirmModalCancelReservationData.isLoading"
-    @cancel="confirmModalCancelReservationData.isVisible = false"
-    @confirm="removeUserFromClass()"
-    :clickToClose="false"
+    :ok-loading="confirmModalCancelReservationData.isLoading"
+    @on-cancel="confirmModalCancelReservationData.isVisible = false"
+    @on-ok="removeUserFromClass()"
+    :closable="false"
   >
-  </ConfirmModal>
+  </ModalComponent>
 
-  <ConfirmModal
-    v-model="confirmModalLateCancelReservationData.isVisible"
+  <ModalComponent
+    v-if="confirmModalLateCancelReservationData.isVisible"
     title="Warning"
     message="You are outsade the early cancellation window. you can only make a late cancellaiton."
     :isLoading="confirmModalLateCancelReservationData.isLoading"
-    @cancel="confirmModalLateCancelReservationData.isVisible = false"
-    textConfirmButton="CONFIRM"
-    @confirm="confirmLateCancelation()"
-    :clickToClose="false"
+    @on-cancel="confirmModalLateCancelReservationData.isVisible = false"
+    ok-text="CONFIRM"
+    @on-ok="confirmLateCancelation()"
+    :closable="false"
   >
-  </ConfirmModal>
+  </ModalComponent>
 
-  <SuccessModal
+  <ModalComponent
     :title="successModalData.title"
     :message="successModalData.message"
-    :clickToClose="false"
-    @accept="successModalData.isVisible = false"
-    v-model="successModalData.isVisible"
+    :closable="false"
+    @on-ok="successModalData.isVisible = false"
+    v-if="successModalData.isVisible"
   >
-  </SuccessModal>
+  </ModalComponent>
 </template>

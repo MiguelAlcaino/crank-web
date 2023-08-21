@@ -6,15 +6,12 @@ import dayjs from 'dayjs'
 
 import { type ClassInfo, EnrollmentTypeEnum } from '@/gql/graphql'
 
-import ConfirmModal from '@/components/ConfirmModal.vue'
-import SuccessModal from '@/components/SuccessModal.vue'
-import ErrorModal from '@/components/ErrorModal.vue'
+import ModalComponent from '@/components/ModalComponent.vue'
 
 import ReserveSpotButton from '@/components/ReserveSpotButton.vue'
 import SpotMatrix from '@/components/SpotMatrix.vue'
 import WaitlistButton from '@/components/WaitlistButton.vue'
 import router from '@/router'
-import PaymentErrorModal from '@/components/PaymentErrorModal.vue'
 import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
 
@@ -264,40 +261,43 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
     </div>
   </div>
 
-  <ConfirmModal
-    v-model="showModal"
+  <ModalComponent
+    v-if="showModal"
     :title="confirmModalData.title"
     :message="confirmModalData.message"
-    :isLoading="confirmModalData.isLoading"
-    @cancel="showModal = false"
-    @confirm="bookClass(classId, spotNumber, isWaitlistBooking!)"
-    :clickToClose="false"
+    :ok-loading="confirmModalData.isLoading"
+    @on-cancel="showModal = false"
+    @on-ok="bookClass(classId, spotNumber, isWaitlistBooking!)"
+    :closable="false"
   >
-  </ConfirmModal>
+  </ModalComponent>
 
-  <SuccessModal
+  <ModalComponent
     :title="successModalData.title"
     :message="successModalData.message"
-    :clickToClose="false"
-    @accept="acceptSuccessModal"
-    v-model="showSuccessModal"
+    :closable="false"
+    @on-ok="acceptSuccessModal"
+    v-if="showSuccessModal"
   >
-  </SuccessModal>
+  </ModalComponent>
 
-  <ErrorModal
-    :is-loading="false"
+  <ModalComponent
+    :ok-loading="false"
     :message="errorModalData.message"
-    :clickToClose="false"
-    v-model="showErrorModal"
-    @close="showErrorModal = false"
-  ></ErrorModal>
+    title="Error"
+    :closable="false"
+    v-if="showErrorModal"
+    @on-ok="showErrorModal = false"
+  ></ModalComponent>
 
-  <PaymentErrorModal
-    v-model="paymentErrorModal"
-    @close="paymentErrorModal = false"
-    @buy="goToThePackagesScreen"
+  <ModalComponent
+    v-if="paymentErrorModal"
+    title="Error"
+    message="You do not have sufficient credits in your account."
+    @on-cancel="paymentErrorModal = false"
+    @on-ok="goToThePackagesScreen()"
   >
-  </PaymentErrorModal>
+  </ModalComponent>
 </template>
 
 <style scoped></style>

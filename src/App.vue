@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { authService } from '@/services/authService'
-import { ModalsContainer } from 'vue-final-modal'
 </script>
 
 <template>
