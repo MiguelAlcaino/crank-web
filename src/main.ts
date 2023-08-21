@@ -15,6 +15,7 @@ import { faLeftLong, faStepBackward, faStepForward } from '@fortawesome/free-sol
 /* add icons to the library */
 library.add(faStepBackward, faStepForward, faLeftLong)
 
+import 'vue3-simple-typeahead/dist/vue3-simple-typeahead.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import './assets/main.css'
@@ -24,6 +25,8 @@ import { ApiService } from '@/services/apiService'
 import { newAnonymousClient, newAuthenticatedApolloClient } from '@/services/graphqlClient'
 import { useAuthenticationStore } from '@/stores/authToken'
 import { Config } from '@/model/Config'
+
+import SimpleTypeahead from 'vue3-simple-typeahead'
 
 startApp()
 
@@ -41,7 +44,7 @@ async function startApp() {
     render: () => h(App)
   }).component('font-awesome-icon', FontAwesomeIcon)
 
-  app.use(createPinia()).use(router)
+  app.use(createPinia()).use(router).use(SimpleTypeahead)
 
   try {
     await authService.startRefreshTokenTimer()

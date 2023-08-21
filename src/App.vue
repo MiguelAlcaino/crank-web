@@ -53,7 +53,6 @@ import { authService } from '@/services/authService'
       </div>
     </div>
   </div>
-  <ModalsContainer />
 </template>
 
 <style scoped></style>
