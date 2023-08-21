@@ -124,7 +124,6 @@ const successModalData = ref<{
 onMounted(() => {
   classId.value = getClassId()
   getClassInfo()
-  doesClassMatchPIQLayout()
 })
 
 async function getClassInfo() {
@@ -137,9 +136,6 @@ async function getClassInfo() {
 function getClassId(): string {
   let mindbodyClass = inject<any | undefined>('mindbodyClass')
   if (mindbodyClass !== undefined) {
-    console.log('ESTAMOS DENTRO!!!!')
-    console.log(mindbodyClass)
-
     return mindbodyClass.id as string
   }
 
@@ -374,7 +370,7 @@ async function confirmLateCancelation() {
 async function doesClassMatchPIQLayout() {
   checkClassLayoutWithPIQIsLoading.value = true
   try {
-    var result = await apiService.doesClassMatchPIQLayout(appStore().site, classId.value)
+    const result = await apiService.doesClassMatchPIQLayout(appStore().site, classId.value)
 
     doesRoomLayoutMatchResult.value = result as DoesRoomLayoutMatchResult
   } catch (error) {
@@ -399,8 +395,7 @@ async function removeLayout() {
   checkClassLayoutWithPIQIsLoading.value = false
 
   if (result.__typename === 'EditClassSuccessResult') {
-    getClassInfo()
-    doesClassMatchPIQLayout()
+    await getClassInfo()
 
     doesRoomLayoutMatchResult.value = null
 
@@ -420,8 +415,7 @@ async function assignPiqId(piqClassId: string) {
   checkClassLayoutWithPIQIsLoading.value = false
 
   if (result.__typename === 'EditClassSuccessResult') {
-    getClassInfo()
-    doesClassMatchPIQLayout()
+    await getClassInfo()
 
     doesRoomLayoutMatchResult.value = null
 
@@ -448,8 +442,7 @@ async function assignRoomLayoutId(roomLayoutId: string) {
     checkClassLayoutWithPIQIsLoading.value = false
 
     if (result.__typename === 'EditClassSuccessResult') {
-      getClassInfo()
-      doesClassMatchPIQLayout()
+      await getClassInfo()
 
       doesRoomLayoutMatchResult.value = null
 
