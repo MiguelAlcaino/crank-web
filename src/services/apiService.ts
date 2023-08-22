@@ -21,6 +21,7 @@ import type {
   RegisterUserInput,
   RemoveCurrentUserFromWaitlistInput,
   SiteEnum,
+  UpdateCurrentUserPasswordInput,
   User,
   UserInput
 } from '@/gql/graphql'
@@ -909,5 +910,45 @@ export class ApiService {
     })
 
     return result.data.editClass as EditClassResultUnion
+  }
+
+  async updateCurrentUserPassword(
+    site: SiteEnum,
+    input: UpdateCurrentUserPasswordInput
+  ): Promise<string> {
+    const UPDATE_CURRENT_USER_PASSWORD_MUTATION = gql`
+      mutation updateCurrentUserPassword(
+        $site: SiteEnum!
+        $input: UpdateCurrentUserPasswordInput!
+      ) {
+        updateCurrentUserPassword(site: $site, input: $input)
+      }
+    `
+
+    try {
+      await this.authApiClient.mutate({
+        mutation: UPDATE_CURRENT_USER_PASSWORD_MUTATION,
+        variables: {
+          site: site,
+          input: input
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      return 'Success'
+    } catch (error) {
+      if (error instanceof ApolloError) {
+        if (error.graphQLErrors[0].message === 'password_must_contain_letter_or_number') {
+          return 'PasswordMustContainLetterOrNumberException'
+        } else if (error.graphQLErrors[0].message === 'minimum_password_length_is_four_chars') {
+          return 'MinimumPasswordLengthException'
+        } else if (error.graphQLErrors[0].message === 'incorrect_password') {
+          return 'IncorrectPasswordException'
+        } else {
+          return 'UnknownError'
+        }
+      }
+      return 'UnknownError'
+    }
   }
 }
