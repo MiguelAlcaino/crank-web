@@ -31,9 +31,9 @@ const errorMessage = ref('')
 
 const countries = ref([] as Country[])
 const countryStates = ref([] as State[])
-const location = ref(SiteEnum.Dubai)
 
 const formData = reactive({
+  location: null,
   firstName: '',
   lastName: '',
   email: '',
@@ -57,6 +57,9 @@ const checkPass = helpers.regex(/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/)
 
 const rules = computed(() => {
   return {
+    location: {
+      required: helpers.withMessage('Location is required', required)
+    },
     firstName: {
       required: helpers.withMessage('First Name is required', required),
       maxLength: maxLength(50)
@@ -161,7 +164,7 @@ const submitForm = async () => {
     }
 
     isSaving.value = true
-    const response = await apiService.registerUser(location.value, input)
+    const response = await apiService.registerUser(formData.location!, input)
     isSaving.value = false
 
     if (response === 'SuccessRegistration') {
@@ -203,6 +206,7 @@ function onChangeCountry() {
   getCountryStates(formData.country)
 }
 
+//TODO: do you have to auto login? what happens if it fails?
 async function login() {
   isLoggingIn.value = true
 
@@ -211,9 +215,9 @@ async function login() {
     await router.push({ name: 'home' })
   } catch (error) {
     console.log(error)
+  } finally {
+    isLoggingIn.value = false
   }
-
-  isLoggingIn.value = false
 }
 </script>
 
@@ -225,10 +229,18 @@ async function login() {
     <!-- location -->
     <div class="form-row">
       <div class="col-md-6 mb-3">
-        <select class="custom-select" v-model="location" disabled>
+        <select class="custom-select" v-model="formData.location" required>
           <option :value="SiteEnum.Dubai">Dubai</option>
           <option :value="SiteEnum.AbuDhabi">Abu Dhabi</option>
         </select>
+        <small
+          v-for="error in v$.location.$errors"
+          :key="error.$uid"
+          class="form-text"
+          style="color: red"
+        >
+          {{ error.$message }}
+        </small>
       </div>
     </div>
     <hr />
