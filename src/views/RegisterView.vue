@@ -606,7 +606,7 @@ async function login() {
         >
           <option value="Friend">Friend</option>
           <option value="Relative">Relative</option>
-          <option value="Relative">Other</option>
+          <option value="Other">Other</option>
         </select>
         <small
           v-for="error in v$.emergencyContactRelationship.$errors"
