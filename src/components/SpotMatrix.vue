@@ -44,11 +44,11 @@ interface BookableSpot extends ClassPositionInterface {
 interface IconPosition extends ClassPositionInterface {}
 
 interface EnrollmentInfo {
-  user: User
+  user?: User | null
   enrollmentDateTime: Date
   enrollmentStatus: EnrollmentStatusEnum
   id: string
-  spotInfo?: SpotInfo
+  spotInfo?: SpotInfo | null
 }
 
 enum EnrollmentStatusEnum {
@@ -63,7 +63,7 @@ interface Props {
   matrix?: Array<BookableSpot | IconPosition>
   showUserInSpots?: boolean
   selectedSpotNumber?: number | null
-  enrollments?: EnrollmentInfo[]
+  enrollments?: EnrollmentInfo[] | null
 }
 
 const BOOKABLE_SPOT_KEY = 'BookableSpot'
