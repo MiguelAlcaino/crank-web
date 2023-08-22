@@ -427,6 +427,7 @@ async function assignRoomLayoutId(roomLayoutId: string) {
     :show-user-in-spots="true"
     :selectedSpotNumber="selectedSpot?.spotNumber"
     @click-spot="spotClicked"
+    :enrollments="classInfo.enrollments"
   >
   </SpotMatrix>
 
