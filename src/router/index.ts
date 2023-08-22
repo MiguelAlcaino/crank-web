@@ -7,6 +7,7 @@ import ProfileView from '../views/ProfileView.vue'
 import ClassView from '../views/ClassView.vue'
 import BookingsView from '../views/BookingsView.vue'
 import PurchasesView from '../views/PurchasesView.vue'
+import ChangePasswordView from '../views/ChangePasswordView.vue'
 
 import { authService } from '@/services/authService'
 import AdminClass from '@/views/admin/AdminClass.vue'
@@ -58,6 +59,11 @@ const router = createRouter({
       path: '/purchases',
       name: 'purchases',
       component: PurchasesView
+    },
+    {
+      path: '/change-password',
+      name: 'change_password',
+      component: ChangePasswordView
     },
     {
       path: '/about',

@@ -198,7 +198,9 @@ function onChangeCountry() {
 
   <form @submit.prevent="submitForm" autocomplete="off">
     <div class="field">
-      <button type="button" class="btn btn-primary">Change Password</button>
+      <RouterLink class="btn btn-primary" :to="{ name: 'change_password' }"
+        >Change Password</RouterLink
+      >
     </div>
     <hr />
 

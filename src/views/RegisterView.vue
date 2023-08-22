@@ -279,7 +279,7 @@ async function login() {
           v-model="formData.password"
           type="password"
           placeholder="Password"
-          maxlength="200"
+          maxlength="50"
           required
         />
         <small
@@ -300,7 +300,7 @@ async function login() {
           v-model="formData.confirmPassword"
           type="password"
           placeholder="Confirm Password"
-          maxlength="200"
+          maxlength="50"
           required
         />
         <small
