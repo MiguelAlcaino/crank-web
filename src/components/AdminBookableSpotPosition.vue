@@ -34,7 +34,7 @@ function selectSpot() {
     :class="['enabledSpot', selected ? 'selectedSpot' : '']"
   >
     {{ spotInfo.spotNumber }}<br />
-    {{ user?.firstName }}
+    {{ user?.firstName }} {{ user?.lastName }}
   </div>
   <div
     v-else-if="enabled"
