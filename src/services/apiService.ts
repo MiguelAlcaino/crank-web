@@ -12,7 +12,6 @@ import type {
   DisableEnableSpotInput,
   DisableEnableSpotResult,
   DisableEnableSpotResultUnion,
-  DoesRoomLayoutMatchResultUnion,
   EditClassInput,
   EditClassResultUnion,
   Enrollment,
@@ -449,14 +448,6 @@ export class ApiService {
                 spotInfo {
                   spotNumber
                   isBooked
-                  bookedSpotUserInfo {
-                    enrollmentId
-                    user {
-                      firstName
-                      lastName
-                      email
-                    }
-                  }
                 }
               }
             }
@@ -837,54 +828,6 @@ export class ApiService {
     }
   }
 
-  async doesClassMatchPIQLayout(
-    site: SiteEnum,
-    classId: string
-  ): Promise<DoesRoomLayoutMatchResultUnion> {
-    const DOES_CLASS_MATCH_PIQ_LAYOUT_QUERY = gql`
-      query doesClassMatchPIQLayout($site: SiteEnum!, $classId: ID!) {
-        doesClassMatchPIQLayout(site: $site, classId: $classId) {
-          __typename
-          ... on PIQClassHasNoRoomLayoutError {
-            __typename
-          }
-          ... on PIQClassNotLinkedError {
-            __typename
-          }
-          ... on RoomLayoutIdDoesNotMatchError {
-            __typename
-            urlToCreateRoomLayout
-            currentRoomLayout {
-              __typename
-              id
-              name
-            }
-            suggestedRoomLayout {
-              __typename
-              id
-              name
-            }
-          }
-          ... on RoomLayoutStructureMatchResult {
-            matchesPIQRoomLayout
-            urlToFixRoomLayout
-          }
-        }
-      }
-    `
-
-    const queryResult = await this.authApiClient.query({
-      query: DOES_CLASS_MATCH_PIQ_LAYOUT_QUERY,
-      variables: {
-        site: site,
-        classId: classId
-      },
-      fetchPolicy: 'network-only'
-    })
-
-    return queryResult.data.doesClassMatchPIQLayout as DoesRoomLayoutMatchResultUnion
-  }
-
   async editClass(input: EditClassInput): Promise<EditClassResultUnion> {
     const EDIT_CLASS_MUTATION = gql`
       mutation editClass($input: EditClassInput!) {
@@ -893,9 +836,6 @@ export class ApiService {
           ... on EditClassSuccessResult {
             __typename
             updated
-          }
-          ... on PIQClassNotFoundError {
-            __typename
           }
         }
       }
