@@ -35,6 +35,9 @@ import { authService } from '@/services/authService'
                 <li class="nav-item">
                   <RouterLink class="nav-link" :to="{ name: 'bookings' }">Bookings</RouterLink>
                 </li>
+                <li class="nav-item">
+                  <RouterLink class="nav-link" :to="{ name: 'purchases' }">Purchases</RouterLink>
+                </li>
               </ul>
             </div>
           </nav>

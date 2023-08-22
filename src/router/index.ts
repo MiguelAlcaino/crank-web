@@ -6,6 +6,7 @@ import BookingCalendarView from '../views/BookingCalendarView.vue'
 import ProfileView from '../views/ProfileView.vue'
 import ClassView from '../views/ClassView.vue'
 import BookingsView from '../views/BookingsView.vue'
+import PurchasesView from '../views/PurchasesView.vue'
 
 import { authService } from '@/services/authService'
 import AdminClass from '@/views/admin/AdminClass.vue'
@@ -52,6 +53,11 @@ const router = createRouter({
       path: '/admin/class/:id',
       name: 'admin_class',
       component: AdminClass
+    },
+    {
+      path: '/purchases',
+      name: 'purchases',
+      component: PurchasesView
     },
     {
       path: '/about',
