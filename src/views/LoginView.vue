@@ -7,6 +7,8 @@ import useVuelidate from '@vuelidate/core'
 
 import { SiteEnum } from '@/gql/graphql'
 
+import DefaultButtonComponent from '../components/DefaultButtonComponent.vue'
+
 const displayLoginError = ref(false)
 const isSubmitting = ref(false)
 const selectedSite = ref('dubai')
@@ -127,9 +129,11 @@ async function login() {
     <!--submit button-->
     <div class="form-row">
       <div class="col-md-12 mb-3">
-        <button class="btn btn-primary" type="submit" :disabled="isSubmitting">
-          Login <span class="spinner-border spinner-border-sm" v-if="isSubmitting"></span>
-        </button>
+        <DefaultButtonComponent
+          type="submit"
+          :is-loading="isSubmitting"
+          text="Login"
+        ></DefaultButtonComponent>
       </div>
     </div>
   </form>
