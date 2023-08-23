@@ -493,41 +493,6 @@
       },
       {
         "kind": "OBJECT",
-        "name": "BookedSpotUserInfo",
-        "description": null,
-        "fields": [
-          {
-            "name": "enrollmentId",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "SCALAR",
-              "name": "ID",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "user",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "OBJECT",
-              "name": "User",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          }
-        ],
-        "inputFields": null,
-        "interfaces": [],
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "OBJECT",
         "name": "BookingWindow",
         "description": null,
         "fields": [
@@ -942,18 +907,6 @@
             "deprecationReason": null
           },
           {
-            "name": "currentUserEnrollmentInfo",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "OBJECT",
-              "name": "EnrollmentInfo",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "enrollments",
             "description": null,
             "args": [],
@@ -976,26 +929,6 @@
             },
             "isDeprecated": false,
             "deprecationReason": null
-          },
-          {
-            "name": "matrix",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "LIST",
-              "name": null,
-              "ofType": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "INTERFACE",
-                  "name": "ClassPositionInterface",
-                  "ofType": null
-                }
-              }
-            },
-            "isDeprecated": true,
-            "deprecationReason": "Use roomLayout instead"
           },
           {
             "name": "roomLayout",
@@ -1712,37 +1645,6 @@
         ]
       },
       {
-        "kind": "UNION",
-        "name": "DoesRoomLayoutMatchResultUnion",
-        "description": null,
-        "fields": null,
-        "inputFields": null,
-        "interfaces": null,
-        "enumValues": null,
-        "possibleTypes": [
-          {
-            "kind": "OBJECT",
-            "name": "PIQClassHasNoRoomLayoutError",
-            "ofType": null
-          },
-          {
-            "kind": "OBJECT",
-            "name": "PIQClassNotLinkedError",
-            "ofType": null
-          },
-          {
-            "kind": "OBJECT",
-            "name": "RoomLayoutIdDoesNotMatchError",
-            "ofType": null
-          },
-          {
-            "kind": "OBJECT",
-            "name": "RoomLayoutStructureMatchResult",
-            "ofType": null
-          }
-        ]
-      },
-      {
         "kind": "INPUT_OBJECT",
         "name": "EditClassInput",
         "description": null,
@@ -1759,18 +1661,6 @@
                 "name": "ID",
                 "ofType": null
               }
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "piqClassId",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "ID",
-              "ofType": null
             },
             "defaultValue": null,
             "isDeprecated": false,
@@ -1805,11 +1695,6 @@
           {
             "kind": "OBJECT",
             "name": "EditClassSuccessResult",
-            "ofType": null
-          },
-          {
-            "kind": "OBJECT",
-            "name": "PIQClassNotFoundError",
             "ofType": null
           }
         ]
@@ -2032,8 +1917,8 @@
               "name": "User",
               "ofType": null
             },
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "This should be removed from here to avoid loops."
           }
         ],
         "inputFields": null,
@@ -2175,21 +2060,6 @@
           },
           {
             "kind": "OBJECT",
-            "name": "PIQClassHasNoRoomLayoutError",
-            "ofType": null
-          },
-          {
-            "kind": "OBJECT",
-            "name": "PIQClassNotFoundError",
-            "ofType": null
-          },
-          {
-            "kind": "OBJECT",
-            "name": "PIQClassNotLinkedError",
-            "ofType": null
-          },
-          {
-            "kind": "OBJECT",
             "name": "PasswordsDontMatchError",
             "ofType": null
           },
@@ -2201,11 +2071,6 @@
           {
             "kind": "OBJECT",
             "name": "PositionAlreadyTakenError",
-            "ofType": null
-          },
-          {
-            "kind": "OBJECT",
-            "name": "RoomLayoutIdDoesNotMatchError",
             "ofType": null
           },
           {
@@ -3164,105 +3029,6 @@
       },
       {
         "kind": "OBJECT",
-        "name": "PIQClassHasNoRoomLayoutError",
-        "description": null,
-        "fields": [
-          {
-            "name": "code",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          }
-        ],
-        "inputFields": null,
-        "interfaces": [
-          {
-            "kind": "INTERFACE",
-            "name": "Error",
-            "ofType": null
-          }
-        ],
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "OBJECT",
-        "name": "PIQClassNotFoundError",
-        "description": null,
-        "fields": [
-          {
-            "name": "code",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          }
-        ],
-        "inputFields": null,
-        "interfaces": [
-          {
-            "kind": "INTERFACE",
-            "name": "Error",
-            "ofType": null
-          }
-        ],
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "OBJECT",
-        "name": "PIQClassNotLinkedError",
-        "description": null,
-        "fields": [
-          {
-            "name": "code",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          }
-        ],
-        "inputFields": null,
-        "interfaces": [
-          {
-            "kind": "INTERFACE",
-            "name": "Error",
-            "ofType": null
-          }
-        ],
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "OBJECT",
         "name": "PasswordsDontMatchError",
         "description": null,
         "fields": [
@@ -3825,55 +3591,6 @@
                   "name": "ClassStat",
                   "ofType": null
                 }
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "doesClassMatchPIQLayout",
-            "description": "Checks if a given class matches the PIQ layout",
-            "args": [
-              {
-                "name": "classId",
-                "description": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "ID",
-                    "ofType": null
-                  }
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "site",
-                "description": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "ENUM",
-                    "name": "SiteEnum",
-                    "ofType": null
-                  }
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              }
-            ],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "UNION",
-                "name": "DoesRoomLayoutMatchResultUnion",
-                "ofType": null
               }
             },
             "isDeprecated": false,
@@ -4610,114 +4327,6 @@
         "possibleTypes": null
       },
       {
-        "kind": "OBJECT",
-        "name": "RoomLayoutIdDoesNotMatchError",
-        "description": null,
-        "fields": [
-          {
-            "name": "code",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "currentRoomLayout",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "OBJECT",
-              "name": "RoomLayout",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "suggestedRoomLayout",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "OBJECT",
-              "name": "RoomLayout",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "urlToCreateRoomLayout",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          }
-        ],
-        "inputFields": null,
-        "interfaces": [
-          {
-            "kind": "INTERFACE",
-            "name": "Error",
-            "ofType": null
-          }
-        ],
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "OBJECT",
-        "name": "RoomLayoutStructureMatchResult",
-        "description": null,
-        "fields": [
-          {
-            "name": "matchesPIQRoomLayout",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Boolean",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "urlToFixRoomLayout",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          }
-        ],
-        "inputFields": null,
-        "interfaces": [],
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
         "kind": "ENUM",
         "name": "SiteEnum",
         "description": null,
@@ -4802,18 +4411,6 @@
         "description": null,
         "fields": [
           {
-            "name": "bookedSpotUserInfo",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "OBJECT",
-              "name": "BookedSpotUserInfo",
-              "ofType": null
-            },
-            "isDeprecated": true,
-            "deprecationReason": "The user info should be obtained from classInfo.enrollments and the same goes for the enrollmentId. The type BookedSpotUserInfo will be removed in the future."
-          },
-          {
             "name": "isBooked",
             "description": null,
             "args": [],
@@ -4826,8 +4423,8 @@
                 "ofType": null
               }
             },
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "Array of booked spots should be returned by other query to reduce complexity of creating SpotInfo instances."
           },
           {
             "name": "spotNumber",
@@ -5256,6 +4853,35 @@
             "type": {
               "kind": "SCALAR",
               "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "enrollmentInClass",
+            "description": "NOT YET IMPLEMENTED: User's current enrollment in a class. If null, it means that the user is not enrolled in the class.",
+            "args": [
+              {
+                "name": "classId",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "ID",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "OBJECT",
+              "name": "EnrollmentInfo",
               "ofType": null
             },
             "isDeprecated": false,

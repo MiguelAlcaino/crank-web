@@ -29,11 +29,6 @@ interface BookableSpotClickedEvent {
 interface SpotInfo {
   isBooked: boolean
   spotNumber: number
-  bookedSpotUserInfo: BookableSpotUserInfo
-}
-
-interface BookableSpotUserInfo {
-  user: User
 }
 
 interface User {
@@ -48,10 +43,27 @@ interface BookableSpot extends ClassPositionInterface {
 
 interface IconPosition extends ClassPositionInterface {}
 
+interface EnrollmentInfo {
+  user?: User | null
+  enrollmentDateTime: Date
+  enrollmentStatus: EnrollmentStatusEnum
+  id: string
+  spotInfo?: SpotInfo | null
+}
+
+enum EnrollmentStatusEnum {
+  Active = 'active',
+  Cancelled = 'cancelled',
+  LateCancelled = 'lateCancelled',
+  Unknown = 'unknown',
+  Waitlisted = 'waitlisted'
+}
+
 interface Props {
   matrix?: Array<BookableSpot | IconPosition>
   showUserInSpots?: boolean
   selectedSpotNumber?: number | null
+  enrollments?: EnrollmentInfo[] | null
 }
 
 const BOOKABLE_SPOT_KEY = 'BookableSpot'
@@ -80,30 +92,18 @@ watch(
   }
 )
 
-function newSpotPosition(classPosition: BookableSpot | IconPosition): SpotPosition {
+function newSpotPosition(
+  classPosition: BookableSpot | IconPosition,
+  user: User | null | undefined
+): SpotPosition {
   if ('spotInfo' in classPosition) {
-    if ('bookedSpotUserInfo' in classPosition.spotInfo) {
-      if (
-        classPosition.spotInfo.bookedSpotUserInfo !== null &&
-        'user' in classPosition.spotInfo.bookedSpotUserInfo
-      )
-        return {
-          x: classPosition.x,
-          y: classPosition.y,
-          positionType: BOOKABLE_SPOT_KEY,
-          positionIcon: classPosition.icon,
-          spotInfo: classPosition.spotInfo,
-          user: classPosition.spotInfo.bookedSpotUserInfo.user,
-          enabled: classPosition.enabled
-        }
-    }
     return {
       x: classPosition.x,
       y: classPosition.y,
       positionType: BOOKABLE_SPOT_KEY,
       positionIcon: classPosition.icon,
       spotInfo: classPosition.spotInfo,
-      user: null,
+      user: user,
       enabled: classPosition.enabled
     }
   }
@@ -118,6 +118,7 @@ function newSpotPosition(classPosition: BookableSpot | IconPosition): SpotPositi
 function getMatrixOfSpotPositions(matrix: Array<BookableSpot | IconPosition>): SpotPosition[][] {
   let rows: Array<Array<SpotPosition>> = []
   let classPosition: ClassPositionInterface
+  let user: User | null | undefined
 
   for (let i = 0; i < matrix.length; i++) {
     for (let j = 0; j < matrix.length; j++) {
@@ -126,7 +127,22 @@ function getMatrixOfSpotPositions(matrix: Array<BookableSpot | IconPosition>): S
         if (rows[classPosition.y] === undefined) {
           rows.push([])
         }
-        rows[i].push(newSpotPosition(classPosition))
+
+        user = null
+        if ('spotInfo' in classPosition) {
+          let spotInfo = classPosition.spotInfo as SpotInfo
+          if (spotInfo.spotNumber && props.enrollments) {
+            for (let index = 0; index < props.enrollments.length; index++) {
+              const enrollment = props.enrollments[index]
+              if (enrollment.spotInfo?.spotNumber === spotInfo.spotNumber) {
+                user = enrollment.user
+                break
+              }
+            }
+          }
+        }
+
+        rows[i].push(newSpotPosition(classPosition, user))
       }
     }
   }

@@ -1,3 +1,10 @@
+<script lang="ts">
+interface BookableSpotClickedEvent {
+  spotNumber: number | null
+  isBooked: boolean
+}
+</script>
+
 <script setup lang="ts">
 import { inject, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
@@ -11,37 +18,15 @@ import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
 
 import SpotMatrix from '@/components/SpotMatrix.vue'
-import CheckClassLayoutWithPIQ from '@/components/CheckClassLayoutWithPIQ.vue'
-
 import ModalComponent from '@/components/ModalComponent.vue'
 import AdminBookedUsersList from '@/components/AdminBookedUsersList.vue'
 import EnrollSelectedMemberComponent from '@/components/EnrollSelectedMemberComponent.vue'
-
-interface BookableSpotClickedEvent {
-  spotNumber: number | null
-  isBooked: boolean
-}
-
-interface DoesRoomLayoutMatchResult {
-  __typename: string
-  currentRoomLayout?: RoomLayout
-  suggestedRoomLayout?: RoomLayout
-  matchesPIQRoomLayout?: boolean
-  urlToCreateRoomLayout?: string
-  urlToFixRoomLayout?: string
-}
-
-interface RoomLayout {
-  __typename: 'RoomLayout'
-  id: string
-  name: string
-}
 
 const route = useRoute()
 
 const apiService = inject<ApiService>('gqlApiService')!
 const isLoading = ref<boolean>(false)
-const checkClassLayoutWithPIQIsLoading = ref<boolean>(false)
+const editingLayout = ref<boolean>(false)
 const classInfo = ref<ClassInfo | null>(null)
 
 const assignUserToThisSpotVisible = ref<boolean>(false)
@@ -50,7 +35,6 @@ const searchingUsers = ref<boolean>(false)
 const users = ref<IdentifiableUser[]>([])
 const selectedUserId = ref<string | null>(null)
 const assigningUserToClass = ref<boolean>(false)
-const doesRoomLayoutMatchResult = ref<DoesRoomLayoutMatchResult | null>(null)
 
 const classId = ref<string>('')
 const totalSignedIn = ref<number>(0)
@@ -129,7 +113,8 @@ onMounted(() => {
 async function getClassInfo() {
   isLoading.value = true
   classInfo.value = await apiService.getClassInfo(appStore().site, classId.value)
-  totalSignedIn.value = getTotalSignedIn()
+  totalSignedIn.value = classInfo.value?.enrollments.length ?? 0
+
   isLoading.value = false
 }
 
@@ -142,26 +127,6 @@ function getClassId(): string {
   return route.params.id as string
 }
 
-function getTotalSignedIn(): number {
-  let totalSignedIn = 0
-  if (
-    classInfo.value &&
-    classInfo.value.roomLayout?.matrix &&
-    classInfo.value.roomLayout.matrix.length > 0
-  )
-    for (let index = 0; index < classInfo.value.roomLayout.matrix.length; index++) {
-      const classPosition = classInfo.value.roomLayout.matrix[index] as BookableSpot | IconPosition
-
-      if ('spotInfo' in classPosition) {
-        if (classPosition.spotInfo.isBooked) {
-          totalSignedIn++
-        }
-      }
-    }
-
-  return totalSignedIn
-}
-
 function spotClicked(event: BookableSpotClickedEvent) {
   assignUserToThisSpotVisible.value = false
 
@@ -172,15 +137,31 @@ function spotClicked(event: BookableSpotClickedEvent) {
       const bookableSpot = element as BookableSpot
 
       if (bookableSpot.spotInfo.spotNumber === event.spotNumber) {
+        var fullName = ''
+        var enrollmentId: string | null | undefined
+
+        if (classInfo.value?.enrollments != null) {
+          for (let index = 0; index < classInfo.value?.enrollments.length; index++) {
+            const enrollment = classInfo.value?.enrollments[index]
+
+            if (
+              bookableSpot.spotInfo.spotNumber === enrollment.spotInfo?.spotNumber &&
+              enrollment.user
+            ) {
+              fullName =
+                (enrollment.user?.firstName ?? '') + ' ' + (enrollment.user?.lastName ?? '')
+              enrollmentId = enrollment.id
+              break
+            }
+          }
+        }
+
         selectedSpot.value = {
           spotNumber: bookableSpot.spotInfo?.spotNumber,
           isBooked: bookableSpot.spotInfo?.isBooked,
-          fullName:
-            (bookableSpot.spotInfo?.bookedSpotUserInfo?.user?.firstName ?? '') +
-            ' ' +
-            (bookableSpot?.spotInfo?.bookedSpotUserInfo?.user?.lastName ?? ''),
+          fullName: fullName,
           enabled: bookableSpot.enabled,
-          enrollmentId: bookableSpot?.spotInfo?.bookedSpotUserInfo?.enrollmentId
+          enrollmentId: enrollmentId
         }
         break
       }
@@ -376,14 +357,12 @@ function goToLayoutEditPage(url: string) {
 }
 
 async function removeLayout() {
-  checkClassLayoutWithPIQIsLoading.value = true
+  editingLayout.value = true
   const result = await apiService.editClass({ classId: classId.value, roomLayoutId: null })
-  checkClassLayoutWithPIQIsLoading.value = false
+  editingLayout.value = false
 
   if (result.__typename === 'EditClassSuccessResult') {
     await getClassInfo()
-
-    doesRoomLayoutMatchResult.value = null
 
     successModalData.value.title = 'Success'
     successModalData.value.message = 'The layout was removed successfully.'
@@ -395,42 +374,17 @@ async function removeLayout() {
   }
 }
 
-async function assignPiqId(piqClassId: string) {
-  checkClassLayoutWithPIQIsLoading.value = true
-  const result = await apiService.editClass({ classId: classId.value, piqClassId: piqClassId })
-  checkClassLayoutWithPIQIsLoading.value = false
-
-  if (result.__typename === 'EditClassSuccessResult') {
-    await getClassInfo()
-
-    doesRoomLayoutMatchResult.value = null
-
-    successModalData.value.title = 'Success'
-    successModalData.value.message = 'PIQ ID assigned successfully.'
-    successModalData.value.isVisible = true
-  } else if (result.__typename === 'PIQClassNotFoundError') {
-    errorModalData.value.message = 'PIQ Class ID Not Found.'
-    errorModalData.value.isVisible = true
-  } else {
-    errorModalData.value.message =
-      "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
-    errorModalData.value.isVisible = true
-  }
-}
-
 async function assignRoomLayoutId(roomLayoutId: string) {
   if (roomLayoutId) {
-    checkClassLayoutWithPIQIsLoading.value = true
+    editingLayout.value = true
     const result = await apiService.editClass({
       classId: classId.value,
       roomLayoutId: roomLayoutId
     })
-    checkClassLayoutWithPIQIsLoading.value = false
+    editingLayout.value = false
 
     if (result.__typename === 'EditClassSuccessResult') {
       await getClassInfo()
-
-      doesRoomLayoutMatchResult.value = null
 
       successModalData.value.title = 'Success'
       successModalData.value.message = 'Room layout assigned successfully.'
@@ -464,18 +418,8 @@ async function assignRoomLayoutId(roomLayoutId: string) {
     <h6 v-html="classInfo?.class?.description"></h6>
   </div>
 
-  <CheckClassLayoutWithPIQ
-    :doesRoomLayoutMatchResult="doesRoomLayoutMatchResult"
-    :isLoading="checkClassLayoutWithPIQIsLoading"
-    @goToLayoutEditPage="goToLayoutEditPage"
-    @removeLayout="removeLayout"
-    @assignRoomLayoutId="assignRoomLayoutId"
-    @assignPiqId="assignPiqId"
-  >
-  </CheckClassLayoutWithPIQ>
-
   <hr />
-  <spot-matrix
+  <SpotMatrix
     v-if="
       classInfo !== null && classInfo.roomLayout !== null && classInfo.roomLayout?.matrix !== null
     "
@@ -483,8 +427,9 @@ async function assignRoomLayoutId(roomLayoutId: string) {
     :show-user-in-spots="true"
     :selectedSpotNumber="selectedSpot?.spotNumber"
     @click-spot="spotClicked"
+    :enrollments="classInfo.enrollments"
   >
-  </spot-matrix>
+  </SpotMatrix>
 
   <EnrollSelectedMemberComponent
     :class-id="classId"
@@ -497,7 +442,8 @@ async function assignRoomLayoutId(roomLayoutId: string) {
     :enrollments="classInfo.enrollments"
     :isLoading="false"
     @after-cancel-member-reservation="getClassInfo()"
-  ></AdminBookedUsersList>
+  >
+  </AdminBookedUsersList>
 
   <div v-if="selectedSpot?.isBooked === false && selectedSpot.enabled === true">
     <h1>Choose an action :</h1>
