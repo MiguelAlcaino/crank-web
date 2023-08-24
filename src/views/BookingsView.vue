@@ -258,6 +258,7 @@ async function acceptSuccessModal() {
     :message="successModalData.message"
     :closable="false"
     @on-ok="acceptSuccessModal"
+    :cancel-text="null"
     v-if="successModalData.isVisible"
   >
   </ModalComponent>
@@ -268,6 +269,7 @@ async function acceptSuccessModal() {
     title="Error"
     :message="errorModalData.message"
     :closable="false"
+    :cancel-text="null"
     v-if="errorModalData.isVisible"
     @on-ok="errorModalData.isVisible = false"
   >
