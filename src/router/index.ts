@@ -8,6 +8,7 @@ import ClassView from '../views/ClassView.vue'
 import BookingsView from '../views/BookingsView.vue'
 import PurchasesView from '../views/PurchasesView.vue'
 import ChangePasswordView from '../views/ChangePasswordView.vue'
+import ForgotPasswordView from '../views/ForgotPasswordView.vue'
 
 import { authService } from '@/services/authService'
 import AdminClass from '@/views/admin/AdminClass.vue'
@@ -66,6 +67,11 @@ const router = createRouter({
       component: ChangePasswordView
     },
     {
+      path: '/forgot-password',
+      name: 'forgot_password',
+      component: ForgotPasswordView
+    },
+    {
       path: '/about',
       name: 'about',
       // route level code-splitting
@@ -77,7 +83,7 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  const publicPages = ['/login', '/register']
+  const publicPages = ['/login', '/register', '/forgot-password']
   const authRequired = !publicPages.includes(to.path)
 
   if (authRequired && !authService.isLoggedId()) {
