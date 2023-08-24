@@ -55,87 +55,124 @@ async function login() {
 </script>
 
 <template>
-  <form @submit.prevent="login" autocomplete="off">
-    <!-- location -->
-    <div class="form-row">
-      <div class="col-md-6 mb-3">
-        <select class="custom-select" v-model="formData.location" required>
-          <option :value="SiteEnum.Dubai">Dubai</option>
-          <option :value="SiteEnum.AbuDhabi">Abu Dhabi</option>
-        </select>
-        <small
-          v-for="error in v$.location.$errors"
-          :key="error.$uid"
-          class="form-text"
-          style="color: red"
-        >
-          {{ error.$message }}
-        </small>
+  <div class="d-flex justify-content-center h-100">
+    <div class="card">
+      <div class="card-body mt-5">
+        <form @submit.prevent="login" autocomplete="off">
+          <!-- location -->
+          <div class="form-row">
+            <div class="col-md-12 mb-3">
+              <select class="custom-select" v-model="formData.location" required>
+                <option :value="SiteEnum.Dubai">Dubai</option>
+                <option :value="SiteEnum.AbuDhabi">Abu Dhabi</option>
+              </select>
+              <small
+                v-for="error in v$.location.$errors"
+                :key="error.$uid"
+                class="form-text"
+                style="color: red"
+              >
+                {{ error.$message }}
+              </small>
+            </div>
+          </div>
+
+          <!-- email -->
+          <div class="form-row">
+            <div class="col-md-12 mb-3">
+              <label for="emailRegistration">Email *</label>
+              <input
+                type="email"
+                v-model="formData.email"
+                class="form-control"
+                id="emailRegistration"
+                maxlength="200"
+                placeholder="Email"
+                required
+              />
+              <small
+                v-for="error in v$.email.$errors"
+                :key="error.$uid"
+                class="form-text"
+                style="color: red"
+              >
+                {{ error.$message }}
+              </small>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <!-- password -->
+            <div class="col-md-12 mb-3">
+              <label for="passwordRegistration">Password *</label>
+              <input
+                id="passwordRegistration"
+                class="form-control"
+                v-model="formData.password"
+                type="password"
+                placeholder="Password"
+                maxlength="100"
+                required
+              />
+              <small
+                v-for="error in v$.password.$errors"
+                :key="error.$uid"
+                class="form-text"
+                style="color: red"
+              >
+                {{ error.$message }}
+              </small>
+            </div>
+          </div>
+
+          <small v-if="displayLoginError" class="form-text" style="color: red">
+            Incorrect Login
+          </small>
+
+          <div class="row">
+            <div class="col-md-12 mb-3" style="text-align: right">
+              <RouterLink class="nav-link" :to="{ name: 'forgot_password' }"
+                >Forgot Password?</RouterLink
+              >
+            </div>
+          </div>
+
+          <!--submit button-->
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <DefaultButtonComponent
+                class="btn-block"
+                type="submit"
+                :is-loading="isSubmitting"
+                text="Login"
+              ></DefaultButtonComponent>
+            </div>
+          </div>
+        </form>
+        <p>Don't have an account with us? Please signup here:</p>
+        <div class="row">
+          <div class="col-md-12 mb-3">
+            <router-link class="btn btn-primary btn-block" to="/register">New User</router-link>
+          </div>
+        </div>
       </div>
     </div>
-
-    <!-- email -->
-    <div class="form-row">
-      <div class="col-md-6 mb-3">
-        <label for="emailRegistration">Email *</label>
-        <input
-          type="email"
-          v-model="formData.email"
-          class="form-control"
-          id="emailRegistration"
-          maxlength="200"
-          placeholder="Email"
-          required
-        />
-        <small
-          v-for="error in v$.email.$errors"
-          :key="error.$uid"
-          class="form-text"
-          style="color: red"
-        >
-          {{ error.$message }}
-        </small>
-      </div>
-    </div>
-
-    <div class="form-row">
-      <!-- password -->
-      <div class="col-md-6 mb-3">
-        <label for="passwordRegistration">Password *</label>
-        <input
-          id="passwordRegistration"
-          class="form-control"
-          v-model="formData.password"
-          type="password"
-          placeholder="Password"
-          maxlength="100"
-          required
-        />
-        <small
-          v-for="error in v$.password.$errors"
-          :key="error.$uid"
-          class="form-text"
-          style="color: red"
-        >
-          {{ error.$message }}
-        </small>
-      </div>
-    </div>
-
-    <small v-if="displayLoginError" class="form-text" style="color: red">
-      This email or password
-    </small>
-
-    <!--submit button-->
-    <div class="form-row">
-      <div class="col-md-12 mb-3">
-        <DefaultButtonComponent
-          type="submit"
-          :is-loading="isSubmitting"
-          text="Login"
-        ></DefaultButtonComponent>
-      </div>
-    </div>
-  </form>
-  <p>New to CRANK? <router-link to="/register">Sign up now.</router-link></p>
+  </div>
 </template>
+
+<style scoped>
+.page-login-v3 .panel .panel-body {
+  padding: 50px 40px 40px;
+}
+
+a {
+  color: #000000;
+}
+
+.card {
+  height: 613px;
+  margin-top: auto;
+  margin-bottom: auto;
+  width: 400px;
+}
+</style>

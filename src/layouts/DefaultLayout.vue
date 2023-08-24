@@ -6,10 +6,9 @@
       </div>
     </div>
   </nav>
-
   <div class="container">
     <div class="columns">
-      <div class="column is-3">
+      <div class="column is-3" v-if="routeName !== 'login' && routeName !== 'forgot_password'">
         <aside class="menu is-hidden-mobile">
           <nav
             class="navbar navbar-expand-lg navbar-light bg-light"
@@ -21,13 +20,13 @@
                   <RouterLink class="nav-link" :to="{ name: 'calendar' }">Calendar</RouterLink>
                 </li>
                 <li class="nav-item">
-                  <RouterLink class="nav-link" :to="{ name: 'profile' }">Profile</RouterLink>
-                </li>
-                <li class="nav-item">
                   <RouterLink class="nav-link" :to="{ name: 'bookings' }">Bookings</RouterLink>
                 </li>
                 <li class="nav-item">
                   <RouterLink class="nav-link" :to="{ name: 'purchases' }">Purchases</RouterLink>
+                </li>
+                <li class="nav-item">
+                  <RouterLink class="nav-link" :to="{ name: 'profile' }">Profile</RouterLink>
                 </li>
               </ul>
             </div>
@@ -42,15 +41,23 @@
           </ul>
         </aside>
       </div>
-      <div class="column is-9">
-        <RouterView />
-      </div>
+
+      <RouterView />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { authService } from '@/services/authService'
+import { useRoute } from 'vue-router'
+import { computed } from 'vue'
+import NavbarComponent from '@/components/NavbarComponent.vue'
+
+const route = useRoute()
+
+const routeName = computed(() => {
+  return route.name?.toString()
+})
 </script>
 
 <style scoped></style>
