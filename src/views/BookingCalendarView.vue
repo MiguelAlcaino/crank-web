@@ -12,7 +12,6 @@ import type { Class } from '@/gql/graphql'
 import { DayOfTheWeek } from '@/model/DayOfTheWeek'
 import { WeekCalendar } from '@/model/WeekCalendar'
 import dayjs from 'dayjs'
-dayjs.Ls.en.weekStart = 1
 
 import CalendarCard from '@/components/CalendarCard.vue'
 import IconCalendarCard from '@/components/icons/IconCalendarCard.vue'
@@ -27,7 +26,10 @@ const hasPreviousWeek = ref<boolean>(false)
 const daysOfTheWeek = ref<DayOfTheWeek[]>([])
 const apiService = inject<ApiService>('gqlApiService')!
 
+
 const enrollmentClassIds = ref<string[]>([])
+
+dayjs.Ls.en.weekStart = 1
 
 onMounted(() => {
   getClassesOfTheWeek()
@@ -218,6 +220,7 @@ function getPivot() {
                 v-for="(colName, key) in columnsNames"
                 :key="key"
                 :class="colName.isCurrentDate ? 'today' : ''"
+                
               >
                 {{ colName.dayName }}<br />
                 {{ colName.dateNumber }}
@@ -330,5 +333,13 @@ function getPivot() {
 .CalendarWeekTable > thead {
   border-top: 1px solid #000000 !important;
   border-bottom: 1px solid #000000 !important;
+  padding-top: 5px!important;
+  padding-bottom: 5px!important;
+}
+
+thead {
+    display: table-header-group;
+    vertical-align: middle;
+    border-color: inherit;
 }
 </style>
