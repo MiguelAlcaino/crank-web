@@ -55,7 +55,7 @@ const emits = defineEmits<{
                 class="btn btn-default"
                 v-if="cancelText !== null"
                 @click="emits('onCancel')"
-                :disabled="cancelDisabled || cancelLoading"
+                :disabled="cancelDisabled || cancelLoading || okLoading"
               >
                 {{ cancelText }}
                 <span
@@ -69,7 +69,7 @@ const emits = defineEmits<{
                 class="btn btn-primary"
                 type="button"
                 v-if="okText !== null"
-                :disabled="okLoading || okDisabled"
+                :disabled="okLoading || okDisabled || cancelLoading"
                 @click="emits('onOk')"
               >
                 {{ okText }}
