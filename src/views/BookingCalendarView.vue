@@ -1,3 +1,11 @@
+<script lang="ts">
+interface ColumnName {
+  dayName: string
+  dateNumber: string
+  isCurrentDate: boolean
+}
+</script>
+
 <script setup lang="ts">
 import { inject, onMounted, ref } from 'vue'
 import type { Class } from '@/gql/graphql'
@@ -11,7 +19,7 @@ import IconCalendarCard from '@/components/icons/IconCalendarCard.vue'
 import { appStore } from '@/stores/appStorage'
 import type { ApiService } from '@/services/apiService'
 
-const columnsNames = ref<string[]>([])
+const columnsNames = ref<ColumnName[]>([])
 const calendarDays = ref<WeekCalendar[]>([])
 const siteDateTimeNow = ref<Date>(new Date())
 const calendarIsLoading = ref<boolean>(false)
@@ -83,7 +91,12 @@ async function getClassesOfTheWeek(): Promise<void> {
     for (let i = 0; i < 7; i++) {
       dates.push(day.toDate())
 
-      columnsNames.value.push(day.format('ddd DD.MM').toUpperCase())
+      columnsNames.value.push({
+        dayName: day.format('ddd').toUpperCase(),
+        dateNumber: day.format('DD.MM').toUpperCase(),
+        isCurrentDate: day.isSame(Date(), 'day')
+      })
+
       day = day.add(1, 'day')
     }
 
@@ -200,9 +213,9 @@ function getPivot() {
         <table class="table table-borderless CalendarWeekTable">
           <thead>
             <tr>
-              <th class="text-center" v-for="(colName, key) in columnsNames" :key="key">
-                {{ colName.split(' ')[0] }}<br />
-                {{ colName.split(' ')[1] }}
+              <th class="text-center" v-for="(colName, key) in columnsNames" :key="key" :class="colName.isCurrentDate ? 'today': ''">
+                {{ colName.dayName }}<br />
+                {{ colName.dateNumber }}
               </th>
             </tr>
           </thead>
@@ -302,5 +315,10 @@ function getPivot() {
 
 .CalendarWeekTable > tbody > tr > td {
   border-left: 1px solid #000000 !important;
+}
+
+.CalendarWeekTable > thead > tr > th.today {
+  background-color: #000000 !important;
+  color: white;
 }
 </style>
