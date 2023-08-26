@@ -239,7 +239,7 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
     <hr />
     <div class="container">
       <div class="row justify-content-center">
-        <div class="col-12">
+        <div class="col-12" style="text-align: center">
           <WaitlistButton
             v-if="classInfo !== null && classInfo.class.waitListAvailable"
             @clickBookWaitList="clickBookWaitList"
