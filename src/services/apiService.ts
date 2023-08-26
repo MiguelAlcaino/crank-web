@@ -15,6 +15,7 @@ import type {
   EditClassInput,
   EditClassResultUnion,
   Enrollment,
+  EnrollmentInfo,
   IdentifiableUser,
   Purchase,
   RegisterUserInput,
@@ -187,6 +188,39 @@ export class ApiService {
       return queryResult.data.currentUserEnrollments as Enrollment[]
     } catch (error) {
       return []
+    }
+  }
+
+  async getCurrentUserEnrollmentInClass(classId: string): Promise<EnrollmentInfo | null> {
+    const CURRENT_USER_ENROLLMENT_IN_CLASS_QUERY = gql`
+      query currentUserEnrollmentInClass($classId: ID!) {
+        currentUser {
+          enrollmentInClass(classId: $classId) {
+            id
+            enrollmentStatus
+            enrollmentDateTime
+            spotInfo {
+              spotNumber
+              isBooked
+            }
+          }
+        }
+      }
+    `
+    try {
+      const queryResult = await this.authApiClient.query({
+        query: CURRENT_USER_ENROLLMENT_IN_CLASS_QUERY,
+        variables: { classId: classId },
+        fetchPolicy: 'network-only'
+      })
+
+      if (queryResult.data.currentUser.enrollmentInClass) {
+        return queryResult.data.currentUser.enrollmentInClass as EnrollmentInfo
+      }
+
+      return null
+    } catch (error) {
+      return null
     }
   }
 
@@ -721,8 +755,7 @@ export class ApiService {
       } else {
         return 'UnknownError'
       }
-    } catch (error) {
-      console.log(error)
+    } catch (error) {     
       return 'UnknownError'
     }
   }
