@@ -200,7 +200,7 @@ function getPivot() {
         <table class="table table-borderless CalendarWeekTable">
           <thead>
             <tr>
-              <th v-for="(colName, key) in columnsNames" :key="key">
+              <th class="text-center" v-for="(colName, key) in columnsNames" :key="key">
                 {{ colName.split(' ')[0] }}<br />
                 {{ colName.split(' ')[1] }}
               </th>
