@@ -33,7 +33,6 @@ export const authService = {
         this.startRefreshTokenTimer()
       }
     } catch (error) {
-      console.log(error)
       throw new IncorrectCredentialsLoginError()
     }
   },

@@ -755,8 +755,7 @@ export class ApiService {
       } else {
         return 'UnknownError'
       }
-    } catch (error) {
-      console.log(error)
+    } catch (error) {     
       return 'UnknownError'
     }
   }
