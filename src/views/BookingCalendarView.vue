@@ -213,7 +213,12 @@ function getPivot() {
         <table class="table table-borderless CalendarWeekTable">
           <thead>
             <tr>
-              <th class="text-center" v-for="(colName, key) in columnsNames" :key="key" :class="colName.isCurrentDate ? 'today': ''">
+              <th
+                class="text-center"
+                v-for="(colName, key) in columnsNames"
+                :key="key"
+                :class="colName.isCurrentDate ? 'today' : ''"
+              >
                 {{ colName.dayName }}<br />
                 {{ colName.dateNumber }}
               </th>
@@ -320,5 +325,10 @@ function getPivot() {
 .CalendarWeekTable > thead > tr > th.today {
   background-color: #000000 !important;
   color: white;
+}
+
+.CalendarWeekTable > thead {
+  border-top: 1px solid #000000 !important;
+  border-bottom: 1px solid #000000 !important;
 }
 </style>
