@@ -10,7 +10,7 @@ import {
 import dayjs from 'dayjs'
 
 import BookingsTable from '@/components/BookingsTable.vue'
-
+import DefaultButtonComponent from '@/components/DefaultButtonComponent.vue'
 import ModalComponent from '@/components/ModalComponent.vue'
 
 import type { ApiService } from '@/services/apiService'
@@ -202,29 +202,74 @@ async function acceptSuccessModal() {
 </script>
 
 <template>
-  <h2>BOOKINGS</h2>
-  <select
-    class="custom-select"
-    v-model="filterEnrollmentType"
-    @change="getUserErollments()"
-    :disabled="isLoading"
-  >
-    <option :value="EnrollmentTypeEnum.Upcoming">UPCOMING</option>
-    <option :value="EnrollmentTypeEnum.Waitlist">WAITLIST</option>
-    <option :value="EnrollmentTypeEnum.Historical">HISTORICAL</option>
-  </select>
-  <br />
-  <br />
+  <div class="card border-0">
+    <div class="card-header border-0" style="background-color: white">
+      <div class="row justify-content-between">
+        <div class="col-md-4">
+          <h1 class="page-title">Bookings</h1>
+        </div>
+        <div class="col-md-5 col-sm-6" style="text-align: right">
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="basic-addon1"
+                ><i class="bi bi-calendar-event"></i
+              ></span>
+            </div>
+            <input
+              type="date"
+              class="form-control calendarFilter"
+              placeholder="Username"
+              aria-label="Username"
+              aria-describedby="basic-addon1"
+              v-model="filterStartDate"
+            />
+            <div class="input-group-append">
+              <span class="input-group-text input-group-prepend" id="basic-addon2">to</span>
+            </div>
+            <input
+              type="date"
+              class="form-control calendarFilter"
+              placeholder="Username"
+              aria-label="Username"
+              aria-describedby="basic-addon1"
+              v-model="filterEndDate"
+            />
+            <DefaultButtonComponent
+              @on-click="getUserErollments()"
+              :is-loading="isLoading"
+              text="Go"
+              type="button"
+              class="input-group-append"
+            ></DefaultButtonComponent>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <select
+        class="custom-select"
+        v-model="filterEnrollmentType"
+        @change="getUserErollments()"
+        :disabled="isLoading"
+      >
+        <option :value="EnrollmentTypeEnum.Upcoming">UPCOMING</option>
+        <option :value="EnrollmentTypeEnum.Waitlist">WAITLIST</option>
+        <option :value="EnrollmentTypeEnum.Historical">HISTORICAL</option>
+      </select>
+      <br />
+      <br />
 
-  <BookingsTable
-    :enrollments="userErollments"
-    :isLoading="isLoading"
-    :enrollmentType="filterEnrollmentType"
-    :siteDateTimeNow="siteDateTimeNow"
-    @clickCancelEnrollment="clickCancelEnrollment"
-    @clickRemoveFromWaitlist="clickRemoveFromWaitlist"
-  >
-  </BookingsTable>
+      <BookingsTable
+        :enrollments="userErollments"
+        :isLoading="isLoading"
+        :enrollmentType="filterEnrollmentType"
+        :siteDateTimeNow="siteDateTimeNow"
+        @clickCancelEnrollment="clickCancelEnrollment"
+        @clickRemoveFromWaitlist="clickRemoveFromWaitlist"
+      >
+      </BookingsTable>
+    </div>
+  </div>
 
   <!-- CONFIRM REMOVE FROM WAITLIST modal -->
   <ModalComponent
@@ -276,4 +321,8 @@ async function acceptSuccessModal() {
   </ModalComponent>
 </template>
 
-<style scoped></style>
+<style scoped>
+.calendarFilter {
+  width: 130px;
+}
+</style>
