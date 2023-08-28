@@ -34,6 +34,7 @@
     "react": "^18.2.0",
     "vue": "^3.2.47",
     "vue-router": "^4.1.6",
+    "vue3-popper": "^1.5.0",
     "vue3-simple-typeahead": "^1.0.11"
   },
   "devDependencies": {
