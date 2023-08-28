@@ -2,6 +2,7 @@
 interface ClassInfo {
   id: string
   name: string
+  description: string
   instructorName: string
   isSubstitute: boolean
   duration: number
@@ -27,12 +28,20 @@ async function selectClass() {
 
 <template>
   <div v-if="classInfo !== undefined" class="classCard" v-on:click="selectClass()">
-    <div class="row">
-      <div class="col-8">
-        <b class="className">{{ classInfo?.name }}</b>
+    <Popper :hover="true" :arrow="true" class="light-popover">
+      <div class="row">
+        <div class="col-8">
+          <b class="className">{{ classInfo?.name }}</b>
+        </div>
+        <div class="col-4 colIcon"></div>
       </div>
-      <div class="col-4 colIcon"></div>
-    </div>
+      <template #content>
+        <div class="popover-header">
+          <b class="className">{{ classInfo?.name }}</b>
+        </div>
+        <div v-html="classInfo?.description" class="popover-body"></div>
+      </template>
+    </Popper>
     <div class="row">
       <div class="col-8">{{ classInfo?.instructorName }}</div>
       <div class="col-4 colIcon">
@@ -71,5 +80,27 @@ async function selectClass() {
 
 .className {
   text-transform: uppercase;
+}
+
+.light-popover {
+  --popper-theme-background-color: #ffffff;
+  --popper-theme-background-color-hover: #ffffff;
+  --popper-theme-text-color: #333333;
+  --popper-theme-border-width: 1px;
+  --popper-theme-border-style: solid;
+  --popper-theme-border-color: #eeeeee;
+  --popper-theme-border-radius: 6px;
+  --popper-theme-padding: 0px;
+  --popper-theme-box-shadow: 0 6px 30px -6px rgba(0, 0, 0, 0);
+}
+
+.popover-header {
+  background-color: #eeeeee;
+  padding: 8px;
+}
+
+.popover-body {
+  max-width: 240px !important;
+  padding: 10px;
 }
 </style>
