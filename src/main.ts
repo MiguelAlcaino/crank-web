@@ -3,6 +3,8 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 
+import Popper from 'vue3-popper'
+
 /* import the fontawesome core */
 import { library } from '@fortawesome/fontawesome-svg-core'
 
@@ -44,7 +46,7 @@ async function startApp() {
     render: () => h(App)
   }).component('font-awesome-icon', FontAwesomeIcon)
 
-  app.use(createPinia()).use(router).use(SimpleTypeahead)
+  app.use(createPinia()).use(router).use(SimpleTypeahead).component('Popper', Popper)
 
   try {
     await authService.startRefreshTokenTimer()
