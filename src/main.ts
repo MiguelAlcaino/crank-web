@@ -4,6 +4,8 @@ import App from './App.vue'
 import router from './router'
 
 import Popper from 'vue3-popper'
+import VueDatePicker from '@vuepic/vue-datepicker'
+import '@vuepic/vue-datepicker/dist/main.css'
 
 /* import the fontawesome core */
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -46,7 +48,12 @@ async function startApp() {
     render: () => h(App)
   }).component('font-awesome-icon', FontAwesomeIcon)
 
-  app.use(createPinia()).use(router).use(SimpleTypeahead).component('Popper', Popper)
+  app
+    .use(createPinia())
+    .use(router)
+    .use(SimpleTypeahead)
+    .component('Popper', Popper)
+    .component('VueDatePicker', VueDatePicker)
 
   try {
     await authService.startRefreshTokenTimer()
