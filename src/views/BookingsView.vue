@@ -21,8 +21,6 @@ const userErollments = ref<Enrollment[]>([])
 const siteDateTimeNow = ref<Date>(new Date())
 const isCancellingCurrentUserEnrollment = ref<boolean>(false)
 
-const filterStartDate = ref<Date | null>(null)
-const filterEndDate = ref<Date | null>(null)
 const filterEnrollmentType = ref<EnrollmentTypeEnum>(EnrollmentTypeEnum.Upcoming)
 
 const modalConfirmRemoveFromWaitlistisVisible = ref<boolean>(false)
@@ -30,6 +28,8 @@ const waitlistEntryIdToRemove = ref<string | null>(null)
 
 const enrollmentIdToRemove = ref<string | null>(null)
 const enrollmentIsLateCancel = ref<boolean>(false)
+
+const dateRangeFilter = ref<[Date | null, Date | null] | undefined>()
 
 const successModalData = ref<{
   title: string
@@ -91,9 +91,13 @@ async function getUserErollments() {
 
   const params = { enrollmentType: filterEnrollmentType.value } as CurrentUserEnrollmentsParams
 
-  if (filterStartDate.value) params.startDate = dayjs(filterStartDate.value).format('YYYY-MM-DD')
+  if (dateRangeFilter.value) {
+    if (dateRangeFilter.value[0])
+      params.startDate = dayjs(dateRangeFilter.value[0]).format('YYYY-MM-DD')
 
-  if (filterEndDate.value) params.endDate = dayjs(filterEndDate.value).format('YYYY-MM-DD')
+    if (dateRangeFilter.value[1])
+      params.endDate = dayjs(dateRangeFilter.value[1]).format('YYYY-MM-DD')
+  }
 
   userErollments.value = await apiService.getCurrentUserEnrollments(appStore().site, params)
 
@@ -204,44 +208,26 @@ async function acceptSuccessModal() {
 <template>
   <div class="card border-0">
     <div class="card-header border-0" style="background-color: white">
-      <div class="row justify-content-between">
-        <div class="col-md-4">
+      <div class="row form-inline">
+        <div class="col-md-6">
           <h1 class="page-title">Bookings</h1>
         </div>
-        <div class="col-md-5 col-sm-6" style="text-align: right">
-          <div class="input-group mb-3">
-            <div class="input-group-prepend">
-              <span class="input-group-text" id="basic-addon1"
-                ><i class="bi bi-calendar-event"></i
-              ></span>
-            </div>
-            <input
-              type="date"
-              class="form-control calendarFilter"
-              placeholder="Username"
-              aria-label="Username"
-              aria-describedby="basic-addon1"
-              v-model="filterStartDate"
-            />
-            <div class="input-group-append">
-              <span class="input-group-text input-group-prepend" id="basic-addon2">to</span>
-            </div>
-            <input
-              type="date"
-              class="form-control calendarFilter"
-              placeholder="Username"
-              aria-label="Username"
-              aria-describedby="basic-addon1"
-              v-model="filterEndDate"
-            />
-            <DefaultButtonComponent
-              @on-click="getUserErollments()"
-              :is-loading="isLoading"
-              text="Go"
-              type="button"
-              class="input-group-append"
-            ></DefaultButtonComponent>
-          </div>
+        <div class="col-md-5 col-sm-6 text-right justify-content-end">
+          <VueDatePicker
+            v-model="dateRangeFilter"
+            range
+            :enable-time-picker="false"
+            placeholder="Date Range"
+          />
+        </div>
+        <div class="col-1">
+          <DefaultButtonComponent
+            @on-click="getUserErollments()"
+            :is-loading="isLoading"
+            text="Go"
+            type="button"
+            class="input-group-append"
+          ></DefaultButtonComponent>
         </div>
       </div>
     </div>
@@ -321,8 +307,4 @@ async function acceptSuccessModal() {
   </ModalComponent>
 </template>
 
-<style scoped>
-.calendarFilter {
-  width: 130px;
-}
-</style>
+<style scoped></style>
