@@ -55,7 +55,7 @@ function selectSpot() {
   cursor: pointer;
   text-decoration: none;
   font-weight: 400;
-  font-size: 14px;  
+  font-size: 14px;
 }
 
 .enabledSpot:hover {

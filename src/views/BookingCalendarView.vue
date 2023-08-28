@@ -1,15 +1,24 @@
+<script lang="ts">
+interface ColumnName {
+  dayName: string
+  dateNumber: string
+  isCurrentDate: boolean
+}
+</script>
+
 <script setup lang="ts">
 import { inject, onMounted, ref } from 'vue'
 import type { Class } from '@/gql/graphql'
 import { DayOfTheWeek } from '@/model/DayOfTheWeek'
 import { WeekCalendar } from '@/model/WeekCalendar'
 import dayjs from 'dayjs'
+
 import CalendarCard from '@/components/CalendarCard.vue'
 import IconCalendarCard from '@/components/icons/IconCalendarCard.vue'
 import { appStore } from '@/stores/appStorage'
 import type { ApiService } from '@/services/apiService'
 
-const columnsNames = ref<string[]>([])
+const columnsNames = ref<ColumnName[]>([])
 const calendarDays = ref<WeekCalendar[]>([])
 const siteDateTimeNow = ref<Date>(new Date())
 const calendarIsLoading = ref<boolean>(false)
@@ -17,7 +26,10 @@ const hasPreviousWeek = ref<boolean>(false)
 const daysOfTheWeek = ref<DayOfTheWeek[]>([])
 const apiService = inject<ApiService>('gqlApiService')!
 
+
 const enrollmentClassIds = ref<string[]>([])
+
+dayjs.Ls.en.weekStart = 1
 
 onMounted(() => {
   getClassesOfTheWeek()
@@ -81,7 +93,12 @@ async function getClassesOfTheWeek(): Promise<void> {
     for (let i = 0; i < 7; i++) {
       dates.push(day.toDate())
 
-      columnsNames.value.push(day.format('ddd DD.MM').toUpperCase())
+      columnsNames.value.push({
+        dayName: day.format('ddd').toUpperCase(),
+        dateNumber: day.format('DD.MM').toUpperCase(),
+        isCurrentDate: day.isSame(Date(), 'day')
+      })
+
       day = day.add(1, 'day')
     }
 
@@ -174,111 +191,155 @@ function getPivot() {
 </script>
 
 <template>
-  <div class="container overflow-hidden">
-    <!-- buttons -->
-    <div class="row gy-5 p-3">
-      <div class="col-6">
-        <button class="btn btn-primary" @click="goToPrevWeek()">
-          <font-awesome-icon icon="fa fa-step-backward" />&nbsp;&nbsp;&nbsp;Prev
-        </button>
-      </div>
-      <div class="col-6" style="text-align: right">
-        <button class="btn btn-primary" @click="goToNextWeek()">
-          Next&nbsp;&nbsp;&nbsp;<font-awesome-icon icon="fa fa-step-forward" />
-        </button>
-      </div>
+  <!-- buttons -->
+  <div class="row gy-5 p-3">
+    <div class="col-6">
+      <button class="btn btn-primary" @click="goToPrevWeek()">
+        <font-awesome-icon icon="fa fa-step-backward" />&nbsp;&nbsp;&nbsp;Prev
+      </button>
     </div>
-    <!-- calendar -->
-    <div class="row gy-5">
-      <div class="col-12">
-        <div class="d-flex justify-content-center" v-if="calendarIsLoading">
-          <div class="spinner-border" role="status"></div>
-          &nbsp;&nbsp;Loading...
-        </div>
-        <div v-else>
-          <div class="row">
-            <div class="col" v-for="(colName, key) in columnsNames" :key="key">
-              <b> {{ colName }}</b>
-            </div>
-          </div>
-          <div class="row" v-for="(colRow, key) in calendarDays" :key="key">
-            <div class="col">
-              <CalendarCard
-                :classInfo="colRow.MON"
-                :isEnrolled="
-                  colRow.MON != null && enrollmentClassIds.indexOf(colRow.MON?.id) !== -1
-                "
-              ></CalendarCard>
-            </div>
-            <div class="col">
-              <CalendarCard
-                :classInfo="colRow.TUE"
-                :isEnrolled="
-                  colRow.TUE != null && enrollmentClassIds.indexOf(colRow.TUE?.id) !== -1
-                "
-              ></CalendarCard>
-            </div>
-            <div class="col">
-              <CalendarCard
-                :classInfo="colRow.WED"
-                :isEnrolled="
-                  colRow.WED != null && enrollmentClassIds.indexOf(colRow.WED?.id) !== -1
-                "
-              ></CalendarCard>
-            </div>
-            <div class="col">
-              <CalendarCard
-                :classInfo="colRow.THU"
-                :isEnrolled="
-                  colRow.THU != null && enrollmentClassIds.indexOf(colRow.THU?.id) !== -1
-                "
-                >></CalendarCard
+    <div class="col-6" style="text-align: right">
+      <button class="btn btn-primary" @click="goToNextWeek()">
+        Next&nbsp;&nbsp;&nbsp;<font-awesome-icon icon="fa fa-step-forward" />
+      </button>
+    </div>
+  </div>
+  <!-- calendar -->
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex justify-content-center" v-if="calendarIsLoading">
+        <div class="spinner-border" role="status"></div>
+        &nbsp;&nbsp;Loading...
+      </div>
+      <div v-else>
+        <table class="table table-borderless CalendarWeekTable">
+          <thead>
+            <tr>
+              <th
+                class="text-center"
+                v-for="(colName, key) in columnsNames"
+                :key="key"
+                :class="colName.isCurrentDate ? 'today' : ''"
+                
               >
-            </div>
-            <div class="col">
-              <CalendarCard
-                :classInfo="colRow.FRI"
-                :isEnrolled="
-                  colRow.FRI != null && enrollmentClassIds.indexOf(colRow.FRI?.id) !== -1
-                "
-              ></CalendarCard>
-            </div>
-            <div class="col">
-              <CalendarCard
-                :classInfo="colRow.SAT"
-                :isEnrolled="
-                  colRow.SAT != null && enrollmentClassIds.indexOf(colRow.SAT?.id) !== -1
-                "
-              ></CalendarCard>
-            </div>
-            <div class="col">
-              <CalendarCard
-                :classInfo="colRow.SUN"
-                :isEnrolled="
-                  colRow.SUN != null && enrollmentClassIds.indexOf(colRow.SUN?.id) !== -1
-                "
-              ></CalendarCard>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- icons -->
-    <div class="row gy-5 mt-5">
-      <div class="col">
-        <IconCalendarCard letter="E"></IconCalendarCard>
-        Enrolled
-      </div>
-      <div class="col">
-        <IconCalendarCard letter="W"></IconCalendarCard>
-        Waitlist
-      </div>
-      <div class="col">
-        <IconCalendarCard letter="S"></IconCalendarCard>
-        Substitute
+                {{ colName.dayName }}<br />
+                {{ colName.dateNumber }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(colRow, key) in calendarDays" :key="key">
+              <td style="border-left: 0px !important">
+                <CalendarCard
+                  :classInfo="colRow.MON"
+                  :isEnrolled="
+                    colRow.MON != null && enrollmentClassIds.indexOf(colRow.MON?.id) !== -1
+                  "
+                ></CalendarCard>
+              </td>
+              <td>
+                <CalendarCard
+                  :classInfo="colRow.TUE"
+                  :isEnrolled="
+                    colRow.TUE != null && enrollmentClassIds.indexOf(colRow.TUE?.id) !== -1
+                  "
+                ></CalendarCard>
+              </td>
+              <td>
+                <CalendarCard
+                  :classInfo="colRow.WED"
+                  :isEnrolled="
+                    colRow.WED != null && enrollmentClassIds.indexOf(colRow.WED?.id) !== -1
+                  "
+                ></CalendarCard>
+              </td>
+              <td>
+                <CalendarCard
+                  :classInfo="colRow.THU"
+                  :isEnrolled="
+                    colRow.THU != null && enrollmentClassIds.indexOf(colRow.THU?.id) !== -1
+                  "
+                  >></CalendarCard
+                >
+              </td>
+              <td>
+                <CalendarCard
+                  :classInfo="colRow.FRI"
+                  :isEnrolled="
+                    colRow.FRI != null && enrollmentClassIds.indexOf(colRow.FRI?.id) !== -1
+                  "
+                ></CalendarCard>
+              </td>
+              <td>
+                <CalendarCard
+                  :classInfo="colRow.SAT"
+                  :isEnrolled="
+                    colRow.SAT != null && enrollmentClassIds.indexOf(colRow.SAT?.id) !== -1
+                  "
+                ></CalendarCard>
+              </td>
+              <td>
+                <CalendarCard
+                  :classInfo="colRow.SUN"
+                  :isEnrolled="
+                    colRow.SUN != null && enrollmentClassIds.indexOf(colRow.SUN?.id) !== -1
+                  "
+                ></CalendarCard>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
+  <!-- icons -->
+  <div class="row gy-5 mt-5">
+    <div class="offset-3"></div>
+    <div class="col-md-2"><IconCalendarCard letter="E"></IconCalendarCard>Enrolled</div>
+    <div class="col-md-2"><IconCalendarCard letter="W"></IconCalendarCard>Waitlist</div>
+    <div class="col-md-2"><IconCalendarCard letter="S"></IconCalendarCard>Substitute</div>
+    <div class="offset-3"></div>
+  </div>
 </template>
 
-<style></style>
+<style>
+.CalendarWeekTable > tbody > tr > td > div {
+  border-bottom: 1px solid black !important;
+}
+
+.CalendarWeekTable > thead > tr {
+  border-bottom: 1px solid black !important;
+  border-top: 1px solid black !important;
+}
+
+.CalendarWeekTable > thead > tr > td {
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  border-top: 0 !important;
+  border-left: 1px black !important;
+}
+
+.CalendarWeekTable > tbody > tr > td {
+  border-left: 1px solid #000000 !important;
+}
+
+.CalendarWeekTable > thead > tr > th.today {
+  background-color: #000000 !important;
+  color: white;
+}
+
+.CalendarWeekTable > thead {
+  border-top: 1px solid #000000 !important;
+  border-bottom: 1px solid #000000 !important;
+  padding-top: 5px!important;
+  padding-bottom: 5px!important;
+}
+
+thead {
+    display: table-header-group;
+    vertical-align: middle;
+    border-color: inherit;
+}
+</style>

@@ -191,7 +191,7 @@ function onClickSpotAdmin(spotNumber: number) {
 
 <template>
   <div>
-    <table class="table table-sm table-borderless" style="margin:0 auto;margin-bottom:35px;">
+    <table class="table table-sm table-borderless" style="margin: 0 auto; margin-bottom: 35px">
       <tbody>
         <tr v-for="(colRow, rowKey) in spotsTable" :key="rowKey">
           <td class="class-position" v-for="(spot, columnKey) in colRow" :key="columnKey">
@@ -224,6 +224,6 @@ td.class-position {
   padding: 5px;
 }
 .table {
-      width: 15%;
-  }
+  width: 15%;
+}
 </style>

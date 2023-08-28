@@ -26,10 +26,10 @@ async function selectClass() {
 </script>
 
 <template>
-  <div v-if="classInfo !== undefined" class="border mt-1 classCard" v-on:click="selectClass()">
+  <div v-if="classInfo !== undefined" class="classCard" v-on:click="selectClass()">
     <div class="row">
       <div class="col-8">
-        <b>{{ classInfo?.name }}</b>
+        <b class="className">{{ classInfo?.name }}</b>
       </div>
       <div class="col-4 colIcon"></div>
     </div>
@@ -60,7 +60,16 @@ async function selectClass() {
   min-height: 100px;
 }
 
+.classCard:hover {
+  background-color: #dadada !important;
+  cursor: pointer;
+}
+
 .colIcon {
   text-align: right;
+}
+
+.className {
+  text-transform: uppercase;
 }
 </style>
