@@ -231,10 +231,14 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
       </div>
     </div>
 
-    <YouAreAlreadyEnrolled
-      v-if="enrollmentInfo !== null"
-      :enrollment-info="enrollmentInfo"
-    ></YouAreAlreadyEnrolled>
+    <div class="row">
+      <div class="col-12 text-center">
+        <YouAreAlreadyEnrolled
+          v-if="enrollmentInfo !== null"
+          :enrollment-info="enrollmentInfo"
+        ></YouAreAlreadyEnrolled>
+      </div>
+    </div>
 
     <hr />
     <div class="container">
