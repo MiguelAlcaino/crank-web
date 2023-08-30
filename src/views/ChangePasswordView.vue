@@ -7,6 +7,7 @@ import type { ApiService } from '@/services/apiService'
 import ModalComponent from '@/components/ModalComponent.vue'
 import { appStore } from '@/stores/appStorage'
 import type { UpdateCurrentUserPasswordInput } from '@/gql/graphql'
+import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 
 const apiService = inject<ApiService>('gqlApiService')!
 const isSaving = ref<boolean>(false)
@@ -71,8 +72,7 @@ const submitForm = async () => {
       } else if (response === 'IncorrectPasswordException') {
         errorMessage.value = 'The current password is not correct.'
       } else {
-        errorMessage.value =
-          "Ups! Sorry, we didn't see that coming!. Please try again or communicate with the team to resolve this issue."
+        errorMessage.value = ERROR_UNKNOWN
       }
       errorModalIsVisible.value = true
     }

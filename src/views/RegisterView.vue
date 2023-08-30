@@ -22,6 +22,7 @@ import { authService } from '@/services/authService'
 import { appStore } from '@/stores/appStorage'
 import router from '@/router'
 import ModalComponent from '@/components/ModalComponent.vue'
+import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 
 const isSaving = ref(false)
 const isLoggingIn = ref(false)
@@ -178,8 +179,7 @@ const submitForm = async () => {
         errorMessage.value =
           'Your email address is already registered with us. Please login directly to your account.'
       } else {
-        errorMessage.value =
-          "Ups! Sorry, we didn't see that coming!. Please try again or communicate with the team to resolve this issue."
+        errorMessage.value = ERROR_UNKNOWN
       }
 
       errorModalIsVisible.value = true
@@ -672,7 +672,7 @@ async function login() {
   <!-- Success Modal -->
   <ModalComponent
     v-if="successModalIsVisible"
-    title="Success"
+    title="SUCCESS"
     message="Your account has been successfully created."
     :cancel-text="null"
     :closable="false"

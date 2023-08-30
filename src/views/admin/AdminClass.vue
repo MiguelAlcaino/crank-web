@@ -22,6 +22,13 @@ import ModalComponent from '@/components/ModalComponent.vue'
 import AdminBookedUsersList from '@/components/AdminBookedUsersList.vue'
 import EnrollSelectedMemberComponent from '@/components/EnrollSelectedMemberComponent.vue'
 
+import {
+  ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW,
+  ERROR_LATE_CANCELLATION_REQUIRED,
+  ERROR_SPOT_NOT_FOUND,
+  ERROR_UNKNOWN
+} from '@/utils/errorMessages'
+
 const route = useRoute()
 
 const apiService = inject<ApiService>('gqlApiService')!
@@ -182,12 +189,10 @@ async function clickPutUnderMaintenance() {
     await getClassInfo()
     selectedSpot.value = { enabled: null, fullName: null, isBooked: null, spotNumber: null }
   } else if (response === 'SpotNotFoundError') {
-    errorModalData.value.message =
-      'The spot was not found in the list of disabled spots. This error is very unlikely to happen.'
+    errorModalData.value.message = ERROR_SPOT_NOT_FOUND
     errorModalData.value.isVisible = true
   } else {
-    errorModalData.value.message =
-      "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+    errorModalData.value.message = ERROR_UNKNOWN
     errorModalData.value.isVisible = true
   }
 }
@@ -203,12 +208,10 @@ async function clickRecoverFromMaintenance() {
     await getClassInfo()
     selectedSpot.value = { enabled: null, fullName: null, isBooked: null, spotNumber: null }
   } else if (response === 'SpotNotFoundError') {
-    errorModalData.value.message =
-      'The spot was not found in the list of disabled spots. This error is very unlikely to happen.'
+    errorModalData.value.message = ERROR_SPOT_NOT_FOUND
     errorModalData.value.isVisible = true
   } else {
-    errorModalData.value.message =
-      "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+    errorModalData.value.message = ERROR_UNKNOWN
     errorModalData.value.isVisible = true
   }
 }
@@ -274,14 +277,13 @@ async function bookUserIntoClass(
       'This user does not have any class packages purchases available for this class. Would you like to override the enrollment?'
     confirmModalData.value.isVisible = true
   } else if (response === 'ClientIsOutsideSchedulingWindowError') {
-    errorModalData.value.message = 'THE CLASS IS OUTSIDE THE SCHEDULING WINDOW.'
+    errorModalData.value.message = ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW
     errorModalData.value.isVisible = true
   } else if (response === 'ClientIsAlreadyBookedError') {
     errorModalData.value.message = 'The user is already booked in this class.'
     errorModalData.value.isVisible = true
   } else {
-    errorModalData.value.message =
-      "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+    errorModalData.value.message = ERROR_UNKNOWN
     errorModalData.value.isVisible = true
   }
 }
@@ -313,8 +315,7 @@ async function removeUserFromClass() {
     confirmModalLateCancelReservationData.value.isLoading = false
     confirmModalLateCancelReservationData.value.isVisible = true
   } else {
-    errorModalData.value.message =
-      "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+    errorModalData.value.message = ERROR_UNKNOWN
     errorModalData.value.isVisible = true
   }
 }
@@ -341,8 +342,7 @@ async function confirmLateCancelation() {
     confirmModalLateCancelReservationData.value.isLoading = false
     confirmModalLateCancelReservationData.value.isVisible = true
   } else {
-    errorModalData.value.message =
-      "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+    errorModalData.value.message = ERROR_UNKNOWN
     errorModalData.value.isVisible = true
   }
 }
@@ -364,12 +364,11 @@ async function removeLayout() {
   if (result.__typename === 'EditClassSuccessResult') {
     await getClassInfo()
 
-    successModalData.value.title = 'Success'
+    successModalData.value.title = 'SUCCESS'
     successModalData.value.message = 'The layout was removed successfully.'
     successModalData.value.isVisible = true
   } else {
-    errorModalData.value.message =
-      "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+    errorModalData.value.message = ERROR_UNKNOWN
     errorModalData.value.isVisible = true
   }
 }
@@ -386,17 +385,15 @@ async function assignRoomLayoutId(roomLayoutId: string) {
     if (result.__typename === 'EditClassSuccessResult') {
       await getClassInfo()
 
-      successModalData.value.title = 'Success'
+      successModalData.value.title = 'SUCCESS'
       successModalData.value.message = 'Room layout assigned successfully.'
       successModalData.value.isVisible = true
     } else {
-      errorModalData.value.message =
-        "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+      errorModalData.value.message = ERROR_UNKNOWN
       errorModalData.value.isVisible = true
     }
   } else {
-    errorModalData.value.message =
-      "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+    errorModalData.value.message = ERROR_UNKNOWN
     errorModalData.value.isVisible = true
   }
 }
@@ -497,7 +494,7 @@ async function assignRoomLayoutId(roomLayoutId: string) {
 
   <!-- ERROR modal -->
   <ModalComponent
-    title="Error"
+    title="ERROR"
     :message="errorModalData.message"
     :closable="false"
     v-if="errorModalData.isVisible"
@@ -530,7 +527,7 @@ async function assignRoomLayoutId(roomLayoutId: string) {
   <ModalComponent
     v-if="confirmModalLateCancelReservationData.isVisible"
     title="Warning"
-    message="You are outsade the early cancellation window. you can only make a late cancellaiton."
+    :message="ERROR_LATE_CANCELLATION_REQUIRED"
     :isLoading="confirmModalLateCancelReservationData.isLoading"
     @on-cancel="confirmModalLateCancelReservationData.isVisible = false"
     ok-text="CONFIRM"

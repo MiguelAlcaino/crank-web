@@ -19,6 +19,7 @@ import { GenderEnum, type UserInput } from '@/gql/graphql'
 import type { ApiService } from '@/services/apiService'
 
 import ModalComponent from '@/components/ModalComponent.vue'
+import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 
 const isSaving = ref(false)
 const successModalIsVisible = ref(false)
@@ -574,7 +575,7 @@ function onChangeCountry() {
   <!-- Error Modal -->
   <ModalComponent
     title="Error"
-    message="Ups! Sorry, we didn't see that coming!. Please try again or communicate with the team to resolve this issue."
+    :message="ERROR_UNKNOWN"
     :closable="false"
     v-if="errorModalIsVisible"
     @on-ok="errorModalIsVisible = false"

@@ -16,6 +16,7 @@ interface User {
 import { inject, ref } from 'vue'
 import ModalComponent from '@/components/ModalComponent.vue'
 import type { ApiService } from '@/services/apiService'
+import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 
 defineProps<{
   enrollments: EnrollmentInfo[]
@@ -139,11 +140,11 @@ async function removeUserFromClass(enrollmentId: string, lateCancel: boolean) {
   >
   </ModalComponent>
 
-  <!-- Ups Error Modal -->
+  <!-- Error Modal -->
   <ModalComponent
     v-if="errorModalIsVisible"
     title="Error"
-    message="Ups! Sorry, we didn't see that coming!. Please try again or communicate wuth the team to resolve this issue."
+    :message="ERROR_UNKNOWN"
     :cancel-text="null"
     @on-ok="errorModalIsVisible = false"
   >

@@ -17,6 +17,7 @@ import { appStore } from '@/stores/appStorage'
 import { inject, ref } from 'vue'
 
 import ModalComponent from '@/components/ModalComponent.vue'
+import { ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW, ERROR_UNKNOWN } from '@/utils/errorMessages'
 
 const apiService = inject<ApiService>('gqlApiService')!
 
@@ -62,12 +63,11 @@ async function bookUserIntoClass(classId: string, userId: string, isPaymentRequi
     paymentRequiredErrorModalIsVisible.value = true
   } else {
     if (response === 'ClientIsOutsideSchedulingWindowError') {
-      errorMessage.value = 'The class is outside the scheduling window.'
+      errorMessage.value = ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW
     } else if (response === 'ClientIsAlreadyBookedError') {
       errorMessage.value = 'The user is already booked in this class.'
     } else {
-      errorMessage.value =
-        "Ups! Sorry, we didn't see that coming!. Please try again or communicate wuth the team to resolve this issue."
+      errorMessage.value = ERROR_UNKNOWN
     }
 
     errorModalIsVisible.value = true
