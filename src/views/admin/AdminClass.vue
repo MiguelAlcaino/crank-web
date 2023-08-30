@@ -22,7 +22,7 @@ import ModalComponent from '@/components/ModalComponent.vue'
 import AdminBookedUsersList from '@/components/AdminBookedUsersList.vue'
 import EnrollSelectedMemberComponent from '@/components/EnrollSelectedMemberComponent.vue'
 
-import { ERROR_SPOT_NOT_FOUND, ERROR_UNKNOWN } from '@/utils/errorMessages'
+import { ERROR_LATE_CANCELLATION_REQUIRED, ERROR_SPOT_NOT_FOUND, ERROR_UNKNOWN } from '@/utils/errorMessages'
 
 const route = useRoute()
 
@@ -379,7 +379,7 @@ async function assignRoomLayoutId(roomLayoutId: string) {
 
     if (result.__typename === 'EditClassSuccessResult') {
       await getClassInfo()
-
+      
       successModalData.value.title = 'Success'
       successModalData.value.message = 'Room layout assigned successfully.'
       successModalData.value.isVisible = true
@@ -489,7 +489,7 @@ async function assignRoomLayoutId(roomLayoutId: string) {
 
   <!-- ERROR modal -->
   <ModalComponent
-    title="Error"
+    title="ERROR"
     :message="errorModalData.message"
     :closable="false"
     v-if="errorModalData.isVisible"
@@ -522,7 +522,7 @@ async function assignRoomLayoutId(roomLayoutId: string) {
   <ModalComponent
     v-if="confirmModalLateCancelReservationData.isVisible"
     title="Warning"
-    message="You are outsade the early cancellation window. you can only make a late cancellaiton."
+    :message="ERROR_LATE_CANCELLATION_REQUIRED"
     :isLoading="confirmModalLateCancelReservationData.isLoading"
     @on-cancel="confirmModalLateCancelReservationData.isVisible = false"
     ok-text="CONFIRM"

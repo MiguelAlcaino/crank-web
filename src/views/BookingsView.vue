@@ -15,7 +15,7 @@ import ModalComponent from '@/components/ModalComponent.vue'
 
 import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
-import { ERROR_UNKNOWN } from '@/utils/errorMessages'
+import { ERROR_LATE_CANCELLATION_REQUIRED, ERROR_UNKNOWN } from '@/utils/errorMessages'
 
 const isLoading = ref<boolean>(false)
 const userErollments = ref<Enrollment[]>([])
@@ -131,8 +131,7 @@ async function cancelCurrentUserEnrollment(
       enrollmentIsLateCancel.value = true
 
       confirmModalData.value.title = 'CANCEL BOOKING'
-      confirmModalData.value.message =
-        'YOU ARE OUTSIDE THE EARLY CANCELLATION WINDOW. YOU CAN ONLY MAKE A LATE CANCELLATION.'
+      confirmModalData.value.message = ERROR_LATE_CANCELLATION_REQUIRED
       confirmModalData.value.textConfirmButton = 'CONFIRM'
       confirmModalData.value.isVisible = true
       break
