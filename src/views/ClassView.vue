@@ -21,6 +21,7 @@ import {
   ERROR_CLIENT_IS_ALREADY_BOOKED,
   ERROR_CLIENT_IS_ALREADY__ON_WAITLIST,
   ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW,
+  ERROR_PAYMENT_REQUIRED,
   ERROR_SPOT_ALREADY_RESERVED,
   ERROR_UNKNOWN,
   ERROR_WAITLIST_FULL_ERROR
@@ -311,7 +312,7 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
     :ok-loading="false"
     :cancel-text="null"
     :message="errorModalData.message"
-    title="Error"
+    title="ERROR"
     :closable="false"
     v-if="showErrorModal"
     @on-ok="showErrorModal = false"
@@ -320,8 +321,8 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
   <!-- Error Payment Modal -->
   <ModalComponent
     v-if="paymentErrorModal"
-    title="Error"
-    message="You do not have sufficient credits in your account."
+    title="ERROR"
+    :message="ERROR_PAYMENT_REQUIRED"
     @on-cancel="paymentErrorModal = false"
     @on-ok="goToThePackagesScreen()"
   >
