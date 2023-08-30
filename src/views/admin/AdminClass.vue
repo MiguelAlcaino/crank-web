@@ -22,7 +22,7 @@ import ModalComponent from '@/components/ModalComponent.vue'
 import AdminBookedUsersList from '@/components/AdminBookedUsersList.vue'
 import EnrollSelectedMemberComponent from '@/components/EnrollSelectedMemberComponent.vue'
 
-import { ERROR_UNKNOWN } from '@/utils/errorMessages'
+import { ERROR_SPOT_NOT_FOUND, ERROR_UNKNOWN } from '@/utils/errorMessages'
 
 const route = useRoute()
 
@@ -184,8 +184,7 @@ async function clickPutUnderMaintenance() {
     await getClassInfo()
     selectedSpot.value = { enabled: null, fullName: null, isBooked: null, spotNumber: null }
   } else if (response === 'SpotNotFoundError') {
-    errorModalData.value.message =
-      'The spot was not found in the list of disabled spots. This error is very unlikely to happen.'
+    errorModalData.value.message = ERROR_SPOT_NOT_FOUND
     errorModalData.value.isVisible = true
   } else {
     errorModalData.value.message = ERROR_UNKNOWN
@@ -204,8 +203,7 @@ async function clickRecoverFromMaintenance() {
     await getClassInfo()
     selectedSpot.value = { enabled: null, fullName: null, isBooked: null, spotNumber: null }
   } else if (response === 'SpotNotFoundError') {
-    errorModalData.value.message =
-      'The spot was not found in the list of disabled spots. This error is very unlikely to happen.'
+    errorModalData.value.message = ERROR_SPOT_NOT_FOUND
     errorModalData.value.isVisible = true
   } else {
     errorModalData.value.message = ERROR_UNKNOWN
