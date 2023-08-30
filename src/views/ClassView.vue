@@ -135,7 +135,10 @@ function acceptSuccessModal() {
 }
 
 function goToThePackagesScreen() {
-  //TODO: go to the packages screen
+  const paymentRedirectUrl = (import.meta.env.VITE_PAYMENT_REDIRECT_URL ?? null) as string | null
+  if (paymentRedirectUrl) {
+    window.location.href = paymentRedirectUrl
+  }
 }
 
 async function bookClass(classId: string, spotNumber: number | null, isWaitlistBooking: boolean) {
@@ -325,6 +328,7 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
     :message="ERROR_PAYMENT_REQUIRED"
     @on-cancel="paymentErrorModal = false"
     @on-ok="goToThePackagesScreen()"
+    ok-text="BUY"
   >
   </ModalComponent>
 </template>
