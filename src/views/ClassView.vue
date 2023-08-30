@@ -245,7 +245,11 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
       <div class="row justify-content-center">
         <div class="col-12" style="text-align: center">
           <WaitlistButton
-            v-if="classInfo !== null && classInfo.class.waitListAvailable"
+            v-if="
+              classInfo !== null &&
+              classInfo.class.waitListAvailable &&
+              (enrollmentInfo === null || enrollmentInfo === undefined)
+            "
             @clickBookWaitList="clickBookWaitList"
             :enrollmentEnabled="enrollmentInfo === null"
           >
@@ -254,7 +258,7 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
             v-if="
               classInfo !== null &&
               classInfo.roomLayout?.matrix !== null &&
-              !classInfo.class.waitListAvailable
+              (!classInfo.class.waitListAvailable || enrollmentInfo !== null)
             "
             :matrix="classInfo.roomLayout?.matrix"
             @click-spot="confirmBookSpot"
