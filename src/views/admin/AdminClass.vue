@@ -22,6 +22,8 @@ import ModalComponent from '@/components/ModalComponent.vue'
 import AdminBookedUsersList from '@/components/AdminBookedUsersList.vue'
 import EnrollSelectedMemberComponent from '@/components/EnrollSelectedMemberComponent.vue'
 
+import { ERROR_UNKNOWN } from '@/utils/errorMessages'
+
 const route = useRoute()
 
 const apiService = inject<ApiService>('gqlApiService')!
@@ -186,8 +188,7 @@ async function clickPutUnderMaintenance() {
       'The spot was not found in the list of disabled spots. This error is very unlikely to happen.'
     errorModalData.value.isVisible = true
   } else {
-    errorModalData.value.message =
-      "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+    errorModalData.value.message = ERROR_UNKNOWN
     errorModalData.value.isVisible = true
   }
 }
@@ -207,8 +208,7 @@ async function clickRecoverFromMaintenance() {
       'The spot was not found in the list of disabled spots. This error is very unlikely to happen.'
     errorModalData.value.isVisible = true
   } else {
-    errorModalData.value.message =
-      "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+    errorModalData.value.message = ERROR_UNKNOWN
     errorModalData.value.isVisible = true
   }
 }
@@ -280,8 +280,7 @@ async function bookUserIntoClass(
     errorModalData.value.message = 'The user is already booked in this class.'
     errorModalData.value.isVisible = true
   } else {
-    errorModalData.value.message =
-      "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+    errorModalData.value.message = ERROR_UNKNOWN
     errorModalData.value.isVisible = true
   }
 }
@@ -313,8 +312,7 @@ async function removeUserFromClass() {
     confirmModalLateCancelReservationData.value.isLoading = false
     confirmModalLateCancelReservationData.value.isVisible = true
   } else {
-    errorModalData.value.message =
-      "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+    errorModalData.value.message = ERROR_UNKNOWN
     errorModalData.value.isVisible = true
   }
 }
@@ -341,8 +339,7 @@ async function confirmLateCancelation() {
     confirmModalLateCancelReservationData.value.isLoading = false
     confirmModalLateCancelReservationData.value.isVisible = true
   } else {
-    errorModalData.value.message =
-      "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+    errorModalData.value.message = ERROR_UNKNOWN
     errorModalData.value.isVisible = true
   }
 }
@@ -368,8 +365,7 @@ async function removeLayout() {
     successModalData.value.message = 'The layout was removed successfully.'
     successModalData.value.isVisible = true
   } else {
-    errorModalData.value.message =
-      "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+    errorModalData.value.message = ERROR_UNKNOWN
     errorModalData.value.isVisible = true
   }
 }
@@ -390,13 +386,11 @@ async function assignRoomLayoutId(roomLayoutId: string) {
       successModalData.value.message = 'Room layout assigned successfully.'
       successModalData.value.isVisible = true
     } else {
-      errorModalData.value.message =
-        "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+      errorModalData.value.message = ERROR_UNKNOWN
       errorModalData.value.isVisible = true
     }
   } else {
-    errorModalData.value.message =
-      "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+    errorModalData.value.message = ERROR_UNKNOWN
     errorModalData.value.isVisible = true
   }
 }

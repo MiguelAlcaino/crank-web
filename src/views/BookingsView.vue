@@ -15,6 +15,7 @@ import ModalComponent from '@/components/ModalComponent.vue'
 
 import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
+import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 
 const isLoading = ref<boolean>(false)
 const userErollments = ref<Enrollment[]>([])
@@ -137,8 +138,7 @@ async function cancelCurrentUserEnrollment(
       break
     }
     default: {
-      errorModalData.value.message =
-        "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+      errorModalData.value.message = ERROR_UNKNOWN
       errorModalData.value.isVisible = true
       break
     }
@@ -164,14 +164,12 @@ async function removeCurrentUserFromWaitlist(waitlistEntryId: string): Promise<v
       break
     }
     case 'WaitlistEntryNotFoundError': {
-      errorModalData.value.message =
-        "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+      errorModalData.value.message = ERROR_UNKNOWN
       errorModalData.value.isVisible = true
       break
     }
     default: {
-      errorModalData.value.message =
-        "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+      errorModalData.value.message = ERROR_UNKNOWN
       errorModalData.value.isVisible = true
       break
     }

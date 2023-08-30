@@ -16,6 +16,7 @@ import YouAreAlreadyEnrolled from '@/components/YouAreAlreadyEnrolled.vue'
 import router from '@/router'
 import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
+import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 
 const route = useRoute()
 
@@ -185,12 +186,10 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
       enrollmentEnabled.value = false
       getClassInfo()
     } else if (response === 'UnknownError') {
-      errorModalData.value.message =
-        "Ups! Sorry, we didn't see that coming!. Please try again or communicate wuth the team to resolve this issue."
+      errorModalData.value.message = ERROR_UNKNOWN
       showErrorModal.value = true
     } else {
-      errorModalData.value.message =
-        "Ups! Sorry, we didn't see that coming!. Please try again or communicate wuth the team to resolve this issue."
+      errorModalData.value.message = ERROR_UNKNOWN
       showErrorModal.value = true
     }
   }
