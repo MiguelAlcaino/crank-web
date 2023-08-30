@@ -672,7 +672,7 @@ async function login() {
   <!-- Success Modal -->
   <ModalComponent
     v-if="successModalIsVisible"
-    title="Success"
+    title="SUCCESS"
     message="Your account has been successfully created."
     :cancel-text="null"
     :closable="false"

@@ -364,7 +364,7 @@ async function removeLayout() {
   if (result.__typename === 'EditClassSuccessResult') {
     await getClassInfo()
 
-    successModalData.value.title = 'Success'
+    successModalData.value.title = 'SUCCESS'
     successModalData.value.message = 'The layout was removed successfully.'
     successModalData.value.isVisible = true
   } else {
@@ -385,7 +385,7 @@ async function assignRoomLayoutId(roomLayoutId: string) {
     if (result.__typename === 'EditClassSuccessResult') {
       await getClassInfo()
 
-      successModalData.value.title = 'Success'
+      successModalData.value.title = 'SUCCESS'
       successModalData.value.message = 'Room layout assigned successfully.'
       successModalData.value.isVisible = true
     } else {
