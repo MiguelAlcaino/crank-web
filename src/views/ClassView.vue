@@ -16,7 +16,7 @@ import YouAreAlreadyEnrolled from '@/components/YouAreAlreadyEnrolled.vue'
 import router from '@/router'
 import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
-import { ERROR_UNKNOWN } from '@/utils/errorMessages'
+import { ERROR_CLASSS_IS_FULL, ERROR_CLIENT_IS_ALREADY_BOOKED, ERROR_CLIENT_IS_ALREADY__ON_WAITLIST, ERROR_UNKNOWN } from '@/utils/errorMessages'
 
 const route = useRoute()
 
@@ -153,12 +153,12 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
     if (response === 'PaymentRequiredError') {
       paymentErrorModal.value = true
     } else if (response === 'ClientIsAlreadyBookedError') {
-      errorModalData.value.message = 'You already booked in this class.'
+      errorModalData.value.message = ERROR_CLIENT_IS_ALREADY_BOOKED
       showErrorModal.value = true
       enrollmentEnabled.value = false
       getClassInfo()
     } else if (response === 'ClientIsAlreadyOnWaitlistError') {
-      errorModalData.value.message = 'You already booked in this waitlist.'
+      errorModalData.value.message = ERROR_CLIENT_IS_ALREADY__ON_WAITLIST
       showErrorModal.value = true
       enrollmentEnabled.value = false
       getClassInfo()
@@ -181,7 +181,7 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
       showErrorModal.value = true
       getClassInfo()
     } else if (response === 'ClassIsFullError') {
-      errorModalData.value.message = 'The class is full.'
+      errorModalData.value.message = ERROR_CLASSS_IS_FULL
       showErrorModal.value = true
       enrollmentEnabled.value = false
       getClassInfo()
