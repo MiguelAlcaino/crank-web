@@ -16,7 +16,16 @@ import YouAreAlreadyEnrolled from '@/components/YouAreAlreadyEnrolled.vue'
 import router from '@/router'
 import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
-import { ERROR_CLASSS_IS_FULL, ERROR_CLIENT_IS_ALREADY_BOOKED, ERROR_CLIENT_IS_ALREADY__ON_WAITLIST, ERROR_UNKNOWN } from '@/utils/errorMessages'
+import {
+  ERROR_CLASSS_IS_FULL,
+  ERROR_CLIENT_IS_ALREADY_BOOKED,
+  ERROR_CLIENT_IS_ALREADY__ON_WAITLIST,
+  ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW,
+  ERROR_SPOT_ALREADY_RESERVED,
+  ERROR_UNKNOWN,
+  ERROR_WAITLIST_FULL_ERROR
+} from '@/utils/errorMessages'
+import { SUCCESS_ADDED_TO_WAITLIST, SUCCESS_BOOK_CLASS } from '@/utils/successMessages'
 
 const route = useRoute()
 
@@ -141,13 +150,12 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
   showModal.value = false
 
   if (response === 'BookClassSuccess') {
-    successModalData.value.title = 'Success'
-    successModalData.value.message = 'Your booking is complete'
+    successModalData.value.title = 'SUCCESS'
+    successModalData.value.message = SUCCESS_BOOK_CLASS
     showSuccessModal.value = true
   } else if (response === 'AddedToWaitlistSuccess') {
-    successModalData.value.title = 'Success'
-    successModalData.value.message =
-      'You have added to the waitlist of class. You will be notified if you are added to the class.'
+    successModalData.value.title = 'SUCCESS'
+    successModalData.value.message = SUCCESS_ADDED_TO_WAITLIST
     showSuccessModal.value = true
   } else {
     if (response === 'PaymentRequiredError') {
@@ -163,16 +171,16 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
       enrollmentEnabled.value = false
       getClassInfo()
     } else if (response === 'WaitlistFullError') {
-      errorModalData.value.message = 'The waitlist if full.'
+      errorModalData.value.message = ERROR_WAITLIST_FULL_ERROR
       showErrorModal.value = true
       enrollmentEnabled.value = false
       getClassInfo()
     } else if (response === 'ClientIsOutsideSchedulingWindowError') {
-      errorModalData.value.message = 'The class is outside the scheduling window.'
+      errorModalData.value.message = ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW
       showErrorModal.value = true
       enrollmentEnabled.value = false
     } else if (response === 'SpotAlreadyReservedError') {
-      errorModalData.value.message = 'The spot has ben booked by another user.'
+      errorModalData.value.message = ERROR_SPOT_ALREADY_RESERVED
       showErrorModal.value = true
       getClassInfo()
     } else if (response === 'BookedButInOtherSpotError') {

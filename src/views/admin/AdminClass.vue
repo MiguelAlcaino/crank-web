@@ -22,7 +22,12 @@ import ModalComponent from '@/components/ModalComponent.vue'
 import AdminBookedUsersList from '@/components/AdminBookedUsersList.vue'
 import EnrollSelectedMemberComponent from '@/components/EnrollSelectedMemberComponent.vue'
 
-import { ERROR_LATE_CANCELLATION_REQUIRED, ERROR_SPOT_NOT_FOUND, ERROR_UNKNOWN } from '@/utils/errorMessages'
+import {
+  ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW,
+  ERROR_LATE_CANCELLATION_REQUIRED,
+  ERROR_SPOT_NOT_FOUND,
+  ERROR_UNKNOWN
+} from '@/utils/errorMessages'
 
 const route = useRoute()
 
@@ -272,7 +277,7 @@ async function bookUserIntoClass(
       'This user does not have any class packages purchases available for this class. Would you like to override the enrollment?'
     confirmModalData.value.isVisible = true
   } else if (response === 'ClientIsOutsideSchedulingWindowError') {
-    errorModalData.value.message = 'THE CLASS IS OUTSIDE THE SCHEDULING WINDOW.'
+    errorModalData.value.message = ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW
     errorModalData.value.isVisible = true
   } else if (response === 'ClientIsAlreadyBookedError') {
     errorModalData.value.message = 'The user is already booked in this class.'
@@ -379,7 +384,7 @@ async function assignRoomLayoutId(roomLayoutId: string) {
 
     if (result.__typename === 'EditClassSuccessResult') {
       await getClassInfo()
-      
+
       successModalData.value.title = 'Success'
       successModalData.value.message = 'Room layout assigned successfully.'
       successModalData.value.isVisible = true
