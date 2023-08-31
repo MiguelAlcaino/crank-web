@@ -4,19 +4,29 @@ import { useRoute } from 'vue-router'
 
 import dayjs from 'dayjs'
 
-import { type ClassInfo, EnrollmentTypeEnum } from '@/gql/graphql'
+import type { ClassInfo, EnrollmentInfo } from '@/gql/graphql'
 
-import ConfirmModal from '@/components/ConfirmModal.vue'
-import SuccessModal from '@/components/SuccessModal.vue'
-import ErrorModal from '@/components/ErrorModal.vue'
+import ModalComponent from '@/components/ModalComponent.vue'
 
 import ReserveSpotButton from '@/components/ReserveSpotButton.vue'
 import SpotMatrix from '@/components/SpotMatrix.vue'
 import WaitlistButton from '@/components/WaitlistButton.vue'
+import YouAreAlreadyEnrolled from '@/components/YouAreAlreadyEnrolled.vue'
+
 import router from '@/router'
-import PaymentErrorModal from '@/components/PaymentErrorModal.vue'
 import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
+import {
+  ERROR_CLASSS_IS_FULL,
+  ERROR_CLIENT_IS_ALREADY_BOOKED,
+  ERROR_CLIENT_IS_ALREADY__ON_WAITLIST,
+  ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW,
+  ERROR_PAYMENT_REQUIRED,
+  ERROR_SPOT_ALREADY_RESERVED,
+  ERROR_UNKNOWN,
+  ERROR_WAITLIST_FULL_ERROR
+} from '@/utils/errorMessages'
+import { SUCCESS_ADDED_TO_WAITLIST, SUCCESS_BOOK_CLASS } from '@/utils/successMessages'
 
 const route = useRoute()
 
@@ -29,7 +39,9 @@ const showSuccessModal = ref<boolean>(false)
 const showErrorModal = ref<boolean>(false)
 const showModal = ref<boolean>(false)
 const classInfo = ref<ClassInfo | null>(null)
+
 const enrollmentEnabled = ref<boolean>(true)
+const enrollmentInfo = ref<EnrollmentInfo | null>(null)
 
 const confirmModalData = ref<{ title: string; message: string; isLoading: boolean }>({
   title: '',
@@ -41,7 +53,6 @@ const errorModalData = ref<{ title: string; message: string; isLoading: boolean 
   message: '',
   isLoading: false
 })
-
 const successModalData = ref<{ title: string; message: string; isLoading: boolean }>({
   title: '',
   message: '',
@@ -69,24 +80,15 @@ watch(
 )
 
 async function getClassInfo() {
+  enrollmentEnabled.value = false
   isLoading.value = true
 
   const classId = route.params.id as string
   const _classInfo = await apiService.getClassInfo(appStore().site, classId)
 
   if (_classInfo) {
-    const userEnrollments = await apiService.getCurrentUserEnrollments(appStore().site, {
-      enrollmentType: EnrollmentTypeEnum.All,
-      startDate: dayjs(new Date(_classInfo.class.start)).format('YYYY-MM-DD'),
-      endDate: dayjs(new Date(_classInfo.class.start)).format('YYYY-MM-DD')
-    })
-
-    for (let i = 0; i < userEnrollments.length; i++) {
-      if (userEnrollments[i].class.id === classId) {
-        enrollmentEnabled.value = false
-        break
-      }
-    }
+    enrollmentInfo.value = await apiService.getCurrentUserEnrollmentInClass(classId)
+    if (enrollmentInfo.value === null) enrollmentEnabled.value = true
   }
 
   classInfo.value = _classInfo
@@ -133,7 +135,10 @@ function acceptSuccessModal() {
 }
 
 function goToThePackagesScreen() {
-  //TODO: go to the packages screen
+  const paymentRedirectUrl = (import.meta.env.VITE_PAYMENT_REDIRECT_URL ?? null) as string | null
+  if (paymentRedirectUrl) {
+    window.location.href = paymentRedirectUrl
+  }
 }
 
 async function bookClass(classId: string, spotNumber: number | null, isWaitlistBooking: boolean) {
@@ -150,51 +155,53 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
 
   if (response === 'BookClassSuccess') {
     successModalData.value.title = 'SUCCESS'
-    successModalData.value.message = 'YOUR BOOKING IS COMPLETE'
+    successModalData.value.message = SUCCESS_BOOK_CLASS
     showSuccessModal.value = true
   } else if (response === 'AddedToWaitlistSuccess') {
     successModalData.value.title = 'SUCCESS'
-    successModalData.value.message =
-      'YOU HAVE ADDED TO THE WAITLIST OF CLASS. YOU WILL BE NOTIFIED IF YOU ARE ADDED TO THE CLASS.'
+    successModalData.value.message = SUCCESS_ADDED_TO_WAITLIST
     showSuccessModal.value = true
   } else {
     if (response === 'PaymentRequiredError') {
       paymentErrorModal.value = true
     } else if (response === 'ClientIsAlreadyBookedError') {
-      errorModalData.value.message = 'YOU ALREADY BOOKED IN THIS CLASS.'
+      errorModalData.value.message = ERROR_CLIENT_IS_ALREADY_BOOKED
       showErrorModal.value = true
       enrollmentEnabled.value = false
+      getClassInfo()
     } else if (response === 'ClientIsAlreadyOnWaitlistError') {
-      errorModalData.value.message = 'YOU ALREADY BOOKED IN THIS WAITLIST.'
+      errorModalData.value.message = ERROR_CLIENT_IS_ALREADY__ON_WAITLIST
       showErrorModal.value = true
       enrollmentEnabled.value = false
+      getClassInfo()
     } else if (response === 'WaitlistFullError') {
-      errorModalData.value.message = 'THE WAITING LIST IS FULL.'
+      errorModalData.value.message = ERROR_WAITLIST_FULL_ERROR
       showErrorModal.value = true
       enrollmentEnabled.value = false
+      getClassInfo()
     } else if (response === 'ClientIsOutsideSchedulingWindowError') {
-      errorModalData.value.message = 'THE CLASS IS OUTSIDE THE SCHEDULING WINDOW.'
+      errorModalData.value.message = ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW
       showErrorModal.value = true
       enrollmentEnabled.value = false
     } else if (response === 'SpotAlreadyReservedError') {
-      errorModalData.value.message = 'THE SPOT HAS BEEN BOOKED BY ANOTHER USER.'
+      errorModalData.value.message = ERROR_SPOT_ALREADY_RESERVED
       showErrorModal.value = true
-      await getClassInfo()
+      getClassInfo()
     } else if (response === 'BookedButInOtherSpotError') {
       //TODO: BookedButInOtherSpotError action
       errorModalData.value.message = 'BOOKED BUT IN OTHER SPOT ERROR.'
       showErrorModal.value = true
+      getClassInfo()
     } else if (response === 'ClassIsFullError') {
-      errorModalData.value.message = 'THE CLASS IS FULL.'
+      errorModalData.value.message = ERROR_CLASSS_IS_FULL
       showErrorModal.value = true
       enrollmentEnabled.value = false
+      getClassInfo()
     } else if (response === 'UnknownError') {
-      errorModalData.value.message =
-        "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+      errorModalData.value.message = ERROR_UNKNOWN
       showErrorModal.value = true
     } else {
-      errorModalData.value.message =
-        "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+      errorModalData.value.message = ERROR_UNKNOWN
       showErrorModal.value = true
     }
   }
@@ -202,7 +209,20 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
 </script>
 
 <template>
-  <h2>RESERVE A SPOT</h2>
+  <div class="row">
+    <div class="col-md-6 col-sm-8">
+      <h1 class="page-title">RESERVE A SPOT</h1>
+    </div>
+    <div class="col-md-6 col-sm-4">
+      <div class="text-right">
+        <div class="form-group form-material">
+          <button type="button" class="btn btn-link" @click="$router.go(-1)">
+            <font-awesome-icon icon="fa-solid fa-left-long" />&nbsp;Back to Calendar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="container">
     <div class="row">
       <div class="col-12 text-center">
@@ -221,29 +241,47 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
         </p>
       </div>
     </div>
+
+    <div class="row">
+      <div class="col-12 text-center">
+        <YouAreAlreadyEnrolled
+          v-if="enrollmentInfo !== null"
+          :enrollment-info="enrollmentInfo"
+        ></YouAreAlreadyEnrolled>
+      </div>
+    </div>
+
     <hr />
     <div class="container">
       <div class="row justify-content-center">
-        <div class="col-12">
+        <div class="col-12" style="text-align: center">
           <WaitlistButton
-            v-if="classInfo !== null && classInfo.class.waitListAvailable"
+            v-if="
+              classInfo !== null &&
+              classInfo.class.waitListAvailable &&
+              (enrollmentInfo === null || enrollmentInfo === undefined)
+            "
             @clickBookWaitList="clickBookWaitList"
-            :enrollmentEnabled="enrollmentEnabled"
+            :enrollmentEnabled="enrollmentInfo === null"
           >
           </WaitlistButton>
           <SpotMatrix
             v-if="
-              classInfo !== null && classInfo.matrix !== null && !classInfo.class.waitListAvailable
+              classInfo !== null &&
+              classInfo.roomLayout?.matrix !== null &&
+              (!classInfo.class.waitListAvailable || enrollmentInfo !== null)
             "
-            :matrix="classInfo.matrix"
+            :matrix="classInfo.roomLayout?.matrix"
             @click-spot="confirmBookSpot"
           ></SpotMatrix>
           <ReserveSpotButton
             v-if="
-              classInfo !== null && classInfo.matrix === null && !classInfo.class.waitListAvailable
+              classInfo !== null &&
+              classInfo.roomLayout === null &&
+              !classInfo.class.waitListAvailable
             "
             @click-book-class="confirmBookClass"
-            :enrollmentEnabled="enrollmentEnabled"
+            :enrollmentEnabled="enrollmentInfo === null"
           >
           </ReserveSpotButton>
         </div>
@@ -251,40 +289,48 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
     </div>
   </div>
 
-  <ConfirmModal
-    v-model="showModal"
+  <ModalComponent
+    v-if="showModal"
     :title="confirmModalData.title"
     :message="confirmModalData.message"
-    :isLoading="confirmModalData.isLoading"
-    @cancel="showModal = false"
-    @confirm="bookClass(classId, spotNumber, isWaitlistBooking!)"
-    :clickToClose="false"
+    :ok-loading="confirmModalData.isLoading"
+    @on-cancel="showModal = false"
+    @on-ok="bookClass(classId, spotNumber, isWaitlistBooking!)"
+    :closable="false"
   >
-  </ConfirmModal>
+  </ModalComponent>
 
-  <SuccessModal
+  <!-- Success Modal -->
+  <ModalComponent
     :title="successModalData.title"
     :message="successModalData.message"
-    :clickToClose="false"
-    @accept="acceptSuccessModal"
-    v-model="showSuccessModal"
+    :closable="false"
+    @on-ok="acceptSuccessModal"
+    :cancel-text="null"
+    v-if="showSuccessModal"
   >
-  </SuccessModal>
+  </ModalComponent>
 
-  <ErrorModal
-    :is-loading="false"
+  <ModalComponent
+    :ok-loading="false"
+    :cancel-text="null"
     :message="errorModalData.message"
-    :clickToClose="false"
-    v-model="showErrorModal"
-    @close="showErrorModal = false"
-  ></ErrorModal>
+    title="ERROR"
+    :closable="false"
+    v-if="showErrorModal"
+    @on-ok="showErrorModal = false"
+  ></ModalComponent>
 
-  <PaymentErrorModal
-    v-model="paymentErrorModal"
-    @close="paymentErrorModal = false"
-    @buy="goToThePackagesScreen"
+  <!-- Error Payment Modal -->
+  <ModalComponent
+    v-if="paymentErrorModal"
+    title="ERROR"
+    :message="ERROR_PAYMENT_REQUIRED"
+    @on-cancel="paymentErrorModal = false"
+    @on-ok="goToThePackagesScreen()"
+    ok-text="BUY"
   >
-  </PaymentErrorModal>
+  </ModalComponent>
 </template>
 
 <style scoped></style>

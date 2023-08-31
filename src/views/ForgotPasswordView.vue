@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
-
-onMounted(async () => {})
+onMounted(() => {})
 </script>
 
 <template>
-  <main></main>
+  <div>
+    <h1>Forgot Password</h1>
+  </div>
 </template>

@@ -12,12 +12,16 @@ import type {
   DisableEnableSpotInput,
   DisableEnableSpotResult,
   DisableEnableSpotResultUnion,
+  EditClassInput,
+  EditClassResultUnion,
   Enrollment,
+  EnrollmentInfo,
   IdentifiableUser,
   Purchase,
   RegisterUserInput,
   RemoveCurrentUserFromWaitlistInput,
   SiteEnum,
+  UpdateCurrentUserPasswordInput,
   User,
   UserInput
 } from '@/gql/graphql'
@@ -184,6 +188,39 @@ export class ApiService {
       return queryResult.data.currentUserEnrollments as Enrollment[]
     } catch (error) {
       return []
+    }
+  }
+
+  async getCurrentUserEnrollmentInClass(classId: string): Promise<EnrollmentInfo | null> {
+    const CURRENT_USER_ENROLLMENT_IN_CLASS_QUERY = gql`
+      query currentUserEnrollmentInClass($classId: ID!) {
+        currentUser {
+          enrollmentInClass(classId: $classId) {
+            id
+            enrollmentStatus
+            enrollmentDateTime
+            spotInfo {
+              spotNumber
+              isBooked
+            }
+          }
+        }
+      }
+    `
+    try {
+      const queryResult = await this.authApiClient.query({
+        query: CURRENT_USER_ENROLLMENT_IN_CLASS_QUERY,
+        variables: { classId: classId },
+        fetchPolicy: 'network-only'
+      })
+
+      if (queryResult.data.currentUser.enrollmentInClass) {
+        return queryResult.data.currentUser.enrollmentInClass as EnrollmentInfo
+      }
+
+      return null
+    } catch (error) {
+      return null
     }
   }
 
@@ -432,25 +469,38 @@ export class ApiService {
             duration
             waitListAvailable
           }
-          matrix {
-            __typename
-            x
-            y
-            icon
-            ... on BookableSpot {
-              enabled
-              spotInfo {
-                spotNumber
-                isBooked
-                bookedSpotUserInfo {
-                  enrollmentId
-                  user {
-                    firstName
-                    lastName
-                    email
-                  }
+          roomLayout {
+            id
+            name
+            matrix {
+              __typename
+              x
+              y
+              icon
+              ... on BookableSpot {
+                enabled
+                spotInfo {
+                  spotNumber
+                  isBooked
                 }
               }
+            }
+          }
+          enrollments {
+            id
+            enrollmentStatus
+            enrollmentDateTime
+            user {
+              __typename
+              firstName
+              lastName
+              email
+              leaderboardUsername
+            }
+            spotInfo {
+              __typename
+              isBooked
+              spotNumber
             }
           }
         }
@@ -706,7 +756,6 @@ export class ApiService {
         return 'UnknownError'
       }
     } catch (error) {
-      console.log(error)
       return 'UnknownError'
     }
   }
@@ -745,9 +794,9 @@ export class ApiService {
   async bookUserIntoClass(
     classId: string,
     userId: string,
-    spotNumber: number,
-    isPaymentRequired: boolean,
-    isWaitlistBooking: boolean
+    spotNumber?: number | null,
+    isPaymentRequired?: boolean | null,
+    isWaitlistBooking?: boolean | null
   ): Promise<string> {
     const input = {
       classId: classId,
@@ -756,6 +805,12 @@ export class ApiService {
       isPaymentRequired: isPaymentRequired,
       isWaitlistBooking: isWaitlistBooking
     } as BookUserIntoClassInput
+
+    if (spotNumber) input.spotNumber = spotNumber
+
+    if (isPaymentRequired) input.isPaymentRequired = isPaymentRequired
+
+    if (isWaitlistBooking) input.isPaymentRequired = isWaitlistBooking
 
     const BOOK_USER_INTO_CLASS_MUTATION = gql`
       mutation bookUserIntoClass($input: BookUserIntoClassInput!) {
@@ -802,6 +857,70 @@ export class ApiService {
 
       return result.data.removeUserFromClass.__typename
     } catch (error) {
+      return 'UnknownError'
+    }
+  }
+
+  async editClass(input: EditClassInput): Promise<EditClassResultUnion> {
+    const EDIT_CLASS_MUTATION = gql`
+      mutation editClass($input: EditClassInput!) {
+        editClass(input: $input) {
+          __typename
+          ... on EditClassSuccessResult {
+            __typename
+            updated
+          }
+        }
+      }
+    `
+
+    const result = await this.authApiClient.mutate({
+      mutation: EDIT_CLASS_MUTATION,
+      variables: {
+        input: input
+      },
+      fetchPolicy: 'network-only'
+    })
+
+    return result.data.editClass as EditClassResultUnion
+  }
+
+  async updateCurrentUserPassword(
+    site: SiteEnum,
+    input: UpdateCurrentUserPasswordInput
+  ): Promise<string> {
+    const UPDATE_CURRENT_USER_PASSWORD_MUTATION = gql`
+      mutation updateCurrentUserPassword(
+        $site: SiteEnum!
+        $input: UpdateCurrentUserPasswordInput!
+      ) {
+        updateCurrentUserPassword(site: $site, input: $input)
+      }
+    `
+
+    try {
+      await this.authApiClient.mutate({
+        mutation: UPDATE_CURRENT_USER_PASSWORD_MUTATION,
+        variables: {
+          site: site,
+          input: input
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      return 'Success'
+    } catch (error) {
+      if (error instanceof ApolloError) {
+        if (error.graphQLErrors[0].message === 'password_must_contain_letter_or_number') {
+          return 'PasswordMustContainLetterOrNumberException'
+        } else if (error.graphQLErrors[0].message === 'minimum_password_length_is_four_chars') {
+          return 'MinimumPasswordLengthException'
+        } else if (error.graphQLErrors[0].message === 'incorrect_password') {
+          return 'IncorrectPasswordException'
+        } else {
+          return 'UnknownError'
+        }
+      }
       return 'UnknownError'
     }
   }

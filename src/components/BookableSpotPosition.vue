@@ -57,4 +57,9 @@ function selectSpot() {
   font-weight: 400;
   font-size: 14px;
 }
+
+.enabledSpot:hover {
+  background-color: black;
+  color: white;
+}
 </style>

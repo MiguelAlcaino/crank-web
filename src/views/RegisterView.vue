@@ -1,27 +1,40 @@
+<script lang="ts">
+interface Country {
+  code: string
+  name: string
+  states?: State[] | undefined
+}
+
+interface State {
+  code: string
+  name: string
+}
+</script>
+
 <script setup lang="ts">
 import { onMounted, reactive, ref, computed, inject } from 'vue'
 import useVuelidate from '@vuelidate/core'
 import { required, email, minLength, sameAs, maxLength, helpers } from '@vuelidate/validators'
-import {
-  GenderEnum,
-  type RegisterUserInput,
-  type Country,
-  type State,
-  SiteEnum
-} from '@/gql/graphql'
+import { GenderEnum, type RegisterUserInput, SiteEnum } from '@/gql/graphql'
 
 import type { ApiService } from '@/services/apiService'
 import { authService } from '@/services/authService'
 import { appStore } from '@/stores/appStorage'
 import router from '@/router'
+import ModalComponent from '@/components/ModalComponent.vue'
+import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 
 const isSaving = ref(false)
 const isLoggingIn = ref(false)
+const successModalIsVisible = ref(false)
+const errorModalIsVisible = ref(false)
+const errorMessage = ref('')
+
 const countries = ref([] as Country[])
 const countryStates = ref([] as State[])
-const location = ref(SiteEnum.Dubai)
 
 const formData = reactive({
+  location: null,
   firstName: '',
   lastName: '',
   email: '',
@@ -42,8 +55,12 @@ const formData = reactive({
 })
 
 const checkPass = helpers.regex(/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/)
+
 const rules = computed(() => {
   return {
+    location: {
+      required: helpers.withMessage('Location is required', required)
+    },
     firstName: {
       required: helpers.withMessage('First Name is required', required),
       maxLength: maxLength(50)
@@ -121,8 +138,6 @@ const submitForm = async () => {
   const isValid = await v$.value.$validate()
 
   if (isValid) {
-    isSaving.value = true
-
     let gender: GenderEnum = GenderEnum.N
 
     if (formData.gender === 'M') gender = GenderEnum.M
@@ -149,32 +164,25 @@ const submitForm = async () => {
       zipCode: '0000'
     }
 
-    const response = await apiService.registerUser(location.value, input)
+    isSaving.value = true
+    const response = await apiService.registerUser(formData.location!, input)
     isSaving.value = false
 
     if (response === 'SuccessRegistration') {
-      //logging
-      isLoggingIn.value = true
-
-      try {
-        await authService.login(formData.email, formData.password, appStore().site)
-        await router.push({ name: 'home' })
-      } catch (error) {
-        console.log(error)
+      successModalIsVisible.value = true
+    } else {
+      if (response === 'PasswordMustContainLetterOrNumberException') {
+        errorMessage.value = 'The password must contain a letter and a number.'
+      } else if (response === 'MinimumPasswordLengthException') {
+        errorMessage.value = 'The password must contain at least 8 characters.'
+      } else if (response === 'RegisterUserAlreadyRegisteredException') {
+        errorMessage.value =
+          'Your email address is already registered with us. Please login directly to your account.'
+      } else {
+        errorMessage.value = ERROR_UNKNOWN
       }
 
-      isLoggingIn.value = false
-    } else if (response === 'PasswordMustContainLetterOrNumberException') {
-      console.error('Error registering user', 'The password must contain a letter and a number')
-    } else if (response === 'MinimumPasswordLengthException') {
-      console.error('Error registering user', 'The password must contain at least 8 characters')
-    } else if (response === 'RegisterUserAlreadyRegisteredException') {
-      console.error('ERROR', 'Email address already registered')
-    } else {
-      console.error(
-        'Error registering user',
-        "Ups! Sorry, we didn't see that coming!. Please try again or communicate with the team to resolve this issue."
-      )
+      errorModalIsVisible.value = true
     }
   } else {
     console.error('error form')
@@ -186,7 +194,7 @@ const onChangeFirstName = async () => {
 }
 
 async function getCountries() {
-  countries.value = await apiService.getCountries()
+  countries.value = (await apiService.getCountries()) as Country[]
 }
 
 async function getCountryStates(countryCode: string) {
@@ -197,326 +205,479 @@ async function getCountryStates(countryCode: string) {
 function onChangeCountry() {
   getCountryStates(formData.country)
 }
+
+//TODO: do you have to auto login? what happens if it fails?
+async function login() {
+  isLoggingIn.value = true
+
+  try {
+    await authService.login(formData.email, formData.password, appStore().site)
+    await router.push({ name: 'home' })
+  } catch (error) {
+    console.log(error)
+  } finally {
+    isLoggingIn.value = false
+  }
+}
 </script>
 
 <template>
+  <h1>Registration</h1>
+  <h3>Location</h3>
+
   <form @submit.prevent="submitForm" autocomplete="off">
-    <h1>Registration</h1>
-    <h3>Location</h3>
-    <div class="field">
-      <p>
-        <select class="input" v-model="location" disabled>
+    <!-- location -->
+    <div class="form-row">
+      <div class="col-md-6 mb-3">
+        <select class="custom-select" v-model="formData.location" required>
           <option :value="SiteEnum.Dubai">Dubai</option>
           <option :value="SiteEnum.AbuDhabi">Abu Dhabi</option>
         </select>
-      </p>
+        <small
+          v-for="error in v$.location.$errors"
+          :key="error.$uid"
+          class="form-text"
+          style="color: red"
+        >
+          {{ error.$message }}
+        </small>
+      </div>
     </div>
+    <hr />
     <h3>Profile Information</h3>
-    <!--email-->
-    <div class="field">
-      <p>
+    <!-- email -->
+    <div class="form-row">
+      <div class="col-md-6 mb-3">
+        <label for="emailRegistration">Email *</label>
         <input
-          class="input"
+          type="email"
           v-model="formData.email"
-          type="text"
-          placeholder="Email *"
+          class="form-control"
+          id="emailRegistration"
           maxlength="200"
+          placeholder="Email"
+          required
         />
-      </p>
-      <p>
-        <span v-for="error in v$.email.$errors" :key="error.$uid" style="color: red">{{
-          error.$message
-        }}</span>
-      </p>
-    </div>
-    <!--password-->
-    <div class="field">
-      <p>
-        <input
-          class="input"
-          v-model="formData.password"
-          type="password"
-          placeholder="Password *"
-          maxlength="200"
-        />
-      </p>
-      <p>
-        <span v-for="error in v$.password.$errors" :key="error.$uid" style="color: red">{{
-          error.$message
-        }}</span>
-      </p>
-    </div>
-    <!--confirmPassword-->
-    <div class="field">
-      <p>
-        <input
-          class="input"
-          v-model="formData.confirmPassword"
-          type="password"
-          placeholder="Confirm Password *"
-          maxlength="200"
-        />
-      </p>
-      <p>
-        <span v-for="error in v$.confirmPassword.$errors" :key="error.$uid" style="color: red">{{
-          error.$message
-        }}</span>
-      </p>
+        <small
+          v-for="error in v$.email.$errors"
+          :key="error.$uid"
+          class="form-text"
+          style="color: red"
+        >
+          {{ error.$message }}
+        </small>
+      </div>
     </div>
 
-    <h3>Profile Information</h3>
-    <!--firstName-->
-    <div class="field">
-      <p>
+    <div class="form-row">
+      <!-- password -->
+      <div class="col-md-6 mb-3">
+        <label for="passwordRegistration">Password *</label>
         <input
-          class="input"
+          id="passwordRegistration"
+          class="form-control"
+          v-model="formData.password"
+          type="password"
+          placeholder="Password"
+          maxlength="50"
+          required
+        />
+        <small
+          v-for="error in v$.password.$errors"
+          :key="error.$uid"
+          class="form-text"
+          style="color: red"
+        >
+          {{ error.$message }}
+        </small>
+      </div>
+      <!-- confirm Password -->
+      <div class="col-md-6 mb-3">
+        <label for="confirmPasswordRegistration">Confirm Password *</label>
+        <input
+          id="confirmPasswordRegistration"
+          class="form-control"
+          v-model="formData.confirmPassword"
+          type="password"
+          placeholder="Confirm Password"
+          maxlength="50"
+          required
+        />
+        <small
+          v-for="error in v$.confirmPassword.$errors"
+          :key="error.$uid"
+          class="form-text"
+          style="color: red"
+        >
+          {{ error.$message }}
+        </small>
+      </div>
+    </div>
+    <hr />
+    <h3>Personal Information</h3>
+    <div class="form-row">
+      <!-- firstName -->
+      <div class="col-md-6 mb-3">
+        <label for="firstNameRegistration">First Name *</label>
+        <input
+          id="firstNameRegistration"
+          class="form-control"
           v-model="formData.firstName"
           type="text"
-          placeholder="First Name *"
+          placeholder="First Name"
           maxlength="50"
+          required
           v-on:input="onChangeFirstName"
         />
-      </p>
-      <p>
-        <span v-for="error in v$.firstName.$errors" :key="error.$uid" style="color: red">{{
-          error.$message
-        }}</span>
-      </p>
-    </div>
-    <!--lastName-->
-    <div class="field">
-      <p>
+        <small
+          v-for="error in v$.firstName.$errors"
+          :key="error.$uid"
+          class="form-text"
+          style="color: red"
+        >
+          {{ error.$message }}
+        </small>
+      </div>
+      <!-- lastName -->
+      <div class="col-md-6 mb-3">
+        <label for="lastNameRegistration">Last Name *</label>
         <input
-          class="input"
+          id="lastNameRegistration"
+          class="form-control"
           v-model="formData.lastName"
           type="text"
-          placeholder="Last Name *"
+          placeholder="Last Name"
           maxlength="50"
+          required
         />
-      </p>
-      <p>
-        <span v-for="error in v$.lastName.$errors" :key="error.$uid" style="color: red">{{
-          error.$message
-        }}</span>
-      </p>
+        <small
+          v-for="error in v$.lastName.$errors"
+          :key="error.$uid"
+          class="form-text"
+          style="color: red"
+        >
+          {{ error.$message }}
+        </small>
+      </div>
     </div>
+
     <!--gender-->
-    <div class="field">
-      <p>
-        <select class="input" v-model="formData.gender">
-          <option value="" disabled>Gender *</option>
+    <div class="form-row">
+      <div class="col-md-6 mb-3">
+        <label for="genderRegistration">Gender *</label>
+        <select
+          class="custom-select"
+          v-model="formData.gender"
+          id="genderRegistration"
+          placeholder="Gender"
+          required
+        >
           <option value="M">Male</option>
           <option value="F">Female</option>
         </select>
-      </p>
-      <p>
-        <span v-for="error in v$.gender.$errors" :key="error.$uid" style="color: red">{{
-          error.$message
-        }}</span>
-      </p>
+        <small
+          v-for="error in v$.gender.$errors"
+          :key="error.$uid"
+          class="form-text"
+          style="color: red"
+        >
+          {{ error.$message }}
+        </small>
+      </div>
     </div>
+
     <!--leaderboardUsername-->
-    <div class="field">
-      <p>
+    <div class="form-row">
+      <div class="col-md-6 mb-3">
+        <label for="leaderboardUsernameRegistration">Leaderboard Nickname *</label>
         <input
-          class="input"
+          id="leaderboardUsernameRegistration"
+          class="form-control"
           v-model="formData.leaderboardUsername"
           type="text"
-          placeholder="Leaderboard Nickname *"
+          placeholder="Leaderboard Nickname"
           maxlength="50"
+          required
         />
-      </p>
-      <p>
-        <span
+        <small
           v-for="error in v$.leaderboardUsername.$errors"
           :key="error.$uid"
+          class="form-text"
           style="color: red"
-          >{{ error.$message }}</span
         >
-      </p>
+          {{ error.$message }}
+        </small>
+      </div>
     </div>
+
     <!--birthdate-->
-    <div class="field">
-      <p>
+    <div class="form-row">
+      <div class="col-md-6 mb-3">
+        <label for="dateOfBirthRegistration">Date of Birth *</label>
         <input
-          class="input"
+          class="form-control"
           v-model="formData.birthdate"
           type="date"
           placeholder="Date of Birth *"
+          id="dateOfBirthRegistration"
+          required
         />
-      </p>
-      <p>
-        <span v-for="error in v$.birthdate.$errors" :key="error.$uid" style="color: red">{{
-          error.$message
-        }}</span>
-      </p>
+        <small
+          v-for="error in v$.birthdate.$errors"
+          :key="error.$uid"
+          class="form-text"
+          style="color: red"
+        >
+          {{ error.$message }}
+        </small>
+      </div>
     </div>
 
+    <hr />
     <h3>Contact Information</h3>
     <!--country-->
-    <div class="field">
-      <p>
-        <select class="input" v-model="formData.country" @change="onChangeCountry()">
-          <option value="" disabled>Country *</option>
+    <div class="form-row">
+      <div class="col-md-6 mb-3">
+        <label for="countryRegistration">Country *</label>
+        <select
+          class="custom-select"
+          v-model="formData.country"
+          @change="onChangeCountry()"
+          id="countryRegistration"
+          required
+        >
           <option v-for="(item, index) in countries" :key="index" :value="item.code">
             {{ item.name }}
           </option>
         </select>
-      </p>
-      <p>
-        <span v-for="error in v$.country.$errors" :key="error.$uid" style="color: red">{{
-          error.$message
-        }}</span>
-      </p>
-    </div>
-    <!--cityState-->
-    <div class="field">
-      <p>
-        <select class="input" v-model="formData.cityState">
-          <option value="" disabled>City/State *</option>
+        <small
+          v-for="error in v$.country.$errors"
+          :key="error.$uid"
+          class="form-text"
+          style="color: red"
+        >
+          {{ error.$message }}
+        </small>
+      </div>
+      <!-- cityState -->
+      <div class="col-md-6 mb-3">
+        <label for="cityStateRegistration">City/State *</label>
+        <select
+          class="custom-select"
+          v-model="formData.cityState"
+          id="cityStateRegistration"
+          required
+        >
           <option v-for="(item, index) in countryStates" :key="index" :value="item.code">
             {{ item.name }}
           </option>
         </select>
-      </p>
-      <p>
-        <span v-for="error in v$.cityState.$errors" :key="error.$uid" style="color: red">{{
-          error.$message
-        }}</span>
-      </p>
+        <small
+          v-for="error in v$.cityState.$errors"
+          :key="error.$uid"
+          class="form-text"
+          style="color: red"
+        >
+          {{ error.$message }}
+        </small>
+      </div>
     </div>
-    <!--address1-->
-    <div class="field">
-      <p>
+
+    <div class="form-row">
+      <!--address1-->
+      <div class="col-md-6 mb-3">
+        <label for="address1Registration">Address Line 1</label>
         <input
-          class="input"
+          id="address1Registration"
+          class="form-control"
           v-model="formData.address1"
           type="text"
           placeholder="Address Line 1"
           maxlength="255"
         />
-      </p>
-      <p>
-        <span v-for="error in v$.address1.$errors" :key="error.$uid" style="color: red">{{
-          error.$message
-        }}</span>
-      </p>
-    </div>
-    <!--address2-->
-    <div class="field">
-      <p>
+        <small
+          v-for="error in v$.address1.$errors"
+          :key="error.$uid"
+          class="form-text"
+          style="color: red"
+        >
+          {{ error.$message }}
+        </small>
+      </div>
+      <!--address2-->
+      <div class="col-md-6 mb-3">
+        <label for="address2Registration">Address Line 2</label>
         <input
-          class="input"
+          id="address2Registration"
+          class="form-control"
           v-model="formData.address2"
           type="text"
           placeholder="Address Line 2"
           maxlength="255"
         />
-      </p>
-      <p>
-        <span v-for="error in v$.address2.$errors" :key="error.$uid" style="color: red">{{
-          error.$message
-        }}</span>
-      </p>
+        <small
+          v-for="error in v$.address2.$errors"
+          :key="error.$uid"
+          class="form-text"
+          style="color: red"
+        >
+          {{ error.$message }}
+        </small>
+      </div>
     </div>
-    <!--phone-->
-    <div class="field">
-      <p>
+
+    <div class="form-row">
+      <!--phone-->
+      <div class="col-md-6 mb-3">
+        <label for="mobileNumberRegistration">Mobile Number *</label>
         <input
-          class="input"
+          id="mobileNumberRegistration"
+          class="form-control"
           v-model="formData.phone"
           type="text"
-          placeholder="Mobile Number *"
+          placeholder="Mobile Number"
           maxlength="20"
+          required
         />
-      </p>
-      <p>
-        <span v-for="error in v$.phone.$errors" :key="error.$uid" style="color: red">{{
-          error.$message
-        }}</span>
-      </p>
+        <small
+          v-for="error in v$.phone.$errors"
+          :key="error.$uid"
+          class="form-text"
+          style="color: red"
+        >
+          {{ error.$message }}
+        </small>
+      </div>
     </div>
-    <!--emergencyContactName-->
-    <div class="field">
-      <p>
+
+    <div class="form-row">
+      <!-- emergencyContactName -->
+      <div class="col-md-6 mb-3">
+        <label for="emergencyContactNameRegistration">Emergency Contact Name *</label>
         <input
-          class="input"
+          id="emergencyContactNameRegistration"
+          class="form-control"
           v-model="formData.emergencyContactName"
           type="text"
-          placeholder="Emergency Contact Name *"
+          placeholder="Emergency Contact Name"
           maxlength="100"
+          required
         />
-      </p>
-      <p>
-        <span
+        <small
           v-for="error in v$.emergencyContactName.$errors"
           :key="error.$uid"
+          class="form-text"
           style="color: red"
-          >{{ error.$message }}</span
         >
-      </p>
-    </div>
-    <!--emergencyContactPhone-->
-    <div class="field">
-      <p>
+          {{ error.$message }}
+        </small>
+      </div>
+      <!--emergencyContactPhone-->
+      <div class="col-md-6 mb-3">
+        <label for="emergencyContactPhoneRegistration">Emergency Contact Number *</label>
         <input
-          class="input"
+          id="emergencyContactPhoneRegistration"
+          class="form-control"
           v-model="formData.emergencyContactPhone"
           type="text"
-          placeholder="Emergency Contact Number *"
+          placeholder="Emergency Contact Number"
           maxlength="100"
+          required
         />
-      </p>
-      <p>
-        <span
+        <small
           v-for="error in v$.emergencyContactPhone.$errors"
           :key="error.$uid"
+          class="form-text"
           style="color: red"
-          >{{ error.$message }}</span
         >
-      </p>
-    </div>
-    <!--emergencyContactRelationship-->
-    <div class="field">
-      <p>
-        <select class="input" v-model="formData.emergencyContactRelationship">
-          <option value="" disabled>Emergency Contact Relationship *</option>
+          {{ error.$message }}
+        </small>
+      </div>
+      <!-- emergencyContactRelationship -->
+      <div class="col-md-6 mb-3">
+        <label for="emergencyContactRelationshipRegistration"
+          >Emergency Contact Relationship *</label
+        >
+        <select
+          class="custom-select"
+          v-model="formData.emergencyContactRelationship"
+          id="emergencyContactRelationshipRegistration"
+          required
+        >
           <option value="Friend">Friend</option>
           <option value="Relative">Relative</option>
-          <option value="Relative">Other</option>
+          <option value="Other">Other</option>
         </select>
-      </p>
-      <p>
-        <span
+        <small
           v-for="error in v$.emergencyContactRelationship.$errors"
           :key="error.$uid"
+          class="form-text"
           style="color: red"
-          >{{ error.$message }}</span
         >
-      </p>
+          {{ error.$message }}
+        </small>
+      </div>
     </div>
-    <!--acceptTermsAndConditions-->
-    <div class="field">
-      <label>
-        <input type="checkbox" v-model="formData.acceptTermsAndConditions" />
-        I understand and accept the
-        <b
-          ><a href="https://www.crank-fit.com/terms-conditions" target="_blank"
-            >Terms & Conditions</a
-          ></b
-        >
-      </label>
-      <p>
-        <span
-          v-for="error in v$.acceptTermsAndConditions.$errors"
-          :key="error.$uid"
-          style="color: red"
-          >{{ error.$message }}</span
-        >
-      </p>
+
+    <!-- acceptTermsAndConditions -->
+    <div class="form-row">
+      <div class="col-md-12 mb-3">
+        <div class="form-check">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            v-model="formData.acceptTermsAndConditions"
+            id="acceptTermsAndConditionsRegistration"
+          />
+          <label class="form-check-label" for="acceptTermsAndConditionsRegistration">
+            I understand and accept the
+            <b
+              ><a href="https://www.crank-fit.com/terms-conditions" target="_blank"
+                >Terms & Conditions</a
+              ></b
+            >
+          </label>
+          <small
+            v-for="error in v$.acceptTermsAndConditions.$errors"
+            :key="error.$uid"
+            class="form-text"
+            style="color: red"
+          >
+            {{ error.$message }}
+          </small>
+        </div>
+      </div>
     </div>
 
     <!--submit button-->
-    <button type="submit" :disabled="isSaving">Next</button>
+    <div class="form-row">
+      <div class="col-md-12 mb-3">
+        <button class="btn btn-primary" type="submit" :disabled="isSaving">
+          Next <span class="spinner-border spinner-border-sm" v-if="isSaving"></span>
+        </button>
+      </div>
+    </div>
   </form>
+
+  <!-- Error Modal -->
+  <ModalComponent
+    v-if="errorModalIsVisible"
+    title="Error"
+    :message="errorMessage"
+    :cancel-text="null"
+    @on-ok="errorModalIsVisible = false"
+  >
+  </ModalComponent>
+
+  <!-- Success Modal -->
+  <ModalComponent
+    v-if="successModalIsVisible"
+    title="SUCCESS"
+    message="Your account has been successfully created."
+    :cancel-text="null"
+    :closable="false"
+    @on-ok="login()"
+    :ok-loading="isLoggingIn"
+  >
+  </ModalComponent>
 </template>

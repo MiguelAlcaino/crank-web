@@ -1,28 +1,39 @@
-<script setup lang="ts">
-import dayjs from 'dayjs'
-import SpotMatrix from '@/components/SpotMatrix.vue'
-import type { BookableSpot, ClassInfo, IconPosition, IdentifiableUser } from '@/gql/graphql'
-import { PositionIconEnum } from '@/gql/graphql'
-import type { ApiService } from '@/services/apiService'
-import { inject, onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
-
-import { appStore } from '@/stores/appStorage'
-
-import ErrorModal from '@/components/ErrorModal.vue'
-import ConfirmModal from '@/components/ConfirmModal.vue'
-
+<script lang="ts">
 interface BookableSpotClickedEvent {
   spotNumber: number | null
   isBooked: boolean
 }
+</script>
+
+<script setup lang="ts">
+import { inject, onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
+
+import dayjs from 'dayjs'
+
+import type { BookableSpot, ClassInfo, IconPosition, IdentifiableUser } from '@/gql/graphql'
+
+import type { ApiService } from '@/services/apiService'
+
+import { appStore } from '@/stores/appStorage'
+
+import SpotMatrix from '@/components/SpotMatrix.vue'
+import ModalComponent from '@/components/ModalComponent.vue'
+import AdminBookedUsersList from '@/components/AdminBookedUsersList.vue'
+import EnrollSelectedMemberComponent from '@/components/EnrollSelectedMemberComponent.vue'
+
+import {
+  ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW,
+  ERROR_LATE_CANCELLATION_REQUIRED,
+  ERROR_SPOT_NOT_FOUND,
+  ERROR_UNKNOWN
+} from '@/utils/errorMessages'
 
 const route = useRoute()
 
-// const { id } = route.params as { id: string }
-
 const apiService = inject<ApiService>('gqlApiService')!
 const isLoading = ref<boolean>(false)
+const editingLayout = ref<boolean>(false)
 const classInfo = ref<ClassInfo | null>(null)
 
 const assignUserToThisSpotVisible = ref<boolean>(false)
@@ -89,6 +100,18 @@ const selectedSpot = ref<{
   enrollmentId: null
 })
 
+const successModalData = ref<{
+  title: string
+  message: string
+  isLoading: boolean
+  isVisible: boolean
+}>({
+  title: '',
+  message: '',
+  isLoading: false,
+  isVisible: false
+})
+
 onMounted(() => {
   classId.value = getClassId()
   getClassInfo()
@@ -97,56 +120,55 @@ onMounted(() => {
 async function getClassInfo() {
   isLoading.value = true
   classInfo.value = await apiService.getClassInfo(appStore().site, classId.value)
-  totalSignedIn.value = getTotalSignedIn()
+  totalSignedIn.value = classInfo.value?.enrollments.length ?? 0
+
   isLoading.value = false
 }
 
 function getClassId(): string {
   let mindbodyClass = inject<any | undefined>('mindbodyClass')
   if (mindbodyClass !== undefined) {
-    console.log('ESTAMOS DENTRO!!!!')
-    console.log(mindbodyClass)
     return mindbodyClass.id as string
   }
 
   return route.params.id as string
 }
 
-function getTotalSignedIn(): number {
-  let totalSignedIn = 0
-  if (classInfo.value && classInfo.value.matrix && classInfo.value.matrix.length > 0)
-    for (let index = 0; index < classInfo.value.matrix.length; index++) {
-      const classPosition = classInfo.value.matrix[index] as BookableSpot | IconPosition
-
-      if ('spotInfo' in classPosition) {
-        if (classPosition.spotInfo.isBooked) {
-          totalSignedIn++
-        }
-      }
-    }
-
-  return totalSignedIn
-}
-
 function spotClicked(event: BookableSpotClickedEvent) {
   assignUserToThisSpotVisible.value = false
 
-  for (let index = 0; index < classInfo.value!.matrix!.length; index++) {
-    const element = classInfo.value!.matrix![index] as BookableSpot | IconPosition
+  for (let index = 0; index < classInfo.value!.roomLayout!.matrix!.length; index++) {
+    const element = classInfo.value!.roomLayout!.matrix![index] as BookableSpot | IconPosition
 
     if (element.__typename == 'BookableSpot') {
       const bookableSpot = element as BookableSpot
 
       if (bookableSpot.spotInfo.spotNumber === event.spotNumber) {
+        var fullName = ''
+        var enrollmentId: string | null | undefined
+
+        if (classInfo.value?.enrollments != null) {
+          for (let index = 0; index < classInfo.value?.enrollments.length; index++) {
+            const enrollment = classInfo.value?.enrollments[index]
+
+            if (
+              bookableSpot.spotInfo.spotNumber === enrollment.spotInfo?.spotNumber &&
+              enrollment.user
+            ) {
+              fullName =
+                (enrollment.user?.firstName ?? '') + ' ' + (enrollment.user?.lastName ?? '')
+              enrollmentId = enrollment.id
+              break
+            }
+          }
+        }
+
         selectedSpot.value = {
           spotNumber: bookableSpot.spotInfo?.spotNumber,
           isBooked: bookableSpot.spotInfo?.isBooked,
-          fullName:
-            (bookableSpot.spotInfo?.bookedSpotUserInfo?.user?.firstName ?? '') +
-            ' ' +
-            (bookableSpot?.spotInfo?.bookedSpotUserInfo?.user?.lastName ?? ''),
+          fullName: fullName,
           enabled: bookableSpot.enabled,
-          enrollmentId: bookableSpot?.spotInfo?.bookedSpotUserInfo?.enrollmentId
+          enrollmentId: enrollmentId
         }
         break
       }
@@ -167,12 +189,10 @@ async function clickPutUnderMaintenance() {
     await getClassInfo()
     selectedSpot.value = { enabled: null, fullName: null, isBooked: null, spotNumber: null }
   } else if (response === 'SpotNotFoundError') {
-    errorModalData.value.message =
-      'The spot was not found in the list of disabled spots. This error is very unlikely to happen.'
+    errorModalData.value.message = ERROR_SPOT_NOT_FOUND
     errorModalData.value.isVisible = true
   } else {
-    errorModalData.value.message =
-      "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+    errorModalData.value.message = ERROR_UNKNOWN
     errorModalData.value.isVisible = true
   }
 }
@@ -188,12 +208,10 @@ async function clickRecoverFromMaintenance() {
     await getClassInfo()
     selectedSpot.value = { enabled: null, fullName: null, isBooked: null, spotNumber: null }
   } else if (response === 'SpotNotFoundError') {
-    errorModalData.value.message =
-      'The spot was not found in the list of disabled spots. This error is very unlikely to happen.'
+    errorModalData.value.message = ERROR_SPOT_NOT_FOUND
     errorModalData.value.isVisible = true
   } else {
-    errorModalData.value.message =
-      "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+    errorModalData.value.message = ERROR_UNKNOWN
     errorModalData.value.isVisible = true
   }
 }
@@ -259,14 +277,13 @@ async function bookUserIntoClass(
       'This user does not have any class packages purchases available for this class. Would you like to override the enrollment?'
     confirmModalData.value.isVisible = true
   } else if (response === 'ClientIsOutsideSchedulingWindowError') {
-    errorModalData.value.message = 'THE CLASS IS OUTSIDE THE SCHEDULING WINDOW.'
+    errorModalData.value.message = ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW
     errorModalData.value.isVisible = true
   } else if (response === 'ClientIsAlreadyBookedError') {
     errorModalData.value.message = 'The user is already booked in this class.'
     errorModalData.value.isVisible = true
   } else {
-    errorModalData.value.message =
-      "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+    errorModalData.value.message = ERROR_UNKNOWN
     errorModalData.value.isVisible = true
   }
 }
@@ -298,8 +315,7 @@ async function removeUserFromClass() {
     confirmModalLateCancelReservationData.value.isLoading = false
     confirmModalLateCancelReservationData.value.isVisible = true
   } else {
-    errorModalData.value.message =
-      "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+    errorModalData.value.message = ERROR_UNKNOWN
     errorModalData.value.isVisible = true
   }
 }
@@ -326,8 +342,58 @@ async function confirmLateCancelation() {
     confirmModalLateCancelReservationData.value.isLoading = false
     confirmModalLateCancelReservationData.value.isVisible = true
   } else {
-    errorModalData.value.message =
-      "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+    errorModalData.value.message = ERROR_UNKNOWN
+    errorModalData.value.isVisible = true
+  }
+}
+
+function goToLayoutEditPage(url: string) {
+  if (url) {
+    window.location.href = url
+  } else {
+    errorModalData.value.message = 'Redirect url is not configured.'
+    errorModalData.value.isVisible = true
+  }
+}
+
+async function removeLayout() {
+  editingLayout.value = true
+  const result = await apiService.editClass({ classId: classId.value, roomLayoutId: null })
+  editingLayout.value = false
+
+  if (result.__typename === 'EditClassSuccessResult') {
+    await getClassInfo()
+
+    successModalData.value.title = 'SUCCESS'
+    successModalData.value.message = 'The layout was removed successfully.'
+    successModalData.value.isVisible = true
+  } else {
+    errorModalData.value.message = ERROR_UNKNOWN
+    errorModalData.value.isVisible = true
+  }
+}
+
+async function assignRoomLayoutId(roomLayoutId: string) {
+  if (roomLayoutId) {
+    editingLayout.value = true
+    const result = await apiService.editClass({
+      classId: classId.value,
+      roomLayoutId: roomLayoutId
+    })
+    editingLayout.value = false
+
+    if (result.__typename === 'EditClassSuccessResult') {
+      await getClassInfo()
+
+      successModalData.value.title = 'SUCCESS'
+      successModalData.value.message = 'Room layout assigned successfully.'
+      successModalData.value.isVisible = true
+    } else {
+      errorModalData.value.message = ERROR_UNKNOWN
+      errorModalData.value.isVisible = true
+    }
+  } else {
+    errorModalData.value.message = ERROR_UNKNOWN
     errorModalData.value.isVisible = true
   }
 }
@@ -348,36 +414,66 @@ async function confirmLateCancelation() {
 
     <h6 v-html="classInfo?.class?.description"></h6>
   </div>
+
   <hr />
-  <spot-matrix
-    v-if="classInfo !== null && classInfo.matrix !== null"
-    :matrix="classInfo.matrix"
+  <SpotMatrix
+    v-if="
+      classInfo !== null && classInfo.roomLayout !== null && classInfo.roomLayout?.matrix !== null
+    "
+    :matrix="classInfo.roomLayout!.matrix!"
     :show-user-in-spots="true"
     :selectedSpotNumber="selectedSpot?.spotNumber"
     @click-spot="spotClicked"
+    :enrollments="classInfo.enrollments"
   >
-  </spot-matrix>
+  </SpotMatrix>
+
+  <EnrollSelectedMemberComponent
+    :class-id="classId"
+    v-if="classInfo !== null && classInfo.roomLayout === null && classInfo.enrollments !== null"
+    @after-enrolling="getClassInfo()"
+  ></EnrollSelectedMemberComponent>
+
+  <AdminBookedUsersList
+    v-if="classInfo !== null && classInfo.roomLayout === null && classInfo.enrollments !== null"
+    :enrollments="classInfo.enrollments"
+    :isLoading="false"
+    @after-cancel-member-reservation="getClassInfo()"
+  >
+  </AdminBookedUsersList>
 
   <div v-if="selectedSpot?.isBooked === false && selectedSpot.enabled === true">
     <h1>Choose an action :</h1>
-    <button @click="clickAssignUserToThisSpot">Assign User to this Spot</button>
-    <button @click="clickPutUnderMaintenance" :disabled="isEnablingDisablingSpot">
+    <button class="btn btn-primary" @click="clickAssignUserToThisSpot">
+      Assign User to this Spot
+    </button>
+    <button
+      class="btn btn-primary"
+      @click="clickPutUnderMaintenance"
+      :disabled="isEnablingDisablingSpot"
+    >
       Put under maintenance
     </button>
   </div>
   <div v-if="selectedSpot.enabled === false">
     <h1>Spot is under maintenance</h1>
-    <button @click="clickRecoverFromMaintenance" :disabled="isEnablingDisablingSpot">
+    <button
+      class="btn btn-primary"
+      @click="clickRecoverFromMaintenance"
+      :disabled="isEnablingDisablingSpot"
+    >
       Recover from maintenance
     </button>
   </div>
   <div v-if="selectedSpot?.isBooked === true">
     <h1>Spot is reserved for - {{ selectedSpot.fullName }}</h1>
-    <button @click="clickCancelMembersReservation">Cancel Member's Reservation</button>
-    <button :disabled="true">Change Member's Spot</button>
-    <button :disabled="true">Swap Spot</button>
-    <button :disabled="true">Check-In</button>
-    <button :disabled="true">Go to Profile</button>
+    <button class="btn btn-primary" @click="clickCancelMembersReservation">
+      Cancel Member's Reservation
+    </button>
+    <button class="btn btn-primary" :disabled="true">Change Member's Spot</button>
+    <button class="btn btn-primary" :disabled="true">Swap Spot</button>
+    <button class="btn btn-primary" :disabled="true">Check-In</button>
+    <button class="btn btn-primary" :disabled="true">Go to Profile</button>
   </div>
 
   <div v-if="assignUserToThisSpotVisible">
@@ -388,6 +484,7 @@ async function confirmLateCancelation() {
       </option>
     </select>
     <button
+      class="btn btn-primary"
       @click="clickAssing"
       :disabled="selectedUserId === null || selectedUserId === undefined || assigningUserToClass"
     >
@@ -396,46 +493,55 @@ async function confirmLateCancelation() {
   </div>
 
   <!-- ERROR modal -->
-  <ErrorModal
-    :isLoading="false"
+  <ModalComponent
+    title="ERROR"
     :message="errorModalData.message"
-    :clickToClose="false"
-    v-model="errorModalData.isVisible"
-    @close="errorModalData.isVisible = false"
+    :closable="false"
+    v-if="errorModalData.isVisible"
+    @on-ok="errorModalData.isVisible = false"
   >
-  </ErrorModal>
+  </ModalComponent>
 
-  <ConfirmModal
-    v-model="confirmModalData.isVisible"
+  <ModalComponent
+    v-if="confirmModalData.isVisible"
     :title="confirmModalData.title"
     :message="confirmModalData.message"
-    :isLoading="confirmModalData.isLoading"
-    @cancel="confirmModalData.isVisible = false"
-    @confirm="bookUserIntoClass(classId, selectedUserId!, selectedSpot.spotNumber!, false)"
-    :clickToClose="false"
+    :ok-loading="confirmModalData.isLoading"
+    @on-cancel="confirmModalData.isVisible = false"
+    @on-ok="bookUserIntoClass(classId, selectedUserId!, selectedSpot.spotNumber!, false)"
+    :closable="false"
   >
-  </ConfirmModal>
+  </ModalComponent>
 
-  <ConfirmModal
-    v-model="confirmModalCancelReservationData.isVisible"
+  <ModalComponent
+    v-if="confirmModalCancelReservationData.isVisible"
     title="Cancel Reservation?"
     message="Are you sure, you want to cancel the reservation?"
-    :isLoading="confirmModalCancelReservationData.isLoading"
-    @cancel="confirmModalCancelReservationData.isVisible = false"
-    @confirm="removeUserFromClass()"
-    :clickToClose="false"
+    :ok-loading="confirmModalCancelReservationData.isLoading"
+    @on-cancel="confirmModalCancelReservationData.isVisible = false"
+    @on-ok="removeUserFromClass()"
+    :closable="false"
   >
-  </ConfirmModal>
+  </ModalComponent>
 
-  <ConfirmModal
-    v-model="confirmModalLateCancelReservationData.isVisible"
+  <ModalComponent
+    v-if="confirmModalLateCancelReservationData.isVisible"
     title="Warning"
-    message="You are outsade the early cancellation window. you can only make a late cancellaiton."
+    :message="ERROR_LATE_CANCELLATION_REQUIRED"
     :isLoading="confirmModalLateCancelReservationData.isLoading"
-    @cancel="confirmModalLateCancelReservationData.isVisible = false"
-    textConfirmButton="CONFIRM"
-    @confirm="confirmLateCancelation()"
-    :clickToClose="false"
+    @on-cancel="confirmModalLateCancelReservationData.isVisible = false"
+    ok-text="CONFIRM"
+    @on-ok="confirmLateCancelation()"
+    :closable="false"
   >
-  </ConfirmModal>
+  </ModalComponent>
+
+  <ModalComponent
+    :title="successModalData.title"
+    :message="successModalData.message"
+    :closable="false"
+    @on-ok="successModalData.isVisible = false"
+    v-if="successModalData.isVisible"
+  >
+  </ModalComponent>
 </template>

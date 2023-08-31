@@ -10,19 +10,18 @@ import {
 import dayjs from 'dayjs'
 
 import BookingsTable from '@/components/BookingsTable.vue'
-import ConfirmModal from '@/components/ConfirmModal.vue'
-import SuccessModal from '@/components/SuccessModal.vue'
-import ErrorModal from '@/components/ErrorModal.vue'
+import DefaultButtonComponent from '@/components/DefaultButtonComponent.vue'
+import ModalComponent from '@/components/ModalComponent.vue'
+
 import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
+import { ERROR_LATE_CANCELLATION_REQUIRED, ERROR_UNKNOWN } from '@/utils/errorMessages'
 
 const isLoading = ref<boolean>(false)
 const userErollments = ref<Enrollment[]>([])
 const siteDateTimeNow = ref<Date>(new Date())
 const isCancellingCurrentUserEnrollment = ref<boolean>(false)
 
-const filterStartDate = ref<Date | null>(null)
-const filterEndDate = ref<Date | null>(null)
 const filterEnrollmentType = ref<EnrollmentTypeEnum>(EnrollmentTypeEnum.Upcoming)
 
 const modalConfirmRemoveFromWaitlistisVisible = ref<boolean>(false)
@@ -30,6 +29,8 @@ const waitlistEntryIdToRemove = ref<string | null>(null)
 
 const enrollmentIdToRemove = ref<string | null>(null)
 const enrollmentIsLateCancel = ref<boolean>(false)
+
+const dateRangeFilter = ref<[Date | null, Date | null] | undefined>()
 
 const successModalData = ref<{
   title: string
@@ -91,9 +92,13 @@ async function getUserErollments() {
 
   const params = { enrollmentType: filterEnrollmentType.value } as CurrentUserEnrollmentsParams
 
-  if (filterStartDate.value) params.startDate = dayjs(filterStartDate.value).format('YYYY-MM-DD')
+  if (dateRangeFilter.value) {
+    if (dateRangeFilter.value[0])
+      params.startDate = dayjs(dateRangeFilter.value[0]).format('YYYY-MM-DD')
 
-  if (filterEndDate.value) params.endDate = dayjs(filterEndDate.value).format('YYYY-MM-DD')
+    if (dateRangeFilter.value[1])
+      params.endDate = dayjs(dateRangeFilter.value[1]).format('YYYY-MM-DD')
+  }
 
   userErollments.value = await apiService.getCurrentUserEnrollments(appStore().site, params)
 
@@ -126,15 +131,13 @@ async function cancelCurrentUserEnrollment(
       enrollmentIsLateCancel.value = true
 
       confirmModalData.value.title = 'CANCEL BOOKING'
-      confirmModalData.value.message =
-        'YOU ARE OUTSIDE THE EARLY CANCELLATION WINDOW. YOU CAN ONLY MAKE A LATE CANCELLATION.'
+      confirmModalData.value.message = ERROR_LATE_CANCELLATION_REQUIRED
       confirmModalData.value.textConfirmButton = 'CONFIRM'
       confirmModalData.value.isVisible = true
       break
     }
     default: {
-      errorModalData.value.message =
-        "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+      errorModalData.value.message = ERROR_UNKNOWN
       errorModalData.value.isVisible = true
       break
     }
@@ -160,14 +163,12 @@ async function removeCurrentUserFromWaitlist(waitlistEntryId: string): Promise<v
       break
     }
     case 'WaitlistEntryNotFoundError': {
-      errorModalData.value.message =
-        "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+      errorModalData.value.message = ERROR_UNKNOWN
       errorModalData.value.isVisible = true
       break
     }
     default: {
-      errorModalData.value.message =
-        "UPS! SORRY, WE DIDN'T SEE THAT COMING!. PLEASE TRY AGAIN OR COMMUNICATE WITH THE TEAM TO RESOLVE THIS ISSUE."
+      errorModalData.value.message = ERROR_UNKNOWN
       errorModalData.value.isVisible = true
       break
     }
@@ -202,70 +203,105 @@ async function acceptSuccessModal() {
 </script>
 
 <template>
-  <h2>BOOKINGS</h2>
-  <select v-model="filterEnrollmentType" @change="getUserErollments()" :disabled="isLoading">
-    <option :value="EnrollmentTypeEnum.Upcoming">UPCOMING</option>
-    <option :value="EnrollmentTypeEnum.Waitlist">WAITLIST</option>
-    <option :value="EnrollmentTypeEnum.Historical">HISTORICAL</option>
-  </select>
-  <br />
-  <br />
+  <div class="card border-0">
+    <div class="card-header border-0" style="background-color: white">
+      <div class="row form-inline">
+        <div class="col-md-6">
+          <h1 class="page-title">Bookings</h1>
+        </div>
+        <div class="col-md-5 col-sm-6 text-right justify-content-end">
+          <VueDatePicker
+            v-model="dateRangeFilter"
+            range
+            :enable-time-picker="false"
+            placeholder="Date Range"
+          />
+        </div>
+        <div class="col-1">
+          <DefaultButtonComponent
+            @on-click="getUserErollments()"
+            :is-loading="isLoading"
+            text="Go"
+            type="button"
+            class="input-group-append"
+          ></DefaultButtonComponent>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <select
+        class="custom-select"
+        v-model="filterEnrollmentType"
+        @change="getUserErollments()"
+        :disabled="isLoading"
+      >
+        <option :value="EnrollmentTypeEnum.Upcoming">UPCOMING</option>
+        <option :value="EnrollmentTypeEnum.Waitlist">WAITLIST</option>
+        <option :value="EnrollmentTypeEnum.Historical">HISTORICAL</option>
+      </select>
+      <br />
+      <br />
 
-  <BookingsTable
-    :enrollments="userErollments"
-    :isLoading="isLoading"
-    :enrollmentType="filterEnrollmentType"
-    :siteDateTimeNow="siteDateTimeNow"
-    @clickCancelEnrollment="clickCancelEnrollment"
-    @clickRemoveFromWaitlist="clickRemoveFromWaitlist"
-  >
-  </BookingsTable>
+      <BookingsTable
+        :enrollments="userErollments"
+        :isLoading="isLoading"
+        :enrollmentType="filterEnrollmentType"
+        :siteDateTimeNow="siteDateTimeNow"
+        @clickCancelEnrollment="clickCancelEnrollment"
+        @clickRemoveFromWaitlist="clickRemoveFromWaitlist"
+      >
+      </BookingsTable>
+    </div>
+  </div>
 
   <!-- CONFIRM REMOVE FROM WAITLIST modal -->
-  <ConfirmModal
-    title="REMOVE FROM WAITLIST"
-    message="ARE YOU SURE YOU WANT TO BE REMOVED FROM THE WAITLIST?"
-    textCancelBtn="CANCEL"
-    textConfirmButton="OK"
-    :isLoading="isCancellingCurrentUserEnrollment"
-    :clickToClose="true"
-    v-model="modalConfirmRemoveFromWaitlistisVisible"
-    @cancel="modalConfirmRemoveFromWaitlistisVisible = false"
-    @confirm="removeCurrentUserFromWaitlist(waitlistEntryIdToRemove!)"
-  ></ConfirmModal>
+  <ModalComponent
+    title="Remove from waitlist"
+    message="Are you sure you want to be removed from the waitlist?"
+    cancel-text="CANCEL"
+    ok-text="OK"
+    :ok-loading="isCancellingCurrentUserEnrollment"
+    :closable="true"
+    v-if="modalConfirmRemoveFromWaitlistisVisible"
+    @on-cancel="modalConfirmRemoveFromWaitlistisVisible = false"
+    @on-ok="removeCurrentUserFromWaitlist(waitlistEntryIdToRemove!)"
+  ></ModalComponent>
 
   <!-- CONFIRM CANCEL BOOKING modal -->
-  <ConfirmModal
+  <ModalComponent
     :title="confirmModalData.title"
     :message="confirmModalData.message"
-    textCancelBtn="CANCEL"
-    :textConfirmButton="confirmModalData.textConfirmButton"
-    :isLoading="isCancellingCurrentUserEnrollment"
-    :clickToClose="true"
-    v-model="confirmModalData.isVisible"
-    @cancel="confirmModalData.isVisible = false"
-    @confirm="cancelCurrentUserEnrollment(enrollmentIdToRemove!, enrollmentIsLateCancel)"
-  ></ConfirmModal>
+    cancel-text="CANCEL"
+    :ok-text="confirmModalData.textConfirmButton"
+    :ok-loading="isCancellingCurrentUserEnrollment"
+    :closable="true"
+    v-if="confirmModalData.isVisible"
+    @on-cancel="confirmModalData.isVisible = false"
+    @on-ok="cancelCurrentUserEnrollment(enrollmentIdToRemove!, enrollmentIsLateCancel)"
+  ></ModalComponent>
 
   <!-- SUCCESS modal -->
-  <SuccessModal
+  <ModalComponent
     :title="successModalData.title"
     :message="successModalData.message"
-    :clickToClose="false"
-    @accept="acceptSuccessModal"
-    v-model="successModalData.isVisible"
+    :closable="false"
+    @on-ok="acceptSuccessModal"
+    :cancel-text="null"
+    v-if="successModalData.isVisible"
   >
-  </SuccessModal>
+  </ModalComponent>
 
   <!-- ERROR modal -->
-  <ErrorModal
-    :isLoading="false"
+  <ModalComponent
+    :ok-loading="false"
+    title="Error"
     :message="errorModalData.message"
-    :clickToClose="false"
-    v-model="errorModalData.isVisible"
-    @close="errorModalData.isVisible = false"
+    :closable="false"
+    :cancel-text="null"
+    v-if="errorModalData.isVisible"
+    @on-ok="errorModalData.isVisible = false"
   >
-  </ErrorModal>
+  </ModalComponent>
 </template>
 
 <style scoped></style>
