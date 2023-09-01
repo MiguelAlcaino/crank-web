@@ -212,7 +212,7 @@ async function login() {
 
   try {
     await authService.login(formData.email, formData.password, appStore().site)
-    await router.push({ name: 'home' })
+    await router.push({ name: 'calendar' })
   } catch (error) {
     console.log(error)
   } finally {
