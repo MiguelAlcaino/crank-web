@@ -34,7 +34,7 @@ const countries = ref([] as Country[])
 const countryStates = ref([] as State[])
 
 const formData = reactive({
-  location: null,
+  location: SiteEnum.Dubai,
   firstName: '',
   lastName: '',
   email: '',
