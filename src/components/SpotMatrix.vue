@@ -117,7 +117,7 @@ function newSpotPosition(
 
 function getMatrixOfSpotPositions(matrix: Array<BookableSpot | IconPosition>): SpotPosition[][] {
   let rows: Array<Array<SpotPosition>> = []
-  let classPosition: ClassPositionInterface
+  let classPosition: BookableSpot | IconPosition
   let user: User | null | undefined
 
   for (let i = 0; i < matrix.length; i++) {
