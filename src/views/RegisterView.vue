@@ -54,7 +54,7 @@ const formData = reactive({
   acceptTermsAndConditions: false
 })
 
-const checkPass = helpers.regex(/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/)
+const checkPass = helpers.regex(/^(?=.*[a-zA-Z])(?=.*\d).+$/)
 
 const rules = computed(() => {
   return {

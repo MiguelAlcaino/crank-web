@@ -16,7 +16,7 @@ const successModalIsVisible = ref<boolean>(false)
 const errorModalIsVisible = ref<boolean>(false)
 const errorMessage = ref<string>('')
 
-const checkPass = helpers.regex(/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/)
+const checkPass = helpers.regex(/^(?=.*[a-zA-Z])(?=.*\d).+$/)
 
 const formData = reactive({
   currentPassword: '',
