@@ -16,6 +16,7 @@ import ModalComponent from '@/components/ModalComponent.vue'
 import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
 import { ERROR_LATE_CANCELLATION_REQUIRED, ERROR_UNKNOWN } from '@/utils/errorMessages'
+import router from '@/router'
 
 const isLoading = ref<boolean>(false)
 const userErollments = ref<Enrollment[]>([])
@@ -200,6 +201,10 @@ async function acceptSuccessModal() {
   await getUserErollments()
   successModalData.value.isVisible = false
 }
+
+function goToChangeSpot(classId: string) {
+  router.push('/change-spot/' + classId)
+}
 </script>
 
 <template>
@@ -249,6 +254,7 @@ async function acceptSuccessModal() {
         :siteDateTimeNow="siteDateTimeNow"
         @clickCancelEnrollment="clickCancelEnrollment"
         @clickRemoveFromWaitlist="clickRemoveFromWaitlist"
+        @change-spot="goToChangeSpot"
       >
       </BookingsTable>
     </div>
