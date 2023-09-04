@@ -13,7 +13,7 @@ defineProps<{
 }>()
 
 const emits = defineEmits<{
-  (e: 'changeSpot'): void
+  (e: 'changeSpot', classId: string): void
   (e: 'clickCancelEnrollment', enrollmentId: string, isLateCancel: boolean): void
   (e: 'clickRemoveFromWaitlist', waitlistEntryId: string): void
 }>()
@@ -72,15 +72,16 @@ function clickRemoveFromWaitlist(waitlistEntryId: string): void {
             :disabled="false"
             :enrollmentId="enrollment.enrollmentInfo.id"
             @clickRemoveFromWaitlist="clickRemoveFromWaitlist"
+            class="ml-1"
           >
           </RemoveFromWaitlistButton>
           <button
             type="button"
-            class="btn btn-primary"
-            @click="emits('changeSpot')"
+            class="btn btn-primary ml-1"
+            @click="emits('changeSpot', enrollment.class.id)"
             :disabled="isLoading"
             v-if="
-              enrollmentType === EnrollmentTypeEnum.Historical &&
+              enrollmentType !== EnrollmentTypeEnum.Historical &&
               dayjs(enrollment.class.start) > dayjs(siteDateTimeNow)
             "
           >

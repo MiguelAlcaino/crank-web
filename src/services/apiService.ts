@@ -926,24 +926,27 @@ export class ApiService {
     }
   }
 
-  async editCurrentUserEnrollment(site: SiteEnum, enrollmentId: string,  newSpotNumber: number): Promise<string> {
-
-    const input = { enrollmentId: enrollmentId, newSpotNumber: newSpotNumber } as EditEnrollmentInput;
+  async editCurrentUserEnrollment(
+    site: SiteEnum,
+    enrollmentId: string,
+    newSpotNumber: number
+  ): Promise<string> {
+    const input = {
+      enrollmentId: enrollmentId,
+      newSpotNumber: newSpotNumber
+    } as EditEnrollmentInput
 
     const muration = gql`
-      mutation editCurrentUserEnrollment(
-        $site: SiteEnum!
-        $input: EditEnrollmentInput!
-      ) {
+      mutation editCurrentUserEnrollment($site: SiteEnum!, $input: EditEnrollmentInput!) {
         editCurrentUserEnrollment(site: $site, input: $input) {
           __typename
-          ... on SpotAlreadyReservedError{
+          ... on SpotAlreadyReservedError {
             code
           }
-          ... on TryToSwitchToSameSpotError{
+          ... on TryToSwitchToSameSpotError {
             code
           }
-          ... on ClientIsOutsideSchedulingWindowError{
+          ... on ClientIsOutsideSchedulingWindowError {
             code
           }
         }
@@ -961,7 +964,7 @@ export class ApiService {
       })
 
       return result.data.editCurrentUserEnrollment.__typename
-    } catch (error) {   
+    } catch (error) {
       return 'UnknownError'
     }
   }

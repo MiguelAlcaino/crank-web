@@ -9,6 +9,7 @@ import BookingsView from '../views/BookingsView.vue'
 import PurchasesView from '../views/PurchasesView.vue'
 import ChangePasswordView from '../views/ChangePasswordView.vue'
 import ForgotPasswordView from '../views/ForgotPasswordView.vue'
+import ChangeSpotView from '../views/ChangeSpotView.vue'
 
 import { authService } from '@/services/authService'
 import AdminClass from '@/views/admin/AdminClass.vue'
@@ -70,6 +71,11 @@ const router = createRouter({
       path: '/forgot-password',
       name: 'forgot_password',
       component: ForgotPasswordView
+    },
+    {
+      path: '/change-spot/:classId',
+      name: 'change_spot',
+      component: ChangeSpotView
     },
     {
       path: '/about',
