@@ -97,3 +97,48 @@ html {
   --dp-danger-color: #ff6f60;
   --dp-highlight-color: rgba(25, 118, 210, 0.1);
 }
+
+
+@font-face {
+  font-family: 'BigJohn';
+  src: url('fonts/big_john.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Avenir';
+  src: url('fonts/avenir.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+.title-font {
+  font-family: 'BigJohn', sans-serif;
+}
+
+h1 {
+  font-family: 'BigJohn', sans-serif;
+}
+
+h3 {
+  font-family: 'BigJohn', sans-serif;
+  color: #737373;
+}
+
+.input-label {
+  color: #FF7F61;
+  font-family: 'Avenir', sans-serif;
+}
+
+input{
+  font-family: 'Avenir', sans-serif;
+}
+
+button {
+  font-family: 'BigJohn', sans-serif;
+}
+
+a {
+  color: #000000;
+}
