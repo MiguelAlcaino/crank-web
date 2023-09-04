@@ -34,7 +34,7 @@ const countries = ref([] as Country[])
 const countryStates = ref([] as State[])
 
 const formData = reactive({
-  location: null,
+  location: SiteEnum.Dubai,
   firstName: '',
   lastName: '',
   email: '',
@@ -54,7 +54,7 @@ const formData = reactive({
   acceptTermsAndConditions: false
 })
 
-const checkPass = helpers.regex(/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/)
+const checkPass = helpers.regex(/^(?=.*[a-zA-Z])(?=.*\d).+$/)
 
 const rules = computed(() => {
   return {
@@ -212,7 +212,7 @@ async function login() {
 
   try {
     await authService.login(formData.email, formData.password, appStore().site)
-    await router.push({ name: 'home' })
+    await router.push({ name: 'calendar' })
   } catch (error) {
     console.log(error)
   } finally {
