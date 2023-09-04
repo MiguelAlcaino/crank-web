@@ -14,6 +14,7 @@ import type {
   DisableEnableSpotResultUnion,
   EditClassInput,
   EditClassResultUnion,
+  EditEnrollmentInput,
   Enrollment,
   EnrollmentInfo,
   IdentifiableUser,
@@ -921,6 +922,46 @@ export class ApiService {
           return 'UnknownError'
         }
       }
+      return 'UnknownError'
+    }
+  }
+
+  async editCurrentUserEnrollment(site: SiteEnum, enrollmentId: string,  newSpotNumber: number): Promise<string> {
+
+    const input = { enrollmentId: enrollmentId, newSpotNumber: newSpotNumber } as EditEnrollmentInput;
+
+    const muration = gql`
+      mutation editCurrentUserEnrollment(
+        $site: SiteEnum!
+        $input: EditEnrollmentInput!
+      ) {
+        editCurrentUserEnrollment(site: $site, input: $input) {
+          __typename
+          ... on SpotAlreadyReservedError{
+            code
+          }
+          ... on TryToSwitchToSameSpotError{
+            code
+          }
+          ... on ClientIsOutsideSchedulingWindowError{
+            code
+          }
+        }
+      }
+    `
+
+    try {
+      const result = await this.authApiClient.mutate({
+        mutation: muration,
+        variables: {
+          site: site,
+          input: input
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      return result.data.editCurrentUserEnrollment.__typename
+    } catch (error) {   
       return 'UnknownError'
     }
   }
