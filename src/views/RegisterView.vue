@@ -248,7 +248,7 @@ async function login() {
     <!-- email -->
     <div class="form-row">
       <div class="col-md-6 mb-3">
-        <label for="emailRegistration">Email *</label>
+        <label for="emailRegistration" class="input-label">Email *</label>
         <input
           type="email"
           v-model="formData.email"
@@ -272,7 +272,7 @@ async function login() {
     <div class="form-row">
       <!-- password -->
       <div class="col-md-6 mb-3">
-        <label for="passwordRegistration">Password *</label>
+        <label for="passwordRegistration" class="input-label">Password *</label>
         <input
           id="passwordRegistration"
           class="form-control"
@@ -293,7 +293,7 @@ async function login() {
       </div>
       <!-- confirm Password -->
       <div class="col-md-6 mb-3">
-        <label for="confirmPasswordRegistration">Confirm Password *</label>
+        <label for="confirmPasswordRegistration" class="input-label">Confirm Password *</label>
         <input
           id="confirmPasswordRegistration"
           class="form-control"
@@ -318,7 +318,7 @@ async function login() {
     <div class="form-row">
       <!-- firstName -->
       <div class="col-md-6 mb-3">
-        <label for="firstNameRegistration">First Name *</label>
+        <label for="firstNameRegistration" class="input-label">First Name *</label>
         <input
           id="firstNameRegistration"
           class="form-control"
@@ -340,7 +340,7 @@ async function login() {
       </div>
       <!-- lastName -->
       <div class="col-md-6 mb-3">
-        <label for="lastNameRegistration">Last Name *</label>
+        <label for="lastNameRegistration" class="input-label">Last Name *</label>
         <input
           id="lastNameRegistration"
           class="form-control"
@@ -364,7 +364,7 @@ async function login() {
     <!--gender-->
     <div class="form-row">
       <div class="col-md-6 mb-3">
-        <label for="genderRegistration">Gender *</label>
+        <label for="genderRegistration" class="input-label">Gender *</label>
         <select
           class="custom-select"
           v-model="formData.gender"
@@ -389,7 +389,9 @@ async function login() {
     <!--leaderboardUsername-->
     <div class="form-row">
       <div class="col-md-6 mb-3">
-        <label for="leaderboardUsernameRegistration">Leaderboard Nickname *</label>
+        <label for="leaderboardUsernameRegistration" class="input-label"
+          >Leaderboard Nickname *</label
+        >
         <input
           id="leaderboardUsernameRegistration"
           class="form-control"
@@ -413,7 +415,7 @@ async function login() {
     <!--birthdate-->
     <div class="form-row">
       <div class="col-md-6 mb-3">
-        <label for="dateOfBirthRegistration">Date of Birth *</label>
+        <label for="dateOfBirthRegistration" class="input-label">Date of Birth *</label>
         <input
           class="form-control"
           v-model="formData.birthdate"
@@ -438,7 +440,7 @@ async function login() {
     <!--country-->
     <div class="form-row">
       <div class="col-md-6 mb-3">
-        <label for="countryRegistration">Country *</label>
+        <label for="countryRegistration" class="input-label">Country *</label>
         <select
           class="custom-select"
           v-model="formData.country"
@@ -461,7 +463,7 @@ async function login() {
       </div>
       <!-- cityState -->
       <div class="col-md-6 mb-3">
-        <label for="cityStateRegistration">City/State *</label>
+        <label for="cityStateRegistration" class="input-label">City/State *</label>
         <select
           class="custom-select"
           v-model="formData.cityState"
@@ -486,7 +488,7 @@ async function login() {
     <div class="form-row">
       <!--address1-->
       <div class="col-md-6 mb-3">
-        <label for="address1Registration">Address Line 1</label>
+        <label for="address1Registration" class="input-label">Address Line 1</label>
         <input
           id="address1Registration"
           class="form-control"
@@ -506,7 +508,7 @@ async function login() {
       </div>
       <!--address2-->
       <div class="col-md-6 mb-3">
-        <label for="address2Registration">Address Line 2</label>
+        <label for="address2Registration" class="input-label">Address Line 2</label>
         <input
           id="address2Registration"
           class="form-control"
@@ -529,7 +531,7 @@ async function login() {
     <div class="form-row">
       <!--phone-->
       <div class="col-md-6 mb-3">
-        <label for="mobileNumberRegistration">Mobile Number *</label>
+        <label for="mobileNumberRegistration" class="input-label">Mobile Number *</label>
         <input
           id="mobileNumberRegistration"
           class="form-control"
@@ -553,7 +555,9 @@ async function login() {
     <div class="form-row">
       <!-- emergencyContactName -->
       <div class="col-md-6 mb-3">
-        <label for="emergencyContactNameRegistration">Emergency Contact Name *</label>
+        <label for="emergencyContactNameRegistration" class="input-label"
+          >Emergency Contact Name *</label
+        >
         <input
           id="emergencyContactNameRegistration"
           class="form-control"
@@ -574,7 +578,9 @@ async function login() {
       </div>
       <!--emergencyContactPhone-->
       <div class="col-md-6 mb-3">
-        <label for="emergencyContactPhoneRegistration">Emergency Contact Number *</label>
+        <label for="emergencyContactPhoneRegistration" class="input-label"
+          >Emergency Contact Number *</label
+        >
         <input
           id="emergencyContactPhoneRegistration"
           class="form-control"
@@ -595,7 +601,7 @@ async function login() {
       </div>
       <!-- emergencyContactRelationship -->
       <div class="col-md-6 mb-3">
-        <label for="emergencyContactRelationshipRegistration"
+        <label for="emergencyContactRelationshipRegistration" class="input-label"
           >Emergency Contact Relationship *</label
         >
         <select
@@ -618,6 +624,8 @@ async function login() {
         </small>
       </div>
     </div>
+
+    <hr />
 
     <!-- acceptTermsAndConditions -->
     <div class="form-row">
@@ -650,9 +658,9 @@ async function login() {
     </div>
 
     <!--submit button-->
-    <div class="form-row">
-      <div class="col-md-12 mb-3">
-        <button class="btn btn-primary" type="submit" :disabled="isSaving">
+    <div class="form-row justify-content-md-center">
+      <div class="col-md-2 mb-3">
+        <button class="btn btn-primary btn-block" type="submit" :disabled="isSaving">
           Next <span class="spinner-border spinner-border-sm" v-if="isSaving"></span>
         </button>
       </div>
