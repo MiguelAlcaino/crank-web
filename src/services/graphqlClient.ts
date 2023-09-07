@@ -30,7 +30,7 @@ const authLink = setContext((_, { headers }) => {
 
 const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) => {
   if (graphQLErrors) {
-    for (let err of graphQLErrors) {
+    for (const err of graphQLErrors) {
       switch (err.message) {
         case 'jwt.expired_access_token':
           return new Observable<any>((observer) => {

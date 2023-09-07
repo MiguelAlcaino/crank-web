@@ -80,7 +80,7 @@ async function login() {
           <!-- email -->
           <div class="form-row">
             <div class="col-md-12 mb-3">
-              <label for="emailRegistration">Email *</label>
+              <label for="emailRegistration" class="input-label">Email *</label>
               <input
                 type="email"
                 v-model="formData.email"
@@ -104,7 +104,7 @@ async function login() {
           <div class="form-row">
             <!-- password -->
             <div class="col-md-12 mb-3">
-              <label for="passwordRegistration">Password *</label>
+              <label for="passwordRegistration" class="input-label">Password *</label>
               <input
                 id="passwordRegistration"
                 class="form-control"
@@ -152,7 +152,13 @@ async function login() {
         <p>Don't have an account with us? Please signup here:</p>
         <div class="row">
           <div class="col-md-12 mb-3">
-            <router-link class="btn btn-primary btn-block" to="/register">New User</router-link>
+            <button
+              type="button"
+              class="btn btn-primary btn-block"
+              @click="router.push({ name: 'register' })"
+            >
+              New User
+            </button>
           </div>
         </div>
       </div>
@@ -165,14 +171,38 @@ async function login() {
   padding: 50px 40px 40px;
 }
 
-a {
-  color: #000000;
-}
-
 .card {
   height: 613px;
   margin-top: auto;
   margin-bottom: auto;
   width: 400px;
+}
+
+a:link {
+  color: #ff7f61;
+  background-color: transparent;
+  text-decoration: none;
+  font-family: 'BigJohn', sans-serif;
+}
+
+a:visited {
+  color: #ff7f61;
+  background-color: transparent;
+  text-decoration: none;
+  font-family: 'BigJohn', sans-serif;
+}
+
+a:hover {
+  color: #737373;
+  background-color: transparent;
+  text-decoration: none;
+  font-family: 'BigJohn', sans-serif;
+}
+
+a:active {
+  color: #ff7f61;
+  background-color: transparent;
+  text-decoration: none;
+  font-family: 'BigJohn', sans-serif;
 }
 </style>

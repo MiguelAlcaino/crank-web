@@ -10,6 +10,7 @@ import PurchasesView from '../views/PurchasesView.vue'
 import ChangePasswordView from '../views/ChangePasswordView.vue'
 import ForgotPasswordView from '../views/ForgotPasswordView.vue'
 import ChangeSpotView from '../views/ChangeSpotView.vue'
+import ResetPasswordView from '../views/ResetPasswordView.vue'
 
 import { authService } from '@/services/authService'
 import AdminClass from '@/views/admin/AdminClass.vue'
@@ -73,6 +74,12 @@ const router = createRouter({
       component: ForgotPasswordView
     },
     {
+      path: '/reset-password',
+      name: 'reset_password',
+      component: ResetPasswordView
+    },
+
+    {
       path: '/change-spot/:classId',
       name: 'change_spot',
       component: ChangeSpotView
@@ -89,7 +96,7 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  const publicPages = ['/login', '/register', '/forgot-password']
+  const publicPages = ['/login', '/register', '/forgot-password', '/reset-password']
   const authRequired = !publicPages.includes(to.path)
 
   if (authRequired && !authService.isLoggedId()) {

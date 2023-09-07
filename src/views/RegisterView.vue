@@ -23,6 +23,7 @@ import { appStore } from '@/stores/appStorage'
 import router from '@/router'
 import ModalComponent from '@/components/ModalComponent.vue'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
+import dayjs from 'dayjs'
 
 const isSaving = ref(false)
 const isLoggingIn = ref(false)
@@ -32,6 +33,7 @@ const errorMessage = ref('')
 
 const countries = ref([] as Country[])
 const countryStates = ref([] as State[])
+const currentDate = ref(new Date())
 
 const formData = reactive({
   location: SiteEnum.Dubai,
@@ -41,7 +43,7 @@ const formData = reactive({
   password: '',
   confirmPassword: '',
   gender: '',
-  birthdate: '',
+  birthdate: null as Date | null,
   country: 'AE',
   cityState: '',
   address1: '',
@@ -146,7 +148,7 @@ const submitForm = async () => {
     const input: RegisterUserInput = {
       address1: formData.address1 == '' ? '-' : formData.address1,
       address2: formData.address2,
-      birthdate: formData.birthdate,
+      birthdate: dayjs(formData.birthdate).format('YYYY-MM-DD'),
       city: formData.cityState,
       country: formData.country,
       email: formData.email,
@@ -416,13 +418,14 @@ async function login() {
     <div class="form-row">
       <div class="col-md-6 mb-3">
         <label for="dateOfBirthRegistration" class="input-label">Date of Birth *</label>
-        <input
-          class="form-control"
+        <VueDatePicker
           v-model="formData.birthdate"
-          type="date"
+          :enable-time-picker="false"
           placeholder="Date of Birth *"
-          id="dateOfBirthRegistration"
+          id="dateOfBirthMyProfile"
           required
+          :clearable="false"
+          :max-date="currentDate"
         />
         <small
           v-for="error in v$.birthdate.$errors"
