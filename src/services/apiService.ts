@@ -1018,7 +1018,7 @@ export class ApiService {
     } as ResetPasswordForCurrentUserInput
 
     const muration = gql`
-      mutation resetPasswordForCurrentUser($input: RequestPasswordLinkInput) {
+      mutation resetPasswordForCurrentUser($input: ResetPasswordForCurrentUserInput) {
         resetPasswordForCurrentUser(input: $input) {
           __typename
           ... on PasswordsDontMatchError {
@@ -1042,7 +1042,7 @@ export class ApiService {
         fetchPolicy: 'network-only'
       })
 
-      return result.data.requestPasswordLink as ResetPasswordForCurrentUserUnion
+      return result.data.resetPasswordForCurrentUser as ResetPasswordForCurrentUserUnion
     } catch (error) {
       return null
     }
