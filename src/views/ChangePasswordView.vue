@@ -91,7 +91,7 @@ const submitForm = async () => {
       <div class="form-row">
         <!-- current password -->
         <div class="col-md-6 mb-3">
-          <label for="currentPassword">Current Password *</label>
+          <label for="currentPassword" class="input-label">Current Password *</label>
           <input
             id="currentPassword"
             class="form-control"
@@ -114,7 +114,7 @@ const submitForm = async () => {
       <div class="form-row">
         <!-- new password -->
         <div class="col-md-6 mb-3">
-          <label for="newPassword">New Password *</label>
+          <label for="newPassword" class="input-label">New Password *</label>
           <input
             id="newPassword"
             class="form-control"
@@ -137,7 +137,7 @@ const submitForm = async () => {
 
       <div class="form-row">
         <div class="col-md-6 mb-3">
-          <label for="confirmNewPassword">Confirm New Password *</label>
+          <label for="confirmNewPassword" class="input-label">Confirm New Password *</label>
           <input
             id="confirmNewPassword"
             class="form-control"

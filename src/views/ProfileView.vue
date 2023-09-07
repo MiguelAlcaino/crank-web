@@ -235,7 +235,7 @@ function onChangeCountry() {
     <div class="form-row">
       <!-- firstName -->
       <div class="col-md-6 mb-3">
-        <label for="firstNameMyProfile">First Name *</label>
+        <label for="firstNameMyProfile" class="input-label">First Name *</label>
         <input
           id="firstNameMyProfile"
           class="form-control"
@@ -256,7 +256,7 @@ function onChangeCountry() {
       </div>
       <!-- lastName -->
       <div class="col-md-6 mb-3">
-        <label for="lastNameMyProfile">Last Name *</label>
+        <label for="lastNameMyProfile" class="input-label">Last Name *</label>
         <input
           id="lastNameMyProfile"
           class="form-control"
@@ -280,7 +280,7 @@ function onChangeCountry() {
     <!--gender-->
     <div class="form-row">
       <div class="col-md-6 mb-3">
-        <label for="genderMyProfile">Gender *</label>
+        <label for="genderMyProfile" class="input-label">Gender *</label>
         <select
           class="custom-select"
           v-model="formData.gender"
@@ -305,7 +305,7 @@ function onChangeCountry() {
     <!--leaderboardUsername-->
     <div class="form-row">
       <div class="col-md-6 mb-3">
-        <label for="leaderboardUsernameMyProfile">Leaderboard Nickname *</label>
+        <label for="leaderboardUsernameMyProfile" class="input-label">Leaderboard Nickname *</label>
         <input
           id="leaderboardUsernameMyProfile"
           class="form-control"
@@ -329,7 +329,7 @@ function onChangeCountry() {
     <!--birthdate-->
     <div class="form-row">
       <div class="col-md-6 mb-3">
-        <label for="dateOfBirthMyProfile">Date of Birth *</label>
+        <label for="dateOfBirthMyProfile" class="input-label">Date of Birth *</label>
         <input
           class="form-control"
           v-model="formData.birthdate"
@@ -352,7 +352,7 @@ function onChangeCountry() {
     <!-- weight -->
     <div class="form-row">
       <div class="col-md-6 mb-3">
-        <label for="weightMyProfile">Weight *</label>
+        <label for="weightMyProfile" class="input-label">Weight *</label>
         <input
           id="weightMyProfile"
           class="form-control"
@@ -378,7 +378,7 @@ function onChangeCountry() {
     <!--country-->
     <div class="form-row">
       <div class="col-md-6 mb-3">
-        <label for="countryMyProfile">Country *</label>
+        <label for="countryMyProfile" class="input-label">Country *</label>
         <select
           class="custom-select"
           v-model="formData.country"
@@ -401,7 +401,7 @@ function onChangeCountry() {
       </div>
       <!-- cityState -->
       <div class="col-md-6 mb-3">
-        <label for="cityStateMyProfile">City/State *</label>
+        <label for="cityStateMyProfile" class="input-label">City/State *</label>
         <select class="custom-select" v-model="formData.cityState" id="cityStateMyProfile" required>
           <option v-for="(item, index) in countryStates" :key="index" :value="item.code">
             {{ item.name }}
@@ -421,7 +421,7 @@ function onChangeCountry() {
     <div class="form-row">
       <!--address1-->
       <div class="col-md-6 mb-3">
-        <label for="address1MyProfile">Address Line 1</label>
+        <label for="address1MyProfile" class="input-label">Address Line 1</label>
         <input
           id="address1MyProfile"
           class="form-control"
@@ -441,7 +441,7 @@ function onChangeCountry() {
       </div>
       <!--address2-->
       <div class="col-md-6 mb-3">
-        <label for="address2MyProfile">Address Line 2</label>
+        <label for="address2MyProfile" class="input-label">Address Line 2</label>
         <input
           id="address2MyProfile"
           class="form-control"
@@ -464,7 +464,7 @@ function onChangeCountry() {
     <div class="form-row">
       <!--phone-->
       <div class="col-md-6 mb-3">
-        <label for="mobileNumberMyProfile">Mobile Number *</label>
+        <label for="mobileNumberMyProfile" class="input-label">Mobile Number *</label>
         <input
           id="mobileNumberMyProfile"
           class="form-control"
@@ -488,7 +488,9 @@ function onChangeCountry() {
     <div class="form-row">
       <!-- emergencyContactName -->
       <div class="col-md-6 mb-3">
-        <label for="emergencyContactNameMyProfile">Emergency Contact Name *</label>
+        <label for="emergencyContactNameMyProfile" class="input-label"
+          >Emergency Contact Name *</label
+        >
         <input
           id="emergencyContactNameMyProfile"
           class="form-control"
@@ -509,7 +511,9 @@ function onChangeCountry() {
       </div>
       <!--emergencyContactPhone-->
       <div class="col-md-6 mb-3">
-        <label for="emergencyContactPhoneMyProfile">Emergency Contact Number *</label>
+        <label for="emergencyContactPhoneMyProfile" class="input-label"
+          >Emergency Contact Number *</label
+        >
         <input
           id="emergencyContactPhoneMyProfile"
           class="form-control"
@@ -530,7 +534,9 @@ function onChangeCountry() {
       </div>
       <!-- emergencyContactRelationship -->
       <div class="col-md-6 mb-3">
-        <label for="emergencyContactRelationshipMyProfile">Emergency Contact Relationship *</label>
+        <label for="emergencyContactRelationshipMyProfile" class="input-label"
+          >Emergency Contact Relationship *</label
+        >
         <select
           class="custom-select"
           v-model="formData.emergencyContactRelationship"
@@ -553,8 +559,8 @@ function onChangeCountry() {
     </div>
 
     <!--submit button-->
-    <div class="form-row">
-      <div class="col-md-12 mb-3">
+    <div class="form-row justify-content-md-center">
+      <div class="col-md-2 mb-3">
         <button class="btn btn-primary" type="submit" :disabled="isSaving">
           Save Profile <span class="spinner-border spinner-border-sm" v-if="isSaving"></span>
         </button>
