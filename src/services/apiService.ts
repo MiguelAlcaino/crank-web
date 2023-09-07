@@ -22,6 +22,8 @@ import type {
   RegisterUserInput,
   RemoveCurrentUserFromWaitlistInput,
   RequestPasswordLinkInput,
+  ResetPasswordForCurrentUserInput,
+  ResetPasswordForCurrentUserUnion,
   ResetPasswordLinkResultUnion,
   SiteEnum,
   UpdateCurrentUserPasswordInput,
@@ -1001,6 +1003,46 @@ export class ApiService {
       })
 
       return result.data.requestPasswordLink as ResetPasswordLinkResultUnion
+    } catch (error) {
+      return null
+    }
+  }
+
+  async resetPasswordForCurrentUser(
+    password: string,
+    repeatedPassword: string
+  ): Promise<ResetPasswordForCurrentUserUnion | null> {
+    const input = {
+      password: password,
+      repeatedPassword: repeatedPassword
+    } as ResetPasswordForCurrentUserInput
+
+    const muration = gql`
+      mutation resetPasswordForCurrentUser($input: RequestPasswordLinkInput) {
+        resetPasswordForCurrentUser(input: $input) {
+          __typename
+          ... on PasswordsDontMatchError {
+            __typename
+            code
+          }
+          ... on ResetPasswordSuccess {
+            __typename
+            status
+          }
+        }
+      }
+    `
+
+    try {
+      const result = await this.authApiClient.mutate({
+        mutation: muration,
+        variables: {
+          input: input
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      return result.data.requestPasswordLink as ResetPasswordForCurrentUserUnion
     } catch (error) {
       return null
     }

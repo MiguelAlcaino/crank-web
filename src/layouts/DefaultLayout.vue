@@ -8,7 +8,12 @@
   </nav>
   <div class="container">
     <div class="columns">
-      <div class="column is-3" v-if="routeName !== 'login' && routeName !== 'forgot_password'">
+      <div
+        class="column is-3"
+        v-if="
+          routeName !== 'login' && routeName !== 'forgot_password' && routeName !== 'reset_password'
+        "
+      >
         <aside class="menu is-hidden-mobile">
           <nav
             class="navbar navbar-expand-lg navbar-light bg-light"
