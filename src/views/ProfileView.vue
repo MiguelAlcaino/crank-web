@@ -20,6 +20,7 @@ import type { ApiService } from '@/services/apiService'
 
 import ModalComponent from '@/components/ModalComponent.vue'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
+import dayjs from 'dayjs'
 
 const isSaving = ref(false)
 const successModalIsVisible = ref(false)
@@ -28,11 +29,13 @@ const errorModalIsVisible = ref(false)
 const countries = ref([] as Country[])
 const countryStates = ref([] as State[])
 
+const currentDate = ref(new Date())
+
 const formData = reactive({
   firstName: '',
   lastName: '',
   gender: '',
-  birthdate: '',
+  birthdate: null as Date | null,
   weight: 0,
   country: '',
   cityState: '',
@@ -115,7 +118,7 @@ async function getMyself(): Promise<void> {
     formData.firstName = user.firstName
     formData.lastName = user.lastName
     formData.gender = user.gender !== null ? user.gender!.toString() : GenderEnum.N.toString()
-    formData.birthdate = user.birthdate
+    formData.birthdate = dayjs(user.birthdate).toDate()
     formData.weight = user.weight !== null ? user.weight! : 0
     formData.country = user.country.code
     formData.cityState = user.state!.code
@@ -133,8 +136,6 @@ async function getMyself(): Promise<void> {
 const submitForm = async () => {
   const isValid = await v$.value.$validate()
 
-  console.log(formData)
-
   if (isValid) {
     let gender: GenderEnum = GenderEnum.N
 
@@ -144,7 +145,7 @@ const submitForm = async () => {
     const input: UserInput = {
       address1: formData.address1 == '' ? '-' : formData.address1,
       address2: formData.address2,
-      birthdate: formData.birthdate,
+      birthdate: dayjs(formData.birthdate).format('YYYY-MM-DD'),
       city: formData.cityState,
       country: formData.country,
       hideMetrics: formData.hideMetrics,
@@ -174,10 +175,6 @@ const submitForm = async () => {
     console.log(formData)
     console.error('error form')
   }
-}
-
-const onChangeFirstName = async () => {
-  formData.leaderboardUsername = formData.firstName
 }
 
 async function getCountries() {
@@ -330,13 +327,14 @@ function onChangeCountry() {
     <div class="form-row">
       <div class="col-md-6 mb-3">
         <label for="dateOfBirthMyProfile" class="input-label">Date of Birth *</label>
-        <input
-          class="form-control"
+        <VueDatePicker
           v-model="formData.birthdate"
-          type="date"
+          :enable-time-picker="false"
           placeholder="Date of Birth *"
           id="dateOfBirthMyProfile"
           required
+          :clearable="false"
+          :max-date="currentDate"
         />
         <small
           v-for="error in v$.birthdate.$errors"
@@ -570,11 +568,12 @@ function onChangeCountry() {
 
   <!-- Success Modal -->
   <ModalComponent
-    :title="'Profile update'"
+    title="Profile update"
     :message="'Your profile was successfully updated'"
     :closable="false"
     @on-ok="successModalIsVisible = false"
     v-if="successModalIsVisible"
+    :cancel-text="null"
   >
   </ModalComponent>
 
