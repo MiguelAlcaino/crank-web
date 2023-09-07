@@ -90,7 +90,7 @@ async function requestPasswordLink() {
     <div class="card">
       <div class="card-body mt-3">
         <div class="row form-inline">
-          <div class="col-md-12">
+          <div class="col-md-12 text-center">
             <h2>Forgot Password</h2>
           </div>
         </div>
