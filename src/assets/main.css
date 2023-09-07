@@ -116,7 +116,9 @@ html {
   font-family: 'BigJohn', sans-serif;
 }
 
-h1 {
+h1,
+h2,
+h5 {
   font-family: 'BigJohn', sans-serif;
 }
 

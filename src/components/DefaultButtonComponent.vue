@@ -1,10 +1,17 @@
 <script setup lang="ts">
-defineProps<{
+interface Props {
   text: string
-  isLoading: boolean
+  isLoading?: boolean
   disabled?: boolean
   type: 'button' | 'submit'
-}>()
+  block?: boolean
+}
+withDefaults(defineProps<Props>(), {
+  isLoading: false,
+  disabled: false,
+  type: 'button',
+  block: false
+})
 
 const emits = defineEmits<{
   (e: 'onClick'): void
@@ -16,6 +23,7 @@ const emits = defineEmits<{
     class="btn btn-primary"
     @click="emits('onClick')"
     :disabled="disabled || isLoading"
+    :class="{ 'btn-block': block }"
   >
     {{ text }}
     <span class="spinner-border spinner-border-sm" v-if="isLoading"></span>
