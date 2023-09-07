@@ -21,6 +21,8 @@ import type {
   Purchase,
   RegisterUserInput,
   RemoveCurrentUserFromWaitlistInput,
+  RequestPasswordLinkInput,
+  ResetPasswordLinkResultUnion,
   SiteEnum,
   UpdateCurrentUserPasswordInput,
   User,
@@ -966,6 +968,41 @@ export class ApiService {
       return result.data.editCurrentUserEnrollment.__typename
     } catch (error) {
       return 'UnknownError'
+    }
+  }
+
+  async requestPasswordLink(
+    site: SiteEnum,
+    email: string
+  ): Promise<ResetPasswordLinkResultUnion | null> {
+    const input = { email: email } as RequestPasswordLinkInput
+
+    const muration = gql`
+      mutation requestPasswordLink($site: SiteEnum!, $input: RequestPasswordLinkInput) {
+        requestPasswordLink(site: $site, input: $input) {
+          ... on TooManyResetPasswordLinkRequestsError {
+            availableAgainAt
+          }
+          ... on ResetPasswordLinkSentSuccessfully {
+            status
+          }
+        }
+      }
+    `
+
+    try {
+      const result = await this.authApiClient.mutate({
+        mutation: muration,
+        variables: {
+          site: site,
+          input: input
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      return result.data.requestPasswordLink as ResetPasswordLinkResultUnion
+    } catch (error) {
+      return null
     }
   }
 }
