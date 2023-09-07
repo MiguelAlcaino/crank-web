@@ -39,9 +39,10 @@ const apiService = inject<ApiService>('gqlApiService')!
 
 const sendingEmail = ref<boolean>(false)
 const validatingToken = ref<boolean>(false)
-const errorModalIsVisible = ref<boolean>(false)
+const errorValidateTokenModalIsVisible = ref<boolean>(false)
 const successModalIsVisible = ref<boolean>(false)
 const errorMessage = ref<string>('')
+const errorModalVisible = ref<boolean>(false)
 
 const checkPass = helpers.regex(/^(?=.*[a-zA-Z])(?=.*\d).+$/)
 
@@ -94,10 +95,10 @@ async function resetPasswordForCurrentUser() {
     if (response.__typename === 'ResetPasswordSuccess') {
       successModalIsVisible.value = true
     } else {
-      errorModalIsVisible.value = true
+      errorModalVisible.value = true
     }
   } else {
-    errorModalIsVisible.value = true
+    errorModalVisible.value = true
   }
 }
 
@@ -110,13 +111,13 @@ async function validateResetPasswordToken(resetPasswordToken: string) {
     // do nothing
   } else if (response === 'expired_reset_password_token') {
     errorMessage.value = ERROR_EXPIRED_RESET_PASSWORD_TOKEN
-    errorModalIsVisible.value = true
+    errorValidateTokenModalIsVisible.value = true
   } else if (response === 'invalid_token') {
     errorMessage.value = ERROR_INVALID_TOKEN
-    errorModalIsVisible.value = true
+    errorValidateTokenModalIsVisible.value = true
   } else {
     errorMessage.value = ERROR_UNKNOWN
-    errorModalIsVisible.value = true
+    errorValidateTokenModalIsVisible.value = true
   }
 }
 </script>
@@ -207,13 +208,24 @@ async function validateResetPasswordToken(resetPasswordToken: string) {
   >
   </ModalComponent>
 
-  <!-- Error Modal -->
+  <!-- Error Validate Token Modal -->
   <ModalComponent
     title="Error"
     :message="errorMessage"
     :closable="false"
-    v-if="errorModalIsVisible"
+    v-if="errorValidateTokenModalIsVisible"
     @on-ok="router.push({ name: 'login' })"
+    :cancel-text="null"
+  >
+  </ModalComponent>
+
+  <!-- Error Modal -->
+  <ModalComponent
+    title="Error"
+    :message="ERROR_UNKNOWN"
+    :closable="false"
+    v-if="errorModalVisible"
+    @on-ok="errorModalVisible = false"
     :cancel-text="null"
   >
   </ModalComponent>
