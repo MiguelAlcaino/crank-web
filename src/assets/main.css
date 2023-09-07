@@ -98,7 +98,6 @@ html {
   --dp-highlight-color: rgba(25, 118, 210, 0.1);
 }
 
-
 @font-face {
   font-family: 'BigJohn';
   src: url('fonts/big_john.otf') format('opentype');
@@ -127,11 +126,11 @@ h3 {
 }
 
 .input-label {
-  color: #FF7F61;
+  color: #ff7f61;
   font-family: 'Avenir', sans-serif;
 }
 
-input{
+input {
   font-family: 'Avenir', sans-serif;
 }
 
@@ -141,4 +140,8 @@ button {
 
 a {
   color: #000000;
+}
+
+.btn.btn-primary {
+  font-family: 'BigJohn', sans-serif;
 }

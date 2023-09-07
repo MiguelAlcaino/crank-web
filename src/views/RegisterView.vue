@@ -389,7 +389,9 @@ async function login() {
     <!--leaderboardUsername-->
     <div class="form-row">
       <div class="col-md-6 mb-3">
-        <label for="leaderboardUsernameRegistration" class="input-label">Leaderboard Nickname *</label>
+        <label for="leaderboardUsernameRegistration" class="input-label"
+          >Leaderboard Nickname *</label
+        >
         <input
           id="leaderboardUsernameRegistration"
           class="form-control"
@@ -553,7 +555,9 @@ async function login() {
     <div class="form-row">
       <!-- emergencyContactName -->
       <div class="col-md-6 mb-3">
-        <label for="emergencyContactNameRegistration" class="input-label">Emergency Contact Name *</label>
+        <label for="emergencyContactNameRegistration" class="input-label"
+          >Emergency Contact Name *</label
+        >
         <input
           id="emergencyContactNameRegistration"
           class="form-control"
@@ -574,7 +578,9 @@ async function login() {
       </div>
       <!--emergencyContactPhone-->
       <div class="col-md-6 mb-3">
-        <label for="emergencyContactPhoneRegistration" class="input-label">Emergency Contact Number *</label>
+        <label for="emergencyContactPhoneRegistration" class="input-label"
+          >Emergency Contact Number *</label
+        >
         <input
           id="emergencyContactPhoneRegistration"
           class="form-control"
