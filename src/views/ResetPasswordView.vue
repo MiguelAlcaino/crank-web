@@ -1,5 +1,5 @@
 <script lang="ts">
-interface ResetPasswordSuccess  {
+interface ResetPasswordSuccess {
   __typename: 'ResetPasswordSuccess'
   status: boolean
 }
@@ -13,22 +13,34 @@ interface PasswordsDontMatchError {
 <script setup lang="ts">
 import type { ApiService } from '@/services/apiService'
 import useVuelidate from '@vuelidate/core'
-import {  helpers, minLength, required, sameAs } from '@vuelidate/validators'
-import { computed, inject, reactive, ref } from 'vue'
+import { helpers, minLength, required, sameAs } from '@vuelidate/validators'
+import { computed, inject, onMounted, reactive, ref } from 'vue'
 import DefaultButtonComponent from '@/components/DefaultButtonComponent.vue'
 
-
 import ModalComponent from '@/components/ModalComponent.vue'
-import { ERROR_UNKNOWN } from '@/utils/errorMessages'
+import {
+  ERROR_EXPIRED_RESET_PASSWORD_TOKEN,
+  ERROR_INVALID_TOKEN,
+  ERROR_UNKNOWN
+} from '@/utils/errorMessages'
 import { SUCCESS_RESET_PASSWORD } from '@/utils/successMessages'
 import router from '@/router'
+import { useRoute } from 'vue-router'
+import { authService } from '@/services/authService'
+
+const route = useRoute()
+
+onMounted(() => {
+  const token = route.query.token as string
+  validateResetPasswordToken(token)
+})
 
 const apiService = inject<ApiService>('gqlApiService')!
 
 const sendingEmail = ref<boolean>(false)
+const validatingToken = ref<boolean>(false)
 const errorModalIsVisible = ref<boolean>(false)
 const successModalIsVisible = ref<boolean>(false)
-
 const errorMessage = ref<string>('')
 
 const checkPass = helpers.regex(/^(?=.*[a-zA-Z])(?=.*\d).+$/)
@@ -72,18 +84,36 @@ const submitForm = async () => {
 
 async function resetPasswordForCurrentUser() {
   sendingEmail.value = true
-  const response = (await apiService.resetPasswordForCurrentUser(formData.password, formData.confirmPassword)) as
-    | ResetPasswordSuccess
-    | PasswordsDontMatchError
-    | null
+  const response = (await apiService.resetPasswordForCurrentUser(
+    formData.password,
+    formData.confirmPassword
+  )) as ResetPasswordSuccess | PasswordsDontMatchError | null
   sendingEmail.value = false
 
   if (response) {
     if (response.__typename === 'ResetPasswordSuccess') {
-      successModalIsVisible.value = true 
+      successModalIsVisible.value = true
     } else {
-      errorMessage.value = ERROR_UNKNOWN
-      errorModalIsVisible.value = true    }
+      errorModalIsVisible.value = true
+    }
+  } else {
+    errorModalIsVisible.value = true
+  }
+}
+
+async function validateResetPasswordToken(resetPasswordToken: string) {
+  validatingToken.value = true
+  var response = await authService.validateResetPasswordToken(resetPasswordToken)
+  validatingToken.value = false
+
+  if (response === 'success') {
+    // do nothing
+  } else if (response === 'expired_reset_password_token') {
+    errorMessage.value = ERROR_EXPIRED_RESET_PASSWORD_TOKEN
+    errorModalIsVisible.value = true
+  } else if (response === 'invalid_token') {
+    errorMessage.value = ERROR_INVALID_TOKEN
+    errorModalIsVisible.value = true
   } else {
     errorMessage.value = ERROR_UNKNOWN
     errorModalIsVisible.value = true
@@ -171,7 +201,7 @@ async function resetPasswordForCurrentUser() {
     title="RESET PASSWORD"
     :message="SUCCESS_RESET_PASSWORD"
     :closable="false"
-    @on-ok="router.replace({ name: 'login' })"
+    @on-ok="router.replace({ name: 'calendar' })"
     :cancel-text="null"
     v-if="successModalIsVisible"
   >
@@ -183,7 +213,7 @@ async function resetPasswordForCurrentUser() {
     :message="errorMessage"
     :closable="false"
     v-if="errorModalIsVisible"
-    @on-ok="router.replace({ name: 'login' })"
+    @on-ok="router.push({ name: 'login' })"
     :cancel-text="null"
   >
   </ModalComponent>
