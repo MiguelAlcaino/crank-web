@@ -134,8 +134,7 @@ async function editCurrentUserEnrollment() {
   <div class="container">
     <div class="row">
       <div class="col-12 text-center">
-        <h4>{{ classInfo?.class.name }}</h4>
-        <p><span v-html="classInfo?.class.description"></span></p>
+        <h4>{{ classInfo?.class.name }}</h4>   
         <p><b>Instructor: </b> {{ classInfo?.class.instructorName }}</p>
         <p>
           <b>Date: </b>
