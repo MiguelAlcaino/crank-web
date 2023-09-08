@@ -8,6 +8,8 @@ import useVuelidate from '@vuelidate/core'
 import { SiteEnum } from '@/gql/graphql'
 
 import DefaultButtonComponent from '../components/DefaultButtonComponent.vue'
+import dayjs from 'dayjs'
+import { appStore } from '@/stores/appStorage'
 
 const displayLoginError = ref(false)
 const isSubmitting = ref(false)
@@ -43,14 +45,22 @@ async function login() {
     isSubmitting.value = true
     displayLoginError.value = false
 
+    setCalendarDates()
+
     try {
       await authService.login(formData.email, formData.password, selectedSite.value)
+
       await router.push({ name: 'calendar' })
     } catch (error) {
       displayLoginError.value = true
     }
     isSubmitting.value = false
   }
+}
+
+function setCalendarDates() {
+  const now = dayjs()
+  appStore().setCalendarDates(now.startOf('week').toDate(), now.endOf('week').toDate())
 }
 </script>
 

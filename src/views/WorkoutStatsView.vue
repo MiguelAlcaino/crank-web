@@ -75,7 +75,9 @@ async function getCurrentUserWorkoutStats() {
           <tr v-for="(item, index) in classStats" :key="index">
             <td>{{ item.className }}</td>
             <td class="text-center">{{ item.spotNumber }}</td>
-            <td class="text-center">{{ dayjs(new Date(item.startDateTime)).format('DD/MM/YYYY h:mm A') }}</td>
+            <td class="text-center">
+              {{ dayjs(new Date(item.startDateTime)).format('DD/MM/YYYY h:mm A') }}
+            </td>
             <td class="text-center">{{ item.duration }} mins.</td>
             <td class="text-center">{{ item.totalEnergy }}</td>
             <td class="text-center"></td>
