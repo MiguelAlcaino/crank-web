@@ -227,7 +227,6 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
     <div class="row">
       <div class="col-12 text-center">
         <h4>{{ classInfo?.class.name }}</h4>
-        <p><span v-html="classInfo?.class.description"></span></p>
         <p><b>Instructor: </b> {{ classInfo?.class.instructorName }}</p>
         <p>
           <b>Date: </b>

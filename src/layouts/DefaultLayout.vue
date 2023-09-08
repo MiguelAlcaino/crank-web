@@ -33,6 +33,11 @@
                 <li class="nav-item">
                   <RouterLink class="nav-link" :to="{ name: 'profile' }">Profile</RouterLink>
                 </li>
+                <li class="nav-item">
+                  <RouterLink class="nav-link" :to="{ name: 'workout_stats' }"
+                    >Workout Stats</RouterLink
+                  >
+                </li>
               </ul>
             </div>
           </nav>
