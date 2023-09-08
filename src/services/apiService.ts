@@ -113,7 +113,7 @@ export class ApiService {
     }
   }
 
-  async getCurrentUserWorkoutStats(site: SiteEnum): Promise<ClassStat | null> {
+  async getCurrentUserWorkoutStats(site: SiteEnum): Promise<ClassStat[] | null> {
     const CURRENT_USER_WORKOUT_STATS_QUERY = gql`
       query currentUserWorkoutStats($site: SiteEnum!) {
         currentUserWorkoutStats(site: $site) {
@@ -145,7 +145,7 @@ export class ApiService {
         }
       })
 
-      return queryResult.data.currentUserWorkoutStats as ClassStat
+      return queryResult.data.currentUserWorkoutStats as ClassStat[]
     } catch (error) {
       return null
     }
