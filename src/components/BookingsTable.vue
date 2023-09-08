@@ -94,7 +94,7 @@ function clickRemoveFromWaitlist(waitlistEntryId: string): void {
           <p v-if="enrollmentType === EnrollmentTypeEnum.Upcoming">YOU HAVE NO UPCOMING BOOKINGS</p>
           <p v-if="enrollmentType === EnrollmentTypeEnum.Waitlist">YOU HAVE NO WAITLIST BOOKINGS</p>
           <p v-if="enrollmentType === EnrollmentTypeEnum.Historical">
-            YOU HAVE NO HISTORICAL BOOKINGS
+            YOU HAVE NO OLD BOOKINGS
           </p>
         </td>
       </tr>
