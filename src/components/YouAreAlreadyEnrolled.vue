@@ -27,10 +27,7 @@ defineProps<{
   <div v-if="enrollmentInfo.enrollmentStatus === EnrollmentStatusEnum.Active">
     <p v-if="enrollmentInfo.spotInfo === null"><b>You are enrolled in this class already</b></p>
     <p v-else>
-      <b
-        >You are enrolled in this class already in the spot
-        {{ enrollmentInfo.spotInfo!.spotNumber }}</b
-      >
+      <b>YOU ARE BOOKED IN SPOT {{ enrollmentInfo.spotInfo!.spotNumber }}</b>
     </p>
   </div>
   <div v-else-if="enrollmentInfo.enrollmentStatus === EnrollmentStatusEnum.Waitlisted">
