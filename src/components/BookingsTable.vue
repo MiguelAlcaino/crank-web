@@ -90,6 +90,7 @@ function clickRemoveFromWaitlist(waitlistEntryId: string): void {
             "
             v-if="
               enrollmentType !== EnrollmentTypeEnum.Historical &&
+              enrollmentType !== EnrollmentTypeEnum.Waitlist &&
               dayjs(enrollment.class.start) > dayjs(siteDateTimeNow)
             "
           >
