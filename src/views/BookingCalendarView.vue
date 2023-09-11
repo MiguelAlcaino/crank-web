@@ -8,7 +8,7 @@ interface ColumnName {
 
 <script setup lang="ts">
 import { inject, onMounted, ref } from 'vue'
-import type { Class } from '@/gql/graphql'
+import { EnrollmentStatusEnum, type Class } from '@/gql/graphql'
 import { DayOfTheWeek } from '@/model/DayOfTheWeek'
 import { WeekCalendar } from '@/model/WeekCalendar'
 import dayjs from 'dayjs'
@@ -80,7 +80,7 @@ async function getClassesOfTheWeek(): Promise<void> {
 
     for (let index = 0; index < customCalendarClasses.enrollmentsUpcoming.length; index++) {
       const enrollment = customCalendarClasses.enrollmentsUpcoming[index]
-      if (enrollment?.class) {
+      if (enrollment?.class && enrollment.enrollmentInfo?.enrollmentStatus === EnrollmentStatusEnum.Active) {
         enrollmentClassIds.value.push(enrollment?.class.id)
       }
     }
