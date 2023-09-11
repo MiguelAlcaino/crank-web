@@ -60,7 +60,12 @@ function clickRemoveFromWaitlist(waitlistEntryId: string): void {
           {{ dayjs(new Date(enrollment.class.start)).format('YYYY-MM-DD h:mm a') }}
         </td>
         <td class="text-center align-middle">
-          {{ enrollment.enrollmentInfo.spotInfo?.spotNumber }}
+          {{
+            enrollment.enrollmentInfo.spotInfo?.spotNumber === null ||
+            enrollment.enrollmentInfo.spotInfo?.spotNumber === undefined
+              ? 'N/A'
+              : enrollment.enrollmentInfo.spotInfo?.spotNumber
+          }}
         </td>
         <td class="text-center align-middle">
           {{
@@ -100,7 +105,10 @@ function clickRemoveFromWaitlist(waitlistEntryId: string): void {
             class="btn btn-primary ml-1"
             @click="emits('changeSpot', enrollment.class.id)"
             :disabled="
-              isLoading || enrollment.enrollmentInfo.enrollmentStatus.toUpperCase() !== 'ACTIVE'
+              isLoading ||
+              enrollment.enrollmentInfo.enrollmentStatus.toUpperCase() !== 'ACTIVE' ||
+              enrollment.enrollmentInfo.spotInfo?.spotNumber === null ||
+              enrollment.enrollmentInfo.spotInfo?.spotNumber === undefined
             "
             v-if="
               enrollmentType !== EnrollmentTypeEnum.Historical &&
