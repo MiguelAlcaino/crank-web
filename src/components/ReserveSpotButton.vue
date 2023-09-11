@@ -22,7 +22,7 @@ function onClickBookClassBtn(): void {
         :class="{ disabled: !enrollmentEnabled }"
       >
         <i class="fa fa-bullseye" aria-hidden="true"></i>
-        <div>Sign up for this class</div>
+        <div>BOOK THIS CLASS</div>
       </a>
     </div>
   </div>
