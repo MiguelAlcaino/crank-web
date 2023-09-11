@@ -80,7 +80,10 @@ async function getClassesOfTheWeek(): Promise<void> {
 
     for (let index = 0; index < customCalendarClasses.enrollmentsUpcoming.length; index++) {
       const enrollment = customCalendarClasses.enrollmentsUpcoming[index]
-      if (enrollment?.class && enrollment.enrollmentInfo?.enrollmentStatus === EnrollmentStatusEnum.Active) {
+      if (
+        enrollment?.class &&
+        enrollment.enrollmentInfo?.enrollmentStatus === EnrollmentStatusEnum.Active
+      ) {
         enrollmentClassIds.value.push(enrollment?.class.id)
       }
     }
