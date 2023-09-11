@@ -55,7 +55,13 @@ function clickRemoveFromWaitlist(waitlistEntryId: string): void {
             )
           }}
         </td>
-        <td class="text-center">{{ enrollment.enrollmentInfo.enrollmentStatus }}</td>
+        <td class="text-center">
+          {{
+            enrollment.enrollmentInfo.enrollmentStatus === 'lateCancelled'
+              ? 'LATE CANCELLED'
+              : enrollment.enrollmentInfo.enrollmentStatus.toUpperCase()
+          }}
+        </td>
         <td>
           <CancelEnrollmentButton
             v-if="enrollmentType === EnrollmentTypeEnum.Upcoming"
@@ -79,7 +85,9 @@ function clickRemoveFromWaitlist(waitlistEntryId: string): void {
             type="button"
             class="btn btn-primary ml-1"
             @click="emits('changeSpot', enrollment.class.id)"
-            :disabled="isLoading"
+            :disabled="
+              isLoading || enrollment.enrollmentInfo.enrollmentStatus.toUpperCase() !== 'ACTIVE'
+            "
             v-if="
               enrollmentType !== EnrollmentTypeEnum.Historical &&
               dayjs(enrollment.class.start) > dayjs(siteDateTimeNow)
