@@ -31,13 +31,15 @@ import { useAuthenticationStore } from '@/stores/authToken'
 import { Config } from '@/model/Config'
 
 import SimpleTypeahead from 'vue3-simple-typeahead'
+import { appStore } from './stores/appStorage'
+import { SiteEnum } from './gql/graphql'
 
 startApp()
 
 async function startApp() {
   const selection = <HTMLElement | null>document.querySelector('#app-parameters')
-  let view = selection?.dataset.view as string
-  let site = selection?.dataset.site as string
+  const view = selection?.dataset.view as string
+  const site = selection?.dataset.site as string
   const app = createApp({
     setup() {
       provide(
@@ -65,6 +67,41 @@ async function startApp() {
     useAuthenticationStore().deleteSession()
   }
 
+  if (site !== null && site !== undefined && site !== appStore().site.toString()) {
+    if (authService.isLoggedId()) {
+      const apiService = new ApiService(
+        newAuthenticatedApolloClient(Config.GRAPHQL_SERVICE_URL),
+        newAnonymousClient(Config.GRAPHQL_SERVICE_URL)
+      )
+
+      const currentUserExistsOnSite = (await apiService.currentUserDoesExistInSite(site)) as boolean
+
+      if (currentUserExistsOnSite !== null && currentUserExistsOnSite === true) {
+        if (site === SiteEnum.Dubai.toString()) {
+          appStore().setSite(SiteEnum.Dubai)
+        } else if (site === SiteEnum.AbuDhabi.toString()) {
+          appStore().setSite(SiteEnum.AbuDhabi)
+        }
+      } else {
+        const response = await apiService.createCurrentUserInSite(appStore().site, site)
+
+        if (
+          response !== null &&
+          (response.__typename === 'CreateCurrentUserInSiteSuccess' ||
+            response.__typename === 'UserAlreadyExistsError')
+        ) {
+          if (site === SiteEnum.Dubai.toString()) {
+            appStore().setSite(SiteEnum.Dubai)
+          } else if (site === SiteEnum.AbuDhabi.toString()) {
+            appStore().setSite(SiteEnum.AbuDhabi)
+          }
+        } else {
+          authService.logout()
+        }
+      }
+    }
+  }
+
   /**
    * 1. Check if user is logged in
    * 1.2 If not logged in, nothing
@@ -75,9 +112,9 @@ async function startApp() {
    *  1.3.2 If user exists, change the site in the app state (storage)
    */
 
-  if(view == 'calendar') {
+  if (view == 'calendar') {
     await router.push('/calendar')
-  }else if(view == 'profile'){
+  } else if (view == 'profile') {
     await router.push('/profile')
   }
 
