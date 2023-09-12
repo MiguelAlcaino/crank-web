@@ -311,10 +311,15 @@ export class ApiService {
           name
           description
           instructorName
+          isSubstitute
           start
           startWithNoTimeZone
           duration
           waitListAvailable
+          bookingWindow {
+            startDateTime
+            endDateTime
+          }
         }
       }
     `
@@ -327,7 +332,7 @@ export class ApiService {
         endDate: stgEndDate
       }
 
-      const queryResult = await this.authApiClient.query({
+      const queryResult = await this.anonymousApiClient.query({
         query: CALENDAR_CLASSES_QUERY,
         variables: {
           site: site,

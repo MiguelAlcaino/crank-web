@@ -17,6 +17,7 @@ import CalendarCard from '@/components/CalendarCard.vue'
 import IconCalendarCard from '@/components/icons/IconCalendarCard.vue'
 import { appStore } from '@/stores/appStorage'
 import type { ApiService } from '@/services/apiService'
+import { authService } from '@/services/authService'
 
 const columnsNames = ref<ColumnName[]>([])
 const calendarDays = ref<WeekCalendar[]>([])
@@ -33,6 +34,14 @@ dayjs.Ls.en.weekStart = 1
 onMounted(() => {
   getClassesOfTheWeek()
 })
+
+function getClassesOfTheWeek() {
+  if (authService.isLoggedId()) {
+    getCustomCalendarClasses()
+  } else {
+    getCalendarClasses()
+  }
+}
 
 function goToNextWeek(): void {
   const date = dayjs(appStore().calendarStartDate)
@@ -60,7 +69,7 @@ function goToPrevWeek(): void {
   getClassesOfTheWeek()
 }
 
-async function getClassesOfTheWeek(): Promise<void> {
+async function getCustomCalendarClasses(): Promise<void> {
   calendarIsLoading.value = true
   hasPreviousWeek.value = false
   daysOfTheWeek.value = []
@@ -117,6 +126,67 @@ async function getClassesOfTheWeek(): Promise<void> {
       )
 
       daysOfTheWeek.value.push(new DayOfTheWeek(selected, disabled, date.toDate(), calendarClasses))
+
+      if (date.isSame(_actualDate, 'day')) hasPreviousWeek.value = false
+    }
+
+    getPivot()
+
+    calendarIsLoading.value = false
+  }
+}
+
+async function getCalendarClasses(): Promise<void> {
+  calendarIsLoading.value = true
+  hasPreviousWeek.value = false
+  daysOfTheWeek.value = []
+  enrollmentClassIds.value = []
+
+  const firstDayWeek = appStore().calendarStartDate
+  const lastDayWeek = appStore().calendarEndDate
+
+  const calendarClasses = await apiService.getCalendarClasses(
+    appStore().site,
+    firstDayWeek,
+    lastDayWeek
+  )
+
+  const siteSettings = await apiService.getSiteSettings(appStore().site)
+
+  if (calendarClasses != null) {
+    siteDateTimeNow.value = siteSettings?.siteDateTimeNow ?? Date()
+
+    columnsNames.value = []
+
+    let dates: Date[] = []
+    let day = dayjs(firstDayWeek)
+    for (let i = 0; i < 7; i++) {
+      dates.push(day.toDate())
+
+      columnsNames.value.push({
+        dayName: day.format('ddd').toUpperCase(),
+        dateNumber: day.format('DD.MM').toUpperCase(),
+        isCurrentDate: day.isSame(Date(), 'day')
+      })
+
+      day = day.add(1, 'day')
+    }
+
+    const _actualDate = new Date()
+
+    for (let i = 0; i < dates.length; i++) {
+      let date = dayjs(dates[i])
+
+      const disabled: boolean = date.isBefore(_actualDate, 'day')
+      const selected: boolean = date.isSame(_actualDate, 'day')
+
+      const calendarClassesTemp: Class[] = calendarClasses.filter((x) =>
+        dayjs(new Date(x.start)).isSame(date, 'day')
+      )
+
+      daysOfTheWeek.value.push(
+        new DayOfTheWeek(selected, disabled, date.toDate(), calendarClassesTemp)
+      )
 
       if (date.isSame(_actualDate, 'day')) hasPreviousWeek.value = false
     }
