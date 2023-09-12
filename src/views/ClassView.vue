@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router'
 
 import dayjs from 'dayjs'
 
-import type { ClassInfo, EnrollmentInfo } from '@/gql/graphql'
+import { EnrollmentStatusEnum, type ClassInfo, type EnrollmentInfo } from '@/gql/graphql'
 
 import ModalComponent from '@/components/ModalComponent.vue'
 
@@ -88,7 +88,11 @@ async function getClassInfo() {
 
   if (_classInfo) {
     enrollmentInfo.value = await apiService.getCurrentUserEnrollmentInClass(classId)
-    if (enrollmentInfo.value === null) enrollmentEnabled.value = true
+    if (enrollmentInfo.value === null || enrollmentInfo.value === undefined) {
+      enrollmentEnabled.value = true
+    } else if (enrollmentInfo.value.enrollmentStatus === EnrollmentStatusEnum.LateCancelled) {
+      enrollmentEnabled.value = true
+    }
   }
 
   classInfo.value = _classInfo
@@ -227,7 +231,6 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
     <div class="row">
       <div class="col-12 text-center">
         <h4>{{ classInfo?.class.name }}</h4>
-        <p><span v-html="classInfo?.class.description"></span></p>
         <p><b>Instructor: </b> {{ classInfo?.class.instructorName }}</p>
         <p>
           <b>Date: </b>
@@ -262,17 +265,19 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
               (enrollmentInfo === null || enrollmentInfo === undefined)
             "
             @clickBookWaitList="clickBookWaitList"
-            :enrollmentEnabled="enrollmentInfo === null"
+            :enrollmentEnabled="enrollmentEnabled"
           >
           </WaitlistButton>
           <SpotMatrix
             v-if="
               classInfo !== null &&
               classInfo.roomLayout?.matrix !== null &&
-              (!classInfo.class.waitListAvailable || enrollmentInfo !== null)
+              (!classInfo.class.waitListAvailable || enrollmentInfo !== null) &&
+              enrollmentInfo?.enrollmentStatus !== 'waitlisted'
             "
             :matrix="classInfo.roomLayout?.matrix"
             @click-spot="confirmBookSpot"
+            :spot-number-booked-by-current-user="enrollmentInfo?.spotInfo?.spotNumber"
           ></SpotMatrix>
           <ReserveSpotButton
             v-if="
@@ -281,7 +286,7 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
               !classInfo.class.waitListAvailable
             "
             @click-book-class="confirmBookClass"
-            :enrollmentEnabled="enrollmentInfo === null"
+            :enrollmentEnabled="enrollmentEnabled"
           >
           </ReserveSpotButton>
         </div>

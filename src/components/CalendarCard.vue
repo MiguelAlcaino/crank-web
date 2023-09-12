@@ -19,15 +19,23 @@ import router from '@/router'
 const props = defineProps<{
   classInfo?: ClassInfo
   isEnrolled?: boolean
+  disabled?: boolean
 }>()
 
 async function selectClass() {
+  if (props.disabled) return
+
   await router.push('/class/' + props.classInfo!.id)
 }
 </script>
 
 <template>
-  <div v-if="classInfo !== undefined" class="classCard" v-on:click="selectClass()">
+  <div
+    v-if="classInfo !== undefined"
+    :class="[disabled ? 'disabledCard' : 'classCard']"
+    class="p-1"
+    v-on:click="selectClass()"
+  >
     <Popper :hover="true" :arrow="true" class="light-popover">
       <div class="row">
         <div class="col-8">
@@ -64,6 +72,10 @@ async function selectClass() {
 </template>
 
 <style scoped>
+.disabledCard {
+  background-color: #f5f5f5 !important;
+  cursor: not-allowed;
+}
 .classCard {
   cursor: pointer;
   min-height: 100px;

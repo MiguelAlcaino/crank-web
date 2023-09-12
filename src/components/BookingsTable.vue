@@ -4,6 +4,9 @@ import dayjs from 'dayjs'
 import { type Enrollment, EnrollmentTypeEnum } from '@/gql/graphql'
 import CancelEnrollmentButton from '@/components/CancelEnrollmentButton.vue'
 import RemoveFromWaitlistButton from '@/components/RemoveFromWaitlistButton.vue'
+import ClassIcon from '@/components/ClassIcon.vue'
+// import shape_icon from "./assets/icons/shape_icon.png"
+// import stretch_icon from "assets/icons/stretch_icon.png"
 
 defineProps<{
   enrollments: Enrollment[]
@@ -31,8 +34,8 @@ function clickRemoveFromWaitlist(waitlistEntryId: string): void {
   <table class="table table-sm">
     <thead>
       <tr class="text-center">
-        <th>INSTRUCTOR</th>
         <th>DESCRIPTION</th>
+        <th>INSTRUCTOR</th>
         <th>DATE</th>
         <th>SPOT</th>
         <th>RESERVATION DATE</th>
@@ -41,24 +44,55 @@ function clickRemoveFromWaitlist(waitlistEntryId: string): void {
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(enrollment, index) in enrollments" :key="index">
-        <td>{{ enrollment.class.instructorName }}</td>
-        <td>{{ enrollment.class.name }}</td>
-        <td class="text-center">
+      <tr
+        v-for="(enrollment, index) in enrollments"
+        :key="index"
+        :class="
+          enrollment.enrollmentInfo.enrollmentStatus === 'lateCancelled' ? 'table-danger' : ''
+        "
+      >
+        <td class="align-middle">
+          <div class="row">
+            <div class="col" style="text-align: right">
+              <ClassIcon :class-name="enrollment.class.name"></ClassIcon>
+            </div>
+            <div class="col align-middle" style="text-align: left; padding-top: 4px">
+              {{ enrollment.class.name.toUpperCase() }}
+            </div>
+          </div>
+        </td>
+        <td class="align-middle">{{ enrollment.class.instructorName }}</td>
+        <td class="text-center align-middle">
           {{ dayjs(new Date(enrollment.class.start)).format('YYYY-MM-DD h:mm a') }}
         </td>
-        <td class="text-center">{{ enrollment.enrollmentInfo.spotInfo?.spotNumber }}</td>
-        <td class="text-center">
+        <td class="text-center align-middle">
+          {{
+            enrollment.enrollmentInfo.spotInfo?.spotNumber === null ||
+            enrollment.enrollmentInfo.spotInfo?.spotNumber === undefined
+              ? 'N/A'
+              : enrollment.enrollmentInfo.spotInfo?.spotNumber
+          }}
+        </td>
+        <td class="text-center align-middle">
           {{
             dayjs(new Date(enrollment.enrollmentInfo.enrollmentDateTime)).format(
               'YYYY-MM-DD h:mm a'
             )
           }}
         </td>
-        <td class="text-center">{{ enrollment.enrollmentInfo.enrollmentStatus }}</td>
+        <td class="text-center align-middle">
+          {{
+            enrollment.enrollmentInfo.enrollmentStatus === 'lateCancelled'
+              ? 'LATE CANCELLED'
+              : enrollment.enrollmentInfo.enrollmentStatus.toUpperCase()
+          }}
+        </td>
         <td>
           <CancelEnrollmentButton
-            v-if="enrollmentType === EnrollmentTypeEnum.Upcoming"
+            v-if="
+              enrollmentType === EnrollmentTypeEnum.Upcoming &&
+              enrollment.enrollmentInfo.enrollmentStatus === 'active'
+            "
             :disabled="isLoading"
             :siteDateTimeNow="siteDateTimeNow"
             :enrollmentStatus="enrollment.enrollmentInfo.enrollmentStatus"
@@ -79,10 +113,18 @@ function clickRemoveFromWaitlist(waitlistEntryId: string): void {
             type="button"
             class="btn btn-primary ml-1"
             @click="emits('changeSpot', enrollment.class.id)"
-            :disabled="isLoading"
+            :disabled="
+              isLoading ||
+              enrollment.enrollmentInfo.enrollmentStatus.toUpperCase() !== 'ACTIVE' ||
+              enrollment.enrollmentInfo.spotInfo?.spotNumber === null ||
+              enrollment.enrollmentInfo.spotInfo?.spotNumber === undefined
+            "
             v-if="
               enrollmentType !== EnrollmentTypeEnum.Historical &&
-              dayjs(enrollment.class.start) > dayjs(siteDateTimeNow)
+              enrollmentType !== EnrollmentTypeEnum.Waitlist &&
+              dayjs(enrollment.class.start) > dayjs(siteDateTimeNow) &&
+              enrollment.enrollmentInfo.spotInfo?.spotNumber !== null &&
+              enrollment.enrollmentInfo.spotInfo?.spotNumber !== undefined
             "
           >
             CHANGE SPOT
@@ -93,9 +135,7 @@ function clickRemoveFromWaitlist(waitlistEntryId: string): void {
         <td colspan="7">
           <p v-if="enrollmentType === EnrollmentTypeEnum.Upcoming">YOU HAVE NO UPCOMING BOOKINGS</p>
           <p v-if="enrollmentType === EnrollmentTypeEnum.Waitlist">YOU HAVE NO WAITLIST BOOKINGS</p>
-          <p v-if="enrollmentType === EnrollmentTypeEnum.Historical">
-            YOU HAVE NO HISTORICAL BOOKINGS
-          </p>
+          <p v-if="enrollmentType === EnrollmentTypeEnum.Historical">YOU HAVE NO OLD BOOKINGS</p>
         </td>
       </tr>
       <tr v-if="isLoading">

@@ -25,15 +25,20 @@ defineProps<{
 
 <template>
   <div v-if="enrollmentInfo.enrollmentStatus === EnrollmentStatusEnum.Active">
-    <b v-if="enrollmentInfo.spotInfo === null">You are enrolled in this class already</b>
-    <b v-else
-      >You are enrolled in this class already in the spot
-      {{ enrollmentInfo.spotInfo!.spotNumber }}</b
-    >
+    <p v-if="enrollmentInfo.spotInfo === null">
+      <b>YOU ARE ALREADY BOOKED IN THIS CLASS</b>
+    </p>
+    <p v-else>
+      <b>YOU ARE BOOKED IN SPOT {{ enrollmentInfo.spotInfo!.spotNumber }}</b>
+    </p>
   </div>
   <div v-else-if="enrollmentInfo.enrollmentStatus === EnrollmentStatusEnum.Waitlisted">
-    <b>You are already on the waiting list</b>
+    <p><b>You are already on the waiting list</b></p>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+p {
+  font-family: 'BigJohn', sans-serif;
+}
+</style>

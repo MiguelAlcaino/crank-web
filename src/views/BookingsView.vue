@@ -242,7 +242,7 @@ function goToChangeSpot(classId: string) {
       >
         <option :value="EnrollmentTypeEnum.Upcoming">UPCOMING</option>
         <option :value="EnrollmentTypeEnum.Waitlist">WAITLIST</option>
-        <option :value="EnrollmentTypeEnum.Historical">HISTORICAL</option>
+        <option :value="EnrollmentTypeEnum.Historical">OLD</option>
       </select>
       <br />
       <br />

@@ -8,7 +8,7 @@ interface ColumnName {
 
 <script setup lang="ts">
 import { inject, onMounted, ref } from 'vue'
-import type { Class } from '@/gql/graphql'
+import { EnrollmentStatusEnum, type Class } from '@/gql/graphql'
 import { DayOfTheWeek } from '@/model/DayOfTheWeek'
 import { WeekCalendar } from '@/model/WeekCalendar'
 import dayjs from 'dayjs'
@@ -80,7 +80,10 @@ async function getClassesOfTheWeek(): Promise<void> {
 
     for (let index = 0; index < customCalendarClasses.enrollmentsUpcoming.length; index++) {
       const enrollment = customCalendarClasses.enrollmentsUpcoming[index]
-      if (enrollment?.class) {
+      if (
+        enrollment?.class &&
+        enrollment.enrollmentInfo?.enrollmentStatus === EnrollmentStatusEnum.Active
+      ) {
         enrollmentClassIds.value.push(enrollment?.class.id)
       }
     }
@@ -233,6 +236,7 @@ function getPivot() {
                   :isEnrolled="
                     colRow.MON != null && enrollmentClassIds.indexOf(colRow.MON?.id) !== -1
                   "
+                  :disabled="dayjs(colRow.MON?.startWithNoTimeZone).isBefore(siteDateTimeNow)"
                 ></CalendarCard>
               </td>
               <td>
@@ -241,6 +245,7 @@ function getPivot() {
                   :isEnrolled="
                     colRow.TUE != null && enrollmentClassIds.indexOf(colRow.TUE?.id) !== -1
                   "
+                  :disabled="dayjs(colRow.TUE?.startWithNoTimeZone).isBefore(siteDateTimeNow)"
                 ></CalendarCard>
               </td>
               <td>
@@ -249,6 +254,7 @@ function getPivot() {
                   :isEnrolled="
                     colRow.WED != null && enrollmentClassIds.indexOf(colRow.WED?.id) !== -1
                   "
+                  :disabled="dayjs(colRow.WED?.startWithNoTimeZone).isBefore(siteDateTimeNow)"
                 ></CalendarCard>
               </td>
               <td>
@@ -257,6 +263,7 @@ function getPivot() {
                   :isEnrolled="
                     colRow.THU != null && enrollmentClassIds.indexOf(colRow.THU?.id) !== -1
                   "
+                  :disabled="dayjs(colRow.THU?.startWithNoTimeZone).isBefore(siteDateTimeNow)"
                   >></CalendarCard
                 >
               </td>
@@ -266,6 +273,7 @@ function getPivot() {
                   :isEnrolled="
                     colRow.FRI != null && enrollmentClassIds.indexOf(colRow.FRI?.id) !== -1
                   "
+                  :disabled="dayjs(colRow.FRI?.startWithNoTimeZone).isBefore(siteDateTimeNow)"
                 ></CalendarCard>
               </td>
               <td>
@@ -274,6 +282,7 @@ function getPivot() {
                   :isEnrolled="
                     colRow.SAT != null && enrollmentClassIds.indexOf(colRow.SAT?.id) !== -1
                   "
+                  :disabled="dayjs(colRow.SAT?.startWithNoTimeZone).isBefore(siteDateTimeNow)"
                 ></CalendarCard>
               </td>
               <td>
@@ -282,6 +291,7 @@ function getPivot() {
                   :isEnrolled="
                     colRow.SUN != null && enrollmentClassIds.indexOf(colRow.SUN?.id) !== -1
                   "
+                  :disabled="dayjs(colRow.SUN?.startWithNoTimeZone).isBefore(siteDateTimeNow)"
                 ></CalendarCard>
               </td>
             </tr>
