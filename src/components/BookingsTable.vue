@@ -44,7 +44,13 @@ function clickRemoveFromWaitlist(waitlistEntryId: string): void {
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(enrollment, index) in enrollments" :key="index">
+      <tr
+        v-for="(enrollment, index) in enrollments"
+        :key="index"
+        :class="
+          enrollment.enrollmentInfo.enrollmentStatus === 'lateCancelled' ? 'table-danger' : ''
+        "
+      >
         <td class="align-middle">
           <div class="row">
             <div class="col" style="text-align: right">
