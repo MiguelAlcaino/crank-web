@@ -272,11 +272,12 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
             v-if="
               classInfo !== null &&
               classInfo.roomLayout?.matrix !== null &&
-              (!classInfo.class.waitListAvailable || enrollmentInfo !== null)
-              && enrollmentInfo?.enrollmentStatus !== 'waitlisted'
+              (!classInfo.class.waitListAvailable || enrollmentInfo !== null) &&
+              enrollmentInfo?.enrollmentStatus !== 'waitlisted'
             "
             :matrix="classInfo.roomLayout?.matrix"
             @click-spot="confirmBookSpot"
+            :spot-number-booked-by-current-user="enrollmentInfo?.spotInfo?.spotNumber"
           ></SpotMatrix>
           <ReserveSpotButton
             v-if="

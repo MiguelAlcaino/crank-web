@@ -64,6 +64,7 @@ interface Props {
   showUserInSpots?: boolean
   selectedSpotNumber?: number | null
   enrollments?: EnrollmentInfo[] | null
+  spotNumberBookedByCurrentUser?: number | null
 }
 
 const BOOKABLE_SPOT_KEY = 'BookableSpot'
@@ -207,6 +208,9 @@ function onClickSpotAdmin(spotNumber: number) {
               v-else-if="!showUserInSpots && spot.positionType === BOOKABLE_SPOT_KEY"
               :spotInfo="spot.spotInfo"
               @click-spot="onClickSpotBtn"
+              :is-booked-by-current-user="
+                props.spotNumberBookedByCurrentUser === spot?.spotInfo?.spotNumber
+              "
             />
             <icon-position-not-bookable
               v-else-if="spot.positionType === ICON_POSITION_KEY"
