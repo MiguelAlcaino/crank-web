@@ -33,6 +33,7 @@ async function selectClass() {
   <div
     v-if="classInfo !== undefined"
     :class="[disabled ? 'disabledCard' : 'classCard']"
+    class="p-1"
     v-on:click="selectClass()"
   >
     <Popper :hover="true" :arrow="true" class="light-popover">
