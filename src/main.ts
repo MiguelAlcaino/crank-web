@@ -102,16 +102,6 @@ async function startApp() {
     }
   }
 
-  /**
-   * 1. Check if user is logged in
-   * 1.2 If not logged in, nothing
-   * 1.3 If logged in, check is user exists with currentUser.doesExistInSite(<site>): bool
-   *  1.3.1 If user does not exist, use mutation createCurrentUserInSite(fromSite: <Site from storage>, toSite: <site>)
-   *    1.3.1.1 if success, change the site in the app state (storage)
-   *    1.3.1.2 If there's an error, logout (this should not evet happen)
-   *  1.3.2 If user exists, change the site in the app state (storage)
-   */
-
   if (view == 'calendar') {
     await router.push('/calendar')
   } else if (view == 'profile') {
