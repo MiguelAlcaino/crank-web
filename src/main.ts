@@ -35,6 +35,9 @@ import SimpleTypeahead from 'vue3-simple-typeahead'
 startApp()
 
 async function startApp() {
+  const selection = <HTMLElement | null>document.querySelector('#app-parameters')
+  let view = selection?.dataset.view as string
+  let site = selection?.dataset.site as string
   const app = createApp({
     setup() {
       provide(
@@ -60,6 +63,22 @@ async function startApp() {
   } catch (e) {
     // In case the refresh token is invalid
     useAuthenticationStore().deleteSession()
+  }
+
+  /**
+   * 1. Check if user is logged in
+   * 1.2 If not logged in, nothing
+   * 1.3 If logged in, check is user exists with currentUser.doesExistInSite(<site>): bool
+   *  1.3.1 If user does not exist, use mutation createCurrentUserInSite(fromSite: <Site from storage>, toSite: <site>)
+   *    1.3.1.1 if success, change the site in the app state (storage)
+   *    1.3.1.2 If there's an error, logout (this should not evet happen)
+   *  1.3.2 If user exists, change the site in the app state (storage)
+   */
+
+  if(view == 'calendar') {
+    await router.push('/calendar')
+  }else if(view == 'profile'){
+    await router.push('/profile')
   }
 
   app.mount('#app')
