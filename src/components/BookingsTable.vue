@@ -83,7 +83,10 @@ function clickRemoveFromWaitlist(waitlistEntryId: string): void {
         </td>
         <td>
           <CancelEnrollmentButton
-            v-if="enrollmentType === EnrollmentTypeEnum.Upcoming"
+            v-if="
+              enrollmentType === EnrollmentTypeEnum.Upcoming &&
+              enrollment.enrollmentInfo.enrollmentStatus === 'active'
+            "
             :disabled="isLoading"
             :siteDateTimeNow="siteDateTimeNow"
             :enrollmentStatus="enrollment.enrollmentInfo.enrollmentStatus"
@@ -113,7 +116,9 @@ function clickRemoveFromWaitlist(waitlistEntryId: string): void {
             v-if="
               enrollmentType !== EnrollmentTypeEnum.Historical &&
               enrollmentType !== EnrollmentTypeEnum.Waitlist &&
-              dayjs(enrollment.class.start) > dayjs(siteDateTimeNow)
+              dayjs(enrollment.class.start) > dayjs(siteDateTimeNow) &&
+              enrollment.enrollmentInfo.spotInfo?.spotNumber !== null &&
+              enrollment.enrollmentInfo.spotInfo?.spotNumber !== undefined
             "
           >
             CHANGE SPOT
