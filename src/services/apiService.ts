@@ -8,6 +8,7 @@ import type {
   ClassInfo,
   ClassStat,
   Country,
+  CreateCurrentUserInSiteUnion,
   CurrentUserEnrollmentsParams,
   DisableEnableSpotInput,
   DisableEnableSpotResult,
@@ -1048,6 +1049,64 @@ export class ApiService {
       })
 
       return result.data.resetPasswordForCurrentUser as ResetPasswordForCurrentUserUnion
+    } catch (error) {
+      return null
+    }
+  }
+
+  async currentUserDoesExistInSite(site: string): Promise<boolean> {
+    const query = gql`
+      query currentUserDoesExistInSite($site: SiteEnum!) {
+        currentUser {
+          doesExistInSite(site: $site)
+        }
+      }
+    `
+    try {
+      const queryResult = await this.authApiClient.query({
+        query: query,
+        variables: {
+          site: site
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      return queryResult.data.currentUser.doesExistInSite as boolean
+    } catch (error) {
+      return false
+    }
+  }
+
+  async createCurrentUserInSite(
+    fromSite: string,
+    toSite: string
+  ): Promise<CreateCurrentUserInSiteUnion | null> {
+    const muration = gql`
+      mutation createCurrentUserInSite($fromSite: SiteEnum!, $toSite: SiteEnum!) {
+        createCurrentUserInSite(fromSite: $fromSite, toSite: $toSite) {
+          ... on CreateCurrentUserInSiteSuccess {
+            __typename
+            result
+          }
+          ... on UserAlreadyExistsError {
+            __typename
+            code
+          }
+        }
+      }
+    `
+
+    try {
+      const result = await this.authApiClient.mutate({
+        mutation: muration,
+        variables: {
+          fromSite: fromSite,
+          toSite: toSite
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      return result.data.createCurrentUserInSite as CreateCurrentUserInSiteUnion
     } catch (error) {
       return null
     }
