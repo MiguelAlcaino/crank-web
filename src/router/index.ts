@@ -101,7 +101,7 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  const publicPages = ['/login', '/register', '/forgot-password', '/reset-password']
+  const publicPages = ['/login', '/register', '/forgot-password', '/reset-password', '/calendar']
   const authRequired = !publicPages.includes(to.path)
 
   if (authRequired && !authService.isLoggedId()) {
