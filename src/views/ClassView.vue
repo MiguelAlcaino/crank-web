@@ -273,6 +273,7 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
               classInfo !== null &&
               classInfo.roomLayout?.matrix !== null &&
               (!classInfo.class.waitListAvailable || enrollmentInfo !== null)
+              && enrollmentInfo?.enrollmentStatus !== 'waitlisted'
             "
             :matrix="classInfo.roomLayout?.matrix"
             @click-spot="confirmBookSpot"
