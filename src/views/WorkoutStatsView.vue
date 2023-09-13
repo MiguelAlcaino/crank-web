@@ -55,7 +55,7 @@ async function getCurrentUserWorkoutStats() {
 <template>
   <div class="row">
     <div class="col-12">
-      <h1 class="page-title">WORKOUT STATS</h1>
+      <h1>WORKOUT STATS</h1>
     </div>
   </div>
   <div class="row mt-3">
