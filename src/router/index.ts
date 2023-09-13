@@ -15,10 +15,43 @@ import WorkoutStatsView from '../views/WorkoutStatsView.vue'
 
 import { authService } from '@/services/authService'
 import AdminClass from '@/views/admin/AdminClass.vue'
+import MenuLayout from '@/layouts/MenuLayout.vue'
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
+    {
+      path: '/',
+      name: 'admin',
+      component: () => MenuLayout,
+      children: [
+        {
+          path: '/profile',
+          name: 'profile',
+          component: ProfileView
+        },
+        {
+          path: '/bookings',
+          name: 'bookings',
+          component: BookingsView
+        },
+        {
+          path: '/purchases',
+          name: 'purchases',
+          component: PurchasesView
+        },
+        {
+          path: '/workout-stats',
+          name: 'workout_stats',
+          component: WorkoutStatsView
+        },
+        {
+          path: '/change-password',
+          name: 'change_password',
+          component: ChangePasswordView
+        }
+      ]
+    },
     {
       path: '/',
       name: 'home',
@@ -35,11 +68,6 @@ const router = createRouter({
       component: RegisterView
     },
     {
-      path: '/profile',
-      name: 'profile',
-      component: ProfileView
-    },
-    {
       path: '/calendar',
       name: 'calendar',
       component: BookingCalendarView
@@ -49,25 +77,11 @@ const router = createRouter({
       name: 'class',
       component: ClassView
     },
-    {
-      path: '/bookings',
-      name: 'bookings',
-      component: BookingsView
-    },
+
     {
       path: '/admin/class/:id',
       name: 'admin_class',
       component: AdminClass
-    },
-    {
-      path: '/purchases',
-      name: 'purchases',
-      component: PurchasesView
-    },
-    {
-      path: '/change-password',
-      name: 'change_password',
-      component: ChangePasswordView
     },
     {
       path: '/forgot-password',
@@ -84,11 +98,7 @@ const router = createRouter({
       name: 'change_spot',
       component: ChangeSpotView
     },
-    {
-      path: '/workout-stats',
-      name: 'workout_stats',
-      component: WorkoutStatsView
-    },
+
     {
       path: '/about',
       name: 'about',
