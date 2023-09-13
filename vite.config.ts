@@ -12,7 +12,13 @@ export default defineConfig({
       input: {
         main: fileURLToPath(new URL('./index.html', import.meta.url)),
         adminClass: fileURLToPath(new URL('./admin-class.html', import.meta.url))
-      }
+      },
+      output: {
+				entryFileNames: 'app-[name].js',
+				assetFileNames: 'app-[name].css',
+				chunkFileNames: "chunk-[name].js",
+				manualChunks: undefined,
+			}
     }
   },
   resolve: {
