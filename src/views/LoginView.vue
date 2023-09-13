@@ -10,6 +10,7 @@ import { SiteEnum } from '@/gql/graphql'
 import DefaultButtonComponent from '../components/DefaultButtonComponent.vue'
 import dayjs from 'dayjs'
 import { appStore } from '@/stores/appStorage'
+import { useRoute } from 'vue-router'
 
 const displayLoginError = ref(false)
 const isSubmitting = ref(false)
@@ -37,7 +38,7 @@ const rules = computed(() => {
 })
 
 const v$ = useVuelidate(rules, formData)
-
+const route = useRoute()
 async function login() {
   const isValid = await v$.value.$validate()
 
@@ -49,8 +50,12 @@ async function login() {
 
     try {
       await authService.login(formData.email, formData.password, selectedSite.value)
-
-      await router.push({ name: 'calendar' })
+      let redirectTo = route.query.redirect?? "/"
+      if( redirectTo !== '/'){
+        await router.push({ path: route.query.redirect as string })
+      }else{
+        await router.push({ name: 'calendar' })
+      }
     } catch (error) {
       displayLoginError.value = true
     }
