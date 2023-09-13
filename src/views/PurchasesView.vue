@@ -56,16 +56,25 @@ async function getCurrentUserPurchases() {
         </thead>
         <tbody>
           <tr v-for="(item, index) in purchases" :key="index">
-            <td>{{ item.packageName }}</td>
-            <td class="text-center">{{ item.allowanceObtained }}</td>
-            <td class="text-center">{{ item.allowanceRemaining }}</td>
-            <td class="text-center">
+            <td class="align-middle">
+              <div class="row">
+                <div class="col-1" style="text-align: right">
+                  <i class="bi bi-bag-fill" style="font-size: 1.5rem"></i>
+                </div>
+                <div class="col align-middle" style="text-align: left; padding-top: 4px">
+                  {{ item.packageName.toUpperCase() }}
+                </div>
+              </div>
+            </td>
+            <td class="text-center align-middle">{{ item.allowanceObtained }}</td>
+            <td class="text-center align-middle">{{ item.allowanceRemaining }}</td>
+            <td class="text-center align-middle">
               {{ dayjs(new Date(item.paymentDateTime)).format('DD/MM/YYYY') }}
             </td>
-            <td class="text-center">
+            <td class="text-center align-middle">
               {{ dayjs(new Date(item.activationDateTime)).format('DD/MM/YYYY') }}
             </td>
-            <td class="text-center">
+            <td class="text-center align-middle">
               {{ dayjs(new Date(item.expirationDateTime)).format('DD/MM/YYYY') }}
             </td>
           </tr>
