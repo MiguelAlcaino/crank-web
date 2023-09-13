@@ -22,8 +22,8 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'admin',
-      component: () => MenuLayout,
+      name: 'user',
+      component: MenuLayout,
       children: [
         {
           path: '/profile',
