@@ -208,57 +208,52 @@ function goToChangeSpot(classId: string) {
 </script>
 
 <template>
-  <div class="card border-0">
-    <div class="card-header border-0" style="background-color: white">
-      <div class="row form-inline">
-        <div class="col-md-6">
-          <h1 class="page-title">Bookings</h1>
-        </div>
-        <div class="col-md-5 col-sm-6 text-right justify-content-end">
-          <VueDatePicker
-            v-model="dateRangeFilter"
-            range
-            :enable-time-picker="false"
-            placeholder="Date Range"
-          />
-        </div>
-        <div class="col-1">
-          <DefaultButtonComponent
-            @on-click="getUserErollments()"
-            :is-loading="isLoading"
-            text="Go"
-            type="button"
-            class="input-group-append"
-          ></DefaultButtonComponent>
-        </div>
-      </div>
+  <div class="row form-inline">
+    <div class="col-md-6">
+      <h1>Bookings</h1>
     </div>
-    <div class="card-body">
-      <select
-        class="custom-select"
-        v-model="filterEnrollmentType"
-        @change="getUserErollments()"
-        :disabled="isLoading"
-      >
-        <option :value="EnrollmentTypeEnum.Upcoming">UPCOMING</option>
-        <option :value="EnrollmentTypeEnum.Waitlist">WAITLIST</option>
-        <option :value="EnrollmentTypeEnum.Historical">OLD</option>
-      </select>
-      <br />
-      <br />
-
-      <BookingsTable
-        :enrollments="userErollments"
-        :isLoading="isLoading"
-        :enrollmentType="filterEnrollmentType"
-        :siteDateTimeNow="siteDateTimeNow"
-        @clickCancelEnrollment="clickCancelEnrollment"
-        @clickRemoveFromWaitlist="clickRemoveFromWaitlist"
-        @change-spot="goToChangeSpot"
-      >
-      </BookingsTable>
+    <div class="col-md-5 col-sm-6 text-right justify-content-end">
+      <VueDatePicker
+        v-model="dateRangeFilter"
+        range
+        :enable-time-picker="false"
+        placeholder="Date Range"
+      />
+    </div>
+    <div class="col-1">
+      <DefaultButtonComponent
+        @on-click="getUserErollments()"
+        :is-loading="isLoading"
+        text="Go"
+        type="button"
+        class="input-group-append"
+      ></DefaultButtonComponent>
     </div>
   </div>
+
+  <select
+    class="custom-select"
+    v-model="filterEnrollmentType"
+    @change="getUserErollments()"
+    :disabled="isLoading"
+  >
+    <option :value="EnrollmentTypeEnum.Upcoming">UPCOMING</option>
+    <option :value="EnrollmentTypeEnum.Waitlist">WAITLIST</option>
+    <option :value="EnrollmentTypeEnum.Historical">OLD</option>
+  </select>
+  <br />
+  <br />
+
+  <BookingsTable
+    :enrollments="userErollments"
+    :isLoading="isLoading"
+    :enrollmentType="filterEnrollmentType"
+    :siteDateTimeNow="siteDateTimeNow"
+    @clickCancelEnrollment="clickCancelEnrollment"
+    @clickRemoveFromWaitlist="clickRemoveFromWaitlist"
+    @change-spot="goToChangeSpot"
+  >
+  </BookingsTable>
 
   <!-- CONFIRM REMOVE FROM WAITLIST modal -->
   <ModalComponent

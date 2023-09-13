@@ -19,6 +19,7 @@ import { GenderEnum, type UserInput } from '@/gql/graphql'
 import type { ApiService } from '@/services/apiService'
 
 import ModalComponent from '@/components/ModalComponent.vue'
+import SideMenu from '@/components/SideMenu.vue'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 import dayjs from 'dayjs'
 
@@ -558,9 +559,10 @@ function onChangeCountry() {
 
     <!--submit button-->
     <div class="form-row justify-content-md-center">
-      <div class="col-md-2 mb-3">
+      <div class="col-md-3 mb-3">
         <button class="btn btn-primary" type="submit" :disabled="isSaving">
-          Save Profile <span class="spinner-border spinner-border-sm" v-if="isSaving"></span>
+          Save Profile
+          <span class="spinner-border spinner-border-sm" v-if="isSaving"></span>
         </button>
       </div>
     </div>
