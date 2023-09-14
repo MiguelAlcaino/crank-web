@@ -115,7 +115,7 @@ router.beforeEach(async (to, from, next) => {
   const authRequired = !publicPages.includes(to.path)
 
   if (authRequired && !authService.isLoggedId()) {
-    next('/login')
+    next({name: 'login', query: { redirect: to.path }})
   } else {
     next()
   }
