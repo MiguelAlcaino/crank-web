@@ -25,6 +25,9 @@ import ModalComponent from '@/components/ModalComponent.vue'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 import dayjs from 'dayjs'
 
+import { VueTelInput } from 'vue-tel-input'
+import 'vue-tel-input/vue-tel-input.css'
+
 const isSaving = ref(false)
 const isLoggingIn = ref(false)
 const successModalIsVisible = ref(false)
@@ -535,15 +538,26 @@ async function login() {
       <!--phone-->
       <div class="col-md-6 mb-3">
         <label for="mobileNumberRegistration" class="input-label">Mobile Number *</label>
-        <input
-          id="mobileNumberRegistration"
-          class="form-control"
+        <vue-tel-input
           v-model="formData.phone"
-          type="text"
+          mode="international"
+          id="mobileNumberRegistration"
           placeholder="Mobile Number"
-          maxlength="20"
           required
-        />
+          defaultCountry="AE"
+          :dropdownOptions="{
+            showSearchBox: true,
+            showFlags: true,
+            showDialCodeInList: true,
+            showDialCodeInSelection: false
+          }"
+          :inputOptions="{
+            id: 'mobileNumberRegistration',
+            showDialCode: true,
+            required: true
+          }"
+        ></vue-tel-input>
+
         <small
           v-for="error in v$.phone.$errors"
           :key="error.$uid"
@@ -584,15 +598,25 @@ async function login() {
         <label for="emergencyContactPhoneRegistration" class="input-label"
           >Emergency Contact Number *</label
         >
-        <input
-          id="emergencyContactPhoneRegistration"
-          class="form-control"
+        <vue-tel-input
           v-model="formData.emergencyContactPhone"
-          type="text"
+          mode="international"
+          id="emergencyContactPhoneRegistration"
           placeholder="Emergency Contact Number"
-          maxlength="100"
           required
-        />
+          defaultCountry="AE"
+          :dropdownOptions="{
+            showSearchBox: true,
+            showFlags: true,
+            showDialCodeInList: true,
+            showDialCodeInSelection: false
+          }"
+          :inputOptions="{
+            id: 'emergencyContactPhoneRegistration',
+            showDialCode: true,
+            required: true
+          }"
+        ></vue-tel-input>
         <small
           v-for="error in v$.emergencyContactPhone.$errors"
           :key="error.$uid"

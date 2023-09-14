@@ -34,7 +34,8 @@
     "pinia": "^2.0.33",
     "react": "^18.2.0",
     "vue": "^3.2.47",
-    "vue-router": "^4.1.6",   
+    "vue-router": "^4.1.6",
+    "vue-tel-input": "^8.1.4",
     "vue3-popper": "^1.5.0",
     "vue3-simple-typeahead": "^1.0.11"
   },
@@ -45,6 +46,7 @@
     "@rushstack/eslint-patch": "^1.1.4",
     "@types/jsdom": "^20.0.0",
     "@types/node": "^16.18.18",
+    "@types/vue-tel-input": "^2.1.2",
     "@vitejs/plugin-vue": "^3.0.3",
     "@vue/eslint-config-prettier": "^7.0.0",
     "@vue/eslint-config-typescript": "^11.0.0",

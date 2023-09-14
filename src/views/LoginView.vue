@@ -50,10 +50,10 @@ async function login() {
 
     try {
       await authService.login(formData.email, formData.password, selectedSite.value)
-      let redirectTo = route.query.redirect?? "/"
-      if( redirectTo !== '/'){
+      let redirectTo = route.query.redirect ?? '/'
+      if (redirectTo !== '/') {
         await router.push({ path: route.query.redirect as string })
-      }else{
+      } else {
         await router.push({ name: 'calendar' })
       }
     } catch (error) {
