@@ -19,9 +19,11 @@ import { GenderEnum, type UserInput } from '@/gql/graphql'
 import type { ApiService } from '@/services/apiService'
 
 import ModalComponent from '@/components/ModalComponent.vue'
-import SideMenu from '@/components/SideMenu.vue'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 import dayjs from 'dayjs'
+
+import { VueTelInput } from 'vue-tel-input'
+import 'vue-tel-input/vue-tel-input.css'
 
 const isSaving = ref(false)
 const successModalIsVisible = ref(false)
@@ -464,15 +466,24 @@ function onChangeCountry() {
       <!--phone-->
       <div class="col-md-6 mb-3">
         <label for="mobileNumberMyProfile" class="input-label">Mobile Number *</label>
-        <input
-          id="mobileNumberMyProfile"
-          class="form-control"
+        <vue-tel-input
           v-model="formData.phone"
-          type="text"
+          mode="international"
+          id="mobileNumberMyProfile"
           placeholder="Mobile Number"
-          maxlength="20"
           required
-        />
+          :dropdownOptions="{
+            showSearchBox: true,
+            showFlags: true,
+            showDialCodeInList: true,
+            showDialCodeInSelection: false
+          }"
+          :inputOptions="{
+            id: 'mobileNumberMyProfile',
+            showDialCode: true,
+            required: true
+          }"
+        ></vue-tel-input>
         <small
           v-for="error in v$.phone.$errors"
           :key="error.$uid"
@@ -513,15 +524,24 @@ function onChangeCountry() {
         <label for="emergencyContactPhoneMyProfile" class="input-label"
           >Emergency Contact Number *</label
         >
-        <input
-          id="emergencyContactPhoneMyProfile"
-          class="form-control"
+        <vue-tel-input
           v-model="formData.emergencyContactPhone"
-          type="text"
+          mode="international"
+          id="emergencyContactPhoneMyProfile"
           placeholder="Emergency Contact Number"
-          maxlength="100"
           required
-        />
+          :dropdownOptions="{
+            showSearchBox: true,
+            showFlags: true,
+            showDialCodeInList: true,
+            showDialCodeInSelection: false
+          }"
+          :inputOptions="{
+            id: 'emergencyContactPhoneMyProfile',
+            showDialCode: true,
+            required: true
+          }"
+        ></vue-tel-input>
         <small
           v-for="error in v$.emergencyContactPhone.$errors"
           :key="error.$uid"
