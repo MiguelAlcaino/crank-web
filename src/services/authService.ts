@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { useAuthenticationStore } from '@/stores/authToken'
 import { IncorrectCredentialsLoginError } from '@/model/Exception'
 import router from '@/router'
@@ -69,20 +69,18 @@ export const authService = {
         Config.AUTH_SERVICE_HOST + '/api/reset-password/validate-token/' + resetPasswordToken
       )
 
-      if (response.status === 200) {
-        if (response.data.status && response.data.status === 'success') {
-          useAuthenticationStore().setSession(response.data.accessToken)
-          return response.data.status
-        } else {
-          if (response.data.code) {
-            return response.data.code
-          } else {
-            return 'unknown_error'
-          }
-        }
-      }
-      return 'unknown_error'
+      useAuthenticationStore().setSession(response.data.token)
+      return 'success'
     } catch (error) {
+      if (
+        error instanceof AxiosError &&
+        error.response?.data &&
+        error.response?.data.status &&
+        error.response?.data.status === 'error'
+      ) {
+        return error.response?.data.code
+      }
+
       return 'unknown_error'
     }
   }
