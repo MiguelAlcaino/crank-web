@@ -106,6 +106,8 @@ async function startApp() {
     await router.push('/calendar')
   } else if (view == 'profile') {
     await router.push('/profile')
+  }else if (view == 'reset-password') {
+    await router.push('/reset-password')
   }
 
   app.mount('#app')
