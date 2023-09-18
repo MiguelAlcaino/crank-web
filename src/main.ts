@@ -68,7 +68,15 @@ async function startApp() {
   }
 
   if (site) {
-    const siteEnum: SiteEnum = SiteEnum[site as keyof typeof SiteEnum]
+    let siteEnum: SiteEnum
+
+    if (site === SiteEnum.Dubai.toString()) {
+      siteEnum = SiteEnum.Dubai
+    } else if (site === SiteEnum.AbuDhabi) {
+      siteEnum = SiteEnum.AbuDhabi
+    } else {
+      throw Error
+    }
 
     if (!authService.isLoggedId()) {
       appStore().setSite(siteEnum)
