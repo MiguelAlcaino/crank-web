@@ -67,36 +67,34 @@ async function startApp() {
     useAuthenticationStore().deleteSession()
   }
 
-  if (site !== null && site !== undefined && site !== appStore().site.toString()) {
-    if (authService.isLoggedId()) {
+  if (site) {
+    const siteEnum: SiteEnum = SiteEnum[site as keyof typeof SiteEnum]
+
+    if (!authService.isLoggedId()) {
+      appStore().setSite(siteEnum)
+    } else {
       const apiService = new ApiService(
         newAuthenticatedApolloClient(Config.GRAPHQL_SERVICE_URL),
         newAnonymousClient(Config.GRAPHQL_SERVICE_URL)
       )
 
-      const currentUserExistsOnSite = (await apiService.currentUserDoesExistInSite(site)) as boolean
+      if (appStore().site !== siteEnum) {
+        const currentUserExistsOnSite = (await apiService.currentUserDoesExistInSite(
+          site
+        )) as boolean
 
-      if (currentUserExistsOnSite !== null && currentUserExistsOnSite === true) {
-        if (site === SiteEnum.Dubai.toString()) {
-          appStore().setSite(SiteEnum.Dubai)
-        } else if (site === SiteEnum.AbuDhabi.toString()) {
-          appStore().setSite(SiteEnum.AbuDhabi)
-        }
-      } else {
-        const response = await apiService.createCurrentUserInSite(appStore().site, site)
+        if (!currentUserExistsOnSite) {
+          const response = await apiService.createCurrentUserInSite(appStore().site, site)
 
-        if (
-          response !== null &&
-          (response.__typename === 'CreateCurrentUserInSiteSuccess' ||
-            response.__typename === 'UserAlreadyExistsError')
-        ) {
-          if (site === SiteEnum.Dubai.toString()) {
-            appStore().setSite(SiteEnum.Dubai)
-          } else if (site === SiteEnum.AbuDhabi.toString()) {
-            appStore().setSite(SiteEnum.AbuDhabi)
+          if (
+            response !== null &&
+            (response.__typename === 'CreateCurrentUserInSiteSuccess' ||
+              response.__typename === 'UserAlreadyExistsError')
+          ) {
+            appStore().setSite(siteEnum)
+          } else {
+            authService.logout()
           }
-        } else {
-          authService.logout()
         }
       }
     }

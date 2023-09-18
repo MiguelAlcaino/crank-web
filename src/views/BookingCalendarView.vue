@@ -79,7 +79,7 @@ async function getCustomCalendarClasses(): Promise<void> {
   const lastDayWeek = appStore().calendarEndDate
 
   let customCalendarClasses = await apiService.getCustomCalendarClasses(
-    localStorage.getItem('site') as SiteEnum,
+    appStore().site,
     firstDayWeek,
     lastDayWeek
   )
