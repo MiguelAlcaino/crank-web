@@ -106,8 +106,10 @@ async function startApp() {
     await router.push('/calendar')
   } else if (view == 'profile') {
     await router.push('/profile')
-  }else if (view == 'reset-password') {
-    await router.push('/reset-password')
+  } else if (view == 'reset-password') {
+    const urlParams = new URLSearchParams(window.location.search)
+    const token = urlParams.get('token')
+    await router.push('/reset-password?token=' + token)
   }
 
   app.mount('#app')
