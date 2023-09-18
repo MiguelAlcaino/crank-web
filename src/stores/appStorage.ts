@@ -28,6 +28,7 @@ export const appStore = defineStore({
     },
     setSite(site: SiteEnum) {
       localStorage.setItem('site', site)
+      this.site = site
     }
   }
 })
