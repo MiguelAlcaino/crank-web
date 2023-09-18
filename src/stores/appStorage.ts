@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import dayjs from 'dayjs'
 import { SiteEnum } from '@/gql/graphql'
+dayjs.Ls.en.weekStart = 1
 
 export const appStore = defineStore({
   id: 'appStore',

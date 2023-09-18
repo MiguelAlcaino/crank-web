@@ -8,7 +8,7 @@ interface ColumnName {
 
 <script setup lang="ts">
 import { inject, onMounted, ref } from 'vue'
-import { EnrollmentStatusEnum, type Class, SiteEnum } from '@/gql/graphql'
+import { EnrollmentStatusEnum, type Class } from '@/gql/graphql'
 import { DayOfTheWeek } from '@/model/DayOfTheWeek'
 import { WeekCalendar } from '@/model/WeekCalendar'
 import dayjs from 'dayjs'
