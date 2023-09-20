@@ -95,8 +95,7 @@ async function requestPasswordLink() {
           </div>
         </div>
         <p class="mt-3">
-          PLEASE ENTER THE EMAIL ADDRESS YOU USED TO CREATE AN ACCOUNT WITH US. IF YOUR ACCOUNT IS
-          VALID, YOU WILL RECEIVE AN EMAIL WITH A PASSWORD RESET LINK.
+          Please enter your CRANK account email address and we will send you a reset link.
         </p>
         <form @submit.prevent="submitForm" autocomplete="off">
           <div class="form-row">
@@ -128,7 +127,7 @@ async function requestPasswordLink() {
             <div class="col-md-12 mb-3">
               <DefaultButtonComponent
                 type="submit"
-                text="OK"
+                text="SEND"
                 :is-loading="sendingEmail"
                 :block="true"
               >

@@ -185,7 +185,7 @@ async function validateResetPasswordToken(resetPasswordToken: string) {
             <div class="col-md-12 mb-3">
               <DefaultButtonComponent
                 type="submit"
-                text="Reset Password"
+                text="RESET"
                 :is-loading="sendingEmail"
                 :block="true"
               >

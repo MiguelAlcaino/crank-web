@@ -8,6 +8,7 @@ import ModalComponent from '@/components/ModalComponent.vue'
 import { appStore } from '@/stores/appStorage'
 import type { UpdateCurrentUserPasswordInput } from '@/gql/graphql'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
+import { SUCCESS_RESET_PASSWORD } from '@/utils/successMessages'
 
 const apiService = inject<ApiService>('gqlApiService')!
 const isSaving = ref<boolean>(false)
@@ -181,7 +182,7 @@ const submitForm = async () => {
   <ModalComponent
     v-if="successModalIsVisible"
     title="Update Password"
-    message="Your password has been successfully updated."
+    :message="SUCCESS_RESET_PASSWORD"
     :ok-loading="false"
     @on-ok="$router.go(-1)"
     :cancel-text="null"
