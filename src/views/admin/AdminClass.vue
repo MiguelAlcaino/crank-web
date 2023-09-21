@@ -21,6 +21,7 @@ import SpotMatrix from '@/components/SpotMatrix.vue'
 import ModalComponent from '@/components/ModalComponent.vue'
 import AdminBookedUsersList from '@/components/AdminBookedUsersList.vue'
 import EnrollSelectedMemberComponent from '@/components/EnrollSelectedMemberComponent.vue'
+import DefaultButtonComponent from '@/components/DefaultButtonComponent.vue'
 
 import {
   ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW,
@@ -443,37 +444,44 @@ async function assignRoomLayoutId(roomLayoutId: string) {
   </AdminBookedUsersList>
 
   <div v-if="selectedSpot?.isBooked === false && selectedSpot.enabled === true">
-    <h1>Choose an action :</h1>
-    <button class="btn btn-primary" @click="clickAssignUserToThisSpot">
-      Assign User to this Spot
-    </button>
-    <button
-      class="btn btn-primary"
-      @click="clickPutUnderMaintenance"
-      :disabled="isEnablingDisablingSpot"
-    >
-      Put under maintenance
-    </button>
+    <h2>Choose an action :</h2>
+    <DefaultButtonComponent
+      text="Assign User to this Spot"
+      type="button"
+      @on-click="clickAssignUserToThisSpot"
+      class="mr-1"
+    ></DefaultButtonComponent>
+    <DefaultButtonComponent
+      text="Put under maintenance"
+      type="button"
+      @on-click="clickPutUnderMaintenance"
+      class="mr-1"
+      :is-loading="isEnablingDisablingSpot"
+    ></DefaultButtonComponent>
   </div>
   <div v-if="selectedSpot.enabled === false">
-    <h1>Spot is under maintenance</h1>
-    <button
-      class="btn btn-primary"
-      @click="clickRecoverFromMaintenance"
-      :disabled="isEnablingDisablingSpot"
-    >
-      Recover from maintenance
-    </button>
+    <h2>Spot is under maintenance</h2>
+    <DefaultButtonComponent
+      text="Recover from maintenance"
+      type="button"
+      @on-click="clickRecoverFromMaintenance"
+      class="mr-1"
+      :is-loading="isEnablingDisablingSpot"
+    ></DefaultButtonComponent>
   </div>
   <div v-if="selectedSpot?.isBooked === true">
-    <h1>Spot is reserved for - {{ selectedSpot.fullName }}</h1>
-    <button class="btn btn-primary" @click="clickCancelMembersReservation">
-      Cancel Member's Reservation
-    </button>
-    <button class="btn btn-primary" :disabled="true">Change Member's Spot</button>
-    <button class="btn btn-primary" :disabled="true">Swap Spot</button>
-    <button class="btn btn-primary" :disabled="true">Check-In</button>
-    <button class="btn btn-primary" :disabled="true">Go to Profile</button>
+    <h2>Spot is reserved for - {{ selectedSpot.fullName }}</h2>
+    <DefaultButtonComponent
+      text="Cancel Member's Reservation"
+      type="button"
+      @on-click="clickCancelMembersReservation"
+      class="mr-1"
+    ></DefaultButtonComponent>
+
+    <button class="btn btn-primary mr-1" :disabled="true">Change Member's Spot</button>
+    <button class="btn btn-primary mr-1" :disabled="true">Swap Spot</button>
+    <button class="btn btn-primary mr-1" :disabled="true">Check-In</button>
+    <button class="btn btn-primary mr-1" :disabled="true">Go to Profile</button>
   </div>
 
   <div v-if="assignUserToThisSpotVisible">
@@ -483,13 +491,14 @@ async function assignRoomLayoutId(roomLayoutId: string) {
         {{ option.user!.firstName + ' ' + option.user!.lastName + ' - ' + option.user!.email }}
       </option>
     </select>
-    <button
-      class="btn btn-primary"
-      @click="clickAssing"
-      :disabled="selectedUserId === null || selectedUserId === undefined || assigningUserToClass"
-    >
-      Assing
-    </button>
+    <DefaultButtonComponent
+      text="Assing"
+      type="button"
+      @on-click="clickAssing"
+      class="mr-1"
+      :disabled="selectedUserId === null || selectedUserId === undefined"
+      :is-loading="assigningUserToClass"
+    ></DefaultButtonComponent>
   </div>
 
   <!-- ERROR modal -->
