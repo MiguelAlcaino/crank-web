@@ -194,7 +194,7 @@ function onClickSpotAdmin(spotNumber: number) {
   <div>
     <table class="table table-sm table-borderless" style="margin: 0 auto; margin-bottom: 35px">
       <tbody>
-        <tr v-for="(colRow, rowKey) in spotsTable" :key="rowKey">
+        <tr v-for="(colRow, rowKey) in spotsTable" :key="rowKey" class="text-center">
           <td class="class-position" v-for="(spot, columnKey) in colRow" :key="columnKey">
             <admin-bookable-spot-position
               v-if="isSpotForAdmin(spot)"
