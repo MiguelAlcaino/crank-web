@@ -7,6 +7,9 @@ import Popper from 'vue3-popper'
 import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
 
+import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
+import ContextMenu from '@imengyu/vue3-context-menu'
+
 /* import the fontawesome core */
 import { library } from '@fortawesome/fontawesome-svg-core'
 
@@ -57,6 +60,7 @@ async function startApp() {
     .use(createPinia())
     .use(router)
     .use(SimpleTypeahead)
+    .use(ContextMenu)
     .component('Popper', Popper)
     .component('VueDatePicker', VueDatePicker)
 
