@@ -17,12 +17,14 @@ import { appStore } from '@/stores/appStorage'
 import { inject, ref } from 'vue'
 
 import ModalComponent from '@/components/ModalComponent.vue'
-import { ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW, ERROR_UNKNOWN } from '@/utils/errorMessages'
+import { ERROR_CLIENT_IS_ALREADY_BOOKED_ADMIN, ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW, ERROR_UNKNOWN } from '@/utils/errorMessages'
 
 const apiService = inject<ApiService>('gqlApiService')!
 
 const props = defineProps<{
   classId: string
+  spotNumber: number | null
+  enrollButtonText: string
 }>()
 
 const emits = defineEmits<{
@@ -37,16 +39,16 @@ const errorMessage = ref<string>('')
 const paymentRequiredErrorModalIsVisible = ref<boolean>(false)
 
 function onClickEnrollSelectedMember() {
-  bookUserIntoClass(props.classId, selectedUser.value!.id!, true)
+  bookUserIntoClass(props.classId, selectedUser.value!.id!, props.spotNumber,  true)
 }
 
-async function bookUserIntoClass(classId: string, userId: string, isPaymentRequired: boolean) {
+async function bookUserIntoClass(classId: string, userId: string, spotNumber: number | null, isPaymentRequired: boolean) {
   isLoading.value = true
 
   const response = await apiService.bookUserIntoClass(
     classId,
     userId,
-    null,
+    spotNumber,
     isPaymentRequired,
     false
   )
@@ -65,7 +67,7 @@ async function bookUserIntoClass(classId: string, userId: string, isPaymentRequi
     if (response === 'ClientIsOutsideSchedulingWindowError') {
       errorMessage.value = ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW
     } else if (response === 'ClientIsAlreadyBookedError') {
-      errorMessage.value = 'The user is already booked in this class.'
+      errorMessage.value = ERROR_CLIENT_IS_ALREADY_BOOKED_ADMIN
     } else {
       errorMessage.value = ERROR_UNKNOWN
     }
@@ -124,7 +126,7 @@ function itemProjectionFunction(item: any) {
         :disabled="selectedUser === null || selectedUser === undefined || isLoading"
         @click="onClickEnrollSelectedMember()"
       >
-        Enroll Selected Member
+        {{ props.enrollButtonText }}
         <span
           class="spinner-border spinner-border-sm"
           role="status"
@@ -144,7 +146,7 @@ function itemProjectionFunction(item: any) {
     ok-text="Yes"
     @on-cancel="paymentRequiredErrorModalIsVisible = false"
     :ok-loading="isLoading"
-    @on-ok="bookUserIntoClass(props.classId, selectedUser?.id!, false)"
+    @on-ok="bookUserIntoClass(props.classId, selectedUser?.id!, props.spotNumber, false)"
   >
   </ModalComponent>
 

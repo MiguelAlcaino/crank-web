@@ -11,7 +11,7 @@ import { useRoute } from 'vue-router'
 
 import dayjs from 'dayjs'
 
-import type { BookableSpot, ClassInfo, IconPosition, IdentifiableUser } from '@/gql/graphql'
+import type { BookableSpot, ClassInfo, IconPosition } from '@/gql/graphql'
 
 import type { ApiService } from '@/services/apiService'
 
@@ -24,7 +24,6 @@ import EnrollSelectedMemberComponent from '@/components/EnrollSelectedMemberComp
 import DefaultButtonComponent from '@/components/DefaultButtonComponent.vue'
 
 import {
-  ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW,
   ERROR_LATE_CANCELLATION_REQUIRED,
   ERROR_SPOT_NOT_FOUND,
   ERROR_UNKNOWN
@@ -38,28 +37,12 @@ const editingLayout = ref<boolean>(false)
 const classInfo = ref<ClassInfo | null>(null)
 
 const assignUserToThisSpotVisible = ref<boolean>(false)
-const query = ref<string>('')
-const searchingUsers = ref<boolean>(false)
-const users = ref<IdentifiableUser[]>([])
-const selectedUserId = ref<string | null>(null)
-const assigningUserToClass = ref<boolean>(false)
+const isEnablingDisablingSpot = ref<boolean>(false)
 
 const classId = ref<string>('')
 const totalSignedIn = ref<number>(0)
 
 const errorModalData = ref<{
-  title: string
-  message: string
-  isLoading: boolean
-  isVisible: boolean
-}>({
-  title: '',
-  message: '',
-  isLoading: false,
-  isVisible: false
-})
-
-const confirmModalData = ref<{
   title: string
   message: string
   isLoading: boolean
@@ -177,7 +160,7 @@ function spotClicked(event: BookableSpotClickedEvent) {
   }
 }
 
-const isEnablingDisablingSpot = ref<boolean>(false)
+
 
 async function clickPutUnderMaintenance() {
   isEnablingDisablingSpot.value = true
@@ -210,78 +193,6 @@ async function clickRecoverFromMaintenance() {
     selectedSpot.value = { enabled: null, fullName: null, isBooked: null, spotNumber: null }
   } else if (response === 'SpotNotFoundError') {
     errorModalData.value.message = ERROR_SPOT_NOT_FOUND
-    errorModalData.value.isVisible = true
-  } else {
-    errorModalData.value.message = ERROR_UNKNOWN
-    errorModalData.value.isVisible = true
-  }
-}
-
-function clickAssignUserToThisSpot() {
-  assignUserToThisSpotVisible.value = true
-}
-
-async function searchUser() {
-  users.value = []
-  selectedUserId.value = null
-
-  if (query.value.length < 3) return
-
-  searchingUsers.value = true
-
-  users.value = await apiService.searchUser(appStore().site, query.value)
-
-  searchingUsers.value = false
-}
-
-function clickAssing() {
-  if (selectedUserId.value) {
-    bookUserIntoClass(classId.value, selectedUserId.value, selectedSpot.value.spotNumber!, true)
-  }
-}
-
-async function bookUserIntoClass(
-  classId: string,
-  userId: string,
-  spotNumber: number,
-  isPaymentRequired: boolean
-) {
-  assigningUserToClass.value = true
-  confirmModalData.value.isLoading = true
-
-  const response = await apiService.bookUserIntoClass(
-    classId,
-    userId,
-    spotNumber,
-    isPaymentRequired,
-    false
-  )
-
-  assigningUserToClass.value = false
-  confirmModalData.value.isLoading = false
-
-  if (response === 'BookClassSuccess') {
-    selectedSpot.value = {
-      enabled: null,
-      fullName: null,
-      isBooked: null,
-      spotNumber: null,
-      enrollmentId: null
-    }
-    confirmModalData.value.isVisible = false
-    assignUserToThisSpotVisible.value = false
-    await getClassInfo()
-  } else if (response === 'PaymentRequiredError') {
-    confirmModalData.value.isLoading = false
-    confirmModalData.value.title = 'Warning'
-    confirmModalData.value.message =
-      'This user does not have any class packages purchases available for this class. Would you like to override the enrollment?'
-    confirmModalData.value.isVisible = true
-  } else if (response === 'ClientIsOutsideSchedulingWindowError') {
-    errorModalData.value.message = ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW
-    errorModalData.value.isVisible = true
-  } else if (response === 'ClientIsAlreadyBookedError') {
-    errorModalData.value.message = 'The user is already booked in this class.'
     errorModalData.value.isVisible = true
   } else {
     errorModalData.value.message = ERROR_UNKNOWN
@@ -433,6 +344,8 @@ async function assignRoomLayoutId(roomLayoutId: string) {
     :class-id="classId"
     v-if="classInfo !== null && classInfo.roomLayout === null && classInfo.enrollments !== null"
     @after-enrolling="getClassInfo()"
+    :spot-number="null"
+    enrollButtonText="Enroll Selected Member"
   ></EnrollSelectedMemberComponent>
 
   <AdminBookedUsersList
@@ -448,7 +361,7 @@ async function assignRoomLayoutId(roomLayoutId: string) {
     <DefaultButtonComponent
       text="Assign User to this Spot"
       type="button"
-      @on-click="clickAssignUserToThisSpot"
+      @on-click="assignUserToThisSpotVisible = true"
       class="mr-1"
     ></DefaultButtonComponent>
     <DefaultButtonComponent
@@ -484,21 +397,16 @@ async function assignRoomLayoutId(roomLayoutId: string) {
     <button class="btn btn-primary mr-1" :disabled="true">Go to Profile</button>
   </div>
 
+
   <div v-if="assignUserToThisSpotVisible">
-    <input v-model="query" @input="searchUser" placeholder="Please enter 3 or more characters" />
-    <select v-model="selectedUserId">
-      <option v-for="option in users" :key="option.id!" :value="option.id">
-        {{ option.user!.firstName + ' ' + option.user!.lastName + ' - ' + option.user!.email }}
-      </option>
-    </select>
-    <DefaultButtonComponent
-      text="Assing"
-      type="button"
-      @on-click="clickAssing"
-      class="mr-1"
-      :disabled="selectedUserId === null || selectedUserId === undefined"
-      :is-loading="assigningUserToClass"
-    ></DefaultButtonComponent>
+    <hr>
+    <EnrollSelectedMemberComponent
+    v-if="classInfo !== null && selectedSpot.spotNumber !== null && selectedSpot.spotNumber !== undefined"
+    :class-id="classId"
+    :spot-number="selectedSpot.spotNumber!"
+    enrollButtonText="Assing"
+    @after-enrolling="getClassInfo()" 
+  ></EnrollSelectedMemberComponent> 
   </div>
 
   <!-- ERROR modal -->
@@ -508,17 +416,6 @@ async function assignRoomLayoutId(roomLayoutId: string) {
     :closable="false"
     v-if="errorModalData.isVisible"
     @on-ok="errorModalData.isVisible = false"
-  >
-  </ModalComponent>
-
-  <ModalComponent
-    v-if="confirmModalData.isVisible"
-    :title="confirmModalData.title"
-    :message="confirmModalData.message"
-    :ok-loading="confirmModalData.isLoading"
-    @on-cancel="confirmModalData.isVisible = false"
-    @on-ok="bookUserIntoClass(classId, selectedUserId!, selectedSpot.spotNumber!, false)"
-    :closable="false"
   >
   </ModalComponent>
 
