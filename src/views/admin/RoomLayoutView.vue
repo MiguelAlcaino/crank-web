@@ -106,9 +106,9 @@ function fillLayout(rows: number, cols: number) {
     </div>
   </div>
 
-  <div class="row margin-top-25">
-    <div id="Seats" class="table-responsive col-md-12">
-      <table id="SeatsTable" class="table">
+  <div class="row mt-5">
+    <div class="table-responsive col-md-12">
+      <table class="">
         <tbody>
           <tr v-for="(colRow, rowIndex) in layout" v-bind:key="rowIndex" v-bind:index="rowIndex">
             <td v-for="(spot, colIndex) in colRow" v-bind:key="colIndex" v-bind:index="colIndex">
@@ -122,28 +122,24 @@ function fillLayout(rows: number, cols: number) {
 </template>
 
 <style scoped>
-#Seats {
-  padding-top: 10px !important;
-}
-#SeatsTable.table > tbody > tr > td:last-child {
-  border-right: 1px solid #000 !important;
-}
-#SeatsTable.table > tbody > tr > td {
-  min-width: 50px !important;
-  width: 70px !important;
-  max-width: 70px !important;
-  height: 70px !important;
-  text-align: center !important;
-  align-content: center !important;
-  vertical-align: middle !important;
-  border-left: 1px solid #000;
-  padding: 0 !important;
-  border-top-color: #000 !important;
+table,
+td {
+  border: 1px solid black;
 }
 
+td {
+  width: 70px;
+  height: 70px;
+  max-width: 70px;
+  max-height: 70px;
+  min-width: 70px;
+  min-height: 70px;
+}
+
+/*
 #SeatsTable tbody td.highlighted {
   border: 2px dotted #f5f5f5 !important;
   background-color: #8b0000 !important;
   color: #fff !important;
-}
+} */
 </style>
