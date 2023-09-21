@@ -15,6 +15,8 @@ interface LayoutSize {
 import { onMounted, reactive, ref, watch } from 'vue'
 import { type MenuOptions, ContextMenu, ContextMenuItem } from '@imengyu/vue3-context-menu'
 
+import DefaultButtonComponent from '@/components/DefaultButtonComponent.vue'
+
 onMounted(() => {
   fillLayout(layoutSize.rows, layoutSize.cols)
 })
@@ -36,6 +38,8 @@ const optionsComponent = ref<MenuOptions>({
 })
 const showMenu = ref(false)
 
+const totalConfiguredSeats = ref(0)
+
 function fillLayout(rows: number, cols: number) {
   const tempLayout: LayoutPosition[][] = new Array(rows)
 
@@ -56,8 +60,10 @@ function fillLayout(rows: number, cols: number) {
   roomLayout.value = tempLayout
 }
 
-function clickPosition(row: number, col: number) {
-  roomLayout.value[row][col].selected = !roomLayout.value[row][col].selected
+function clickPosition(e: MouseEvent, row: number, col: number) {
+  if (!(e.target instanceof HTMLInputElement)) {
+    roomLayout.value[row][col].selected = !roomLayout.value[row][col].selected
+  }
 }
 
 function onContextMenu(e: MouseEvent) {
@@ -88,6 +94,8 @@ function invertSelection() {
 }
 
 function setSpotType(spotType: 'empty' | 'seat' | 'tv' | 'speaker' | 'fan' | 'instructor') {
+  totalConfiguredSeats.value = 0
+
   for (var i = 0; i < roomLayout.value.length; i++) {
     var row = roomLayout.value[i]
     for (var j = 0; j < row.length; j++) {
@@ -96,16 +104,70 @@ function setSpotType(spotType: 'empty' | 'seat' | 'tv' | 'speaker' | 'fan' | 'in
         roomLayout.value[i][j].spotNumber = null
         roomLayout.value[i][j].selected = false
       }
+
+      if (roomLayout.value[i][j].type === 'seat') {
+        totalConfiguredSeats.value++
+      }
     }
   }
+}
+
+function onClickSaveLayout() {
+  console.log(roomLayout.value)
+}
+
+function onClickCancel() {
+  console.log(roomLayout.value)
 }
 </script>
 
 <template>
   <h1>New Room Layout</h1>
 
-  <hr />
-  <form>
+  <form
+    action="https://stagingcrank-fit.myperformanceiq.com/admin/createRoomLayout"
+    id="createLayoutForm"
+    enctype="multipart/form-data"
+    method="post"
+    accept-charset="utf-8"
+  >
+    <input type="hidden" id="SeatMatrixData" name="SeatMatrixData" />
+    <div class="row">
+      <div class="form-group col-md-4 col-sm-12 col-xs-12">
+        <label class="form-label">Room Layout Name</label>
+        <div class="controls">
+          <input
+            type="text"
+            id="RoomLayoutName"
+            name="RoomLayoutName"
+            required
+            placeholder=""
+            class="form-control"
+          />
+        </div>
+      </div>
+      <div class="form-group col-md-4 col-sm-12 col-xs-12">
+        <label class="form-label">Email Type</label>
+        <div class="controls">
+          <select
+            id="EmailType"
+            name="EmailType"
+            style="width: 100%"
+            tabindex="-1"
+            class="custom-select"
+            aria-hidden="true"      
+          >
+            <option value="0" selected>CYCLE Emails</option>
+            <option value="1">RPM Emails</option>
+            <option value="2">HEART RATE Emails</option>
+            <option value="4">ROWING Emails</option>
+            <option value="3">No Emails</option></select
+          >
+        </div>
+      </div>
+      <hr class="col-md-12" />
+    </div>
+
     <div class="row">
       <div class="form-group col-md-6">
         <label for="formControlRange">Rows - {{ layoutSize.rows }}</label>
@@ -136,28 +198,29 @@ function setSpotType(spotType: 'empty' | 'seat' | 'tv' | 'speaker' | 'fan' | 'in
     </div>
   </form>
 
+  <hr />
+
   <p>Maximum 100 Spots can be configured</p>
   <p>Total Spots - {{ layoutSize.rows * layoutSize.cols }}</p>
-  <p>Total Configured Spots - 0</p>
+  <p>Total Configured Spots - {{ totalConfiguredSeats }}</p>
 
   <div class="row">
     <div class="col-md-2 col-xs-12">
-      <button
-        id="submitData"
-        value="Save Layout"
-        class="btn btn-primary btn-cons btn-block waves-effect waves-light"
-      >
-        Save Layout
-      </button>
+      <DefaultButtonComponent
+        text="Save Layout"
+        @on-click="onClickSaveLayout()"
+        type="button"
+        :block="true"
+      ></DefaultButtonComponent>
     </div>
     <div class="col-md-2 col-xs-12">
-      <a
-        href="https://stagingcrank-fit.myperformanceiq.com/admin/roomLayouts"
+      <DefaultButtonComponent
+        text="Cancel"
+        @on-click="onClickCancel()"
         type="button"
-        class="btn btn-white btn-cons btn-block waves-effect waves-light"
-      >
-        Cancel</a
-      >
+        :block="true"
+        variant="secondary"
+      ></DefaultButtonComponent>
     </div>
   </div>
 
@@ -176,13 +239,31 @@ function setSpotType(spotType: 'empty' | 'seat' | 'tv' | 'speaker' | 'fan' | 'in
               v-bind:key="colIndex"
               v-bind:index="colIndex"
               :class="{ highlighted: spot.selected }"
-              @click="clickPosition(rowIndex, colIndex)"
+              @click="clickPosition($event, rowIndex, colIndex)"
               @contextmenu="onContextMenu($event)"
             >
               <div>
                 <div v-if="spot.type === 'empty'">-</div>
-                <div v-else-if="spot.type === 'seat'">seat</div>
+                <div v-else-if="spot.type === 'seat'">
+                  <input
+                    type="number"
+                    class="seat-number"
+                    min="1"
+                    max="2500"
+                    :class="{ hasError: spot.spotNumber === null || spot.spotNumber === undefined }"
+                    v-model="spot.spotNumber"
+                  />
+                  <i class="bi bi-circle" style="font-size: 1.8rem"></i>
+                </div>
                 <div v-else-if="spot.type === 'instructor'">
+                  <input
+                    type="number"
+                    class="seat-number"
+                    min="1"
+                    max="2500"
+                    :class="{ hasError: spot.spotNumber === null || spot.spotNumber === undefined }"
+                    v-model="spot.spotNumber"
+                  />
                   <i class="bi bi-person-fill" style="font-size: 1.8rem"></i>
                 </div>
                 <div v-else-if="spot.type === 'speaker'">
@@ -271,7 +352,24 @@ td {
 
 td.highlighted {
   border: 2px dotted #f5f5f5 !important;
-  background-color: #8b0000 !important;
+  background-color: #000000 !important;
   color: #fff !important;
+}
+
+.seat-number {
+  color: #000 !important;
+  min-width: 20px !important;
+  width: 80%;
+  max-width: 60px !important;
+  min-height: 25px !important;
+  max-height: 25px !important;
+  padding: 0 !important;
+  background-color: #efefef !important;
+  border: 0 solid transparent;
+  text-transform: uppercase;
+}
+
+.hasError {
+  border: 1px solid red !important;
 }
 </style>
