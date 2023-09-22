@@ -160,8 +160,6 @@ function spotClicked(event: BookableSpotClickedEvent) {
   }
 }
 
-
-
 async function clickPutUnderMaintenance() {
   isEnablingDisablingSpot.value = true
 
@@ -397,16 +395,19 @@ async function assignRoomLayoutId(roomLayoutId: string) {
     <button class="btn btn-primary mr-1" :disabled="true">Go to Profile</button>
   </div>
 
-
   <div v-if="assignUserToThisSpotVisible">
-    <hr>
+    <hr />
     <EnrollSelectedMemberComponent
-    v-if="classInfo !== null && selectedSpot.spotNumber !== null && selectedSpot.spotNumber !== undefined"
-    :class-id="classId"
-    :spot-number="selectedSpot.spotNumber!"
-    enrollButtonText="Assing"
-    @after-enrolling="getClassInfo()" 
-  ></EnrollSelectedMemberComponent> 
+      v-if="
+        classInfo !== null &&
+        selectedSpot.spotNumber !== null &&
+        selectedSpot.spotNumber !== undefined
+      "
+      :class-id="classId"
+      :spot-number="selectedSpot.spotNumber!"
+      enrollButtonText="Assing"
+      @after-enrolling="getClassInfo()"
+    ></EnrollSelectedMemberComponent>
   </div>
 
   <!-- ERROR modal -->

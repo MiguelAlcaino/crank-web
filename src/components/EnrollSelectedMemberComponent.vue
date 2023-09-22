@@ -17,7 +17,11 @@ import { appStore } from '@/stores/appStorage'
 import { inject, ref } from 'vue'
 
 import ModalComponent from '@/components/ModalComponent.vue'
-import { ERROR_CLIENT_IS_ALREADY_BOOKED_ADMIN, ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW, ERROR_UNKNOWN } from '@/utils/errorMessages'
+import {
+  ERROR_CLIENT_IS_ALREADY_BOOKED_ADMIN,
+  ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW,
+  ERROR_UNKNOWN
+} from '@/utils/errorMessages'
 
 const apiService = inject<ApiService>('gqlApiService')!
 
@@ -39,10 +43,15 @@ const errorMessage = ref<string>('')
 const paymentRequiredErrorModalIsVisible = ref<boolean>(false)
 
 function onClickEnrollSelectedMember() {
-  bookUserIntoClass(props.classId, selectedUser.value!.id!, props.spotNumber,  true)
+  bookUserIntoClass(props.classId, selectedUser.value!.id!, props.spotNumber, true)
 }
 
-async function bookUserIntoClass(classId: string, userId: string, spotNumber: number | null, isPaymentRequired: boolean) {
+async function bookUserIntoClass(
+  classId: string,
+  userId: string,
+  spotNumber: number | null,
+  isPaymentRequired: boolean
+) {
   isLoading.value = true
 
   const response = await apiService.bookUserIntoClass(
