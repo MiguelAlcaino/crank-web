@@ -15,6 +15,7 @@ import WorkoutStatsView from '../views/WorkoutStatsView.vue'
 
 import { authService } from '@/services/authService'
 import AdminClass from '@/views/admin/AdminClass.vue'
+import RoomLayoutView from '@/views/admin/RoomLayoutView.vue'
 import MenuLayout from '@/layouts/MenuLayout.vue'
 
 const router = createRouter({
@@ -77,12 +78,6 @@ const router = createRouter({
       name: 'class',
       component: ClassView
     },
-
-    {
-      path: '/admin/class/:id',
-      name: 'admin_class',
-      component: AdminClass
-    },
     {
       path: '/forgot-password',
       name: 'forgot_password',
@@ -106,6 +101,16 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue')
+    },
+    {
+      path: '/admin/class/:id',
+      name: 'admin_class',
+      component: AdminClass
+    },
+    {
+      path: '/admin/room-layout',
+      name: 'admin_room_layout',
+      component: RoomLayoutView
     }
   ]
 })

@@ -5,12 +5,14 @@ interface Props {
   disabled?: boolean
   type: 'button' | 'submit'
   block?: boolean
+  variant?: 'primary' | 'secondary'
 }
 withDefaults(defineProps<Props>(), {
   isLoading: false,
   disabled: false,
   type: 'button',
-  block: false
+  block: false,
+  variant: 'primary'
 })
 
 const emits = defineEmits<{
@@ -20,10 +22,14 @@ const emits = defineEmits<{
 <template>
   <button
     :type="type"
-    class="btn btn-primary"
+    class="btn"
     @click="emits('onClick')"
     :disabled="disabled || isLoading"
-    :class="{ 'btn-block': block }"
+    :class="{
+      'btn-block': block,
+      'btn-primary': variant === 'primary',
+      'btn-secondary': variant === 'secondary'
+    }"
   >
     {{ text }}
     <span class="spinner-border spinner-border-sm" v-if="isLoading"></span>
