@@ -124,14 +124,7 @@ function onClickCancel() {
 <template>
   <h1>New Room Layout</h1>
 
-  <form
-    action="https://stagingcrank-fit.myperformanceiq.com/admin/createRoomLayout"
-    id="createLayoutForm"
-    enctype="multipart/form-data"
-    method="post"
-    accept-charset="utf-8"
-  >
-    <input type="hidden" id="SeatMatrixData" name="SeatMatrixData" />
+  <form>
     <div class="row">
       <div class="form-group col-md-4 col-sm-12 col-xs-12">
         <label class="form-label">Room Layout Name</label>
@@ -155,14 +148,14 @@ function onClickCancel() {
             style="width: 100%"
             tabindex="-1"
             class="custom-select"
-            aria-hidden="true"      
+            aria-hidden="true"
           >
             <option value="0" selected>CYCLE Emails</option>
             <option value="1">RPM Emails</option>
             <option value="2">HEART RATE Emails</option>
             <option value="4">ROWING Emails</option>
-            <option value="3">No Emails</option></select
-          >
+            <option value="3">No Emails</option>
+          </select>
         </div>
       </div>
       <hr class="col-md-12" />
@@ -352,7 +345,7 @@ td {
 
 td.highlighted {
   border: 2px dotted #f5f5f5 !important;
-  background-color: #000000 !important;
+  background-color: #ff7f61 !important;
   color: #fff !important;
 }
 
