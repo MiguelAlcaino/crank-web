@@ -1114,8 +1114,39 @@ export class ApiService {
     }
   }
 
-  async createRoomLayout(site: SiteEnum, input: RoomLayoutInput): Promise<RoomLayout | null> {
-    console.log('input', input)
+  async roomLayouts(site: SiteEnum): Promise<RoomLayout[] | null> {
+    const query = gql`
+      query roomLayouts($site: SiteEnum!) {
+        roomLayouts(site: $site) {
+          id
+          name
+          columns
+          rows
+          matrix {
+            x
+            y
+            icon
+          }
+        }
+      }
+    `
+    try {
+      const queryResult = await this.authApiClient.query({
+        query: query,
+        variables: {
+          site: site,
+          query: query
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      return queryResult.data.roomLayouts as RoomLayout[]
+    } catch (error) {
+      return null
+    }
+  }
+
+  async createRoomLayout(site: SiteEnum, input: RoomLayoutInput): Promise<RoomLayout | null> {   
     const muration = gql`
       mutation createRoomLayout($site: SiteEnum!, $input: RoomLayoutInput!) {
         createRoomLayout(site: $site, input: $input) {

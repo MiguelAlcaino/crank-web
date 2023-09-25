@@ -36,28 +36,21 @@ enum PositionIconEnum {
 
 <script setup lang="ts">
 import { computed, inject, onMounted, reactive, ref, watch } from 'vue'
+import { helpers, maxLength, required } from '@vuelidate/validators'
 import { type MenuOptions, ContextMenu, ContextMenuItem } from '@imengyu/vue3-context-menu'
+import useVuelidate from '@vuelidate/core'
 
+import type { ApiService } from '@/services/apiService'
+import router from '@/router'
+
+import { appStore } from '@/stores/appStorage'
+import { ERROR_UNIQUE_NAMES_SPOTS_LAYOUT, ERROR_UNKNOWN } from '@/utils/errorMessages'
 import DefaultButtonComponent from '@/components/DefaultButtonComponent.vue'
 import ModalComponent from '@/components/ModalComponent.vue'
-import { ERROR_UNIQUE_NAMES_SPOTS_LAYOUT, ERROR_UNKNOWN } from '@/utils/errorMessages'
-import type { ApiService } from '@/services/apiService'
-import { appStore } from '@/stores/appStorage'
-import { helpers, maxLength, required } from '@vuelidate/validators'
-import useVuelidate from '@vuelidate/core'
-import router from '@/router'
 
 const apiService = inject<ApiService>('gqlApiService')!
 
-onMounted(() => {
-  fillLayout(layoutSize.rows, layoutSize.cols)
-})
-
 const layoutSize = reactive<LayoutSize>({ rows: 5, cols: 5 })
-
-watch(layoutSize, (newLayoutSize, _) => {
-  fillLayout(newLayoutSize.rows, newLayoutSize.cols)
-})
 
 const formData = reactive({
   name: ''
@@ -88,6 +81,14 @@ const isSaving = ref<boolean>(false)
 const errorMessage = ref<string>('')
 const errorModalIsVisible = ref<Boolean>(false)
 const successModalIsVisible = ref<Boolean>(false)
+
+onMounted(() => {
+  fillLayout(layoutSize.rows, layoutSize.cols)
+})
+
+watch(layoutSize, (newLayoutSize, _) => {
+  fillLayout(newLayoutSize.rows, newLayoutSize.cols)
+})
 
 function fillLayout(rows: number, cols: number) {
   const tempLayout: LayoutPosition[][] = new Array(rows)
@@ -172,10 +173,6 @@ async function onClickSaveLayout() {
       errorModalIsVisible.value = true
     }
   }
-}
-
-function onClickCancel() {
-  console.log(roomLayout.value)
 }
 
 async function saveRomLayout() {
@@ -317,7 +314,7 @@ function spotNumbersAreValid(roomLayout: Array<Array<LayoutPosition>>): boolean 
     <div class="col-md-2 col-xs-12">
       <DefaultButtonComponent
         text="Cancel"
-        @on-click="onClickCancel()"
+        @on-click="router.push('/admin/room-layout/list')"
         type="button"
         :block="true"
         variant="secondary"
