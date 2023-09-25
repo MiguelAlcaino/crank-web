@@ -64,7 +64,11 @@ const documents = {
   '\n      mutation requestPasswordLink($site: SiteEnum!, $input: RequestPasswordLinkInput) {\n        requestPasswordLink(site: $site, input: $input) {\n          ... on TooManyResetPasswordLinkRequestsError {\n            availableAgainAt\n          }\n          ... on ResetPasswordLinkSentSuccessfully {\n            status\n          }\n        }\n      }\n    ':
     types.RequestPasswordLinkDocument,
   '\n      mutation resetPasswordForCurrentUser($input: ResetPasswordForCurrentUserInput) {\n        resetPasswordForCurrentUser(input: $input) {\n          __typename\n          ... on PasswordsDontMatchError {\n            __typename\n            code\n          }\n          ... on ResetPasswordSuccess {\n            __typename\n            status\n          }\n        }\n      }\n    ':
-    types.ResetPasswordForCurrentUserDocument
+    types.ResetPasswordForCurrentUserDocument,
+  '\n      query currentUserDoesExistInSite($site: SiteEnum!) {\n        currentUser {\n          doesExistInSite(site: $site)\n        }\n      }\n    ':
+    types.CurrentUserDoesExistInSiteDocument,
+  '\n      mutation createCurrentUserInSite($fromSite: SiteEnum!, $toSite: SiteEnum!) {\n        createCurrentUserInSite(fromSite: $fromSite, toSite: $toSite) {\n          ... on CreateCurrentUserInSiteSuccess {\n            __typename\n            result\n          }\n          ... on UserAlreadyExistsError {\n            __typename\n            code\n          }\n        }\n      }\n    ':
+    types.CreateCurrentUserInSiteDocument
 }
 
 /**
@@ -237,6 +241,18 @@ export function graphql(
 export function graphql(
   source: '\n      mutation resetPasswordForCurrentUser($input: ResetPasswordForCurrentUserInput) {\n        resetPasswordForCurrentUser(input: $input) {\n          __typename\n          ... on PasswordsDontMatchError {\n            __typename\n            code\n          }\n          ... on ResetPasswordSuccess {\n            __typename\n            status\n          }\n        }\n      }\n    '
 ): (typeof documents)['\n      mutation resetPasswordForCurrentUser($input: ResetPasswordForCurrentUserInput) {\n        resetPasswordForCurrentUser(input: $input) {\n          __typename\n          ... on PasswordsDontMatchError {\n            __typename\n            code\n          }\n          ... on ResetPasswordSuccess {\n            __typename\n            status\n          }\n        }\n      }\n    ']
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n      query currentUserDoesExistInSite($site: SiteEnum!) {\n        currentUser {\n          doesExistInSite(site: $site)\n        }\n      }\n    '
+): (typeof documents)['\n      query currentUserDoesExistInSite($site: SiteEnum!) {\n        currentUser {\n          doesExistInSite(site: $site)\n        }\n      }\n    ']
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n      mutation createCurrentUserInSite($fromSite: SiteEnum!, $toSite: SiteEnum!) {\n        createCurrentUserInSite(fromSite: $fromSite, toSite: $toSite) {\n          ... on CreateCurrentUserInSiteSuccess {\n            __typename\n            result\n          }\n          ... on UserAlreadyExistsError {\n            __typename\n            code\n          }\n        }\n      }\n    '
+): (typeof documents)['\n      mutation createCurrentUserInSite($fromSite: SiteEnum!, $toSite: SiteEnum!) {\n        createCurrentUserInSite(fromSite: $fromSite, toSite: $toSite) {\n          ... on CreateCurrentUserInSiteSuccess {\n            __typename\n            result\n          }\n          ... on UserAlreadyExistsError {\n            __typename\n            code\n          }\n        }\n      }\n    ']
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {}

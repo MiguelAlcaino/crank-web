@@ -251,6 +251,11 @@ export type EditEnrollmentResultUnion =
   | SpotAlreadyReservedError
   | TryToSwitchToSameSpotError
 
+export type EditRoomLayoutInput = {
+  roomLayoutId: Scalars['ID']
+  roomLayoutInput: RoomLayoutInput
+}
+
 export type Enrollment = {
   __typename: 'Enrollment'
   class: Class
@@ -308,6 +313,13 @@ export type IconPosition = ClassPositionInterface & {
   y: Scalars['Int']
 }
 
+export type IconPositionInput = {
+  spotNumber?: InputMaybe<Scalars['Int']>
+  type: PositionIconEnum
+  x: Scalars['Int']
+  y: Scalars['Int']
+}
+
 export type IdentifiableUser = {
   __typename: 'IdentifiableUser'
   id?: Maybe<Scalars['ID']>
@@ -333,6 +345,7 @@ export type Mutation = {
   cancelCurrentUserEnrollment?: Maybe<CancelEnrollmentResultUnion>
   /** Creates a copy of the current user in the given site */
   createCurrentUserInSite?: Maybe<CreateCurrentUserInSiteUnion>
+  createRoomLayout: RoomLayout
   /** Removes a devices token */
   deleteDeviceTokenToCurrentUser?: Maybe<Scalars['Boolean']>
   /** Disables a spot in a class */
@@ -341,6 +354,7 @@ export type Mutation = {
   editClass: EditClassResultUnion
   /** Edits an enrollment made by the current user */
   editCurrentUserEnrollment?: Maybe<EditEnrollmentResultUnion>
+  editRoomLayout: RoomLayout
   /** Enabled a spot in a class */
   enableSpot?: Maybe<DisableEnableSpotResultUnion>
   /** Registers a new user */
@@ -390,6 +404,11 @@ export type MutationCreateCurrentUserInSiteArgs = {
   toSite: SiteEnum
 }
 
+export type MutationCreateRoomLayoutArgs = {
+  input: RoomLayoutInput
+  site: SiteEnum
+}
+
 export type MutationDeleteDeviceTokenToCurrentUserArgs = {
   input?: InputMaybe<DeviceTokenInput>
   site?: InputMaybe<SiteEnum>
@@ -405,6 +424,11 @@ export type MutationEditClassArgs = {
 
 export type MutationEditCurrentUserEnrollmentArgs = {
   input: EditEnrollmentInput
+  site: SiteEnum
+}
+
+export type MutationEditRoomLayoutArgs = {
+  input: EditRoomLayoutInput
   site: SiteEnum
 }
 
@@ -504,6 +528,8 @@ export type Query = {
   currentUserRankingInClass?: Maybe<UserInClassRanking>
   /** Get current user's workout stats */
   currentUserWorkoutStats: Array<Maybe<ClassStat>>
+  /** Returns a list of available RoomLayouts for a site */
+  roomLayouts: Array<RoomLayout>
   /** Returns the matched users given the query provided */
   searchUser?: Maybe<Array<Maybe<IdentifiableUser>>>
   /** Settings of a site */
@@ -539,6 +565,10 @@ export type QueryCurrentUserRankingInClassArgs = {
 }
 
 export type QueryCurrentUserWorkoutStatsArgs = {
+  site: SiteEnum
+}
+
+export type QueryRoomLayoutsArgs = {
   site: SiteEnum
 }
 
@@ -625,9 +655,18 @@ export type ResetPasswordSuccess = {
 
 export type RoomLayout = {
   __typename: 'RoomLayout'
+  columns: Scalars['Int']
   id: Scalars['ID']
   matrix?: Maybe<Array<ClassPositionInterface>>
   name: Scalars['String']
+  rows: Scalars['Int']
+}
+
+export type RoomLayoutInput = {
+  columns: Scalars['Int']
+  matrix: Array<IconPositionInput>
+  name: Scalars['String']
+  rows: Scalars['Int']
 }
 
 export enum SiteEnum {
@@ -1269,6 +1308,28 @@ export type ResetPasswordForCurrentUserMutation = {
   resetPasswordForCurrentUser?:
     | { __typename: 'PasswordsDontMatchError'; code: string }
     | { __typename: 'ResetPasswordSuccess'; status: boolean }
+    | null
+}
+
+export type CurrentUserDoesExistInSiteQueryVariables = Exact<{
+  site: SiteEnum
+}>
+
+export type CurrentUserDoesExistInSiteQuery = {
+  __typename: 'Query'
+  currentUser?: { __typename: 'User'; doesExistInSite: boolean } | null
+}
+
+export type CreateCurrentUserInSiteMutationVariables = Exact<{
+  fromSite: SiteEnum
+  toSite: SiteEnum
+}>
+
+export type CreateCurrentUserInSiteMutation = {
+  __typename: 'Mutation'
+  createCurrentUserInSite?:
+    | { __typename: 'CreateCurrentUserInSiteSuccess'; result: boolean }
+    | { __typename: 'UserAlreadyExistsError'; code: string }
     | null
 }
 
@@ -3085,4 +3146,137 @@ export const ResetPasswordForCurrentUserDocument = {
 } as unknown as DocumentNode<
   ResetPasswordForCurrentUserMutation,
   ResetPasswordForCurrentUserMutationVariables
+>
+export const CurrentUserDoesExistInSiteDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'currentUserDoesExistInSite' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentUser' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'doesExistInSite' },
+                  arguments: [
+                    {
+                      kind: 'Argument',
+                      name: { kind: 'Name', value: 'site' },
+                      value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  CurrentUserDoesExistInSiteQuery,
+  CurrentUserDoesExistInSiteQueryVariables
+>
+export const CreateCurrentUserInSiteDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'createCurrentUserInSite' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'fromSite' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'toSite' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'createCurrentUserInSite' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'fromSite' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'fromSite' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'toSite' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'toSite' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'CreateCurrentUserInSiteSuccess' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'result' } }
+                    ]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'UserAlreadyExistsError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'code' } }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  CreateCurrentUserInSiteMutation,
+  CreateCurrentUserInSiteMutationVariables
 >
