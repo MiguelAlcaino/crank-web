@@ -17,10 +17,15 @@ interface RoomLayoutInput {
   matrix: Array<IconPositionInput>
 }
 
+interface EditRoomLayoutInput {
+  roomLayoutId: string
+  roomLayoutInput: RoomLayoutInput
+}
+
 interface IconPositionInput {
   x: number
   y: number
-  type: PositionIconEnum
+  icon: PositionIconEnum
   spotNumber?: number | null
 }
 
@@ -31,6 +36,14 @@ enum PositionIconEnum {
   Speaker = 'speaker',
   Spot = 'spot',
   Tv = 'tv'
+}
+
+interface RoomLayout {
+  id: string
+  name: string
+  columns: number
+  rows: number
+  matrix: Array<IconPositionInput>
 }
 </script>
 
@@ -47,8 +60,12 @@ import { appStore } from '@/stores/appStorage'
 import { ERROR_UNIQUE_NAMES_SPOTS_LAYOUT, ERROR_UNKNOWN } from '@/utils/errorMessages'
 import DefaultButtonComponent from '@/components/DefaultButtonComponent.vue'
 import ModalComponent from '@/components/ModalComponent.vue'
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
 const apiService = inject<ApiService>('gqlApiService')!
+
+const roomLayoutId = ref<string | null>(null)
 
 const layoutSize = reactive<LayoutSize>({ rows: 5, cols: 5 })
 
@@ -78,17 +95,71 @@ const showMenu = ref(false)
 
 const totalConfiguredSeats = ref(0)
 const isSaving = ref<boolean>(false)
+const isLoading = ref<boolean>(false)
 const errorMessage = ref<string>('')
 const errorModalIsVisible = ref<Boolean>(false)
 const successModalIsVisible = ref<Boolean>(false)
 
 onMounted(() => {
-  fillLayout(layoutSize.rows, layoutSize.cols)
+  roomLayoutId.value = getRoomLayoutId()
+
+  if (roomLayoutId.value) {
+    getRoomLayout()
+  } else {
+    fillLayout(layoutSize.rows, layoutSize.cols)
+  }
 })
 
 watch(layoutSize, (newLayoutSize, _) => {
   fillLayout(newLayoutSize.rows, newLayoutSize.cols)
 })
+
+async function getRoomLayout() {
+  isLoading.value = true
+
+  const _roomLayout = (await apiService.roomLayout(
+    appStore().site,
+    roomLayoutId.value!
+  )) as RoomLayout | null
+
+  isLoading.value = false
+
+  if (_roomLayout) {
+    formData.name = _roomLayout.name
+    layoutSize.cols = _roomLayout.columns
+    layoutSize.rows = _roomLayout.rows
+
+    const tempLayout: LayoutPosition[][] = new Array(layoutSize.rows)
+
+    for (let i = 0; i < layoutSize.rows; i++) {
+      tempLayout[i] = new Array<LayoutPosition>(layoutSize.rows)
+    }
+
+    for (let i = 0; i < _roomLayout.matrix.length; i++) {
+      tempLayout[_roomLayout.matrix[i].y][_roomLayout.matrix[i].x] = {
+        selected: false,
+        spotNumber: _roomLayout.matrix[i].spotNumber ?? undefined,
+        type: _roomLayout.matrix[i].icon
+      }
+
+      if(_roomLayout.matrix[i].spotNumber) totalConfiguredSeats.value++;
+    }
+
+    roomLayout.value = tempLayout
+  } else {
+    errorMessage.value = ERROR_UNKNOWN
+    errorModalIsVisible.value = true
+  }
+}
+
+function getRoomLayoutId(): string {
+  let roomLayout = inject<any | undefined>('roomLayoutData')
+  if (roomLayout !== undefined) {
+    return roomLayout.id as string
+  }
+
+  return route.params.id as string
+}
 
 function fillLayout(rows: number, cols: number) {
   const tempLayout: LayoutPosition[][] = new Array(rows)
@@ -167,7 +238,11 @@ async function onClickSaveLayout() {
 
   if (isValid) {
     if (spotNumbersAreValid(roomLayout.value)) {
-      saveRomLayout()
+      if (roomLayoutId.value) {
+        editRoomLayout()
+      } else {
+        createRoomLayout()
+      }
     } else {
       errorMessage.value = ERROR_UNIQUE_NAMES_SPOTS_LAYOUT
       errorModalIsVisible.value = true
@@ -175,22 +250,8 @@ async function onClickSaveLayout() {
   }
 }
 
-async function saveRomLayout() {
-  isSaving.value = true
-
-  var matrix: Array<IconPositionInput> = []
-
-  for (var y = 0; y < roomLayout.value.length; y++) {
-    var row = roomLayout.value[y]
-    for (var x = 0; x < row.length; x++) {
-      matrix.push({
-        type: roomLayout.value[y][x].type,
-        x: x,
-        y: y,
-        spotNumber: roomLayout.value[y][x].spotNumber
-      })
-    }
-  }
+async function createRoomLayout() {
+  var matrix = getMatrixToSave(roomLayout.value)
 
   var roomlayoutInput: RoomLayoutInput = {
     columns: +layoutSize.cols,
@@ -199,6 +260,7 @@ async function saveRomLayout() {
     matrix: matrix
   }
 
+  isSaving.value = true
   const response = await apiService.createRoomLayout(appStore().site, roomlayoutInput)
   isSaving.value = false
 
@@ -210,6 +272,49 @@ async function saveRomLayout() {
   }
 }
 
+async function editRoomLayout() {
+  var matrix = getMatrixToSave(roomLayout.value)
+
+  var editRoomLayoutInput: EditRoomLayoutInput = {
+    roomLayoutId: roomLayoutId.value!,
+    roomLayoutInput: {
+      columns: +layoutSize.cols,
+      rows: +layoutSize.rows,
+      name: formData.name,
+      matrix: matrix
+    }
+  }
+
+  isSaving.value = true
+  const response = await apiService.editRoomLayout(appStore().site, editRoomLayoutInput)
+  isSaving.value = false
+
+  if (response) {
+    successModalIsVisible.value = true
+  } else {
+    errorMessage.value = ERROR_UNKNOWN
+    errorModalIsVisible.value = true
+  }
+}
+
+function getMatrixToSave(roomLayout: Array<Array<LayoutPosition>>): Array<IconPositionInput> {
+  var matrix: Array<IconPositionInput> = []
+
+  for (var i = 0; i < roomLayout.length; i++) {
+    var row = roomLayout[i]
+    for (var j = 0; j < row.length; j++) {
+      matrix.push({
+        icon: roomLayout[j][i].type,
+        x: j,
+        y: i,
+        spotNumber: roomLayout[j][i].spotNumber ?? undefined
+      })
+    }
+  }
+
+  return matrix
+}
+
 function spotNumbersAreValid(roomLayout: Array<Array<LayoutPosition>>): boolean {
   let sportNumbers: number[] = []
 
@@ -219,8 +324,12 @@ function spotNumbersAreValid(roomLayout: Array<Array<LayoutPosition>>): boolean 
     for (var j = 0; j < row.length; j++) {
       if (roomLayout[i][j].type === PositionIconEnum.Spot) {
         if (roomLayout[i][j].spotNumber !== null && roomLayout[i][j].spotNumber !== undefined) {
-          if (!sportNumbers.includes(roomLayout[i][j].spotNumber!)) {
-            sportNumbers.push(roomLayout[i][j].spotNumber!)
+          const spotNumber = Number(roomLayout[i][j].spotNumber)
+
+          if (spotNumber <= 0) return false
+
+          if (!sportNumbers.includes(spotNumber)) {
+            sportNumbers.push(spotNumber)
           } else {
             return false
           }
@@ -309,6 +418,7 @@ function spotNumbersAreValid(roomLayout: Array<Array<LayoutPosition>>): boolean 
         @on-click="onClickSaveLayout()"
         type="button"
         :block="true"
+        :is-loading="isSaving"
       ></DefaultButtonComponent>
     </div>
     <div class="col-md-2 col-xs-12">
@@ -318,6 +428,7 @@ function spotNumbersAreValid(roomLayout: Array<Array<LayoutPosition>>): boolean 
         type="button"
         :block="true"
         variant="secondary"
+        :disabled="isSaving"
       ></DefaultButtonComponent>
     </div>
   </div>
@@ -354,14 +465,6 @@ function spotNumbersAreValid(roomLayout: Array<Array<LayoutPosition>>): boolean 
                   <i class="bi bi-circle" style="font-size: 1.8rem"></i>
                 </div>
                 <div v-else-if="spot.type === PositionIconEnum.Instructor">
-                  <input
-                    type="number"
-                    class="seat-number"
-                    min="1"
-                    max="2500"
-                    :class="{ hasError: spot.spotNumber === null || spot.spotNumber === undefined }"
-                    v-model="spot.spotNumber"
-                  />
                   <i class="bi bi-person-fill" style="font-size: 1.8rem"></i>
                 </div>
                 <div v-else-if="spot.type === PositionIconEnum.Speaker">
@@ -439,7 +542,7 @@ function spotNumbersAreValid(roomLayout: Array<Array<LayoutPosition>>): boolean 
   <ModalComponent
     :ok-loading="false"
     title="SUCCESS"
-    message="Saved successfully"
+    message="SAVED SUCCESSFULLY"
     :closable="false"
     :cancel-text="null"
     v-if="successModalIsVisible"

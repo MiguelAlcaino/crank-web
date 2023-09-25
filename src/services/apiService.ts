@@ -16,6 +16,7 @@ import type {
   EditClassInput,
   EditClassResultUnion,
   EditEnrollmentInput,
+  EditRoomLayoutInput,
   Enrollment,
   EnrollmentInfo,
   IdentifiableUser,
@@ -1120,13 +1121,6 @@ export class ApiService {
         roomLayouts(site: $site) {
           id
           name
-          columns
-          rows
-          matrix {
-            x
-            y
-            icon
-          }
         }
       }
     `
@@ -1146,10 +1140,10 @@ export class ApiService {
     }
   }
 
-  async createRoomLayout(site: SiteEnum, input: RoomLayoutInput): Promise<RoomLayout | null> {   
-    const muration = gql`
-      mutation createRoomLayout($site: SiteEnum!, $input: RoomLayoutInput!) {
-        createRoomLayout(site: $site, input: $input) {
+  async roomLayout(site: SiteEnum, id: string): Promise<RoomLayout | null> {
+    const query = gql`
+      query roomLayout($site: SiteEnum!, $id: ID!) {
+        roomLayout(site: $site, id: $id) {
           id
           name
           columns
@@ -1158,7 +1152,35 @@ export class ApiService {
             x
             y
             icon
+            ... on BookableSpot {
+              spotNumber
+            }
           }
+        }
+      }
+    `
+    try {
+      const queryResult = await this.authApiClient.query({
+        query: query,
+        variables: {
+          site: site,
+          id: id,
+          query: query
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      return queryResult.data.roomLayout as RoomLayout
+    } catch (error) {
+      return null
+    }
+  }
+
+  async createRoomLayout(site: SiteEnum, input: RoomLayoutInput): Promise<RoomLayout | null> {
+    const muration = gql`
+      mutation createRoomLayout($site: SiteEnum!, $input: RoomLayoutInput!) {
+        createRoomLayout(site: $site, input: $input) {
+          id
         }
       }
     `
@@ -1174,6 +1196,31 @@ export class ApiService {
       })
 
       return result.data.createRoomLayout as RoomLayout
+    } catch (error) {
+      return null
+    }
+  }
+
+  async editRoomLayout(site: SiteEnum, input: EditRoomLayoutInput): Promise<RoomLayout | null> {
+    const muration = gql`
+      mutation editRoomLayout($site: SiteEnum!, $input: EditRoomLayoutInput!) {
+        editRoomLayout(site: $site, input: $input) {
+          id
+        }
+      }
+    `
+
+    try {
+      const result = await this.authApiClient.mutate({
+        mutation: muration,
+        variables: {
+          site: site,
+          input: input
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      return result.data.editRoomLayout as RoomLayout
     } catch (error) {
       return null
     }
