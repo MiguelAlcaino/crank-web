@@ -26,6 +26,8 @@ import type {
   ResetPasswordForCurrentUserInput,
   ResetPasswordForCurrentUserUnion,
   ResetPasswordLinkResultUnion,
+  RoomLayout,
+  RoomLayoutInput,
   SiteEnum,
   UpdateCurrentUserPasswordInput,
   User,
@@ -1107,6 +1109,40 @@ export class ApiService {
       })
 
       return result.data.createCurrentUserInSite as CreateCurrentUserInSiteUnion
+    } catch (error) {
+      return null
+    }
+  }
+
+  async createRoomLayout(site: SiteEnum, input: RoomLayoutInput): Promise<RoomLayout | null> {
+    console.log('input', input)
+    const muration = gql`
+      mutation createRoomLayout($site: SiteEnum!, $input: RoomLayoutInput!) {
+        createRoomLayout(site: $site, input: $input) {
+          id
+          name
+          columns
+          rows
+          matrix {
+            x
+            y
+            icon
+          }
+        }
+      }
+    `
+
+    try {
+      const result = await this.authApiClient.mutate({
+        mutation: muration,
+        variables: {
+          site: site,
+          input: input
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      return result.data.createRoomLayout as RoomLayout
     } catch (error) {
       return null
     }
