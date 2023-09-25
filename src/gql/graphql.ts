@@ -71,7 +71,9 @@ export type BookableSpot = ClassPositionInterface & {
   __typename: 'BookableSpot'
   enabled?: Maybe<Scalars['Boolean']>
   icon: PositionIconEnum
+  /** @deprecated isBooked should be moved somewhere else and spotNumber has been moved to the root. */
   spotInfo: SpotInfo
+  spotNumber: Scalars['Int']
   x: Scalars['Int']
   y: Scalars['Int']
 }
@@ -314,8 +316,8 @@ export type IconPosition = ClassPositionInterface & {
 }
 
 export type IconPositionInput = {
+  icon: PositionIconEnum
   spotNumber?: InputMaybe<Scalars['Int']>
-  type: PositionIconEnum
   x: Scalars['Int']
   y: Scalars['Int']
 }
@@ -528,6 +530,7 @@ export type Query = {
   currentUserRankingInClass?: Maybe<UserInClassRanking>
   /** Get current user's workout stats */
   currentUserWorkoutStats: Array<Maybe<ClassStat>>
+  roomLayout?: Maybe<RoomLayout>
   /** Returns a list of available RoomLayouts for a site */
   roomLayouts: Array<RoomLayout>
   /** Returns the matched users given the query provided */
@@ -565,6 +568,11 @@ export type QueryCurrentUserRankingInClassArgs = {
 }
 
 export type QueryCurrentUserWorkoutStatsArgs = {
+  site: SiteEnum
+}
+
+export type QueryRoomLayoutArgs = {
+  id: Scalars['ID']
   site: SiteEnum
 }
 
@@ -1331,6 +1339,55 @@ export type CreateCurrentUserInSiteMutation = {
     | { __typename: 'CreateCurrentUserInSiteSuccess'; result: boolean }
     | { __typename: 'UserAlreadyExistsError'; code: string }
     | null
+}
+
+export type RoomLayoutsQueryVariables = Exact<{
+  site: SiteEnum
+}>
+
+export type RoomLayoutsQuery = {
+  __typename: 'Query'
+  roomLayouts: Array<{ __typename: 'RoomLayout'; id: string; name: string }>
+}
+
+export type RoomLayoutQueryVariables = Exact<{
+  site: SiteEnum
+  id: Scalars['ID']
+}>
+
+export type RoomLayoutQuery = {
+  __typename: 'Query'
+  roomLayout?: {
+    __typename: 'RoomLayout'
+    id: string
+    name: string
+    columns: number
+    rows: number
+    matrix?: Array<
+      | { __typename: 'BookableSpot'; x: number; y: number; icon: PositionIconEnum }
+      | { __typename: 'IconPosition'; x: number; y: number; icon: PositionIconEnum }
+    > | null
+  } | null
+}
+
+export type CreateRoomLayoutMutationVariables = Exact<{
+  site: SiteEnum
+  input: RoomLayoutInput
+}>
+
+export type CreateRoomLayoutMutation = {
+  __typename: 'Mutation'
+  createRoomLayout: {
+    __typename: 'RoomLayout'
+    id: string
+    name: string
+    columns: number
+    rows: number
+    matrix?: Array<
+      | { __typename: 'BookableSpot'; x: number; y: number; icon: PositionIconEnum }
+      | { __typename: 'IconPosition'; x: number; y: number; icon: PositionIconEnum }
+    > | null
+  }
 }
 
 export const SiteSettingsDocument = {
@@ -3280,3 +3337,186 @@ export const CreateCurrentUserInSiteDocument = {
   CreateCurrentUserInSiteMutation,
   CreateCurrentUserInSiteMutationVariables
 >
+export const RoomLayoutsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'roomLayouts' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'roomLayouts' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<RoomLayoutsQuery, RoomLayoutsQueryVariables>
+export const RoomLayoutDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'roomLayout' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'roomLayout' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'id' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'columns' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'rows' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'matrix' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'x' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'y' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'icon' } }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<RoomLayoutQuery, RoomLayoutQueryVariables>
+export const CreateRoomLayoutDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'createRoomLayout' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'RoomLayoutInput' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'createRoomLayout' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'columns' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'rows' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'matrix' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'x' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'y' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'icon' } }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<CreateRoomLayoutMutation, CreateRoomLayoutMutationVariables>

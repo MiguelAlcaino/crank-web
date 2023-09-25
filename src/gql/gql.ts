@@ -68,7 +68,13 @@ const documents = {
   '\n      query currentUserDoesExistInSite($site: SiteEnum!) {\n        currentUser {\n          doesExistInSite(site: $site)\n        }\n      }\n    ':
     types.CurrentUserDoesExistInSiteDocument,
   '\n      mutation createCurrentUserInSite($fromSite: SiteEnum!, $toSite: SiteEnum!) {\n        createCurrentUserInSite(fromSite: $fromSite, toSite: $toSite) {\n          ... on CreateCurrentUserInSiteSuccess {\n            __typename\n            result\n          }\n          ... on UserAlreadyExistsError {\n            __typename\n            code\n          }\n        }\n      }\n    ':
-    types.CreateCurrentUserInSiteDocument
+    types.CreateCurrentUserInSiteDocument,
+  '\n      query roomLayouts($site: SiteEnum!) {\n        roomLayouts(site: $site) {\n          id\n          name\n        }\n      }\n    ':
+    types.RoomLayoutsDocument,
+  '\n      query roomLayout($site: SiteEnum!, $id: ID!) {\n        roomLayout(site: $site, id: $id) {\n          id\n          name\n          columns\n          rows\n          matrix {\n            x\n            y\n            icon\n          }\n        }\n      }\n    ':
+    types.RoomLayoutDocument,
+  '\n      mutation createRoomLayout($site: SiteEnum!, $input: RoomLayoutInput!) {\n        createRoomLayout(site: $site, input: $input) {\n          id\n          name\n          columns\n          rows\n          matrix {\n            x\n            y\n            icon\n          }\n        }\n      }\n    ':
+    types.CreateRoomLayoutDocument
 }
 
 /**
@@ -253,6 +259,24 @@ export function graphql(
 export function graphql(
   source: '\n      mutation createCurrentUserInSite($fromSite: SiteEnum!, $toSite: SiteEnum!) {\n        createCurrentUserInSite(fromSite: $fromSite, toSite: $toSite) {\n          ... on CreateCurrentUserInSiteSuccess {\n            __typename\n            result\n          }\n          ... on UserAlreadyExistsError {\n            __typename\n            code\n          }\n        }\n      }\n    '
 ): (typeof documents)['\n      mutation createCurrentUserInSite($fromSite: SiteEnum!, $toSite: SiteEnum!) {\n        createCurrentUserInSite(fromSite: $fromSite, toSite: $toSite) {\n          ... on CreateCurrentUserInSiteSuccess {\n            __typename\n            result\n          }\n          ... on UserAlreadyExistsError {\n            __typename\n            code\n          }\n        }\n      }\n    ']
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n      query roomLayouts($site: SiteEnum!) {\n        roomLayouts(site: $site) {\n          id\n          name\n        }\n      }\n    '
+): (typeof documents)['\n      query roomLayouts($site: SiteEnum!) {\n        roomLayouts(site: $site) {\n          id\n          name\n        }\n      }\n    ']
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n      query roomLayout($site: SiteEnum!, $id: ID!) {\n        roomLayout(site: $site, id: $id) {\n          id\n          name\n          columns\n          rows\n          matrix {\n            x\n            y\n            icon\n          }\n        }\n      }\n    '
+): (typeof documents)['\n      query roomLayout($site: SiteEnum!, $id: ID!) {\n        roomLayout(site: $site, id: $id) {\n          id\n          name\n          columns\n          rows\n          matrix {\n            x\n            y\n            icon\n          }\n        }\n      }\n    ']
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n      mutation createRoomLayout($site: SiteEnum!, $input: RoomLayoutInput!) {\n        createRoomLayout(site: $site, input: $input) {\n          id\n          name\n          columns\n          rows\n          matrix {\n            x\n            y\n            icon\n          }\n        }\n      }\n    '
+): (typeof documents)['\n      mutation createRoomLayout($site: SiteEnum!, $input: RoomLayoutInput!) {\n        createRoomLayout(site: $site, input: $input) {\n          id\n          name\n          columns\n          rows\n          matrix {\n            x\n            y\n            icon\n          }\n        }\n      }\n    ']
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {}
