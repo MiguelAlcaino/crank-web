@@ -1,7 +1,7 @@
 <script lang="ts">
 interface LayoutPosition {
   selected: boolean
-  type: 'empty' | 'seat' | 'tv' | 'speaker' | 'fan' | 'instructor'
+  type: PositionIconEnum
   spotNumber?: number | null
 }
 
@@ -9,23 +9,78 @@ interface LayoutSize {
   rows: number
   cols: number
 }
+
+interface RoomLayoutInput {
+  name: string
+  columns: number
+  rows: number
+  matrix: Array<IconPositionInput>
+}
+
+interface EditRoomLayoutInput {
+  roomLayoutId: string
+  roomLayoutInput: RoomLayoutInput
+}
+
+interface IconPositionInput {
+  x: number
+  y: number
+  icon: PositionIconEnum
+  spotNumber?: number | null
+}
+
+enum PositionIconEnum {
+  Empty = 'empty',
+  Fan = 'fan',
+  Instructor = 'instructor',
+  Speaker = 'speaker',
+  Spot = 'spot',
+  Tv = 'tv'
+}
+
+interface RoomLayout {
+  id: string
+  name: string
+  columns: number
+  rows: number
+  matrix: Array<IconPositionInput>
+}
 </script>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref, watch } from 'vue'
+import { computed, inject, onMounted, reactive, ref, watch } from 'vue'
+import { helpers, maxLength, required } from '@vuelidate/validators'
 import { type MenuOptions, ContextMenu, ContextMenuItem } from '@imengyu/vue3-context-menu'
+import useVuelidate from '@vuelidate/core'
 
+import type { ApiService } from '@/services/apiService'
+import router from '@/router'
+
+import { appStore } from '@/stores/appStorage'
+import { ERROR_UNIQUE_NAMES_SPOTS_LAYOUT, ERROR_UNKNOWN } from '@/utils/errorMessages'
 import DefaultButtonComponent from '@/components/DefaultButtonComponent.vue'
+import ModalComponent from '@/components/ModalComponent.vue'
+import { useRoute } from 'vue-router'
 
-onMounted(() => {
-  fillLayout(layoutSize.rows, layoutSize.cols)
-})
+const route = useRoute()
+const apiService = inject<ApiService>('gqlApiService')!
+
+const roomLayoutId = ref<string | null>(null)
 
 const layoutSize = reactive<LayoutSize>({ rows: 5, cols: 5 })
 
-watch(layoutSize, (newLayoutSize, _) => {
-  fillLayout(newLayoutSize.rows, newLayoutSize.cols)
+const formData = reactive({
+  name: ''
 })
+const rules = computed(() => {
+  return {
+    name: {
+      required: helpers.withMessage('Name is required', required),
+      maxLength: maxLength(50)
+    }
+  }
+})
+const v$ = useVuelidate(rules, formData)
 
 const roomLayout = ref<Array<Array<LayoutPosition>>>([])
 const optionsComponent = ref<MenuOptions>({
@@ -38,7 +93,76 @@ const optionsComponent = ref<MenuOptions>({
 })
 const showMenu = ref(false)
 
+const title = ref('')
 const totalConfiguredSeats = ref(0)
+const isSaving = ref<boolean>(false)
+const isLoading = ref<boolean>(false)
+const errorMessage = ref<string>('')
+const errorModalIsVisible = ref<Boolean>(false)
+const successModalIsVisible = ref<Boolean>(false)
+
+onMounted(() => { 
+  roomLayoutId.value = getRoomLayoutId()
+
+  if (roomLayoutId.value) {   
+    title.value = 'EDIT ROOM LAYOUT'
+    getRoomLayout()
+  } else {
+    title.value = 'NEW ROOM LAYOUT'
+    fillLayout(layoutSize.rows, layoutSize.cols)
+  }
+})
+
+watch(layoutSize, (newLayoutSize, _) => {
+  fillLayout(newLayoutSize.rows, newLayoutSize.cols)
+})
+
+async function getRoomLayout() {
+  isLoading.value = true
+
+  const _roomLayout = (await apiService.roomLayout(
+    appStore().site,
+    roomLayoutId.value!
+  )) as RoomLayout | null
+
+  isLoading.value = false
+
+  if (_roomLayout) {
+    formData.name = _roomLayout.name
+    layoutSize.cols = _roomLayout.columns
+    layoutSize.rows = _roomLayout.rows
+
+    const tempLayout: LayoutPosition[][] = new Array(layoutSize.rows)
+
+    for (let i = 0; i < layoutSize.rows; i++) {
+      tempLayout[i] = new Array<LayoutPosition>(layoutSize.rows)
+    }
+
+    for (let i = 0; i < _roomLayout.matrix.length; i++) {
+      tempLayout[_roomLayout.matrix[i].y][_roomLayout.matrix[i].x] = {
+        selected: false,
+        spotNumber: _roomLayout.matrix[i].spotNumber ?? undefined,
+        type: _roomLayout.matrix[i].icon
+      }
+
+      if(_roomLayout.matrix[i].spotNumber) totalConfiguredSeats.value++;
+    }
+
+    roomLayout.value = tempLayout
+  } else {
+    errorMessage.value = ERROR_UNKNOWN
+    errorModalIsVisible.value = true
+  }
+}
+
+function getRoomLayoutId(): string {
+  let roomLayout = inject<any | undefined>('roomLayoutData')
+  if (roomLayout !== undefined) {
+    return roomLayout.id as string
+  }
+
+  return route.params.id as string
+}
 
 function fillLayout(rows: number, cols: number) {
   const tempLayout: LayoutPosition[][] = new Array(rows)
@@ -52,7 +176,7 @@ function fillLayout(rows: number, cols: number) {
       if (roomLayout.value[rowIndex] && roomLayout.value[rowIndex][colIndex]) {
         tempLayout[rowIndex][colIndex] = roomLayout.value[rowIndex][colIndex]
       } else {
-        tempLayout[rowIndex][colIndex] = { selected: false, type: 'empty' }
+        tempLayout[rowIndex][colIndex] = { selected: false, type: PositionIconEnum.Empty }
       }
     }
   }
@@ -93,7 +217,7 @@ function invertSelection() {
   }
 }
 
-function setSpotType(spotType: 'empty' | 'seat' | 'tv' | 'speaker' | 'fan' | 'instructor') {
+function setSpotType(spotType: PositionIconEnum) {
   totalConfiguredSeats.value = 0
 
   for (var i = 0; i < roomLayout.value.length; i++) {
@@ -105,60 +229,153 @@ function setSpotType(spotType: 'empty' | 'seat' | 'tv' | 'speaker' | 'fan' | 'in
         roomLayout.value[i][j].selected = false
       }
 
-      if (roomLayout.value[i][j].type === 'seat') {
+      if (roomLayout.value[i][j].type === PositionIconEnum.Spot) {
         totalConfiguredSeats.value++
       }
     }
   }
 }
 
-function onClickSaveLayout() {
-  console.log(roomLayout.value)
+async function onClickSaveLayout() {
+  const isValid = await v$.value.$validate()
+
+  if (isValid) {
+    if (spotNumbersAreValid(roomLayout.value)) {
+      if (roomLayoutId.value) {
+        editRoomLayout()
+      } else {
+        createRoomLayout()
+      }
+    } else {
+      errorMessage.value = ERROR_UNIQUE_NAMES_SPOTS_LAYOUT
+      errorModalIsVisible.value = true
+    }
+  }
 }
 
-function onClickCancel() {
-  console.log(roomLayout.value)
+async function createRoomLayout() {
+  var matrix = getMatrixToSave(roomLayout.value)
+
+  var roomlayoutInput: RoomLayoutInput = {
+    columns: +layoutSize.cols,
+    rows: +layoutSize.rows,
+    name: formData.name,
+    matrix: matrix
+  }
+
+  isSaving.value = true
+  const response = await apiService.createRoomLayout(appStore().site, roomlayoutInput)
+  isSaving.value = false
+
+  if (response) {
+    successModalIsVisible.value = true
+  } else {
+    errorMessage.value = ERROR_UNKNOWN
+    errorModalIsVisible.value = true
+  }
+}
+
+async function editRoomLayout() {
+  var matrix = getMatrixToSave(roomLayout.value)
+
+  var editRoomLayoutInput: EditRoomLayoutInput = {
+    roomLayoutId: roomLayoutId.value!,
+    roomLayoutInput: {
+      columns: +layoutSize.cols,
+      rows: +layoutSize.rows,
+      name: formData.name,
+      matrix: matrix
+    }
+  }
+
+  isSaving.value = true
+  const response = await apiService.editRoomLayout(appStore().site, editRoomLayoutInput)
+  isSaving.value = false
+
+  if (response) {
+    successModalIsVisible.value = true
+  } else {
+    errorMessage.value = ERROR_UNKNOWN
+    errorModalIsVisible.value = true
+  }
+}
+
+function getMatrixToSave(roomLayout: Array<Array<LayoutPosition>>): Array<IconPositionInput> {
+  var matrix: Array<IconPositionInput> = []
+
+  for (var i = 0; i < roomLayout.length; i++) {
+    var row = roomLayout[i]
+    for (var j = 0; j < row.length; j++) {
+      matrix.push({
+        icon: roomLayout[j][i].type,
+        x: j,
+        y: i,
+        spotNumber: roomLayout[j][i].spotNumber ?? undefined
+      })
+    }
+  }
+
+  return matrix
+}
+
+function spotNumbersAreValid(roomLayout: Array<Array<LayoutPosition>>): boolean {
+  let sportNumbers: number[] = []
+
+  for (var i = 0; i < roomLayout.length; i++) {
+    var row = roomLayout[i]
+
+    for (var j = 0; j < row.length; j++) {
+      if (roomLayout[i][j].type === PositionIconEnum.Spot) {
+        if (roomLayout[i][j].spotNumber !== null && roomLayout[i][j].spotNumber !== undefined) {
+          const spotNumber = Number(roomLayout[i][j].spotNumber)
+
+          if (spotNumber <= 0) return false
+
+          if (!sportNumbers.includes(spotNumber)) {
+            sportNumbers.push(spotNumber)
+          } else {
+            return false
+          }
+        } else {
+          return false
+        }
+      }
+    }
+  }
+
+  if (sportNumbers.length === 0) return false
+
+  return true
 }
 </script>
 
 <template>
-  <h1>New Room Layout</h1>
+  <h1>{{ title }}</h1>
 
-  <form>
+  <form autocomplete="off">
     <div class="row">
       <div class="form-group col-md-4 col-sm-12 col-xs-12">
-        <label class="form-label">Room Layout Name</label>
+        <label for="roomLayoutName" class="input-label">Room Layout Name *</label>
         <div class="controls">
           <input
             type="text"
-            id="RoomLayoutName"
-            name="RoomLayoutName"
+            id="roomLayoutName"
+            name="roomLayoutName"
             required
-            placeholder=""
             class="form-control"
+            v-model="formData.name"
           />
-        </div>
-      </div>
-      <div class="form-group col-md-4 col-sm-12 col-xs-12">
-        <label class="form-label">Email Type</label>
-        <div class="controls">
-          <select
-            id="EmailType"
-            name="EmailType"
-            style="width: 100%"
-            tabindex="-1"
-            class="custom-select"
-            aria-hidden="true"
+          <small
+            v-for="error in v$.name.$errors"
+            :key="error.$uid"
+            class="form-text"
+            style="color: red"
           >
-            <option value="0" selected>CYCLE Emails</option>
-            <option value="1">RPM Emails</option>
-            <option value="2">HEART RATE Emails</option>
-            <option value="4">ROWING Emails</option>
-            <option value="3">No Emails</option>
-          </select>
+            {{ error.$message }}
+          </small>
         </div>
       </div>
-      <hr class="col-md-12" />
+      <hr />
     </div>
 
     <div class="row">
@@ -204,15 +421,17 @@ function onClickCancel() {
         @on-click="onClickSaveLayout()"
         type="button"
         :block="true"
+        :is-loading="isSaving"
       ></DefaultButtonComponent>
     </div>
     <div class="col-md-2 col-xs-12">
       <DefaultButtonComponent
         text="Cancel"
-        @on-click="onClickCancel()"
+        @on-click="router.push('/admin/room-layout/list')"
         type="button"
         :block="true"
         variant="secondary"
+        :disabled="isSaving"
       ></DefaultButtonComponent>
     </div>
   </div>
@@ -236,8 +455,8 @@ function onClickCancel() {
               @contextmenu="onContextMenu($event)"
             >
               <div>
-                <div v-if="spot.type === 'empty'">-</div>
-                <div v-else-if="spot.type === 'seat'">
+                <div v-if="spot.type === PositionIconEnum.Empty">-</div>
+                <div v-else-if="spot.type === PositionIconEnum.Spot">
                   <input
                     type="number"
                     class="seat-number"
@@ -248,24 +467,16 @@ function onClickCancel() {
                   />
                   <i class="bi bi-circle" style="font-size: 1.8rem"></i>
                 </div>
-                <div v-else-if="spot.type === 'instructor'">
-                  <input
-                    type="number"
-                    class="seat-number"
-                    min="1"
-                    max="2500"
-                    :class="{ hasError: spot.spotNumber === null || spot.spotNumber === undefined }"
-                    v-model="spot.spotNumber"
-                  />
+                <div v-else-if="spot.type === PositionIconEnum.Instructor">
                   <i class="bi bi-person-fill" style="font-size: 1.8rem"></i>
                 </div>
-                <div v-else-if="spot.type === 'speaker'">
+                <div v-else-if="spot.type === PositionIconEnum.Speaker">
                   <i class="bi bi-speaker" style="font-size: 1.8rem"></i>
                 </div>
-                <div v-else-if="spot.type === 'fan'">
+                <div v-else-if="spot.type === PositionIconEnum.Fan">
                   <i class="bi bi-fan" style="font-size: 1.8rem"></i>
                 </div>
-                <div v-else-if="spot.type === 'tv'">
+                <div v-else-if="spot.type === PositionIconEnum.Tv">
                   <i class="bi bi-tv" style="font-size: 1.8rem"></i>
                 </div>
               </div>
@@ -276,7 +487,7 @@ function onClickCancel() {
     </div>
   </div>
 
-  <!--this is component mode of context-menu-->
+  <!--context menu-->
   <context-menu v-model:show="showMenu" :options="optionsComponent">
     <context-menu-item label="Select All" @click="checkUncheckAll(true)">
       <template #icon>
@@ -294,38 +505,65 @@ function onClickCancel() {
       </template>
     </context-menu-item>
     <context-menu-sperator />
-    <context-menu-item label="Create Seat" @click="setSpotType('seat')">
+    <context-menu-item label="Create Seat" @click="setSpotType(PositionIconEnum.Spot)">
       <template #icon>
         <i class="bi bi-bicycle"></i>
       </template>
     </context-menu-item>
-    <context-menu-item label="Create Fan Spot" @click="setSpotType('fan')">
+    <context-menu-item label="Create Fan Spot" @click="setSpotType(PositionIconEnum.Fan)">
       <template #icon>
         <i class="bi bi-fan"></i>
       </template>
     </context-menu-item>
-    <context-menu-item label="Create TV Spot" @click="setSpotType('tv')">
+    <context-menu-item label="Create TV Spot" @click="setSpotType(PositionIconEnum.Tv)">
       <template #icon>
         <i class="bi bi-tv"></i>
       </template>
     </context-menu-item>
-    <context-menu-item label="Create Speaker Spot" @click="setSpotType('speaker')">
+    <context-menu-item label="Create Speaker Spot" @click="setSpotType(PositionIconEnum.Speaker)">
       <template #icon>
         <i class="bi bi-speaker-fill"></i>
       </template>
     </context-menu-item>
-    <context-menu-item label="Create Instructor Spot" @click="setSpotType('instructor')">
+    <context-menu-item
+      label="Create Instructor Spot"
+      @click="setSpotType(PositionIconEnum.Instructor)"
+    >
       <template #icon>
         <i class="bi bi-person-fill"></i>
       </template>
     </context-menu-item>
     <context-menu-sperator />
-    <context-menu-item label="Clear Seat" @click="setSpotType('empty')">
+    <context-menu-item label="Clear Seat" @click="setSpotType(PositionIconEnum.Empty)">
       <template #icon>
         <i class="bi bi-x-circle"></i>
       </template>
     </context-menu-item>
   </context-menu>
+
+  <!-- Success modal -->
+  <ModalComponent
+    :ok-loading="false"
+    title="SUCCESS"
+    message="SAVED SUCCESSFULLY"
+    :closable="false"
+    :cancel-text="null"
+    v-if="successModalIsVisible"
+    @on-ok="router.push('/admin/room-layout/list')"
+  >
+  </ModalComponent>
+
+  <!-- ERROR modal -->
+  <ModalComponent
+    :ok-loading="false"
+    title="Error"
+    :message="errorMessage"
+    :closable="false"
+    :cancel-text="null"
+    v-if="errorModalIsVisible"
+    @on-ok="errorModalIsVisible = false"
+  >
+  </ModalComponent>
 </template>
 
 <style scoped>

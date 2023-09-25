@@ -16,6 +16,7 @@ import WorkoutStatsView from '../views/WorkoutStatsView.vue'
 import { authService } from '@/services/authService'
 import AdminClass from '@/views/admin/AdminClass.vue'
 import RoomLayoutView from '@/views/admin/RoomLayoutView.vue'
+import RoomLayoutListView from '@/views/admin/RoomLayoutListView.vue'
 import MenuLayout from '@/layouts/MenuLayout.vue'
 
 const router = createRouter({
@@ -108,8 +109,18 @@ const router = createRouter({
       component: AdminClass
     },
     {
-      path: '/admin/room-layout',
-      name: 'admin_room_layout',
+      path: '/admin/room-layout/list',
+      name: 'admin_room_layout_list',
+      component: RoomLayoutListView
+    },
+    {
+      path: '/admin/room-layout/create',
+      name: 'admin_room_layout_create',
+      component: RoomLayoutView
+    },
+    {
+      path: '/admin/room-layout/edit/:id',
+      name: 'admin_room_layout_edit',
       component: RoomLayoutView
     }
   ]
