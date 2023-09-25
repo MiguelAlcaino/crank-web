@@ -93,6 +93,7 @@ const optionsComponent = ref<MenuOptions>({
 })
 const showMenu = ref(false)
 
+const title = ref('')
 const totalConfiguredSeats = ref(0)
 const isSaving = ref<boolean>(false)
 const isLoading = ref<boolean>(false)
@@ -100,12 +101,14 @@ const errorMessage = ref<string>('')
 const errorModalIsVisible = ref<Boolean>(false)
 const successModalIsVisible = ref<Boolean>(false)
 
-onMounted(() => {
+onMounted(() => { 
   roomLayoutId.value = getRoomLayoutId()
 
-  if (roomLayoutId.value) {
+  if (roomLayoutId.value) {   
+    title.value = 'EDIT ROOM LAYOUT'
     getRoomLayout()
   } else {
+    title.value = 'NEW ROOM LAYOUT'
     fillLayout(layoutSize.rows, layoutSize.cols)
   }
 })
@@ -347,7 +350,7 @@ function spotNumbersAreValid(roomLayout: Array<Array<LayoutPosition>>): boolean 
 </script>
 
 <template>
-  <h1>New Room Layout</h1>
+  <h1>{{ title }}</h1>
 
   <form autocomplete="off">
     <div class="row">

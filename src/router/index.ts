@@ -115,12 +115,12 @@ const router = createRouter({
     },
     {
       path: '/admin/room-layout/create',
-      name: 'admin_room_layout',
+      name: 'admin_room_layout_create',
       component: RoomLayoutView
     },
     {
       path: '/admin/room-layout/edit/:id',
-      name: 'admin_room_layout',
+      name: 'admin_room_layout_edit',
       component: RoomLayoutView
     }
   ]

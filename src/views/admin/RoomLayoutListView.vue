@@ -78,7 +78,7 @@ function onClickDeleteLayout(roomLayout: RoomLayout) {
               </button>
             </td>
           </tr>
-          <tr v-if="!isLoading && roomLayouts.length === 0">
+          <tr v-if="!isLoading && roomLayouts?.length === 0">
             <td colspan="3" class="text-center">No data available in table</td>
           </tr>
           <tr v-if="isLoading">
