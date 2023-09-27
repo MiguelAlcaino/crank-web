@@ -101,10 +101,10 @@ const errorMessage = ref<string>('')
 const errorModalIsVisible = ref<Boolean>(false)
 const successModalIsVisible = ref<Boolean>(false)
 
-onMounted(() => { 
+onMounted(() => {
   roomLayoutId.value = getRoomLayoutId()
 
-  if (roomLayoutId.value) {   
+  if (roomLayoutId.value) {
     title.value = 'EDIT ROOM LAYOUT'
     getRoomLayout()
   } else {
@@ -145,7 +145,7 @@ async function getRoomLayout() {
         type: _roomLayout.matrix[i].icon
       }
 
-      if(_roomLayout.matrix[i].spotNumber) totalConfiguredSeats.value++;
+      if (_roomLayout.matrix[i].spotNumber) totalConfiguredSeats.value++
     }
 
     roomLayout.value = tempLayout

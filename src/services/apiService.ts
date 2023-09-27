@@ -166,9 +166,12 @@ export class ApiService {
             id
             enrollmentStatus
             enrollmentDateTime
-            spotInfo {
-              spotNumber
-              isBooked
+            ... on EnrollmentInfo {
+              spotInfo {
+                __typename
+                isBooked
+                spotNumber
+              }
             }
           }
           class {
@@ -208,9 +211,12 @@ export class ApiService {
             id
             enrollmentStatus
             enrollmentDateTime
-            spotInfo {
-              spotNumber
-              isBooked
+            ... on EnrollmentInfo {
+              spotInfo {
+                __typename
+                isBooked
+                spotNumber
+              }
             }
           }
         }
@@ -493,6 +499,7 @@ export class ApiService {
               icon
               ... on BookableSpot {
                 enabled
+                spotNumber
                 spotInfo {
                   spotNumber
                   isBooked
@@ -500,7 +507,7 @@ export class ApiService {
               }
             }
           }
-          enrollments {
+          enrollments(status: active) {
             id
             enrollmentStatus
             enrollmentDateTime
@@ -511,10 +518,12 @@ export class ApiService {
               email
               leaderboardUsername
             }
-            spotInfo {
-              __typename
-              isBooked
-              spotNumber
+            ... on EnrollmentInfo {
+              spotInfo {
+                __typename
+                isBooked
+                spotNumber
+              }
             }
           }
         }

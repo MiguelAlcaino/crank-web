@@ -3,6 +3,75 @@ interface BookableSpotClickedEvent {
   spotNumber: number | null
   isBooked: boolean
 }
+
+interface ClassInfo {
+  class: Class
+  enrollments: Array<EnrollmentInfo>
+  roomLayout?: RoomLayout
+}
+
+interface RoomLayout {
+  id: string
+  name: string
+  matrix?: Array<ClassPosition>
+}
+
+interface ClassPosition {
+  x: number
+  y: number
+  icon: PositionIconEnum
+  spotNumber?: number
+  enabled?: boolean
+  spotInfo?: SpotInfo
+}
+
+interface Class {
+  id: string
+  name: string
+  description: string
+  instructorName: string
+  startWithNoTimeZone: Date
+  duration: number
+}
+
+interface EnrollmentInfo  {
+  enrollmentDateTime: Date
+  enrollmentStatus: EnrollmentStatusEnum
+  id: string
+  /** @deprecated This should be removed from here to avoid loops. */
+  user?: User
+  spotInfo?: SpotInfo
+}
+
+interface SpotInfo {
+  /** @deprecated Array of booked spots should be returned by other query to reduce complexity of creating SpotInfo instances. */
+  isBooked: boolean
+  spotNumber: number
+}
+
+interface User {
+  email: string
+  firstName: string
+  lastName: string
+  leaderboardUsername?: string
+}
+
+enum EnrollmentStatusEnum {
+  Active = 'active',
+  Cancelled = 'cancelled',
+  LateCancelled = 'lateCancelled',
+  Unknown = 'unknown',
+  Waitlisted = 'waitlisted'
+}
+
+enum PositionIconEnum {
+  Empty = 'empty',
+  Fan = 'fan',
+  Instructor = 'instructor',
+  Speaker = 'speaker',
+  Spot = 'spot',
+  Tv = 'tv'
+}
 </script>
 
 <script setup lang="ts">
@@ -10,8 +79,6 @@ import { inject, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 import dayjs from 'dayjs'
-
-import type { BookableSpot, ClassInfo, IconPosition } from '@/gql/graphql'
 
 import type { ApiService } from '@/services/apiService'
 
@@ -103,7 +170,7 @@ onMounted(() => {
 
 async function getClassInfo() {
   isLoading.value = true
-  classInfo.value = await apiService.getClassInfo(appStore().site, classId.value)
+  classInfo.value = (await apiService.getClassInfo(appStore().site, classId.value)) as ClassInfo
   totalSignedIn.value = classInfo.value?.enrollments.length ?? 0
 
   isLoading.value = false
@@ -122,12 +189,10 @@ function spotClicked(event: BookableSpotClickedEvent) {
   assignUserToThisSpotVisible.value = false
 
   for (let index = 0; index < classInfo.value!.roomLayout!.matrix!.length; index++) {
-    const element = classInfo.value!.roomLayout!.matrix![index] as BookableSpot | IconPosition
+    const classPosition = classInfo.value!.roomLayout!.matrix![index]
 
-    if (element.__typename == 'BookableSpot') {
-      const bookableSpot = element as BookableSpot
-
-      if (bookableSpot.spotInfo.spotNumber === event.spotNumber) {
+    if (classPosition.icon === PositionIconEnum.Spot) {
+      if (classPosition.spotNumber === event.spotNumber) {
         var fullName = ''
         var enrollmentId: string | null | undefined
 
@@ -135,10 +200,7 @@ function spotClicked(event: BookableSpotClickedEvent) {
           for (let index = 0; index < classInfo.value?.enrollments.length; index++) {
             const enrollment = classInfo.value?.enrollments[index]
 
-            if (
-              bookableSpot.spotInfo.spotNumber === enrollment.spotInfo?.spotNumber &&
-              enrollment.user
-            ) {
+            if (classPosition.spotNumber === enrollment.spotInfo?.spotNumber && enrollment.user) {
               fullName =
                 (enrollment.user?.firstName ?? '') + ' ' + (enrollment.user?.lastName ?? '')
               enrollmentId = enrollment.id
@@ -148,10 +210,10 @@ function spotClicked(event: BookableSpotClickedEvent) {
         }
 
         selectedSpot.value = {
-          spotNumber: bookableSpot.spotInfo?.spotNumber,
-          isBooked: bookableSpot.spotInfo?.isBooked,
+          spotNumber: classPosition.spotInfo?.spotNumber,
+          isBooked: classPosition.spotInfo?.isBooked,
           fullName: fullName,
-          enabled: bookableSpot.enabled,
+          enabled: classPosition.enabled,
           enrollmentId: enrollmentId
         }
         break
