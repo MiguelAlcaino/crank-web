@@ -46,12 +46,12 @@ async function getCurrentUserPurchases() {
       <table class="table table-sm">
         <thead>
           <tr class="text-center">
-            <th>PACKAGE NAME</th>
-            <th>PURCHASED COUNT</th>
-            <th>REMAINING COUNT</th>
-            <th>PAYMENT DATE</th>
-            <th>ACTIVATION DATE</th>
-            <th>EXPIRATION DATE</th>
+            <th>PACKAGES</th>
+            <th>TOTAL CREDITS</th>
+            <th>BALANCE</th>
+            <th>PURCHASED ON</th>
+            <th>ACTIVATED ON</th>
+            <th>EXPIRY DATE</th>
           </tr>
         </thead>
         <tbody>

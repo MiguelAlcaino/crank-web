@@ -38,10 +38,9 @@ async function selectClass() {
   >
     <Popper :hover="true" :arrow="true" class="light-popover">
       <div class="row">
-        <div class="col-8">
+        <div class="col-12">
           <b class="className">{{ classInfo?.name }}</b>
         </div>
-        <div class="col-4 colIcon"></div>
       </div>
       <template #content>
         <div class="popover-header">

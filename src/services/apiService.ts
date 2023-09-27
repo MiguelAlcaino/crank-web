@@ -335,34 +335,31 @@ export class ApiService {
         }
       }
     `
-    try {
-      const stgStartDate = dayjs(startDate).format('YYYY-MM-DD')
-      const stgEndDate = dayjs(endDate).format('YYYY-MM-DD')
 
-      const params: CalendarClassesParams = {
-        startDate: stgStartDate,
-        endDate: stgEndDate
-      }
+    const stgStartDate = dayjs(startDate).format('YYYY-MM-DD')
+    const stgEndDate = dayjs(endDate).format('YYYY-MM-DD')
 
-      const queryResult = await this.anonymousApiClient.query({
-        query: CALENDAR_CLASSES_QUERY,
-        variables: {
-          site: site,
-          params: params
-        }
-      })
-
-      return queryResult.data.calendarClasses as Class[]
-    } catch (error) {
-      return []
+    const params: CalendarClassesParams = {
+      startDate: stgStartDate,
+      endDate: stgEndDate
     }
+
+    const queryResult = await this.anonymousApiClient.query({
+      query: CALENDAR_CLASSES_QUERY,
+      variables: {
+        site: site,
+        params: params
+      }
+    })
+
+    return queryResult.data.calendarClasses as Class[]
   }
 
   async getCustomCalendarClasses(
     site: SiteEnum,
     startDate: Date,
     endDate: Date
-  ): Promise<CustomCalendarClasses | null> {
+  ): Promise<CustomCalendarClasses> {
     const CUSTOM_CALENDAR_CLASSES_QUERY = gql`
       query customCalendarClasses(
         $site: SiteEnum!
@@ -449,32 +446,28 @@ export class ApiService {
       endDate: stgEndDate
     }
 
-    try {
-      const queryResult = await this.authApiClient.query({
-        query: CUSTOM_CALENDAR_CLASSES_QUERY,
-        fetchPolicy: 'network-only',
-        variables: {
-          site: site,
-          params: params,
-          enrollmentsWaitlistParams: enrollmentsWaitlistParams,
-          enrollmentsUpcomingParams: enrollmentsUpcomingParams
-        }
-      })
+    const queryResult = await this.authApiClient.query({
+      query: CUSTOM_CALENDAR_CLASSES_QUERY,
+      fetchPolicy: 'network-only',
+      variables: {
+        site: site,
+        params: params,
+        enrollmentsWaitlistParams: enrollmentsWaitlistParams,
+        enrollmentsUpcomingParams: enrollmentsUpcomingParams
+      }
+    })
 
-      const siteSettings = queryResult.data.siteSettings as SiteSetting
-      const calendarClasses = queryResult.data.calendarClasses as Class[]
-      const enrollmentsWaitlist = queryResult.data.enrollmentsWaitlist as Enrollment[]
-      const enrollmentsUpcoming = queryResult.data.enrollmentsUpcoming as Enrollment[]
+    const siteSettings = queryResult.data.siteSettings as SiteSetting
+    const calendarClasses = queryResult.data.calendarClasses as Class[]
+    const enrollmentsWaitlist = queryResult.data.enrollmentsWaitlist as Enrollment[]
+    const enrollmentsUpcoming = queryResult.data.enrollmentsUpcoming as Enrollment[]
 
-      return new CustomCalendarClasses(
-        siteSettings,
-        calendarClasses,
-        enrollmentsWaitlist,
-        enrollmentsUpcoming
-      )
-    } catch (error) {
-      return null
-    }
+    return new CustomCalendarClasses(
+      siteSettings,
+      calendarClasses,
+      enrollmentsWaitlist,
+      enrollmentsUpcoming
+    )
   }
 
   async getClassInfo(site: SiteEnum, id: string): Promise<ClassInfo | null> {
