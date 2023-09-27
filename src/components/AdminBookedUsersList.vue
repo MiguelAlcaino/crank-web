@@ -1,14 +1,21 @@
 <script lang="ts">
 interface EnrollmentInfo {
   id: string
-  enrollmentStatus?: string
-  enrollmentDateTime?: string
+  enrollmentStatus?: EnrollmentStatusEnum
   user?: User | null
 }
 
 interface User {
   firstName: string
   lastName: string
+}
+
+enum EnrollmentStatusEnum {
+  Active = 'active',
+  Cancelled = 'cancelled',
+  LateCancelled = 'lateCancelled',
+  Unknown = 'unknown',
+  Waitlisted = 'waitlisted'
 }
 </script>
 

@@ -135,8 +135,12 @@ export type Class = {
 export type ClassInfo = {
   __typename: 'ClassInfo'
   class: Class
-  enrollments: Array<EnrollmentInfo>
+  enrollments: Array<EnrollmentInfoInterface>
   roomLayout?: Maybe<RoomLayout>
+}
+
+export type ClassInfoEnrollmentsArgs = {
+  status?: InputMaybe<EnrollmentStatusEnum>
 }
 
 export type ClassIsFullError = Error & {
@@ -261,15 +265,23 @@ export type EditRoomLayoutInput = {
 export type Enrollment = {
   __typename: 'Enrollment'
   class: Class
-  enrollmentInfo: EnrollmentInfo
+  enrollmentInfo: EnrollmentInfoInterface
 }
 
-export type EnrollmentInfo = {
+export type EnrollmentInfo = EnrollmentInfoInterface & {
   __typename: 'EnrollmentInfo'
   enrollmentDateTime: Scalars['DateTime']
   enrollmentStatus: EnrollmentStatusEnum
   id: Scalars['ID']
   spotInfo?: Maybe<SpotInfo>
+  /** @deprecated This should be removed from here to avoid loops. */
+  user?: Maybe<User>
+}
+
+export type EnrollmentInfoInterface = {
+  enrollmentDateTime: Scalars['DateTime']
+  enrollmentStatus: EnrollmentStatusEnum
+  id: Scalars['ID']
   /** @deprecated This should be removed from here to avoid loops. */
   user?: Maybe<User>
 }
@@ -749,7 +761,7 @@ export type User = {
   emergencyContactName: Scalars['String']
   emergencyContactPhone: Scalars['String']
   emergencyContactRelationship?: Maybe<Scalars['String']>
-  enrollmentInClass?: Maybe<EnrollmentInfo>
+  enrollmentInClass?: Maybe<EnrollmentInfoInterface>
   firstName: Scalars['String']
   gender?: Maybe<GenderEnum>
   hideMetrics?: Maybe<Scalars['Boolean']>
@@ -812,6 +824,15 @@ export type UserRanking = {
 
 export type ValidateResetPasswordTokenInput = {
   token: Scalars['String']
+}
+
+export type WaitlistEntry = EnrollmentInfoInterface & {
+  __typename: 'WaitlistEntry'
+  enrollmentDateTime: Scalars['DateTime']
+  enrollmentStatus: EnrollmentStatusEnum
+  id: Scalars['ID']
+  /** @deprecated This should be removed from here to avoid loops. */
+  user?: Maybe<User>
 }
 
 export type WaitlistEntryNotFoundError = Error & {
@@ -903,13 +924,20 @@ export type CurrentUserEnrollmentsQuery = {
   __typename: 'Query'
   currentUserEnrollments: Array<{
     __typename: 'Enrollment'
-    enrollmentInfo: {
-      __typename: 'EnrollmentInfo'
-      id: string
-      enrollmentStatus: EnrollmentStatusEnum
-      enrollmentDateTime: any
-      spotInfo?: { __typename: 'SpotInfo'; spotNumber: number; isBooked: boolean } | null
-    }
+    enrollmentInfo:
+      | {
+          __typename: 'EnrollmentInfo'
+          id: string
+          enrollmentStatus: EnrollmentStatusEnum
+          enrollmentDateTime: any
+          spotInfo?: { __typename: 'SpotInfo'; isBooked: boolean; spotNumber: number } | null
+        }
+      | {
+          __typename: 'WaitlistEntry'
+          id: string
+          enrollmentStatus: EnrollmentStatusEnum
+          enrollmentDateTime: any
+        }
     class: {
       __typename: 'Class'
       id: string
@@ -932,13 +960,21 @@ export type CurrentUserEnrollmentInClassQuery = {
   __typename: 'Query'
   currentUser?: {
     __typename: 'User'
-    enrollmentInClass?: {
-      __typename: 'EnrollmentInfo'
-      id: string
-      enrollmentStatus: EnrollmentStatusEnum
-      enrollmentDateTime: any
-      spotInfo?: { __typename: 'SpotInfo'; spotNumber: number; isBooked: boolean } | null
-    } | null
+    enrollmentInClass?:
+      | {
+          __typename: 'EnrollmentInfo'
+          id: string
+          enrollmentStatus: EnrollmentStatusEnum
+          enrollmentDateTime: any
+          spotInfo?: { __typename: 'SpotInfo'; isBooked: boolean; spotNumber: number } | null
+        }
+      | {
+          __typename: 'WaitlistEntry'
+          id: string
+          enrollmentStatus: EnrollmentStatusEnum
+          enrollmentDateTime: any
+        }
+      | null
   } | null
 }
 
@@ -1026,12 +1062,19 @@ export type CustomCalendarClassesQuery = {
   }>
   enrollmentsWaitlist: Array<{
     __typename: 'Enrollment'
-    enrollmentInfo: {
-      __typename: 'EnrollmentInfo'
-      id: string
-      enrollmentStatus: EnrollmentStatusEnum
-      enrollmentDateTime: any
-    }
+    enrollmentInfo:
+      | {
+          __typename: 'EnrollmentInfo'
+          id: string
+          enrollmentStatus: EnrollmentStatusEnum
+          enrollmentDateTime: any
+        }
+      | {
+          __typename: 'WaitlistEntry'
+          id: string
+          enrollmentStatus: EnrollmentStatusEnum
+          enrollmentDateTime: any
+        }
     class: {
       __typename: 'Class'
       id: string
@@ -1047,12 +1090,19 @@ export type CustomCalendarClassesQuery = {
   }>
   enrollmentsUpcoming: Array<{
     __typename: 'Enrollment'
-    enrollmentInfo: {
-      __typename: 'EnrollmentInfo'
-      id: string
-      enrollmentStatus: EnrollmentStatusEnum
-      enrollmentDateTime: any
-    }
+    enrollmentInfo:
+      | {
+          __typename: 'EnrollmentInfo'
+          id: string
+          enrollmentStatus: EnrollmentStatusEnum
+          enrollmentDateTime: any
+        }
+      | {
+          __typename: 'WaitlistEntry'
+          id: string
+          enrollmentStatus: EnrollmentStatusEnum
+          enrollmentDateTime: any
+        }
     class: {
       __typename: 'Class'
       id: string
@@ -1104,20 +1154,35 @@ export type ClassInfoQuery = {
         | { __typename: 'IconPosition'; x: number; y: number; icon: PositionIconEnum }
       > | null
     } | null
-    enrollments: Array<{
-      __typename: 'EnrollmentInfo'
-      id: string
-      enrollmentStatus: EnrollmentStatusEnum
-      enrollmentDateTime: any
-      user?: {
-        __typename: 'User'
-        firstName: string
-        lastName: string
-        email: string
-        leaderboardUsername?: string | null
-      } | null
-      spotInfo?: { __typename: 'SpotInfo'; isBooked: boolean; spotNumber: number } | null
-    }>
+    enrollments: Array<
+      | {
+          __typename: 'EnrollmentInfo'
+          id: string
+          enrollmentStatus: EnrollmentStatusEnum
+          enrollmentDateTime: any
+          spotInfo?: { __typename: 'SpotInfo'; isBooked: boolean; spotNumber: number } | null
+          user?: {
+            __typename: 'User'
+            firstName: string
+            lastName: string
+            email: string
+            leaderboardUsername?: string | null
+          } | null
+        }
+      | {
+          __typename: 'WaitlistEntry'
+          id: string
+          enrollmentStatus: EnrollmentStatusEnum
+          enrollmentDateTime: any
+          user?: {
+            __typename: 'User'
+            firstName: string
+            lastName: string
+            email: string
+            leaderboardUsername?: string | null
+          } | null
+        }
+    >
   } | null
 }
 
@@ -1364,7 +1429,13 @@ export type RoomLayoutQuery = {
     columns: number
     rows: number
     matrix?: Array<
-      | { __typename: 'BookableSpot'; x: number; y: number; icon: PositionIconEnum }
+      | {
+          __typename: 'BookableSpot'
+          spotNumber: number
+          x: number
+          y: number
+          icon: PositionIconEnum
+        }
       | { __typename: 'IconPosition'; x: number; y: number; icon: PositionIconEnum }
     > | null
   } | null
@@ -1377,17 +1448,17 @@ export type CreateRoomLayoutMutationVariables = Exact<{
 
 export type CreateRoomLayoutMutation = {
   __typename: 'Mutation'
-  createRoomLayout: {
-    __typename: 'RoomLayout'
-    id: string
-    name: string
-    columns: number
-    rows: number
-    matrix?: Array<
-      | { __typename: 'BookableSpot'; x: number; y: number; icon: PositionIconEnum }
-      | { __typename: 'IconPosition'; x: number; y: number; icon: PositionIconEnum }
-    > | null
-  }
+  createRoomLayout: { __typename: 'RoomLayout'; id: string }
+}
+
+export type EditRoomLayoutMutationVariables = Exact<{
+  site: SiteEnum
+  input: EditRoomLayoutInput
+}>
+
+export type EditRoomLayoutMutation = {
+  __typename: 'Mutation'
+  editRoomLayout: { __typename: 'RoomLayout'; id: string }
 }
 
 export const SiteSettingsDocument = {
@@ -1628,13 +1699,26 @@ export const CurrentUserEnrollmentsDocument = {
                       { kind: 'Field', name: { kind: 'Name', value: 'enrollmentStatus' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'enrollmentDateTime' } },
                       {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'spotInfo' },
+                        kind: 'InlineFragment',
+                        typeCondition: {
+                          kind: 'NamedType',
+                          name: { kind: 'Name', value: 'EnrollmentInfo' }
+                        },
                         selectionSet: {
                           kind: 'SelectionSet',
                           selections: [
-                            { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'isBooked' } }
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'spotInfo' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'isBooked' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } }
+                                ]
+                              }
+                            }
                           ]
                         }
                       }
@@ -1709,13 +1793,26 @@ export const CurrentUserEnrollmentInClassDocument = {
                       { kind: 'Field', name: { kind: 'Name', value: 'enrollmentStatus' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'enrollmentDateTime' } },
                       {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'spotInfo' },
+                        kind: 'InlineFragment',
+                        typeCondition: {
+                          kind: 'NamedType',
+                          name: { kind: 'Name', value: 'EnrollmentInfo' }
+                        },
                         selectionSet: {
                           kind: 'SelectionSet',
                           selections: [
-                            { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'isBooked' } }
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'spotInfo' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'isBooked' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } }
+                                ]
+                              }
+                            }
                           ]
                         }
                       }
@@ -2249,6 +2346,13 @@ export const ClassInfoDocument = {
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'enrollments' },
+                  arguments: [
+                    {
+                      kind: 'Argument',
+                      name: { kind: 'Name', value: 'status' },
+                      value: { kind: 'EnumValue', value: 'active' }
+                    }
+                  ],
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
@@ -2270,14 +2374,26 @@ export const ClassInfoDocument = {
                         }
                       },
                       {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'spotInfo' },
+                        kind: 'InlineFragment',
+                        typeCondition: {
+                          kind: 'NamedType',
+                          name: { kind: 'Name', value: 'EnrollmentInfo' }
+                        },
                         selectionSet: {
                           kind: 'SelectionSet',
                           selections: [
-                            { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'isBooked' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } }
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'spotInfo' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'isBooked' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } }
+                                ]
+                              }
+                            }
                           ]
                         }
                       }
@@ -3438,7 +3554,20 @@ export const RoomLayoutDocument = {
                     selections: [
                       { kind: 'Field', name: { kind: 'Name', value: 'x' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'y' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'icon' } }
+                      { kind: 'Field', name: { kind: 'Name', value: 'icon' } },
+                      {
+                        kind: 'InlineFragment',
+                        typeCondition: {
+                          kind: 'NamedType',
+                          name: { kind: 'Name', value: 'BookableSpot' }
+                        },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } }
+                          ]
+                        }
+                      }
                     ]
                   }
                 }
@@ -3495,24 +3624,7 @@ export const CreateRoomLayoutDocument = {
             ],
             selectionSet: {
               kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'columns' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'rows' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'matrix' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'x' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'y' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'icon' } }
-                    ]
-                  }
-                }
-              ]
+              selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }]
             }
           }
         ]
@@ -3520,3 +3632,56 @@ export const CreateRoomLayoutDocument = {
     }
   ]
 } as unknown as DocumentNode<CreateRoomLayoutMutation, CreateRoomLayoutMutationVariables>
+export const EditRoomLayoutDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'editRoomLayout' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'EditRoomLayoutInput' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'editRoomLayout' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<EditRoomLayoutMutation, EditRoomLayoutMutationVariables>

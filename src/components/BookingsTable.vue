@@ -1,12 +1,50 @@
+<script lang="ts">
+enum EnrollmentTypeEnum {
+  All = 'all',
+  Historical = 'historical',
+  Upcoming = 'upcoming',
+  Waitlist = 'waitlist'
+}
+
+interface Enrollment {
+  class: Class
+  enrollmentInfo: EnrollmentInfo
+}
+
+interface Class {
+  id: string
+  instructorName: string
+  name: string
+  start: Date
+}
+
+interface EnrollmentInfo {
+  enrollmentDateTime: Date
+  enrollmentStatus: EnrollmentStatusEnum
+  id: string
+  spotInfo?: SpotInfo
+}
+
+interface SpotInfo {
+  /** @deprecated Array of booked spots should be returned by other query to reduce complexity of creating SpotInfo instances. */
+  isBooked: boolean
+  spotNumber: number
+}
+
+enum EnrollmentStatusEnum {
+  Active = 'active',
+  Cancelled = 'cancelled',
+  LateCancelled = 'lateCancelled',
+  Unknown = 'unknown',
+  Waitlisted = 'waitlisted'
+}
+</script>
 <script setup lang="ts">
 import dayjs from 'dayjs'
 
-import { type Enrollment, EnrollmentTypeEnum } from '@/gql/graphql'
 import CancelEnrollmentButton from '@/components/CancelEnrollmentButton.vue'
 import RemoveFromWaitlistButton from '@/components/RemoveFromWaitlistButton.vue'
 import ClassIcon from '@/components/ClassIcon.vue'
-// import shape_icon from "./assets/icons/shape_icon.png"
-// import stretch_icon from "assets/icons/stretch_icon.png"
 
 defineProps<{
   enrollments: Enrollment[]
@@ -48,7 +86,9 @@ function clickRemoveFromWaitlist(waitlistEntryId: string): void {
         v-for="(enrollment, index) in enrollments"
         :key="index"
         :class="
-          enrollment.enrollmentInfo.enrollmentStatus === 'lateCancelled' ? 'table-danger' : ''
+          enrollment.enrollmentInfo.enrollmentStatus === EnrollmentStatusEnum.LateCancelled
+            ? 'table-danger'
+            : ''
         "
       >
         <td class="align-middle">
