@@ -19,6 +19,8 @@ import type {
   EditRoomLayoutInput,
   Enrollment,
   EnrollmentInfo,
+  EnrollmentInfoInterface,
+  EnrollmentStatusEnum,
   IdentifiableUser,
   Purchase,
   RegisterUserInput,
@@ -1233,5 +1235,40 @@ export class ApiService {
     } catch (error) {
       return null
     }
+  }
+
+  async getClassWaitlistEntries(
+    site: SiteEnum,
+    classId: string
+  ): Promise<EnrollmentInfoInterface[] | null> {
+    const query = gql`
+      query classInfo($site: SiteEnum!, $id: ID!) {
+        classInfo(site: $site, id: $id) {
+          enrollments(status: waitlisted) {
+            id
+            enrollmentStatus
+            enrollmentDateTime
+            user {
+              firstName
+              lastName
+            }
+          }
+        }
+      }
+    `
+
+    const queryResult = await this.authApiClient.query({
+      query: query,
+      variables: {
+        site: site,
+        id: classId,
+        query: query
+      },
+      fetchPolicy: 'no-cache'
+    })
+
+    const classInfo = queryResult.data.classInfo as ClassInfo
+
+    return classInfo.enrollments
   }
 }

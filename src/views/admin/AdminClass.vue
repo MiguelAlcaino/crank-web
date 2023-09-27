@@ -90,6 +90,7 @@ import AdminBookedUsersList from '@/components/AdminBookedUsersList.vue'
 import EnrollSelectedMemberComponent from '@/components/EnrollSelectedMemberComponent.vue'
 import DefaultButtonComponent from '@/components/DefaultButtonComponent.vue'
 import ChangeLayoutClass from '@/components/ChangeLayoutClass.vue'
+import ViewWaitlistEntries from '@/components/ViewWaitlistEntries.vue'
 
 import {
   ERROR_LATE_CANCELLATION_REQUIRED,
@@ -373,28 +374,36 @@ async function assignRoomLayoutId(roomLayoutId: string) {
 </script>
 
 <template>
-  <div>
-    <h4>
-      {{ classInfo?.class?.name }} - {{ classInfo?.class.instructorName }} ({{
-        dayjs(classInfo?.class.startWithNoTimeZone).format('DD/MM/YYYY')
-      }}) | Total Signed In : {{ totalSignedIn }} | ClassID:
-      {{ classInfo?.class.id }}
-    </h4>
-    <h4>
-      Time : {{ dayjs(classInfo?.class.startWithNoTimeZone).format('hh:mm A') }} | Duration :
-      {{ classInfo?.class?.duration }} mins
-    </h4>
-
-    <h6 v-html="classInfo?.class?.description"></h6>
+  <div class="row">
+    <div class="col-md-12">
+      <h4>
+        {{ classInfo?.class?.name }} - {{ classInfo?.class.instructorName }} ({{
+          dayjs(classInfo?.class.startWithNoTimeZone).format('DD/MM/YYYY')
+        }}) | Total Signed In : {{ totalSignedIn }} | ClassID:
+        {{ classInfo?.class.id }}
+      </h4>
+      <h4>
+        Time : {{ dayjs(classInfo?.class.startWithNoTimeZone).format('hh:mm A') }} | Duration :
+        {{ classInfo?.class?.duration }} mins
+      </h4>
+    </div>
   </div>
 
+  <h6 v-html="classInfo?.class?.description"></h6>
+
+  <div class="row">
+    <div class="col-md-12">
+      <ChangeLayoutClass
+        v-if="classInfo?.roomLayout?.id"
+        :class-id="classId"
+        :room-layout-id="classInfo.roomLayout.id"
+        @after-changing-room-layout="getClassInfo()"
+      ></ChangeLayoutClass>
+      &nbsp;
+      <ViewWaitlistEntries :class-id="classId"></ViewWaitlistEntries>
+    </div>
+  </div>
   <hr />
-  <ChangeLayoutClass
-    v-if="classInfo?.roomLayout?.id"
-    :class-id="classId"
-    :room-layout-id="classInfo.roomLayout.id"
-    @after-changing-room-layout="getClassInfo()"
-  ></ChangeLayoutClass>
   <br />
   <SpotMatrix
     v-if="
