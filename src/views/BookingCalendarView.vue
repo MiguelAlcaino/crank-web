@@ -8,13 +8,39 @@ interface ColumnName {
 enum EnrollmentStatusEnum {
   Active = 'active'
 }
+
+interface DayOfTheWeek {
+  selected: boolean
+  disabled: boolean
+  day: Date
+  classes: Class[]
+}
+
+interface Class {
+  id: string
+  name: string
+  description: string
+  instructorName: string
+  isSubstitute: boolean
+  duration: number
+  waitListAvailable: boolean
+  startWithNoTimeZone: Date
+  start: Date
+}
+
+interface WeekCalendar {
+  MON?: Class
+  TUE?: Class
+  WED?: Class
+  THU?: Class
+  FRI?: Class
+  SAT?: Class
+  SUN?: Class
+}
 </script>
 
 <script setup lang="ts">
 import { inject, onMounted, ref } from 'vue'
-import type { Class } from '@/gql/graphql'
-import { DayOfTheWeek } from '@/model/DayOfTheWeek'
-import { WeekCalendar } from '@/model/WeekCalendar'
 import dayjs from 'dayjs'
 
 import CalendarCard from '@/components/CalendarCard.vue'
@@ -133,9 +159,12 @@ async function getCustomCalendarClasses(): Promise<void> {
           dayjs(new Date(x.start)).isSame(date, 'day')
         )
 
-        daysOfTheWeek.value.push(
-          new DayOfTheWeek(selected, disabled, date.toDate(), calendarClasses)
-        )
+        daysOfTheWeek.value.push({
+          selected: selected,
+          disabled: disabled,
+          day: date.toDate(),
+          classes: calendarClasses
+        })
 
         if (date.isSame(_actualDate, 'day')) hasPreviousWeek.value = false
       }
@@ -199,9 +228,12 @@ async function getCalendarClasses(): Promise<void> {
           dayjs(new Date(x.start)).isSame(date, 'day')
         )
 
-        daysOfTheWeek.value.push(
-          new DayOfTheWeek(selected, disabled, date.toDate(), calendarClassesTemp)
-        )
+        daysOfTheWeek.value.push({
+          selected: selected,
+          disabled: disabled,
+          day: date.toDate(),
+          classes: calendarClassesTemp
+        })
 
         if (date.isSame(_actualDate, 'day')) hasPreviousWeek.value = false
       }
@@ -227,7 +259,7 @@ function getPivot() {
   }
 
   for (let i = 0; i < maxClasses; i++) {
-    let rowCalendar: WeekCalendar = new WeekCalendar()
+    let rowCalendar: WeekCalendar = {}
     for (let day = 0; day < 7; day++) {
       if (day === 0) {
         if (
