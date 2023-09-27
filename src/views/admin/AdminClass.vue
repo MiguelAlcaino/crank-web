@@ -34,7 +34,7 @@ interface Class {
   duration: number
 }
 
-interface EnrollmentInfo  {
+interface EnrollmentInfo {
   enrollmentDateTime: Date
   enrollmentStatus: EnrollmentStatusEnum
   id: string
@@ -89,6 +89,7 @@ import ModalComponent from '@/components/ModalComponent.vue'
 import AdminBookedUsersList from '@/components/AdminBookedUsersList.vue'
 import EnrollSelectedMemberComponent from '@/components/EnrollSelectedMemberComponent.vue'
 import DefaultButtonComponent from '@/components/DefaultButtonComponent.vue'
+import ChangeLayoutClass from '@/components/ChangeLayoutClass.vue'
 
 import {
   ERROR_LATE_CANCELLATION_REQUIRED,
@@ -388,6 +389,13 @@ async function assignRoomLayoutId(roomLayoutId: string) {
   </div>
 
   <hr />
+  <ChangeLayoutClass
+    v-if="classInfo?.roomLayout?.id"
+    :class-id="classId"
+    :room-layout-id="classInfo.roomLayout.id"
+    @after-changing-room-layout="getClassInfo()"
+  ></ChangeLayoutClass>
+  <br />
   <SpotMatrix
     v-if="
       classInfo !== null && classInfo.roomLayout !== null && classInfo.roomLayout?.matrix !== null

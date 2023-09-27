@@ -69,8 +69,8 @@ async function assignRoomLayoutId() {
     })
     isSaving.value = false
 
-    confirmModalIsVisible.value = false;
-    modalIsVisible.value = false;
+    confirmModalIsVisible.value = false
+    modalIsVisible.value = false
 
     if (result.__typename === 'EditClassSuccessResult') {
       emits('afterChangingRoomLayout')
@@ -118,7 +118,7 @@ async function assignRoomLayoutId() {
                 required
               >
                 <option v-for="(item, index) in roomLayouts" :key="index" :value="item.id">
-                  {{ item.name }} 
+                  {{ item.name }}
                 </option>
               </select>
             </div>
