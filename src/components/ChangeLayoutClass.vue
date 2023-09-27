@@ -85,15 +85,11 @@ async function assignRoomLayoutId() {
 </script>
 
 <template>
-  <div class="row">
-    <div class="col">
-      <DefaultButtonComponent
-        text="Change Room Layout"
-        type="button"
-        @on-click="openModal()"
-      ></DefaultButtonComponent>
-    </div>
-  </div>
+  <DefaultButtonComponent
+    text="Change Room Layout"
+    type="button"
+    @on-click="openModal()"
+  ></DefaultButtonComponent>
 
   <transition name="modal" v-if="modalIsVisible">
     <div class="modal-mask">
