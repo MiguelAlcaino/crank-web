@@ -4,20 +4,26 @@ interface ColumnName {
   dateNumber: string
   isCurrentDate: boolean
 }
+
+enum EnrollmentStatusEnum {
+  Active = 'active'
+}
 </script>
 
 <script setup lang="ts">
 import { inject, onMounted, ref } from 'vue'
-import { EnrollmentStatusEnum, type Class } from '@/gql/graphql'
+import type { Class } from '@/gql/graphql'
 import { DayOfTheWeek } from '@/model/DayOfTheWeek'
 import { WeekCalendar } from '@/model/WeekCalendar'
 import dayjs from 'dayjs'
 
 import CalendarCard from '@/components/CalendarCard.vue'
 import IconCalendarCard from '@/components/icons/IconCalendarCard.vue'
+import ModalComponent from '@/components/ModalComponent.vue'
 import { appStore } from '@/stores/appStorage'
 import type { ApiService } from '@/services/apiService'
 import { authService } from '@/services/authService'
+import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 
 const columnsNames = ref<ColumnName[]>([])
 const calendarDays = ref<WeekCalendar[]>([])
@@ -26,7 +32,7 @@ const calendarIsLoading = ref<boolean>(false)
 const hasPreviousWeek = ref<boolean>(false)
 const daysOfTheWeek = ref<DayOfTheWeek[]>([])
 const apiService = inject<ApiService>('gqlApiService')!
-
+const errorModalIsVisible = ref<boolean>(false)
 const enrollmentClassIds = ref<string[]>([])
 
 dayjs.Ls.en.weekStart = 1
@@ -70,7 +76,6 @@ function goToPrevWeek(): void {
 }
 
 async function getCustomCalendarClasses(): Promise<void> {
-  calendarIsLoading.value = true
   hasPreviousWeek.value = false
   daysOfTheWeek.value = []
   enrollmentClassIds.value = []
@@ -78,66 +83,73 @@ async function getCustomCalendarClasses(): Promise<void> {
   const firstDayWeek = appStore().calendarStartDate
   const lastDayWeek = appStore().calendarEndDate
 
-  let customCalendarClasses = await apiService.getCustomCalendarClasses(
-    appStore().site,
-    firstDayWeek,
-    lastDayWeek
-  )
+  try {
+    calendarIsLoading.value = true
 
-  if (customCalendarClasses != null) {
-    siteDateTimeNow.value = customCalendarClasses.siteSettings.siteDateTimeNow
+    let customCalendarClasses = await apiService.getCustomCalendarClasses(
+      appStore().site,
+      firstDayWeek,
+      lastDayWeek
+    )
 
-    for (let index = 0; index < customCalendarClasses.enrollmentsUpcoming.length; index++) {
-      const enrollment = customCalendarClasses.enrollmentsUpcoming[index]
-      if (
-        enrollment?.class &&
-        enrollment.enrollmentInfo?.enrollmentStatus === EnrollmentStatusEnum.Active
-      ) {
-        enrollmentClassIds.value.push(enrollment?.class.id)
+    if (customCalendarClasses != null) {
+      siteDateTimeNow.value = customCalendarClasses.siteSettings.siteDateTimeNow
+
+      for (let index = 0; index < customCalendarClasses.enrollmentsUpcoming.length; index++) {
+        const enrollment = customCalendarClasses.enrollmentsUpcoming[index]
+        if (
+          enrollment?.class &&
+          enrollment.enrollmentInfo?.enrollmentStatus === EnrollmentStatusEnum.Active
+        ) {
+          enrollmentClassIds.value.push(enrollment?.class.id)
+        }
       }
+
+      columnsNames.value = []
+
+      let dates: Date[] = []
+      let day = dayjs(firstDayWeek)
+      for (let i = 0; i < 7; i++) {
+        dates.push(day.toDate())
+
+        columnsNames.value.push({
+          dayName: day.format('ddd').toUpperCase(),
+          dateNumber: day.format('DD.MM').toUpperCase(),
+          isCurrentDate: day.isSame(Date(), 'day')
+        })
+
+        day = day.add(1, 'day')
+      }
+
+      const _actualDate = new Date()
+
+      for (let i = 0; i < dates.length; i++) {
+        let date = dayjs(dates[i])
+
+        const disabled: boolean = date.isBefore(_actualDate, 'day')
+        const selected: boolean = date.isSame(_actualDate, 'day')
+
+        const calendarClasses: Class[] = customCalendarClasses.calendarClasses.filter((x) =>
+          dayjs(new Date(x.start)).isSame(date, 'day')
+        )
+
+        daysOfTheWeek.value.push(
+          new DayOfTheWeek(selected, disabled, date.toDate(), calendarClasses)
+        )
+
+        if (date.isSame(_actualDate, 'day')) hasPreviousWeek.value = false
+      }
+
+      getPivot()
     }
-
-    columnsNames.value = []
-
-    let dates: Date[] = []
-    let day = dayjs(firstDayWeek)
-    for (let i = 0; i < 7; i++) {
-      dates.push(day.toDate())
-
-      columnsNames.value.push({
-        dayName: day.format('ddd').toUpperCase(),
-        dateNumber: day.format('DD.MM').toUpperCase(),
-        isCurrentDate: day.isSame(Date(), 'day')
-      })
-
-      day = day.add(1, 'day')
-    }
-
-    const _actualDate = new Date()
-
-    for (let i = 0; i < dates.length; i++) {
-      let date = dayjs(dates[i])
-
-      const disabled: boolean = date.isBefore(_actualDate, 'day')
-      const selected: boolean = date.isSame(_actualDate, 'day')
-
-      const calendarClasses: Class[] = customCalendarClasses.calendarClasses.filter((x) =>
-        dayjs(new Date(x.start)).isSame(date, 'day')
-      )
-
-      daysOfTheWeek.value.push(new DayOfTheWeek(selected, disabled, date.toDate(), calendarClasses))
-
-      if (date.isSame(_actualDate, 'day')) hasPreviousWeek.value = false
-    }
-
-    getPivot()
-
+  } catch (error) {
+    errorModalIsVisible.value = true
+  } finally {
     calendarIsLoading.value = false
   }
 }
 
 async function getCalendarClasses(): Promise<void> {
-  calendarIsLoading.value = true
   hasPreviousWeek.value = false
   daysOfTheWeek.value = []
   enrollmentClassIds.value = []
@@ -145,54 +157,60 @@ async function getCalendarClasses(): Promise<void> {
   const firstDayWeek = appStore().calendarStartDate
   const lastDayWeek = appStore().calendarEndDate
 
-  const calendarClasses = await apiService.getCalendarClasses(
-    appStore().site,
-    firstDayWeek,
-    lastDayWeek
-  )
+  calendarIsLoading.value = true
 
-  const siteSettings = await apiService.getSiteSettings(appStore().site)
+  try {
+    const calendarClasses = await apiService.getCalendarClasses(
+      appStore().site,
+      firstDayWeek,
+      lastDayWeek
+    )
 
-  if (calendarClasses != null) {
-    siteDateTimeNow.value = siteSettings?.siteDateTimeNow ?? Date()
+    const siteSettings = await apiService.getSiteSettings(appStore().site)
 
-    columnsNames.value = []
+    if (calendarClasses != null) {
+      siteDateTimeNow.value = siteSettings?.siteDateTimeNow ?? Date()
 
-    let dates: Date[] = []
-    let day = dayjs(firstDayWeek)
-    for (let i = 0; i < 7; i++) {
-      dates.push(day.toDate())
+      columnsNames.value = []
 
-      columnsNames.value.push({
-        dayName: day.format('ddd').toUpperCase(),
-        dateNumber: day.format('DD.MM').toUpperCase(),
-        isCurrentDate: day.isSame(Date(), 'day')
-      })
+      let dates: Date[] = []
+      let day = dayjs(firstDayWeek)
+      for (let i = 0; i < 7; i++) {
+        dates.push(day.toDate())
 
-      day = day.add(1, 'day')
+        columnsNames.value.push({
+          dayName: day.format('ddd').toUpperCase(),
+          dateNumber: day.format('DD.MM').toUpperCase(),
+          isCurrentDate: day.isSame(Date(), 'day')
+        })
+
+        day = day.add(1, 'day')
+      }
+
+      const _actualDate = new Date()
+
+      for (let i = 0; i < dates.length; i++) {
+        let date = dayjs(dates[i])
+
+        const disabled: boolean = date.isBefore(_actualDate, 'day')
+        const selected: boolean = date.isSame(_actualDate, 'day')
+
+        const calendarClassesTemp: Class[] = calendarClasses.filter((x) =>
+          dayjs(new Date(x.start)).isSame(date, 'day')
+        )
+
+        daysOfTheWeek.value.push(
+          new DayOfTheWeek(selected, disabled, date.toDate(), calendarClassesTemp)
+        )
+
+        if (date.isSame(_actualDate, 'day')) hasPreviousWeek.value = false
+      }
+
+      getPivot()
     }
-
-    const _actualDate = new Date()
-
-    for (let i = 0; i < dates.length; i++) {
-      let date = dayjs(dates[i])
-
-      const disabled: boolean = date.isBefore(_actualDate, 'day')
-      const selected: boolean = date.isSame(_actualDate, 'day')
-
-      const calendarClassesTemp: Class[] = calendarClasses.filter((x) =>
-        dayjs(new Date(x.start)).isSame(date, 'day')
-      )
-
-      daysOfTheWeek.value.push(
-        new DayOfTheWeek(selected, disabled, date.toDate(), calendarClassesTemp)
-      )
-
-      if (date.isSame(_actualDate, 'day')) hasPreviousWeek.value = false
-    }
-
-    getPivot()
-
+  } catch (error) {
+    errorModalIsVisible.value = true
+  } finally {
     calendarIsLoading.value = false
   }
 }
@@ -378,6 +396,16 @@ function getPivot() {
     <div class="col-md-2"><IconCalendarCard letter="S"></IconCalendarCard>Substitute</div>
     <div class="offset-3"></div>
   </div>
+
+  <!-- Error Modal -->
+  <ModalComponent
+    v-if="errorModalIsVisible"
+    title="Error"
+    :message="ERROR_UNKNOWN"
+    :cancel-text="null"
+    @on-ok="errorModalIsVisible = false"
+  >
+  </ModalComponent>
 </template>
 
 <style>
