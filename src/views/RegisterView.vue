@@ -109,7 +109,7 @@ const rules = computed(() => {
     address2: { maxLength: maxLength(255) },
     phone: {
       required: helpers.withMessage(
-        'Valid mobile number is required to receive the sms and redeem the trial package',
+        'Valid mobile number is required to redeem the trial package through an SMS validation code',
         required
       )
     },
