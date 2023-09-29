@@ -181,7 +181,7 @@ const submitForm = async () => {
   <!-- success modal -->
   <ModalComponent
     v-if="successModalIsVisible"
-    title="Update Password"
+    title="SUCCESS"
     :message="SUCCESS_RESET_PASSWORD"
     :ok-loading="false"
     @on-ok="$router.go(-1)"
