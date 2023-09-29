@@ -213,14 +213,16 @@ function onChangeCountry() {
     <!-- hideMetrics -->
     <div class="form-row">
       <div class="col-md-12 mb-3">
-        <div class="form-check">
+        <div class="custom-control custom-switch">
           <input
-            class="form-check-input"
             type="checkbox"
+            class="custom-control-input"
             v-model="formData.hideMetrics"
             id="hideMetricsMyProfile"
           />
-          <label class="form-check-label" for="hideMetricsMyProfile">Join the Leaderboard?</label>
+          <label class="custom-control-label" for="hideMetricsMyProfile"
+            >Join the Leaderboard?</label
+          >
           <small
             v-for="error in v$.hideMetrics.$errors"
             :key="error.$uid"
@@ -612,3 +614,29 @@ function onChangeCountry() {
   >
   </ModalComponent>
 </template>
+
+<style lang="css" scoped>
+.custom-control-input:focus ~ .custom-control-label::before {
+  border-color: #ff6f60 !important;
+  box-shadow: 0 0 0 0.2rem rgba(255, 47, 69, 0.25) !important;
+}
+
+.custom-control-input:checked ~ .custom-control-label::before {
+  border-color: #ff6f60 !important;
+  background-color: #ff6f60 !important;
+}
+
+.custom-control-input:active ~ .custom-control-label::before {
+  background-color: #ff6f60 !important;
+  border-color: #ff6f60 !important;
+}
+
+.custom-control-input:focus:not(:checked) ~ .custom-control-label::before {
+  border-color: #ff6f60 !important;
+}
+
+.custom-control-input-green:not(:disabled):active ~ .custom-control-label::before {
+  background-color: #ff6f60 !important;
+  border-color: #ff6f60 !important;
+}
+</style>
