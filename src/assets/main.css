@@ -95,7 +95,12 @@ html {
   --dp-success-color-disabled: #a3d9b1;
   --dp-icon-color: #959595;
   --dp-danger-color: #ff6f60;
-  --dp-highlight-color: rgba(25, 118, 210, 0.1);
+  --dp-highlight-color: rgba(255, 127, 97, 0.1);
+}
+
+.dp__range_end, .dp__range_start, .dp__active_date {
+  background: var(--dp-danger-color);
+  color: var(--dp-primary-text-color);
 }
 
 @font-face {
