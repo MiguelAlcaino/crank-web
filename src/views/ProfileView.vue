@@ -359,14 +359,20 @@ function onChangeCountry() {
     <div class="form-row">
       <div class="col-md-6 mb-3">
         <label for="weightMyProfile" class="input-label">Weight *</label>
-        <input
-          id="weightMyProfile"
-          class="form-control"
-          v-model="formData.weight"
-          type="number"
-          placeholder="Weight"
-          required
-        />
+        <div class="input-group">
+          <input
+            id="weightMyProfile"
+            class="form-control"
+            v-model="formData.weight"
+            type="number"
+            placeholder="Weight"
+            required
+          />
+          <div class="input-group-append">
+            <span class="input-group-text" id="input-group-append-kg">kg</span>
+          </div>
+        </div>
+
         <small
           v-for="error in v$.weight.$errors"
           :key="error.$uid"
