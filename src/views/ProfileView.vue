@@ -33,6 +33,7 @@ const countries = ref([] as Country[])
 const countryStates = ref([] as State[])
 
 const currentDate = ref(new Date())
+const userEmail = ref<string>('')
 
 const formData = reactive({
   firstName: '',
@@ -116,6 +117,8 @@ async function getMyself(): Promise<void> {
   const user = await apiService.getMyself()
 
   if (user !== null) {
+    userEmail.value = user.email;
+
     await getCountryStates(user.country.code)
 
     formData.firstName = user.firstName
@@ -195,8 +198,11 @@ function onChangeCountry() {
 </script>
 
 <template>
-  <h1>My Profile</h1>
 
+  <h1>My Profile</h1>
+  <br>
+  <h5>{{ userEmail }}</h5>
+  <hr>
   <form @submit.prevent="submitForm" autocomplete="off">
     <div class="field">
       <RouterLink class="btn btn-primary" :to="{ name: 'change_password' }"
