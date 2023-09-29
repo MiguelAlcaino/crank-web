@@ -117,7 +117,7 @@ async function getMyself(): Promise<void> {
   const user = await apiService.getMyself()
 
   if (user !== null) {
-    userEmail.value = user.email;
+    userEmail.value = user.email
 
     await getCountryStates(user.country.code)
 
@@ -198,11 +198,10 @@ function onChangeCountry() {
 </script>
 
 <template>
-
   <h1>My Profile</h1>
-  <br>
+  <br />
   <h5>{{ userEmail }}</h5>
-  <hr>
+  <hr />
   <form @submit.prevent="submitForm" autocomplete="off">
     <div class="field">
       <RouterLink class="btn btn-primary" :to="{ name: 'change_password' }"
@@ -221,9 +220,7 @@ function onChangeCountry() {
             v-model="formData.hideMetrics"
             id="hideMetricsMyProfile"
           />
-          <label class="form-check-label" for="hideMetricsMyProfile"
-            >Join the Leaderboard?</label
-          >
+          <label class="form-check-label" for="hideMetricsMyProfile">Join the Leaderboard?</label>
           <small
             v-for="error in v$.hideMetrics.$errors"
             :key="error.$uid"
