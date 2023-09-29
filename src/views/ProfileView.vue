@@ -222,7 +222,7 @@ function onChangeCountry() {
             id="hideMetricsMyProfile"
           />
           <label class="form-check-label" for="hideMetricsMyProfile"
-            >Display my info on all performance leaderboards</label
+            >Join the Leaderboard?</label
           >
           <small
             v-for="error in v$.hideMetrics.$errors"
