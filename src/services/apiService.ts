@@ -20,7 +20,6 @@ import type {
   Enrollment,
   EnrollmentInfo,
   EnrollmentInfoInterface,
-  EnrollmentStatusEnum,
   IdentifiableUser,
   Purchase,
   RegisterUserInput,
