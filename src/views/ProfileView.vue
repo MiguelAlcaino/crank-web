@@ -150,6 +150,9 @@ const submitForm = async () => {
     if (formData.gender === 'M') gender = GenderEnum.M
     else if (formData.gender === 'F') gender = GenderEnum.F
 
+    formData.emergencyContactPhone = getFormattedPhoneNumber(formData.emergencyContactPhone)
+    formData.phone = getFormattedPhoneNumber(formData.phone)
+
     const input: UserInput = {
       address1: formData.address1 == '' ? '-' : formData.address1,
       address2: formData.address2,
@@ -158,13 +161,13 @@ const submitForm = async () => {
       country: formData.country,
       hideMetrics: formData.hideMetrics,
       emergencyContactName: formData.emergencyContactName,
-      emergencyContactPhone: getFormattedPhoneNumber(formData.emergencyContactPhone),
+      emergencyContactPhone: formData.emergencyContactPhone,
       emergencyContactRelationship: formData.emergencyContactRelationship,
       firstName: formData.firstName,
       gender: gender,
       lastName: formData.lastName,
       leaderboardUsername: formData.leaderboardUsername,
-      phone: getFormattedPhoneNumber(formData.phone),
+      phone: formData.phone,
       state: formData.cityState,
       weight: formData.weight,
       zipCode: '0000'
