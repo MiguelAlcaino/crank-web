@@ -24,6 +24,8 @@ import type {
   Purchase,
   RegisterUserInput,
   RemoveCurrentUserFromWaitlistInput,
+  RemoveUserFromWaitlistInput,
+  RemoveUserFromWaitlistUnion,
   RequestPasswordLinkInput,
   ResetPasswordForCurrentUserInput,
   ResetPasswordForCurrentUserUnion,
@@ -1262,5 +1264,32 @@ export class ApiService {
     const classInfo = queryResult.data.classInfo as ClassInfo
 
     return classInfo.enrollments
+  }
+
+  async removeUserFromWaitlist(waitlistEntryId: string): Promise<RemoveUserFromWaitlistUnion> {
+    const input = { waitlistEntryId: waitlistEntryId } as RemoveUserFromWaitlistInput
+
+    const muration = gql`
+      mutation removeUserFromWaitlist($input: RemoveUserFromWaitlistInput!) {
+        removeUserFromWaitlist(input: $input) {
+          ... on RemoveFromWaitlistResult {
+            success
+          }
+          ... on WaitlistEntryNotFoundError {
+            code
+          }  
+        }
+      }
+    `
+
+    const result = await this.authApiClient.mutate({
+      mutation: muration,
+      variables: {
+        input: input
+      },
+      fetchPolicy: 'no-cache'
+    })
+
+    return result.data.removeUserFromWaitlist as RemoveUserFromWaitlistUnion
   }
 }
