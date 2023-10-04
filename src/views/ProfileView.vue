@@ -25,6 +25,7 @@ import dayjs from 'dayjs'
 import { VueTelInput } from 'vue-tel-input'
 import 'vue-tel-input/vue-tel-input.css'
 import { getFormattedPhoneNumber } from '@/utils/utility-functions'
+import { SUCCESS_UPDATE_PROFILE } from '@/utils/successMessages'
 
 const isSaving = ref(false)
 const successModalIsVisible = ref(false)
@@ -614,7 +615,7 @@ function onChangeCountry() {
   <!-- Success Modal -->
   <ModalComponent
     title="Profile update"
-    :message="'Your profile was successfully updated'"
+    :message="SUCCESS_UPDATE_PROFILE"
     :closable="false"
     @on-ok="successModalIsVisible = false"
     v-if="successModalIsVisible"
