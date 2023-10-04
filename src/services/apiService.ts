@@ -1234,7 +1234,7 @@ export class ApiService {
     classId: string
   ): Promise<EnrollmentInfoInterface[] | null> {
     const query = gql`
-      query classInfo($site: SiteEnum!, $id: ID!) {
+      query classWaitlistEntries($site: SiteEnum!, $id: ID!) {
         classInfo(site: $site, id: $id) {
           enrollments(status: waitlisted) {
             id
