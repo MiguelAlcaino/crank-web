@@ -27,6 +27,7 @@ import dayjs from 'dayjs'
 
 import { VueTelInput } from 'vue-tel-input'
 import 'vue-tel-input/vue-tel-input.css'
+import { getFormattedPhoneNumber } from '@/utils/utility-functions'
 
 const isSaving = ref(false)
 const isLoggingIn = ref(false)
@@ -156,14 +157,14 @@ const submitForm = async () => {
       country: formData.country,
       email: formData.email,
       emergencyContactName: formData.emergencyContactName,
-      emergencyContactPhone: formData.emergencyContactPhone,
+      emergencyContactPhone: getFormattedPhoneNumber(formData.emergencyContactPhone),
       emergencyContactRelationship: formData.emergencyContactRelationship,
       firstName: formData.firstName,
       gender: gender,
       lastName: formData.lastName,
       leaderboardUsername: formData.leaderboardUsername,
       password: formData.password,
-      phone: formData.phone,
+      phone: getFormattedPhoneNumber(formData.phone),
       state: formData.cityState,
       weight: null,
       zipCode: '0000'

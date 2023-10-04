@@ -1277,7 +1277,7 @@ export class ApiService {
           }
           ... on WaitlistEntryNotFoundError {
             code
-          }  
+          }
         }
       }
     `

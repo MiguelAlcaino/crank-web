@@ -24,6 +24,7 @@ import dayjs from 'dayjs'
 
 import { VueTelInput } from 'vue-tel-input'
 import 'vue-tel-input/vue-tel-input.css'
+import { getFormattedPhoneNumber } from '@/utils/utility-functions'
 
 const isSaving = ref(false)
 const successModalIsVisible = ref(false)
@@ -130,9 +131,9 @@ async function getMyself(): Promise<void> {
     formData.cityState = user.state!.code
     formData.address1 = user.address1
     formData.address2 = user.address2!
-    formData.phone = user.phone
+    formData.phone = getFormattedPhoneNumber(user.phone)
     formData.emergencyContactName = user.emergencyContactName
-    formData.emergencyContactPhone = user.emergencyContactPhone
+    formData.emergencyContactPhone = getFormattedPhoneNumber(user.emergencyContactPhone)
     formData.emergencyContactRelationship = user.emergencyContactRelationship!
     formData.leaderboardUsername = user.leaderboardUsername!
     formData.hideMetrics = user.hideMetrics !== null ? user.hideMetrics! : false
@@ -156,13 +157,13 @@ const submitForm = async () => {
       country: formData.country,
       hideMetrics: formData.hideMetrics,
       emergencyContactName: formData.emergencyContactName,
-      emergencyContactPhone: formData.emergencyContactPhone,
+      emergencyContactPhone: getFormattedPhoneNumber(formData.emergencyContactPhone),
       emergencyContactRelationship: formData.emergencyContactRelationship,
       firstName: formData.firstName,
       gender: gender,
       lastName: formData.lastName,
       leaderboardUsername: formData.leaderboardUsername,
-      phone: formData.phone,
+      phone: getFormattedPhoneNumber(formData.phone),
       state: formData.cityState,
       weight: formData.weight,
       zipCode: '0000'
