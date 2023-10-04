@@ -451,7 +451,7 @@ async function confirmLateCancelation() {
   <ModalComponent
     v-if="confirmModalCancelReservationData.isVisible"
     title="Cancel Reservation?"
-    message="Are you sure, you want to cancel the reservation?"
+    message="ARE YOU SURE, YOU WANT TO CANCEL THE RESERVATION?"
     :ok-loading="confirmModalCancelReservationData.isLoading"
     @on-cancel="confirmModalCancelReservationData.isVisible = false"
     @on-ok="removeUserFromClass()"
