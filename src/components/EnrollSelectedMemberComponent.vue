@@ -18,6 +18,7 @@ import { inject, ref } from 'vue'
 
 import ModalComponent from '@/components/ModalComponent.vue'
 import {
+  ERROR_CLASS_IS_FULL,
   ERROR_CLIENT_IS_ALREADY_BOOKED_ADMIN,
   ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW,
   ERROR_UNKNOWN
@@ -73,7 +74,9 @@ async function bookUserIntoClass(
   } else if (response === 'PaymentRequiredError') {
     paymentRequiredErrorModalIsVisible.value = true
   } else {
-    if (response === 'ClientIsOutsideSchedulingWindowError') {
+    if (response == 'ClassIsFullError') {
+      errorMessage.value = ERROR_CLASS_IS_FULL
+    } else if (response === 'ClientIsOutsideSchedulingWindowError') {
       errorMessage.value = ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW
     } else if (response === 'ClientIsAlreadyBookedError') {
       errorMessage.value = ERROR_CLIENT_IS_ALREADY_BOOKED_ADMIN

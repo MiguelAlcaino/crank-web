@@ -433,7 +433,7 @@ async function confirmLateCancelation() {
       "
       :class-id="classId"
       :spot-number="selectedSpot.spotNumber!"
-      enrollButtonText="Assing"
+      enrollButtonText="Assign"
       @after-enrolling="getClassInfo()"
     ></EnrollSelectedMemberComponent>
   </div>
