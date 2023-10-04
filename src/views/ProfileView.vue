@@ -29,6 +29,7 @@ import { getFormattedPhoneNumber } from '@/utils/utility-functions'
 const isSaving = ref(false)
 const successModalIsVisible = ref(false)
 const errorModalIsVisible = ref(false)
+const weightInputMessageIsVisible = ref(false)
 
 const countries = ref([] as Country[])
 const countryStates = ref([] as State[])
@@ -368,11 +369,16 @@ function onChangeCountry() {
             type="number"
             placeholder="Weight"
             required
+            @focus="weightInputMessageIsVisible = true"
+            @blur="weightInputMessageIsVisible = false"
           />
           <div class="input-group-append">
             <span class="input-group-text" id="input-group-append-kg">kg</span>
           </div>
         </div>
+        <small v-if="weightInputMessageIsVisible" class="form-text" style="color: #737373">
+          Enter your weight to improve the accuracy of your class stats
+        </small>
 
         <small
           v-for="error in v$.weight.$errors"
