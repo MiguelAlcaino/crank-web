@@ -74,8 +74,13 @@ async function removeUserFromWaitlist(waitlistEntryId: string) {
     if (response.success) {
         //TODO: add success modal and reload waitlist table
     } else {
-      errorModalMessage.value = ERROR_UNKNOWN
+      if (response.code === 'WaitlistEntryNotFoundError') {
+        errorModalMessage.value = 'Id was not found on the waiting list';
         errorModalIsVisible.value = true
+      } else {
+        errorModalMessage.value = ERROR_UNKNOWN
+        errorModalIsVisible.value = true
+      }
     }
   } catch (error) {
     errorModalMessage.value = ERROR_UNKNOWN
