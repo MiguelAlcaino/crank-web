@@ -556,6 +556,7 @@ async function login() {
             showDialCode: true,
             required: true
           }"
+          :validCharactersOnly="true"
         ></vue-tel-input>
 
         <small
@@ -616,6 +617,7 @@ async function login() {
             showDialCode: true,
             required: true
           }"
+          :validCharactersOnly="true"
         ></vue-tel-input>
         <small
           v-for="error in v$.emergencyContactPhone.$errors"

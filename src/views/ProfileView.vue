@@ -494,6 +494,7 @@ function onChangeCountry() {
             showDialCode: true,
             required: true
           }"
+          :validCharactersOnly="true"
         ></vue-tel-input>
         <small
           v-for="error in v$.phone.$errors"
@@ -552,6 +553,7 @@ function onChangeCountry() {
             showDialCode: true,
             required: true
           }"
+          :validCharactersOnly="true"
         ></vue-tel-input>
         <small
           v-for="error in v$.emergencyContactPhone.$errors"
