@@ -320,57 +320,6 @@ async function confirmLateCancelation() {
     errorModalData.value.isVisible = true
   }
 }
-
-function goToLayoutEditPage(url: string) {
-  if (url) {
-    window.location.href = url
-  } else {
-    errorModalData.value.message = 'Redirect url is not configured.'
-    errorModalData.value.isVisible = true
-  }
-}
-
-async function removeLayout() {
-  editingLayout.value = true
-  const result = await apiService.editClass({ classId: classId.value, roomLayoutId: null })
-  editingLayout.value = false
-
-  if (result.__typename === 'EditClassSuccessResult') {
-    await getClassInfo()
-
-    successModalData.value.title = 'SUCCESS'
-    successModalData.value.message = 'The layout was removed successfully.'
-    successModalData.value.isVisible = true
-  } else {
-    errorModalData.value.message = ERROR_UNKNOWN
-    errorModalData.value.isVisible = true
-  }
-}
-
-async function assignRoomLayoutId(roomLayoutId: string) {
-  if (roomLayoutId) {
-    editingLayout.value = true
-    const result = await apiService.editClass({
-      classId: classId.value,
-      roomLayoutId: roomLayoutId
-    })
-    editingLayout.value = false
-
-    if (result.__typename === 'EditClassSuccessResult') {
-      await getClassInfo()
-
-      successModalData.value.title = 'SUCCESS'
-      successModalData.value.message = 'Room layout assigned successfully.'
-      successModalData.value.isVisible = true
-    } else {
-      errorModalData.value.message = ERROR_UNKNOWN
-      errorModalData.value.isVisible = true
-    }
-  } else {
-    errorModalData.value.message = ERROR_UNKNOWN
-    errorModalData.value.isVisible = true
-  }
-}
 </script>
 
 <template>
