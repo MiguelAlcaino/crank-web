@@ -8,6 +8,11 @@ interface User {
   firstName: string
   lastName: string
 }
+
+interface RemoveFromWaitlistResult {
+  code?: string | null
+  success?: boolean | null
+}
 </script>
 
 <script setup lang="ts">
@@ -29,9 +34,10 @@ const emits = defineEmits<{
 }>()
 
 const errorModalIsVisible = ref<boolean>(false)
+const errorModalMessage = ref<string>('')
 const modalIsVisible = ref<boolean>(false)
 const isLoading = ref<boolean>(false)
-
+const isRemoving = ref<boolean>(false)
 const waitlistEntries = ref<WaitlistEntry[]>([])
 
 function openModal() {
@@ -49,9 +55,33 @@ async function getWaitlistEntries() {
       props.classId
     )) as WaitlistEntry[]
   } catch (error) {
+    errorModalMessage.value = ERROR_UNKNOWN
     errorModalIsVisible.value = true
   } finally {
     isLoading.value = false
+  }
+}
+
+async function removeUserFromWaitlist(waitlistEntryId: string) {
+  //TODO: check method
+  waitlistEntryId = "5465"
+  try {
+    isRemoving.value = true
+    const response = (await apiService.removeUserFromWaitlist(
+      waitlistEntryId
+    )) as RemoveFromWaitlistResult
+
+    if (response.success) {
+        //TODO: add success modal and reload waitlist table
+    } else {
+      errorModalMessage.value = ERROR_UNKNOWN
+        errorModalIsVisible.value = true
+    }
+  } catch (error) {
+    errorModalMessage.value = ERROR_UNKNOWN
+    errorModalIsVisible.value = true
+  } finally {
+    isRemoving.value = false
   }
 }
 </script>
@@ -95,7 +125,14 @@ async function getWaitlistEntries() {
                     <td class="text-center align-middle">
                       {{ item.user.lastName.toUpperCase() }}
                     </td>
-                    <td class="text-center align-middle"></td>
+                    <td class="text-center align-middle">
+                      <DefaultButtonComponent
+                        text="REMOVE"
+                        type="button"
+                        @on-click="removeUserFromWaitlist(item.id)"
+                        :is-loading="isRemoving"
+                      ></DefaultButtonComponent>
+                    </td>
                   </tr>
                   <tr v-if="waitlistEntries.length === 0 && !isLoading">
                     <td colspan="4" class="text-center">
@@ -117,7 +154,7 @@ async function getWaitlistEntries() {
   <!-- ERROR modal -->
   <ModalComponent
     title="ERROR"
-    :message="ERROR_UNKNOWN"
+    :message="errorModalMessage"
     :closable="false"
     :cancel-text="null"
     v-if="errorModalIsVisible"
