@@ -67,11 +67,11 @@ const submitForm = async () => {
       successModalIsVisible.value = true
     } else {
       if (response === 'PasswordMustContainLetterOrNumberException') {
-        errorMessage.value = 'The password must contain a letter and a number.'
+        errorMessage.value = 'THE PASSWORD MUST CONTAIN A LETTER AND A NUMBER.'
       } else if (response === 'MinimumPasswordLengthException') {
-        errorMessage.value = 'The password must contain at least 8 characters.'
+        errorMessage.value = 'THE PASSWORD MUST CONTAIN AT LEAST 8 CHATACTERS.'
       } else if (response === 'IncorrectPasswordException') {
-        errorMessage.value = 'The current password is not correct.'
+        errorMessage.value = 'INVALID CURRENT PASSWORD.'
       } else {
         errorMessage.value = ERROR_UNKNOWN
       }
@@ -169,7 +169,7 @@ const submitForm = async () => {
   </div>
   <!-- error modal -->
   <ModalComponent
-    title="Error"
+    title="ERROR"
     :message="errorMessage"
     :closable="false"
     v-if="errorModalIsVisible"
@@ -181,7 +181,7 @@ const submitForm = async () => {
   <!-- success modal -->
   <ModalComponent
     v-if="successModalIsVisible"
-    title="Update Password"
+    title="SUCCESS"
     :message="SUCCESS_RESET_PASSWORD"
     :ok-loading="false"
     @on-ok="$router.go(-1)"

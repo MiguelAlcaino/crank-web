@@ -17,7 +17,7 @@ import router from '@/router'
 import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
 import {
-  ERROR_CLASSS_IS_FULL,
+  ERROR_CLASS_IS_FULL,
   ERROR_CLIENT_IS_ALREADY_BOOKED,
   ERROR_CLIENT_IS_ALREADY__ON_WAITLIST,
   ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW,
@@ -197,7 +197,7 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
       showErrorModal.value = true
       getClassInfo()
     } else if (response === 'ClassIsFullError') {
-      errorModalData.value.message = ERROR_CLASSS_IS_FULL
+      errorModalData.value.message = ERROR_CLASS_IS_FULL
       showErrorModal.value = true
       enrollmentEnabled.value = false
       getClassInfo()

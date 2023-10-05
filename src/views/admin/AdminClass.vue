@@ -320,57 +320,6 @@ async function confirmLateCancelation() {
     errorModalData.value.isVisible = true
   }
 }
-
-function goToLayoutEditPage(url: string) {
-  if (url) {
-    window.location.href = url
-  } else {
-    errorModalData.value.message = 'Redirect url is not configured.'
-    errorModalData.value.isVisible = true
-  }
-}
-
-async function removeLayout() {
-  editingLayout.value = true
-  const result = await apiService.editClass({ classId: classId.value, roomLayoutId: null })
-  editingLayout.value = false
-
-  if (result.__typename === 'EditClassSuccessResult') {
-    await getClassInfo()
-
-    successModalData.value.title = 'SUCCESS'
-    successModalData.value.message = 'The layout was removed successfully.'
-    successModalData.value.isVisible = true
-  } else {
-    errorModalData.value.message = ERROR_UNKNOWN
-    errorModalData.value.isVisible = true
-  }
-}
-
-async function assignRoomLayoutId(roomLayoutId: string) {
-  if (roomLayoutId) {
-    editingLayout.value = true
-    const result = await apiService.editClass({
-      classId: classId.value,
-      roomLayoutId: roomLayoutId
-    })
-    editingLayout.value = false
-
-    if (result.__typename === 'EditClassSuccessResult') {
-      await getClassInfo()
-
-      successModalData.value.title = 'SUCCESS'
-      successModalData.value.message = 'Room layout assigned successfully.'
-      successModalData.value.isVisible = true
-    } else {
-      errorModalData.value.message = ERROR_UNKNOWN
-      errorModalData.value.isVisible = true
-    }
-  } else {
-    errorModalData.value.message = ERROR_UNKNOWN
-    errorModalData.value.isVisible = true
-  }
-}
 </script>
 
 <template>
@@ -484,7 +433,7 @@ async function assignRoomLayoutId(roomLayoutId: string) {
       "
       :class-id="classId"
       :spot-number="selectedSpot.spotNumber!"
-      enrollButtonText="Assing"
+      enrollButtonText="Assign"
       @after-enrolling="getClassInfo()"
     ></EnrollSelectedMemberComponent>
   </div>
@@ -502,7 +451,7 @@ async function assignRoomLayoutId(roomLayoutId: string) {
   <ModalComponent
     v-if="confirmModalCancelReservationData.isVisible"
     title="Cancel Reservation?"
-    message="Are you sure, you want to cancel the reservation?"
+    message="ARE YOU SURE, YOU WANT TO CANCEL THE RESERVATION?"
     :ok-loading="confirmModalCancelReservationData.isLoading"
     @on-cancel="confirmModalCancelReservationData.isVisible = false"
     @on-ok="removeUserFromClass()"

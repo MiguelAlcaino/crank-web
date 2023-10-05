@@ -24,15 +24,19 @@ import dayjs from 'dayjs'
 
 import { VueTelInput } from 'vue-tel-input'
 import 'vue-tel-input/vue-tel-input.css'
+import { getFormattedPhoneNumber } from '@/utils/utility-functions'
+import { SUCCESS_UPDATE_PROFILE } from '@/utils/successMessages'
 
 const isSaving = ref(false)
 const successModalIsVisible = ref(false)
 const errorModalIsVisible = ref(false)
+const weightInputMessageIsVisible = ref(false)
 
 const countries = ref([] as Country[])
 const countryStates = ref([] as State[])
 
 const currentDate = ref(new Date())
+const userEmail = ref<string>('')
 
 const formData = reactive({
   firstName: '',
@@ -82,7 +86,7 @@ const rules = computed(() => {
     address2: { maxLength: maxLength(255) },
     phone: {
       required: helpers.withMessage(
-        'Valid mobile number is required to receive the sms and redeem the trial package',
+        'Valid mobile number is required to redeem the trial package through an SMS validation code',
         required
       )
     },
@@ -116,6 +120,8 @@ async function getMyself(): Promise<void> {
   const user = await apiService.getMyself()
 
   if (user !== null) {
+    userEmail.value = user.email
+
     await getCountryStates(user.country.code)
 
     formData.firstName = user.firstName
@@ -127,9 +133,9 @@ async function getMyself(): Promise<void> {
     formData.cityState = user.state!.code
     formData.address1 = user.address1
     formData.address2 = user.address2!
-    formData.phone = user.phone
+    formData.phone = getFormattedPhoneNumber(user.phone)
     formData.emergencyContactName = user.emergencyContactName
-    formData.emergencyContactPhone = user.emergencyContactPhone
+    formData.emergencyContactPhone = getFormattedPhoneNumber(user.emergencyContactPhone)
     formData.emergencyContactRelationship = user.emergencyContactRelationship!
     formData.leaderboardUsername = user.leaderboardUsername!
     formData.hideMetrics = user.hideMetrics !== null ? user.hideMetrics! : false
@@ -144,6 +150,9 @@ const submitForm = async () => {
 
     if (formData.gender === 'M') gender = GenderEnum.M
     else if (formData.gender === 'F') gender = GenderEnum.F
+
+    formData.emergencyContactPhone = getFormattedPhoneNumber(formData.emergencyContactPhone)
+    formData.phone = getFormattedPhoneNumber(formData.phone)
 
     const input: UserInput = {
       address1: formData.address1 == '' ? '-' : formData.address1,
@@ -196,7 +205,9 @@ function onChangeCountry() {
 
 <template>
   <h1>My Profile</h1>
-
+  <br />
+  <h5>{{ userEmail }}</h5>
+  <hr />
   <form @submit.prevent="submitForm" autocomplete="off">
     <div class="field">
       <RouterLink class="btn btn-primary" :to="{ name: 'change_password' }"
@@ -208,15 +219,15 @@ function onChangeCountry() {
     <!-- hideMetrics -->
     <div class="form-row">
       <div class="col-md-12 mb-3">
-        <div class="form-check">
+        <div class="custom-control custom-switch">
           <input
-            class="form-check-input"
             type="checkbox"
+            class="custom-control-input"
             v-model="formData.hideMetrics"
             id="hideMetricsMyProfile"
           />
-          <label class="form-check-label" for="hideMetricsMyProfile"
-            >Display my info on all performance leaderboards</label
+          <label class="custom-control-label" for="hideMetricsMyProfile"
+            >Join the Leaderboard?</label
           >
           <small
             v-for="error in v$.hideMetrics.$errors"
@@ -354,14 +365,25 @@ function onChangeCountry() {
     <div class="form-row">
       <div class="col-md-6 mb-3">
         <label for="weightMyProfile" class="input-label">Weight *</label>
-        <input
-          id="weightMyProfile"
-          class="form-control"
-          v-model="formData.weight"
-          type="number"
-          placeholder="Weight"
-          required
-        />
+        <div class="input-group">
+          <input
+            id="weightMyProfile"
+            class="form-control"
+            v-model="formData.weight"
+            type="number"
+            placeholder="Weight"
+            required
+            @focus="weightInputMessageIsVisible = true"
+            @blur="weightInputMessageIsVisible = false"
+          />
+          <div class="input-group-append">
+            <span class="input-group-text" id="input-group-append-kg">kg</span>
+          </div>
+        </div>
+        <small v-if="weightInputMessageIsVisible" class="form-text" style="color: #737373">
+          Enter your weight to improve the accuracy of your class stats
+        </small>
+
         <small
           v-for="error in v$.weight.$errors"
           :key="error.$uid"
@@ -483,6 +505,7 @@ function onChangeCountry() {
             showDialCode: true,
             required: true
           }"
+          :validCharactersOnly="true"
         ></vue-tel-input>
         <small
           v-for="error in v$.phone.$errors"
@@ -541,6 +564,7 @@ function onChangeCountry() {
             showDialCode: true,
             required: true
           }"
+          :validCharactersOnly="true"
         ></vue-tel-input>
         <small
           v-for="error in v$.emergencyContactPhone.$errors"
@@ -591,7 +615,7 @@ function onChangeCountry() {
   <!-- Success Modal -->
   <ModalComponent
     title="Profile update"
-    :message="'Your profile was successfully updated'"
+    :message="SUCCESS_UPDATE_PROFILE"
     :closable="false"
     @on-ok="successModalIsVisible = false"
     v-if="successModalIsVisible"
@@ -609,3 +633,29 @@ function onChangeCountry() {
   >
   </ModalComponent>
 </template>
+
+<style lang="css" scoped>
+.custom-control-input:focus ~ .custom-control-label::before {
+  border-color: #ff6f60 !important;
+  box-shadow: 0 0 0 0.2rem rgba(255, 47, 69, 0.25) !important;
+}
+
+.custom-control-input:checked ~ .custom-control-label::before {
+  border-color: #ff6f60 !important;
+  background-color: #ff6f60 !important;
+}
+
+.custom-control-input:active ~ .custom-control-label::before {
+  background-color: #ff6f60 !important;
+  border-color: #ff6f60 !important;
+}
+
+.custom-control-input:focus:not(:checked) ~ .custom-control-label::before {
+  border-color: #ff6f60 !important;
+}
+
+.custom-control-input-green:not(:disabled):active ~ .custom-control-label::before {
+  background-color: #ff6f60 !important;
+  border-color: #ff6f60 !important;
+}
+</style>

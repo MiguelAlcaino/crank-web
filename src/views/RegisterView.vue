@@ -27,6 +27,7 @@ import dayjs from 'dayjs'
 
 import { VueTelInput } from 'vue-tel-input'
 import 'vue-tel-input/vue-tel-input.css'
+import { getFormattedPhoneNumber } from '@/utils/utility-functions'
 
 const isSaving = ref(false)
 const isLoggingIn = ref(false)
@@ -109,7 +110,7 @@ const rules = computed(() => {
     address2: { maxLength: maxLength(255) },
     phone: {
       required: helpers.withMessage(
-        'Valid mobile number is required to receive the sms and redeem the trial package',
+        'Valid mobile number is required to redeem the trial package through an SMS validation code',
         required
       )
     },
@@ -156,14 +157,14 @@ const submitForm = async () => {
       country: formData.country,
       email: formData.email,
       emergencyContactName: formData.emergencyContactName,
-      emergencyContactPhone: formData.emergencyContactPhone,
+      emergencyContactPhone: getFormattedPhoneNumber(formData.emergencyContactPhone),
       emergencyContactRelationship: formData.emergencyContactRelationship,
       firstName: formData.firstName,
       gender: gender,
       lastName: formData.lastName,
       leaderboardUsername: formData.leaderboardUsername,
       password: formData.password,
-      phone: formData.phone,
+      phone: getFormattedPhoneNumber(formData.phone),
       state: formData.cityState,
       weight: null,
       zipCode: '0000'
@@ -556,6 +557,7 @@ async function login() {
             showDialCode: true,
             required: true
           }"
+          :validCharactersOnly="true"
         ></vue-tel-input>
 
         <small
@@ -616,6 +618,7 @@ async function login() {
             showDialCode: true,
             required: true
           }"
+          :validCharactersOnly="true"
         ></vue-tel-input>
         <small
           v-for="error in v$.emergencyContactPhone.$errors"

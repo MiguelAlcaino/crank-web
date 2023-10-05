@@ -20,7 +20,7 @@ withDefaults(defineProps<Props>(), {
   cancelLoading: false,
   cancelDisabled: false,
   okDisabled: false,
-  closable: true
+  closable: false
 })
 
 const emits = defineEmits<{

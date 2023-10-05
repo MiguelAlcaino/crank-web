@@ -118,6 +118,28 @@ export type ChartPoint = {
   time?: Maybe<Scalars['Int']>
 }
 
+export type CheckinResultUnion = CheckinSuccess | EnrollmentNotFoundError
+
+export type CheckinSuccess = {
+  __typename: 'CheckinSuccess'
+  success: Scalars['Boolean']
+}
+
+export type CheckinUserInClass = {
+  enrollmentId: Scalars['ID']
+}
+
+export type CheckoutResultUnion = CheckoutSuccess | EnrollmentNotFoundError
+
+export type CheckoutSuccess = {
+  __typename: 'CheckoutSuccess'
+  success: Scalars['Boolean']
+}
+
+export type CheckoutUserInClass = {
+  enrollmentId: Scalars['ID']
+}
+
 export type Class = {
   __typename: 'Class'
   bookingWindow: BookingWindow
@@ -286,6 +308,11 @@ export type EnrollmentInfoInterface = {
   user?: Maybe<User>
 }
 
+export type EnrollmentNotFoundError = Error & {
+  __typename: 'EnrollmentNotFoundError'
+  code: Scalars['String']
+}
+
 export enum EnrollmentStatusEnum {
   Active = 'active',
   Cancelled = 'cancelled',
@@ -357,8 +384,11 @@ export type Mutation = {
   bookUserIntoClass: BookClassResultUnion
   /** Cancels an enrollment done by the current user */
   cancelCurrentUserEnrollment?: Maybe<CancelEnrollmentResultUnion>
+  checkinUserInClass?: Maybe<CheckinResultUnion>
+  checkoutUserInClass?: Maybe<CheckoutResultUnion>
   /** Creates a copy of the current user in the given site */
   createCurrentUserInSite?: Maybe<CreateCurrentUserInSiteUnion>
+  /** Creates a new room layout */
   createRoomLayout: RoomLayout
   /** Removes a devices token */
   deleteDeviceTokenToCurrentUser?: Maybe<Scalars['Boolean']>
@@ -368,6 +398,7 @@ export type Mutation = {
   editClass: EditClassResultUnion
   /** Edits an enrollment made by the current user */
   editCurrentUserEnrollment?: Maybe<EditEnrollmentResultUnion>
+  /** Edits a room layout */
   editRoomLayout: RoomLayout
   /** Enabled a spot in a class */
   enableSpot?: Maybe<DisableEnableSpotResultUnion>
@@ -379,6 +410,7 @@ export type Mutation = {
   removeCurrentUserFromWaitlist?: Maybe<RemoveCurrentUserFromWaitlistUnion>
   /** Removes a user from a class */
   removeUserFromClass: CancelEnrollmentResultUnion
+  removeUserFromWaitlist: RemoveUserFromWaitlistUnion
   /** Request a reset password link */
   requestPasswordLink?: Maybe<ResetPasswordLinkResultUnion>
   /** Resets the current user's password */
@@ -410,6 +442,16 @@ export type MutationBookUserIntoClassArgs = {
 
 export type MutationCancelCurrentUserEnrollmentArgs = {
   input: CancelEnrollmentInput
+  site: SiteEnum
+}
+
+export type MutationCheckinUserInClassArgs = {
+  input: CheckinUserInClass
+  site: SiteEnum
+}
+
+export type MutationCheckoutUserInClassArgs = {
+  input: CheckoutUserInClass
   site: SiteEnum
 }
 
@@ -467,6 +509,10 @@ export type MutationRemoveCurrentUserFromWaitlistArgs = {
 
 export type MutationRemoveUserFromClassArgs = {
   input: CancelEnrollmentInput
+}
+
+export type MutationRemoveUserFromWaitlistArgs = {
+  input: RemoveUserFromWaitlistInput
 }
 
 export type MutationRequestPasswordLinkArgs = {
@@ -647,6 +693,12 @@ export type RemoveFromWaitlistResult = {
   __typename: 'RemoveFromWaitlistResult'
   success: Scalars['Boolean']
 }
+
+export type RemoveUserFromWaitlistInput = {
+  waitlistEntryId: Scalars['ID']
+}
+
+export type RemoveUserFromWaitlistUnion = RemoveFromWaitlistResult | WaitlistEntryNotFoundError
 
 export type RequestPasswordLinkInput = {
   email: Scalars['String']
@@ -1146,6 +1198,7 @@ export type ClassInfoQuery = {
         | {
             __typename: 'BookableSpot'
             enabled?: boolean | null
+            spotNumber: number
             x: number
             y: number
             icon: PositionIconEnum
@@ -1459,6 +1512,34 @@ export type EditRoomLayoutMutationVariables = Exact<{
 export type EditRoomLayoutMutation = {
   __typename: 'Mutation'
   editRoomLayout: { __typename: 'RoomLayout'; id: string }
+}
+
+export type ClassWaitlistEntriesQueryVariables = Exact<{
+  site: SiteEnum
+  id: Scalars['ID']
+}>
+
+export type ClassWaitlistEntriesQuery = {
+  __typename: 'Query'
+  classInfo?: {
+    __typename: 'ClassInfo'
+    enrollments: Array<
+      | {
+          __typename: 'EnrollmentInfo'
+          id: string
+          enrollmentStatus: EnrollmentStatusEnum
+          enrollmentDateTime: any
+          user?: { __typename: 'User'; firstName: string; lastName: string } | null
+        }
+      | {
+          __typename: 'WaitlistEntry'
+          id: string
+          enrollmentStatus: EnrollmentStatusEnum
+          enrollmentDateTime: any
+          user?: { __typename: 'User'; firstName: string; lastName: string } | null
+        }
+    >
+  } | null
 }
 
 export const SiteSettingsDocument = {
@@ -2320,6 +2401,7 @@ export const ClassInfoDocument = {
                                 kind: 'SelectionSet',
                                 selections: [
                                   { kind: 'Field', name: { kind: 'Name', value: 'enabled' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } },
                                   {
                                     kind: 'Field',
                                     name: { kind: 'Name', value: 'spotInfo' },
@@ -3685,3 +3767,87 @@ export const EditRoomLayoutDocument = {
     }
   ]
 } as unknown as DocumentNode<EditRoomLayoutMutation, EditRoomLayoutMutationVariables>
+export const ClassWaitlistEntriesDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'classWaitlistEntries' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'classInfo' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'id' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'enrollments' },
+                  arguments: [
+                    {
+                      kind: 'Argument',
+                      name: { kind: 'Name', value: 'status' },
+                      value: { kind: 'EnumValue', value: 'waitlisted' }
+                    }
+                  ],
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'enrollmentStatus' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'enrollmentDateTime' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'user' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'firstName' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'lastName' } }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<ClassWaitlistEntriesQuery, ClassWaitlistEntriesQueryVariables>
