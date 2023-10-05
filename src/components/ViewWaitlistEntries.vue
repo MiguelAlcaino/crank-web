@@ -10,6 +10,7 @@ interface User {
 }
 
 interface RemoveFromWaitlistResult {
+  __typename: 'RemoveFromWaitlistResult' | 'WaitlistEntryNotFoundError'
   code?: string | null
   success?: boolean | null
 }
@@ -20,7 +21,7 @@ import DefaultButtonComponent from '@/components/DefaultButtonComponent.vue'
 import ModalComponent from '@/components/ModalComponent.vue'
 import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
-import { ERROR_UNKNOWN } from '@/utils/errorMessages'
+import { ERROR_UNKNOWN, ERROR_WAITLIST_ENTRY_NOT_FOUND } from '@/utils/errorMessages'
 import { inject, ref } from 'vue'
 
 const apiService = inject<ApiService>('gqlApiService')!
@@ -29,15 +30,14 @@ const props = defineProps<{
   classId: string
 }>()
 
-const emits = defineEmits<{
-  (e: 'afterChangingRoomLayout'): void
-}>()
-
 const errorModalIsVisible = ref<boolean>(false)
+const successModalIsVisible = ref<boolean>(false)
+const confirmModalIsVisible = ref<boolean>(false)
 const errorModalMessage = ref<string>('')
 const modalIsVisible = ref<boolean>(false)
 const isLoading = ref<boolean>(false)
 const isRemoving = ref<boolean>(false)
+const waitlistEntryIdSelected = ref<string | null>(null)
 const waitlistEntries = ref<WaitlistEntry[]>([])
 
 function openModal() {
@@ -63,8 +63,6 @@ async function getWaitlistEntries() {
 }
 
 async function removeUserFromWaitlist(waitlistEntryId: string) {
-  //TODO: check method
-  waitlistEntryId = "5465"
   try {
     isRemoving.value = true
     const response = (await apiService.removeUserFromWaitlist(
@@ -72,10 +70,11 @@ async function removeUserFromWaitlist(waitlistEntryId: string) {
     )) as RemoveFromWaitlistResult
 
     if (response.success) {
-        //TODO: add success modal and reload waitlist table
+      successModalIsVisible.value = true
+      getWaitlistEntries()
     } else {
-      if (response.code === 'WaitlistEntryNotFoundError') {
-        errorModalMessage.value = 'Id was not found on the waiting list';
+      if (response.__typename === 'WaitlistEntryNotFoundError') {
+        errorModalMessage.value = ERROR_WAITLIST_ENTRY_NOT_FOUND
         errorModalIsVisible.value = true
       } else {
         errorModalMessage.value = ERROR_UNKNOWN
@@ -87,7 +86,13 @@ async function removeUserFromWaitlist(waitlistEntryId: string) {
     errorModalIsVisible.value = true
   } finally {
     isRemoving.value = false
+    confirmModalIsVisible.value = false
   }
+}
+
+function showConfirmModal(waitlistEntry: WaitlistEntry) {
+  waitlistEntryIdSelected.value = waitlistEntry.id
+  confirmModalIsVisible.value = true
 }
 </script>
 
@@ -134,8 +139,7 @@ async function removeUserFromWaitlist(waitlistEntryId: string) {
                       <DefaultButtonComponent
                         text="REMOVE"
                         type="button"
-                        @on-click="removeUserFromWaitlist(item.id)"
-                        :is-loading="isRemoving"
+                        @on-click="showConfirmModal(item)"
                       ></DefaultButtonComponent>
                     </td>
                   </tr>
@@ -164,6 +168,30 @@ async function removeUserFromWaitlist(waitlistEntryId: string) {
     :cancel-text="null"
     v-if="errorModalIsVisible"
     @on-ok="errorModalIsVisible = false"
+  >
+  </ModalComponent>
+
+  <!-- Success Modal -->
+  <ModalComponent
+    v-if="successModalIsVisible"
+    title="SUCCESS"
+    message="THE USER HAS BEEN SUCCESSFULLY REMOVED FROM THE WAITLIST."
+    :cancel-text="null"
+    ok-text="OK"
+    @on-ok="successModalIsVisible = false"
+  >
+  </ModalComponent>
+
+  <!-- Confirm Modal -->
+  <ModalComponent
+    v-if="confirmModalIsVisible"
+    title="CONFIRM"
+    message="ARE YOU SURE YOU WANT TO REMOVE THE USER FROM THE WAITLIST?"
+    cancel-text="No"
+    ok-text="Yes"
+    :ok-loading="isRemoving"
+    @on-cancel="confirmModalIsVisible = false"
+    @on-ok="removeUserFromWaitlist(waitlistEntryIdSelected!)"
   >
   </ModalComponent>
 </template>
