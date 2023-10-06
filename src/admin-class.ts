@@ -14,6 +14,7 @@ import { appStore } from './stores/appStorage'
 startApp()
 
 async function startApp() {
+  console.log("V1.0.0")
   const selection = <HTMLElement | null>document.querySelector('#vue-app-admin-class')
   const mindbodyClass = JSON.parse(selection?.dataset.mindbodyClass as string)
   const token = selection?.dataset.token as string
