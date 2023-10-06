@@ -36,9 +36,9 @@ async function startApp() {
 
   if (site) {
     if (site === SiteEnum.Dubai.toString()) {
-      appStore().site = SiteEnum.Dubai
+      appStore().setSite(SiteEnum.Dubai)
     } else if (site === SiteEnum.AbuDhabi) {
-      appStore().site = SiteEnum.AbuDhabi
+      appStore().setSite(SiteEnum.AbuDhabi)
     } else {
       throw Error
     }
