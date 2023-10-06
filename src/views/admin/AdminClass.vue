@@ -32,6 +32,7 @@ interface Class {
   instructorName: string
   startWithNoTimeZone: Date
   duration: number
+  waitListAvailable: boolean
 }
 
 interface EnrollmentInfo {
@@ -343,6 +344,21 @@ async function confirmLateCancelation() {
       <ViewWaitlistEntries :class-id="classId"></ViewWaitlistEntries>
     </div>
   </div>
+  <div class="row" v-if="classInfo !== null && classInfo.class.waitListAvailable === true">
+    <div class="col-md-12">
+      <hr />
+      <EnrollSelectedMemberComponent
+        :class-id="classId"
+        v-if="classInfo !== null && classInfo.class.waitListAvailable === true"
+        @after-enrolling="getClassInfo()"
+        :spot-number="null"
+        enrollButtonText="Enroll In Waitlist"
+        :is-waitlist-booking="true"
+      >
+      </EnrollSelectedMemberComponent>
+    </div>
+  </div>
+
   <hr />
   <br />
   <SpotMatrix
@@ -363,6 +379,7 @@ async function confirmLateCancelation() {
     @after-enrolling="getClassInfo()"
     :spot-number="null"
     enrollButtonText="Enroll Selected Member"
+    :is-waitlist-booking="false"
   >
   </EnrollSelectedMemberComponent>
 
@@ -432,6 +449,7 @@ async function confirmLateCancelation() {
       :spot-number="selectedSpot.spotNumber!"
       enrollButtonText="Assign"
       @after-enrolling="getClassInfo()"
+      :is-waitlist-booking="false"
     ></EnrollSelectedMemberComponent>
   </div>
 

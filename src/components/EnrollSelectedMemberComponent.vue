@@ -21,8 +21,10 @@ import {
   ERROR_CLASS_IS_FULL,
   ERROR_CLIENT_IS_ALREADY_BOOKED_ADMIN,
   ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW,
-  ERROR_UNKNOWN
+  ERROR_UNKNOWN,
+  ERROR_WAITLIST_FULL_ERROR
 } from '@/utils/errorMessages'
+import { SUCCESS_ADDED_USER_TO_WAITLIST } from '@/utils/successMessages'
 
 const apiService = inject<ApiService>('gqlApiService')!
 
@@ -30,6 +32,7 @@ const props = defineProps<{
   classId: string
   spotNumber: number | null
   enrollButtonText: string
+  isWaitlistBooking: boolean
 }>()
 
 const emits = defineEmits<{
@@ -41,6 +44,8 @@ const isLoading = ref<boolean>(false)
 const selectedUser = ref<IdentifiableUser | null>(null)
 const errorModalIsVisible = ref<boolean>(false)
 const errorMessage = ref<string>('')
+const successModalIsVisible = ref<boolean>(false)
+const successMessage = ref<string>('')
 const paymentRequiredErrorModalIsVisible = ref<boolean>(false)
 
 function onClickEnrollSelectedMember() {
@@ -60,7 +65,7 @@ async function bookUserIntoClass(
     userId,
     spotNumber,
     isPaymentRequired,
-    false
+    props.isWaitlistBooking
   )
 
   isLoading.value = false
@@ -69,6 +74,15 @@ async function bookUserIntoClass(
     users.value = []
     selectedUser.value = null
     paymentRequiredErrorModalIsVisible.value = false
+
+    emits('afterEnrolling')
+  } else if (response === 'AddedToWaitlistSuccess') {
+    users.value = []
+    selectedUser.value = null
+    paymentRequiredErrorModalIsVisible.value = false
+
+    successMessage.value = SUCCESS_ADDED_USER_TO_WAITLIST
+    successModalIsVisible.value = true
 
     emits('afterEnrolling')
   } else if (response === 'PaymentRequiredError') {
@@ -80,6 +94,8 @@ async function bookUserIntoClass(
       errorMessage.value = ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW
     } else if (response === 'ClientIsAlreadyBookedError') {
       errorMessage.value = ERROR_CLIENT_IS_ALREADY_BOOKED_ADMIN
+    } else if (response == 'WaitlistFullError') {
+      errorMessage.value = ERROR_WAITLIST_FULL_ERROR
     } else {
       errorMessage.value = ERROR_UNKNOWN
     }
@@ -169,6 +185,16 @@ function itemProjectionFunction(item: any) {
     :message="errorMessage"
     :cancel-text="null"
     @on-ok="errorModalIsVisible = false"
+  >
+  </ModalComponent>
+
+  <!-- Success Modal -->
+  <ModalComponent
+    v-if="successModalIsVisible"
+    title="SUCCESS"
+    :message="successMessage"
+    :cancel-text="null"
+    @on-ok="successModalIsVisible = false"
   >
   </ModalComponent>
 </template>

@@ -834,7 +834,7 @@ export class ApiService {
 
     if (isPaymentRequired) input.isPaymentRequired = isPaymentRequired
 
-    if (isWaitlistBooking) input.isPaymentRequired = isWaitlistBooking
+    if (isWaitlistBooking) input.isWaitlistBooking = isWaitlistBooking
 
     const BOOK_USER_INTO_CLASS_MUTATION = gql`
       mutation bookUserIntoClass($input: BookUserIntoClassInput!) {
