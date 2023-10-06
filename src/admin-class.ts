@@ -10,11 +10,12 @@ import { newAnonymousClient, newAuthenticatedApolloClient } from '@/services/gra
 import { useAuthenticationStore } from '@/stores/authToken'
 import { SiteEnum } from './gql/graphql'
 import { appStore } from './stores/appStorage'
+import SimpleTypeahead from 'vue3-simple-typeahead'
 
 startApp()
 
 async function startApp() {
-  console.log("V1.0.0")
+  console.log('V1.0.0')
   const selection = <HTMLElement | null>document.querySelector('#vue-app-admin-class')
   const mindbodyClass = JSON.parse(selection?.dataset.mindbodyClass as string)
   const token = selection?.dataset.token as string
@@ -32,7 +33,7 @@ async function startApp() {
     render: () => h(AdminClass)
   })
 
-  app.use(createPinia()).use(router)
+  app.use(createPinia()).use(router).use(SimpleTypeahead)
   useAuthenticationStore().setSession(token)
 
   if (site) {
@@ -43,7 +44,7 @@ async function startApp() {
     } else {
       throw Error
     }
-  }else {
+  } else {
     throw Error
   }
 
