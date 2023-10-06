@@ -8,14 +8,18 @@ import 'bootstrap-icons/font/bootstrap-icons.css'
 import { ApiService } from '@/services/apiService'
 import { newAnonymousClient, newAuthenticatedApolloClient } from '@/services/graphqlClient'
 import { useAuthenticationStore } from '@/stores/authToken'
+import { SiteEnum } from './gql/graphql'
+import { appStore } from './stores/appStorage'
 
 startApp()
 
 async function startApp() {
   const selection = <HTMLElement | null>document.querySelector('#vue-app-admin-class')
-  let mindbodyClass = JSON.parse(selection?.dataset.mindbodyClass as string)
-  let token = selection?.dataset.token as string
-  let gqlUrl = selection?.dataset.gqlUrl as string
+  const mindbodyClass = JSON.parse(selection?.dataset.mindbodyClass as string)
+  const token = selection?.dataset.token as string
+  const gqlUrl = selection?.dataset.gqlUrl as string
+  const site = selection?.dataset.site as string
+
   const app = createApp({
     setup() {
       provide('mindbodyClass', mindbodyClass)
@@ -29,6 +33,18 @@ async function startApp() {
 
   app.use(createPinia()).use(router)
   useAuthenticationStore().setSession(token)
+
+  if (site) {
+    if (site === SiteEnum.Dubai.toString()) {
+      appStore().site = SiteEnum.Dubai
+    } else if (site === SiteEnum.AbuDhabi) {
+      appStore().site = SiteEnum.AbuDhabi
+    } else {
+      throw Error
+    }
+  }else {
+    throw Error
+  }
 
   app.mount('#app')
 }
