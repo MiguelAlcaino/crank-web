@@ -1,4 +1,4 @@
-import { ApolloLink, createHttpLink, Observable } from '@apollo/client'
+import { createHttpLink, Observable } from '@apollo/client'
 import { ApolloClient, InMemoryCache } from '@apollo/client/core'
 import { setContext } from '@apollo/client/link/context'
 import { useAuthenticationStore } from '@/stores/authToken'
