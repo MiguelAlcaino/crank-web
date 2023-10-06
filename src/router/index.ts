@@ -15,7 +15,6 @@ import WorkoutStatsView from '../views/WorkoutStatsView.vue'
 
 import { authService } from '@/services/authService'
 import AdminClass from '@/views/admin/AdminClass.vue'
-import RoomLayoutView from '@/views/admin/RoomLayoutView.vue'
 import RoomLayoutListView from '@/views/admin/RoomLayoutListView.vue'
 import MenuLayout from '@/layouts/MenuLayout.vue'
 
@@ -116,12 +115,12 @@ const router = createRouter({
     {
       path: '/admin/room-layout/create',
       name: 'admin_room_layout_create',
-      component: RoomLayoutView
+      component: () => import('../views/admin/RoomLayoutView.vue')
     },
     {
       path: '/admin/room-layout/edit/:id',
       name: 'admin_room_layout_edit',
-      component: RoomLayoutView
+      component: () => import('../views/admin/RoomLayoutView.vue')
     }
   ]
 })
