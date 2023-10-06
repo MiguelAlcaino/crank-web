@@ -1,11 +1,19 @@
+<script lang="ts">
+enum EnrollmentTypeEnum {
+  All = 'all',
+  Historical = 'historical',
+  Upcoming = 'upcoming',
+  Waitlist = 'waitlist'
+}
+</script>
+
 <script setup lang="ts">
 import { inject, onMounted, ref } from 'vue'
-import {
-  type CancelEnrollmentInput,
-  type CurrentUserEnrollmentsParams,
-  type Enrollment,
-  EnrollmentTypeEnum,
-  type RemoveCurrentUserFromWaitlistInput
+import type {
+  CancelEnrollmentInput,
+  CurrentUserEnrollmentsParams,
+  Enrollment,
+  RemoveCurrentUserFromWaitlistInput
 } from '@/gql/graphql'
 import dayjs from 'dayjs'
 
@@ -18,12 +26,11 @@ import { appStore } from '@/stores/appStorage'
 import { ERROR_LATE_CANCELLATION_REQUIRED, ERROR_UNKNOWN } from '@/utils/errorMessages'
 import router from '@/router'
 
-const isLoading = ref<boolean>(false)
-const userErollments = ref<Enrollment[]>([])
+const upcomingEnrollments = ref<Enrollment[]>([])
+const waitlistEnrollments = ref<Enrollment[]>([])
+const oldEnrollments = ref<Enrollment[]>([])
 const siteDateTimeNow = ref<Date>(new Date())
 const isCancellingCurrentUserEnrollment = ref<boolean>(false)
-
-const filterEnrollmentType = ref<EnrollmentTypeEnum>(EnrollmentTypeEnum.Upcoming)
 
 const modalConfirmRemoveFromWaitlistisVisible = ref<boolean>(false)
 const waitlistEntryIdToRemove = ref<string | null>(null)
@@ -31,29 +38,27 @@ const waitlistEntryIdToRemove = ref<string | null>(null)
 const enrollmentIdToRemove = ref<string | null>(null)
 const enrollmentIsLateCancel = ref<boolean>(false)
 
+const upcomingEnrollmentsIsLoading = ref<boolean>(false)
+const waitlistEnrollmentsIsLoading = ref<boolean>(false)
+const oldEnrollmentsIsLoading = ref<boolean>(false)
+
 const dateRangeFilter = ref<[Date | null, Date | null] | undefined>()
 
 const successModalData = ref<{
-  title: string
   message: string
   isLoading: boolean
   isVisible: boolean
 }>({
-  title: '',
   message: '',
   isLoading: false,
   isVisible: false
 })
 
 const errorModalData = ref<{
-  title: string
   message: string
-  isLoading: boolean
   isVisible: boolean
 }>({
-  title: '',
   message: '',
-  isLoading: false,
   isVisible: false
 })
 
@@ -71,11 +76,13 @@ const confirmModalData = ref<{
   isVisible: false
 })
 
+const activeItem = ref<EnrollmentTypeEnum>(EnrollmentTypeEnum.Upcoming)
+
 const apiService = inject<ApiService>('gqlApiService')!
 
 onMounted(() => {
   getSiteDateTimeNow()
-  getUserErollments()
+  getUserEnrollments()
 })
 
 async function getSiteDateTimeNow() {
@@ -86,24 +93,85 @@ async function getSiteDateTimeNow() {
   if (siteSetting) siteDateTimeNow.value = new Date(siteSetting.siteDateTimeNow)
 }
 
-async function getUserErollments() {
-  userErollments.value = []
+async function getUserEnrollments() {
+  getUpcomingEnrollments()
+  getWaitlistEnrollments()
+  getOldEnrollments()
+}
 
-  isLoading.value = true
+async function getUpcomingEnrollments() {
+  try {
+    upcomingEnrollments.value = []
 
-  const params = { enrollmentType: filterEnrollmentType.value } as CurrentUserEnrollmentsParams
+    const params = { enrollmentType: EnrollmentTypeEnum.Upcoming } as CurrentUserEnrollmentsParams
 
-  if (dateRangeFilter.value) {
-    if (dateRangeFilter.value[0])
-      params.startDate = dayjs(dateRangeFilter.value[0]).format('YYYY-MM-DD')
+    if (dateRangeFilter.value) {
+      if (dateRangeFilter.value[0])
+        params.startDate = dayjs(dateRangeFilter.value[0]).format('YYYY-MM-DD')
 
-    if (dateRangeFilter.value[1])
-      params.endDate = dayjs(dateRangeFilter.value[1]).format('YYYY-MM-DD')
+      if (dateRangeFilter.value[1])
+        params.endDate = dayjs(dateRangeFilter.value[1]).format('YYYY-MM-DD')
+    }
+
+    upcomingEnrollmentsIsLoading.value = true
+
+    upcomingEnrollments.value = await apiService.getCurrentUserEnrollments(appStore().site, params)
+  } catch (error) {
+    errorModalData.value.message = ERROR_UNKNOWN
+    errorModalData.value.isVisible = true
+  } finally {
+    upcomingEnrollmentsIsLoading.value = false
   }
+}
 
-  userErollments.value = await apiService.getCurrentUserEnrollments(appStore().site, params)
+async function getWaitlistEnrollments() {
+  try {
+    waitlistEnrollments.value = []
 
-  isLoading.value = false
+    const params = { enrollmentType: EnrollmentTypeEnum.Waitlist } as CurrentUserEnrollmentsParams
+
+    if (dateRangeFilter.value) {
+      if (dateRangeFilter.value[0])
+        params.startDate = dayjs(dateRangeFilter.value[0]).format('YYYY-MM-DD')
+
+      if (dateRangeFilter.value[1])
+        params.endDate = dayjs(dateRangeFilter.value[1]).format('YYYY-MM-DD')
+    }
+
+    waitlistEnrollmentsIsLoading.value = true
+
+    waitlistEnrollments.value = await apiService.getCurrentUserEnrollments(appStore().site, params)
+  } catch (error) {
+    errorModalData.value.message = ERROR_UNKNOWN
+    errorModalData.value.isVisible = true
+  } finally {
+    waitlistEnrollmentsIsLoading.value = false
+  }
+}
+
+async function getOldEnrollments() {
+  try {
+    oldEnrollments.value = []
+
+    const params = { enrollmentType: EnrollmentTypeEnum.Historical } as CurrentUserEnrollmentsParams
+
+    if (dateRangeFilter.value) {
+      if (dateRangeFilter.value[0])
+        params.startDate = dayjs(dateRangeFilter.value[0]).format('YYYY-MM-DD')
+
+      if (dateRangeFilter.value[1])
+        params.endDate = dayjs(dateRangeFilter.value[1]).format('YYYY-MM-DD')
+    }
+
+    oldEnrollmentsIsLoading.value = true
+
+    oldEnrollments.value = await apiService.getCurrentUserEnrollments(appStore().site, params)
+  } catch (error) {
+    errorModalData.value.message = ERROR_UNKNOWN
+    errorModalData.value.isVisible = true
+  } finally {
+    oldEnrollmentsIsLoading.value = false
+  }
 }
 
 async function cancelCurrentUserEnrollment(
@@ -122,7 +190,6 @@ async function cancelCurrentUserEnrollment(
 
   switch (response) {
     case 'CancelUserEnrollmentSuccess': {
-      successModalData.value.title = 'SUCCESS'
       successModalData.value.message = 'YOUR BOOKING HAS BEEN CANCELLED'
       successModalData.value.isVisible = true
       break
@@ -158,7 +225,6 @@ async function removeCurrentUserFromWaitlist(waitlistEntryId: string): Promise<v
 
   switch (response['__typename']) {
     case 'RemoveFromWaitlistResult': {
-      successModalData.value.title = 'SUCCESS'
       successModalData.value.message = 'HAS BEEN SUCCESSFULLY REMOVED FROM WAITLIST'
       successModalData.value.isVisible = true
       break
@@ -198,12 +264,20 @@ function clickCancelEnrollment(enrollmentId: string, lateCancel: boolean): void 
 }
 
 async function acceptSuccessModal() {
-  await getUserErollments()
+  await getUserEnrollments()
   successModalData.value.isVisible = false
 }
 
 function goToChangeSpot(classId: string) {
   router.push('/change-spot/' + classId)
+}
+
+function isActive(menuItem: EnrollmentTypeEnum) {
+  return activeItem.value === menuItem
+}
+
+function setActive(menuItem: EnrollmentTypeEnum) {
+  activeItem.value = menuItem
 }
 </script>
 
@@ -222,38 +296,95 @@ function goToChangeSpot(classId: string) {
     </div>
     <div class="col-1">
       <DefaultButtonComponent
-        @on-click="getUserErollments()"
-        :is-loading="isLoading"
+        @on-click="getUserEnrollments()"
+        :is-loading="upcomingEnrollmentsIsLoading || waitlistEnrollmentsIsLoading || oldEnrollmentsIsLoading"
         text="Go"
         type="button"
         class="input-group-append"
       ></DefaultButtonComponent>
     </div>
   </div>
-
-  <select
-    class="custom-select"
-    v-model="filterEnrollmentType"
-    @change="getUserErollments()"
-    :disabled="isLoading"
-  >
-    <option :value="EnrollmentTypeEnum.Upcoming">UPCOMING</option>
-    <option :value="EnrollmentTypeEnum.Waitlist">WAITLIST</option>
-    <option :value="EnrollmentTypeEnum.Historical">OLD</option>
-  </select>
   <br />
   <br />
 
-  <BookingsTable
-    :enrollments="userErollments"
-    :isLoading="isLoading"
-    :enrollmentType="filterEnrollmentType"
-    :siteDateTimeNow="siteDateTimeNow"
-    @clickCancelEnrollment="clickCancelEnrollment"
-    @clickRemoveFromWaitlist="clickRemoveFromWaitlist"
-    @change-spot="goToChangeSpot"
-  >
-  </BookingsTable>
+  <ul class="nav nav-tabs nav-justified">
+    <li class="nav-item">
+      <a
+        class="nav-link"
+        @click.prevent="setActive(EnrollmentTypeEnum.Upcoming)"
+        :class="{ active: isActive(EnrollmentTypeEnum.Upcoming) }"
+        href="#upcoming"
+        >UPCOMING</a
+      >
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link"
+        @click.prevent="setActive(EnrollmentTypeEnum.Waitlist)"
+        :class="{ active: isActive(EnrollmentTypeEnum.Waitlist) }"
+        href="#waitlist"
+        >WAITLIST</a
+      >
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link"
+        @click.prevent="setActive(EnrollmentTypeEnum.Historical)"
+        :class="{ active: isActive(EnrollmentTypeEnum.Historical) }"
+        href="#old"
+        >OLD</a
+      >
+    </li>
+  </ul>
+  <div class="tab-content py-3" id="myTabContent">
+    <div
+      class="tab-pane fade"
+      :class="{ 'active show': isActive(EnrollmentTypeEnum.Upcoming) }"
+      id="upcoming"
+    >
+      <BookingsTable
+        :enrollments="upcomingEnrollments"
+        :isLoading="upcomingEnrollmentsIsLoading"
+        :enrollmentType="EnrollmentTypeEnum.Upcoming"
+        :siteDateTimeNow="siteDateTimeNow"
+        @clickCancelEnrollment="clickCancelEnrollment"
+        @clickRemoveFromWaitlist="clickRemoveFromWaitlist"
+        @change-spot="goToChangeSpot"
+      >
+      </BookingsTable>
+    </div>
+    <div
+      class="tab-pane fade"
+      :class="{ 'active show': isActive(EnrollmentTypeEnum.Waitlist) }"
+      id="waitlist"
+    >
+      <BookingsTable
+        :enrollments="waitlistEnrollments"
+        :isLoading="waitlistEnrollmentsIsLoading"
+        :enrollmentType="EnrollmentTypeEnum.Waitlist"
+        :siteDateTimeNow="siteDateTimeNow"
+        @clickCancelEnrollment="clickCancelEnrollment"
+        @clickRemoveFromWaitlist="clickRemoveFromWaitlist"
+        @change-spot="goToChangeSpot"
+      >
+      </BookingsTable>
+    </div>
+    <div
+      class="tab-pane fade"
+      :class="{ 'active show': isActive(EnrollmentTypeEnum.Historical) }"
+      id="old"
+    >
+      <BookingsTable
+        :enrollments="oldEnrollments"
+        :isLoading="oldEnrollmentsIsLoading"
+        :enrollmentType="EnrollmentTypeEnum.Historical"
+        :siteDateTimeNow="siteDateTimeNow"
+        @clickRemoveFromWaitlist="clickRemoveFromWaitlist"
+        @change-spot="goToChangeSpot"
+      >
+      </BookingsTable>
+    </div>
+  </div>
 
   <!-- CONFIRM REMOVE FROM WAITLIST modal -->
   <ModalComponent
@@ -283,7 +414,7 @@ function goToChangeSpot(classId: string) {
 
   <!-- SUCCESS modal -->
   <ModalComponent
-    :title="successModalData.title"
+    title="SUCCESS"
     :message="successModalData.message"
     :closable="false"
     @on-ok="acceptSuccessModal"
@@ -295,7 +426,7 @@ function goToChangeSpot(classId: string) {
   <!-- ERROR modal -->
   <ModalComponent
     :ok-loading="false"
-    title="Error"
+    title="ERROR"
     :message="errorModalData.message"
     :closable="false"
     :cancel-text="null"

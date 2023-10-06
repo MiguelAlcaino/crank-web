@@ -194,20 +194,17 @@ export class ApiService {
         }
       }
     `
-    try {
-      const queryResult = await this.authApiClient.query({
-        query: CURRENT_USER_ENROLLMENTS_QUERY,
-        variables: {
-          site: site,
-          params: params
-        },
-        fetchPolicy: 'network-only'
-      })
 
-      return queryResult.data.currentUserEnrollments as Enrollment[]
-    } catch (error) {
-      return []
-    }
+    const queryResult = await this.authApiClient.query({
+      query: CURRENT_USER_ENROLLMENTS_QUERY,
+      variables: {
+        site: site,
+        params: params
+      },
+      fetchPolicy: 'network-only'
+    })
+
+    return queryResult.data.currentUserEnrollments as Enrollment[]
   }
 
   async getCurrentUserEnrollmentInClass(classId: string): Promise<EnrollmentInfo | null> {
