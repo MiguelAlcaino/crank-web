@@ -16,6 +16,7 @@ const props = defineProps<{
   user: User | null
   enabled: boolean
   selected: boolean
+  isCheckedIn?: boolean
 }>()
 
 const emits = defineEmits<{
@@ -33,7 +34,8 @@ function selectSpot() {
     @click="selectSpot()"
     :class="['enabledSpot', selected ? 'selectedSpot' : '']"
   >
-    {{ spotInfo.spotNumber }}<br />
+    {{ spotInfo.spotNumber + (isCheckedIn === true ? '✓' : '') }}
+    <br />
     {{ user?.firstName }} {{ user?.lastName }}
   </div>
   <div

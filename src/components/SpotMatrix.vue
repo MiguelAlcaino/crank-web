@@ -12,6 +12,7 @@ interface SpotPosition {
   spotInfo?: SpotInfo
   user?: User | null
   enabled?: boolean
+  isCheckedIn?: boolean
 }
 
 interface ClassPositionInterface {
@@ -48,6 +49,7 @@ interface EnrollmentInfo {
   enrollmentDateTime: Date
   enrollmentStatus: EnrollmentStatusEnum
   id: string
+  isCheckedIn?: boolean
   spotInfo?: SpotInfo | null
 }
 
@@ -93,9 +95,17 @@ watch(
   }
 )
 
+watch(
+  () => props.enrollments,
+  () => {
+    spotsTable.value = getMatrixOfSpotPositions(props.matrix!)
+  }
+)
+
 function newSpotPosition(
   classPosition: BookableSpot | IconPosition,
-  user: User | null | undefined
+  user: User | null | undefined,
+  isCheckedIn?: boolean
 ): SpotPosition {
   if ('spotInfo' in classPosition) {
     return {
@@ -105,7 +115,8 @@ function newSpotPosition(
       positionIcon: classPosition.icon,
       spotInfo: classPosition.spotInfo,
       user: user,
-      enabled: classPosition.enabled
+      enabled: classPosition.enabled,
+      isCheckedIn: isCheckedIn
     }
   }
   return {
@@ -120,6 +131,7 @@ function getMatrixOfSpotPositions(matrix: Array<BookableSpot | IconPosition>): S
   let rows: Array<Array<SpotPosition>> = []
   let classPosition: BookableSpot | IconPosition
   let user: User | null | undefined
+  let isCheckedIn: boolean | undefined
 
   for (let i = 0; i < matrix.length; i++) {
     for (let j = 0; j < matrix.length; j++) {
@@ -130,11 +142,14 @@ function getMatrixOfSpotPositions(matrix: Array<BookableSpot | IconPosition>): S
         }
 
         user = null
+        isCheckedIn = false
+
         if ('spotInfo' in classPosition) {
           let spotInfo = classPosition.spotInfo as SpotInfo
           if (spotInfo.spotNumber && props.enrollments) {
             for (let index = 0; index < props.enrollments.length; index++) {
               const enrollment = props.enrollments[index]
+              isCheckedIn = enrollment.isCheckedIn
               if (enrollment.spotInfo?.spotNumber === spotInfo.spotNumber) {
                 user = enrollment.user
                 break
@@ -143,7 +158,7 @@ function getMatrixOfSpotPositions(matrix: Array<BookableSpot | IconPosition>): S
           }
         }
 
-        rows[i].push(newSpotPosition(classPosition, user))
+        rows[i].push(newSpotPosition(classPosition, user, isCheckedIn))
       }
     }
   }
@@ -203,6 +218,7 @@ function onClickSpotAdmin(spotNumber: number) {
               :enabled="spot.enabled!"
               @click-spot="onClickSpotAdmin"
               :selected="props.selectedSpotNumber === spot?.spotInfo?.spotNumber"
+              :is-checked-in="spot.isCheckedIn"
             />
             <bookable-spot-position
               v-else-if="!showUserInSpots && spot.positionType === BOOKABLE_SPOT_KEY"
