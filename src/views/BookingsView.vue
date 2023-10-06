@@ -297,7 +297,9 @@ function setActive(menuItem: EnrollmentTypeEnum) {
     <div class="col-1">
       <DefaultButtonComponent
         @on-click="getUserEnrollments()"
-        :is-loading="upcomingEnrollmentsIsLoading || waitlistEnrollmentsIsLoading || oldEnrollmentsIsLoading"
+        :is-loading="
+          upcomingEnrollmentsIsLoading || waitlistEnrollmentsIsLoading || oldEnrollmentsIsLoading
+        "
         text="Go"
         type="button"
         class="input-group-append"

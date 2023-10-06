@@ -3,6 +3,7 @@ interface EnrollmentInfo {
   id: string
   enrollmentStatus?: EnrollmentStatusEnum
   user?: User | null
+  isCheckedIn?: boolean
 }
 
 interface User {
@@ -24,6 +25,7 @@ import { inject, ref } from 'vue'
 import ModalComponent from '@/components/ModalComponent.vue'
 import type { ApiService } from '@/services/apiService'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
+import CheckInCheckOutUserInClass from '@/components/CheckInCheckOutUserInClass.vue'
 
 defineProps<{
   enrollments: EnrollmentInfo[]
@@ -41,10 +43,6 @@ const removingUserFromClass = ref<boolean>(false)
 const modalCancelReservationIsVisible = ref<boolean>(false)
 const modalLateCancelIsVisible = ref<boolean>(false)
 const errorModalIsVisible = ref<boolean>(false)
-
-function onClickCheckInOut() {
-  //TODO: add check in and check out functionality
-}
 
 function onClickCancelMemberReservation(enrollmentId: string) {
   removingUserFromClass.value = false
@@ -100,7 +98,12 @@ async function removeUserFromClass(enrollmentId: string, lateCancel: boolean) {
         <td>{{ item.user?.firstName }}</td>
         <td>{{ item.user?.lastName }}</td>
         <td>
-          <button class="btn btn-primary" type="button">Check - In</button>
+          <CheckInCheckOutUserInClass
+            v-if="item.id != null && item.isCheckedIn != null"
+            :enrollment-id="item.id"
+            :is-checked-in="item.isCheckedIn"
+            @after-check-in-check-out="emits('afterCancelMemberReservation')"
+          ></CheckInCheckOutUserInClass>
         </td>
         <td>
           <button
