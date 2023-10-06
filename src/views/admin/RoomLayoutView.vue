@@ -156,9 +156,9 @@ async function getRoomLayout() {
 }
 
 function getRoomLayoutId(): string {
-  let roomLayout = inject<any | undefined>('roomLayoutData')
-  if (roomLayout !== undefined) {
-    return roomLayout.id as string
+  let roomLayoutId = inject<any | undefined>('roomLayoutId')
+  if (roomLayoutId !== undefined) {
+    return roomLayoutId as string
   }
 
   return route.params.id as string

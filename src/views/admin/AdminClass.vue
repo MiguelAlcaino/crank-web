@@ -335,9 +335,9 @@ async function confirmLateCancelation() {
   <div class="row">
     <div class="col-md-12">
       <ChangeLayoutClass
-        v-if="classInfo?.roomLayout?.id"
+        v-if="classInfo"
         :class-id="classId"
-        :room-layout-id="classInfo.roomLayout.id"
+        :room-layout-id="classInfo?.roomLayout?.id"
         @after-changing-room-layout="getClassInfo()"
       ></ChangeLayoutClass>
       &nbsp;

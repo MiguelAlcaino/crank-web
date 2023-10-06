@@ -19,7 +19,7 @@ const apiService = inject<ApiService>('gqlApiService')!
 
 const props = defineProps<{
   classId: string
-  roomLayoutId: string
+  roomLayoutId?: string
 }>()
 
 const emits = defineEmits<{
@@ -61,23 +61,19 @@ async function getRoomLayouts() {
 }
 
 async function assignRoomLayoutId() {
-  if (selectedRoomLayoutId.value) {
-    isSaving.value = true
-    const result = await apiService.editClass({
-      classId: props.classId,
-      roomLayoutId: selectedRoomLayoutId.value
-    })
-    isSaving.value = false
+  isSaving.value = true
+  const result = await apiService.editClass({
+    classId: props.classId,
+    roomLayoutId: selectedRoomLayoutId.value
+  })
+  isSaving.value = false
 
-    confirmModalIsVisible.value = false
-    modalIsVisible.value = false
+  confirmModalIsVisible.value = false
+  modalIsVisible.value = false
 
-    if (result.__typename === 'EditClassSuccessResult') {
-      emits('afterChangingRoomLayout')
-      successModalIsVisible.value = true
-    } else {
-      errorModalIsVisible.value = true
-    }
+  if (result.__typename === 'EditClassSuccessResult') {
+    emits('afterChangingRoomLayout')
+    successModalIsVisible.value = true
   } else {
     errorModalIsVisible.value = true
   }
@@ -113,6 +109,7 @@ async function assignRoomLayoutId() {
                 id="countryRegistration"
                 required
               >
+                <option :value="null">-- NO ROOM LAYOUT --</option>
                 <option v-for="(item, index) in roomLayouts" :key="index" :value="item.id">
                   {{ item.name }}
                 </option>
@@ -123,8 +120,8 @@ async function assignRoomLayoutId() {
                 text="Change Room Layout"
                 type="button"
                 :is-loading="isSaving"
-                v-if="selectedRoomLayoutId !== null && selectedRoomLayoutId !== roomLayoutId"
-                :disabled="selectedRoomLayoutId !== null && selectedRoomLayoutId === roomLayoutId"
+                v-if="selectedRoomLayoutId !== roomLayoutId && !isLoading"
+                :disabled="selectedRoomLayoutId === roomLayoutId && !isLoading"
                 @on-click="confirmModalIsVisible = true"
               ></DefaultButtonComponent>
 
