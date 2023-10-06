@@ -4,6 +4,10 @@ import type {
   BookUserIntoClassInput,
   CalendarClassesParams,
   CancelEnrollmentInput,
+  CheckinResultUnion,
+  CheckinUserInClass,
+  CheckoutResultUnion,
+  CheckoutUserInClass,
   Class,
   ClassInfo,
   ClassStat,
@@ -515,6 +519,7 @@ export class ApiService {
               leaderboardUsername
             }
             ... on EnrollmentInfo {
+              isCheckedIn
               spotInfo {
                 __typename
                 isBooked
@@ -1291,5 +1296,60 @@ export class ApiService {
     })
 
     return result.data.removeUserFromWaitlist as RemoveUserFromWaitlistUnion
+  }
+
+  async checkinUserInClass(site: SiteEnum, input: CheckinUserInClass): Promise<CheckinResultUnion> {
+    const mutation = gql`
+      mutation checkinUserInClass($site: SiteEnum!, $input: CheckinUserInClass!) {
+        checkinUserInClass(site: $site, input: $input) {
+          __typename
+          ... on CheckinSuccess {
+            success
+          }
+          ... on EnrollmentNotFoundError {
+            code
+          }
+        }
+      }
+    `
+    const result = await this.authApiClient.mutate({
+      mutation: mutation,
+      variables: {
+        site: site,
+        input: input
+      },
+      fetchPolicy: 'network-only'
+    })
+
+    return result.data.checkinUserInClass as CheckinResultUnion
+  }
+
+  async checkoutUserInClass(
+    site: SiteEnum,
+    input: CheckoutUserInClass
+  ): Promise<CheckoutResultUnion> {
+    const mutation = gql`
+      mutation checkoutUserInClass($site: SiteEnum!, $input: CheckoutUserInClass!) {
+        checkoutUserInClass(site: $site, input: $input) {
+          __typename
+          ... on CheckoutSuccess {
+            success
+          }
+          ... on EnrollmentNotFoundError {
+            code
+          }
+        }
+      }
+    `
+    const result = await this.authApiClient.mutate({
+      mutation: mutation,
+      variables: {
+        site: site,
+        input: input
+      },
+      fetchPolicy: 'network-only'
+    })
+
+    return result.data.checkoutUserInClass as CheckoutResultUnion
   }
 }

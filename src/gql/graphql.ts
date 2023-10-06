@@ -295,6 +295,7 @@ export type EnrollmentInfo = EnrollmentInfoInterface & {
   enrollmentDateTime: Scalars['DateTime']
   enrollmentStatus: EnrollmentStatusEnum
   id: Scalars['ID']
+  isCheckedIn: Scalars['Boolean']
   spotInfo?: Maybe<SpotInfo>
   /** @deprecated This should be removed from here to avoid loops. */
   user?: Maybe<User>
@@ -1540,6 +1541,43 @@ export type ClassWaitlistEntriesQuery = {
         }
     >
   } | null
+}
+
+export type RemoveUserFromWaitlistMutationVariables = Exact<{
+  input: RemoveUserFromWaitlistInput
+}>
+
+export type RemoveUserFromWaitlistMutation = {
+  __typename: 'Mutation'
+  removeUserFromWaitlist:
+    | { __typename: 'RemoveFromWaitlistResult'; success: boolean }
+    | { __typename: 'WaitlistEntryNotFoundError'; code: string }
+}
+
+export type CheckinUserInClassMutationVariables = Exact<{
+  site: SiteEnum
+  input: CheckinUserInClass
+}>
+
+export type CheckinUserInClassMutation = {
+  __typename: 'Mutation'
+  checkinUserInClass?:
+    | { __typename: 'CheckinSuccess'; success: boolean }
+    | { __typename: 'EnrollmentNotFoundError'; code: string }
+    | null
+}
+
+export type CheckoutUserInClassMutationVariables = Exact<{
+  site: SiteEnum
+  input: CheckoutUserInClass
+}>
+
+export type CheckoutUserInClassMutation = {
+  __typename: 'Mutation'
+  checkoutUserInClass?:
+    | { __typename: 'CheckoutSuccess'; success: boolean }
+    | { __typename: 'EnrollmentNotFoundError'; code: string }
+    | null
 }
 
 export const SiteSettingsDocument = {
@@ -3851,3 +3889,226 @@ export const ClassWaitlistEntriesDocument = {
     }
   ]
 } as unknown as DocumentNode<ClassWaitlistEntriesQuery, ClassWaitlistEntriesQueryVariables>
+export const RemoveUserFromWaitlistDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'removeUserFromWaitlist' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'RemoveUserFromWaitlistInput' }
+            }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'removeUserFromWaitlist' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'RemoveFromWaitlistResult' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'success' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'WaitlistEntryNotFoundError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  RemoveUserFromWaitlistMutation,
+  RemoveUserFromWaitlistMutationVariables
+>
+export const CheckinUserInClassDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'checkinUserInClass' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'CheckinUserInClass' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'checkinUserInClass' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'CheckinSuccess' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'success' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'EnrollmentNotFoundError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<CheckinUserInClassMutation, CheckinUserInClassMutationVariables>
+export const CheckoutUserInClassDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'checkoutUserInClass' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'CheckoutUserInClass' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'checkoutUserInClass' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'CheckoutSuccess' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'success' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'EnrollmentNotFoundError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<CheckoutUserInClassMutation, CheckoutUserInClassMutationVariables>

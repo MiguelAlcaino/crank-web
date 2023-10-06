@@ -78,7 +78,13 @@ const documents = {
   '\n      mutation editRoomLayout($site: SiteEnum!, $input: EditRoomLayoutInput!) {\n        editRoomLayout(site: $site, input: $input) {\n          id\n        }\n      }\n    ':
     types.EditRoomLayoutDocument,
   '\n      query classWaitlistEntries($site: SiteEnum!, $id: ID!) {\n        classInfo(site: $site, id: $id) {\n          enrollments(status: waitlisted) {\n            id\n            enrollmentStatus\n            enrollmentDateTime\n            user {\n              firstName\n              lastName\n            }\n          }\n        }\n      }\n    ':
-    types.ClassWaitlistEntriesDocument
+    types.ClassWaitlistEntriesDocument,
+  '\n      mutation removeUserFromWaitlist($input: RemoveUserFromWaitlistInput!) {\n        removeUserFromWaitlist(input: $input) {\n          ... on RemoveFromWaitlistResult {\n            success\n          }\n          ... on WaitlistEntryNotFoundError {\n            code\n          }\n        }\n      }\n    ':
+    types.RemoveUserFromWaitlistDocument,
+  '\n      mutation checkinUserInClass($site: SiteEnum!, $input: CheckinUserInClass!) {\n        checkinUserInClass(site: $site, input: $input) {\n          __typename\n          ... on CheckinSuccess {\n            success\n          }\n          ... on EnrollmentNotFoundError {\n            code\n          }\n        }\n      }\n    ':
+    types.CheckinUserInClassDocument,
+  '\n      mutation checkoutUserInClass($site: SiteEnum!, $input: CheckoutUserInClass!) {\n        checkoutUserInClass(site: $site, input: $input) {\n          __typename\n          ... on CheckoutSuccess {\n            success\n          }\n          ... on EnrollmentNotFoundError {\n            code\n          }\n        }\n      }\n    ':
+    types.CheckoutUserInClassDocument
 }
 
 /**
@@ -293,6 +299,24 @@ export function graphql(
 export function graphql(
   source: '\n      query classWaitlistEntries($site: SiteEnum!, $id: ID!) {\n        classInfo(site: $site, id: $id) {\n          enrollments(status: waitlisted) {\n            id\n            enrollmentStatus\n            enrollmentDateTime\n            user {\n              firstName\n              lastName\n            }\n          }\n        }\n      }\n    '
 ): (typeof documents)['\n      query classWaitlistEntries($site: SiteEnum!, $id: ID!) {\n        classInfo(site: $site, id: $id) {\n          enrollments(status: waitlisted) {\n            id\n            enrollmentStatus\n            enrollmentDateTime\n            user {\n              firstName\n              lastName\n            }\n          }\n        }\n      }\n    ']
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n      mutation removeUserFromWaitlist($input: RemoveUserFromWaitlistInput!) {\n        removeUserFromWaitlist(input: $input) {\n          ... on RemoveFromWaitlistResult {\n            success\n          }\n          ... on WaitlistEntryNotFoundError {\n            code\n          }\n        }\n      }\n    '
+): (typeof documents)['\n      mutation removeUserFromWaitlist($input: RemoveUserFromWaitlistInput!) {\n        removeUserFromWaitlist(input: $input) {\n          ... on RemoveFromWaitlistResult {\n            success\n          }\n          ... on WaitlistEntryNotFoundError {\n            code\n          }\n        }\n      }\n    ']
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n      mutation checkinUserInClass($site: SiteEnum!, $input: CheckinUserInClass!) {\n        checkinUserInClass(site: $site, input: $input) {\n          __typename\n          ... on CheckinSuccess {\n            success\n          }\n          ... on EnrollmentNotFoundError {\n            code\n          }\n        }\n      }\n    '
+): (typeof documents)['\n      mutation checkinUserInClass($site: SiteEnum!, $input: CheckinUserInClass!) {\n        checkinUserInClass(site: $site, input: $input) {\n          __typename\n          ... on CheckinSuccess {\n            success\n          }\n          ... on EnrollmentNotFoundError {\n            code\n          }\n        }\n      }\n    ']
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n      mutation checkoutUserInClass($site: SiteEnum!, $input: CheckoutUserInClass!) {\n        checkoutUserInClass(site: $site, input: $input) {\n          __typename\n          ... on CheckoutSuccess {\n            success\n          }\n          ... on EnrollmentNotFoundError {\n            code\n          }\n        }\n      }\n    '
+): (typeof documents)['\n      mutation checkoutUserInClass($site: SiteEnum!, $input: CheckoutUserInClass!) {\n        checkoutUserInClass(site: $site, input: $input) {\n          __typename\n          ... on CheckoutSuccess {\n            success\n          }\n          ... on EnrollmentNotFoundError {\n            code\n          }\n        }\n      }\n    ']
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {}

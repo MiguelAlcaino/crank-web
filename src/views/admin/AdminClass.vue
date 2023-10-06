@@ -38,6 +38,7 @@ interface EnrollmentInfo {
   enrollmentDateTime: Date
   enrollmentStatus: EnrollmentStatusEnum
   id: string
+  isCheckedIn?: boolean
   /** @deprecated This should be removed from here to avoid loops. */
   user?: User
   spotInfo?: SpotInfo
@@ -91,6 +92,7 @@ import EnrollSelectedMemberComponent from '@/components/EnrollSelectedMemberComp
 import DefaultButtonComponent from '@/components/DefaultButtonComponent.vue'
 import ChangeLayoutClass from '@/components/ChangeLayoutClass.vue'
 import ViewWaitlistEntries from '@/components/ViewWaitlistEntries.vue'
+import CheckInCheckOutUserInClass from '@/components/CheckInCheckOutUserInClass.vue'
 
 import {
   ERROR_LATE_CANCELLATION_REQUIRED,
@@ -102,7 +104,6 @@ const route = useRoute()
 
 const apiService = inject<ApiService>('gqlApiService')!
 const isLoading = ref<boolean>(false)
-const editingLayout = ref<boolean>(false)
 const classInfo = ref<ClassInfo | null>(null)
 
 const assignUserToThisSpotVisible = ref<boolean>(false)
@@ -145,6 +146,7 @@ const selectedSpot = ref<{
   fullName?: string | null
   enabled?: boolean | null
   enrollmentId?: string | null
+  isCheckedIn?: boolean
 }>({
   spotNumber: null,
   isBooked: null,
@@ -171,11 +173,14 @@ onMounted(() => {
 })
 
 async function getClassInfo() {
+  selectedSpot.value = {}
+
   isLoading.value = true
   classInfo.value = (await apiService.getClassInfo(appStore().site, classId.value)) as ClassInfo
-  totalSignedIn.value = classInfo.value?.enrollments.length ?? 0
-
   isLoading.value = false
+
+  totalSignedIn.value =
+    classInfo.value?.enrollments.filter((x) => x.isCheckedIn === true).length ?? 0
 }
 
 function getClassId(): string {
@@ -196,12 +201,13 @@ function spotClicked(event: BookableSpotClickedEvent) {
     if (classPosition.icon === PositionIconEnum.Spot) {
       if (classPosition.spotNumber === event.spotNumber) {
         var fullName = ''
+        let isCheckedIn: boolean | undefined
         var enrollmentId: string | null | undefined
 
         if (classInfo.value?.enrollments != null) {
           for (let index = 0; index < classInfo.value?.enrollments.length; index++) {
             const enrollment = classInfo.value?.enrollments[index]
-
+            isCheckedIn = enrollment.isCheckedIn
             if (classPosition.spotNumber === enrollment.spotInfo?.spotNumber && enrollment.user) {
               fullName =
                 (enrollment.user?.firstName ?? '') + ' ' + (enrollment.user?.lastName ?? '')
@@ -216,7 +222,8 @@ function spotClicked(event: BookableSpotClickedEvent) {
           isBooked: classPosition.spotInfo?.isBooked,
           fullName: fullName,
           enabled: classPosition.enabled,
-          enrollmentId: enrollmentId
+          enrollmentId: enrollmentId,
+          isCheckedIn: isCheckedIn
         }
         break
       }
@@ -233,7 +240,6 @@ async function clickPutUnderMaintenance() {
 
   if (response === 'Success') {
     await getClassInfo()
-    selectedSpot.value = { enabled: null, fullName: null, isBooked: null, spotNumber: null }
   } else if (response === 'SpotNotFoundError') {
     errorModalData.value.message = ERROR_SPOT_NOT_FOUND
     errorModalData.value.isVisible = true
@@ -252,7 +258,6 @@ async function clickRecoverFromMaintenance() {
 
   if (response === 'Success') {
     await getClassInfo()
-    selectedSpot.value = { enabled: null, fullName: null, isBooked: null, spotNumber: null }
   } else if (response === 'SpotNotFoundError') {
     errorModalData.value.message = ERROR_SPOT_NOT_FOUND
     errorModalData.value.isVisible = true
@@ -277,13 +282,6 @@ async function removeUserFromClass() {
   confirmModalCancelReservationData.value.isVisible = false
 
   if (response === 'CancelUserEnrollmentSuccess') {
-    selectedSpot.value = {
-      enabled: null,
-      fullName: null,
-      isBooked: null,
-      spotNumber: null,
-      enrollmentId: null
-    }
     await getClassInfo()
   } else if (response === 'LateCancellationRequiredError') {
     confirmModalLateCancelReservationData.value.isLoading = false
@@ -304,13 +302,6 @@ async function confirmLateCancelation() {
   confirmModalLateCancelReservationData.value.isVisible = false
 
   if (response === 'CancelUserEnrollmentSuccess') {
-    selectedSpot.value = {
-      enabled: null,
-      fullName: null,
-      isBooked: null,
-      spotNumber: null,
-      enrollmentId: null
-    }
     await getClassInfo()
   } else if (response === 'LateCancellationRequiredError') {
     confirmModalLateCancelReservationData.value.isLoading = false
@@ -372,7 +363,8 @@ async function confirmLateCancelation() {
     @after-enrolling="getClassInfo()"
     :spot-number="null"
     enrollButtonText="Enroll Selected Member"
-  ></EnrollSelectedMemberComponent>
+  >
+  </EnrollSelectedMemberComponent>
 
   <AdminBookedUsersList
     v-if="classInfo !== null && classInfo.roomLayout === null && classInfo.enrollments !== null"
@@ -419,7 +411,12 @@ async function confirmLateCancelation() {
 
     <button class="btn btn-primary mr-1" :disabled="true">Change Member's Spot</button>
     <button class="btn btn-primary mr-1" :disabled="true">Swap Spot</button>
-    <button class="btn btn-primary mr-1" :disabled="true">Check-In</button>
+    <CheckInCheckOutUserInClass
+      v-if="selectedSpot.enrollmentId != null && selectedSpot.isCheckedIn != null"
+      :enrollment-id="selectedSpot.enrollmentId"
+      :is-checked-in="selectedSpot.isCheckedIn"
+      @after-check-in-check-out="getClassInfo()"
+    ></CheckInCheckOutUserInClass>
     <button class="btn btn-primary mr-1" :disabled="true">Go to Profile</button>
   </div>
 
