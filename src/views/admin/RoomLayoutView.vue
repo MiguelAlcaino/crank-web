@@ -313,10 +313,10 @@ function getMatrixToSave(roomLayout: Array<Array<LayoutPosition>>): Array<IconPo
     var row = roomLayout[i]
     for (var j = 0; j < row.length; j++) {
       matrix.push({
-        icon: roomLayout[j][i].type,
-        x: j,
-        y: i,
-        spotNumber: roomLayout[j][i].spotNumber ?? undefined
+        icon: roomLayout[i][j].type,
+        x: i,
+        y: j,
+        spotNumber: roomLayout[i][j].spotNumber ?? undefined
       })
     }
   }
@@ -354,11 +354,12 @@ function spotNumbersAreValid(roomLayout: Array<Array<LayoutPosition>>): boolean 
   return true
 }
 
-function goToRoomLayoutList() {
+async function goToRoomLayoutList() {
+  successModalIsVisible.value = false
   if (roomLayoutListUrl.value) {
     window.location.href = roomLayoutListUrl.value
   } else {
-    router.push('/admin/room-layout/list')
+    await router.push('/admin/room-layout/list')
   }
 }
 </script>
