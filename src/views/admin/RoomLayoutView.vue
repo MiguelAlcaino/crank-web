@@ -100,9 +100,15 @@ const isLoading = ref<boolean>(false)
 const errorMessage = ref<string>('')
 const errorModalIsVisible = ref<Boolean>(false)
 const successModalIsVisible = ref<Boolean>(false)
+const roomLayoutListUrl = ref<string | null>(null)
 
 onMounted(() => {
   roomLayoutId.value = getRoomLayoutId()
+
+  let _roomLayoutListUrl = inject<any | undefined>('roomLayoutListUrl')
+  if (_roomLayoutListUrl) {
+    roomLayoutListUrl.value = _roomLayoutListUrl
+  }
 
   if (roomLayoutId.value) {
     title.value = 'EDIT ROOM LAYOUT'
@@ -347,6 +353,14 @@ function spotNumbersAreValid(roomLayout: Array<Array<LayoutPosition>>): boolean 
 
   return true
 }
+
+function goToRoomLayoutList() {
+  if (roomLayoutListUrl.value) {
+    window.location.href = roomLayoutListUrl.value
+  } else {
+    router.push('/admin/room-layout/list')
+  }
+}
 </script>
 
 <template>
@@ -427,7 +441,7 @@ function spotNumbersAreValid(roomLayout: Array<Array<LayoutPosition>>): boolean 
     <div class="col-md-2 col-xs-12">
       <DefaultButtonComponent
         text="Cancel"
-        @on-click="router.push('/admin/room-layout/list')"
+        @on-click="goToRoomLayoutList()"
         type="button"
         :block="true"
         variant="secondary"
@@ -549,7 +563,7 @@ function spotNumbersAreValid(roomLayout: Array<Array<LayoutPosition>>): boolean 
     :closable="false"
     :cancel-text="null"
     v-if="successModalIsVisible"
-    @on-ok="router.push('/admin/room-layout/list')"
+    @on-ok="goToRoomLayoutList()"
   >
   </ModalComponent>
 
