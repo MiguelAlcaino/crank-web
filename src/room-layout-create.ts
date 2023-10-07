@@ -22,9 +22,11 @@ async function startApp() {
   const token = selection?.dataset.token as string
   const gqlUrl = selection?.dataset.gqlUrl as string
   const site = selection?.dataset.site as string
+  const roomLayoutListUrl = selection?.dataset.roomLayoutListUrl as string
 
   const app = createApp({
     setup() {
+      provide('roomLayoutListUrl', roomLayoutListUrl)
       provide(
         'gqlApiService',
         new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
