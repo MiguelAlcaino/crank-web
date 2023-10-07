@@ -18,7 +18,7 @@ startApp()
 
 async function startApp() {
   console.log('V1.0.0')
-  const selection = <HTMLElement | null>document.querySelector('#vue-app-room-layout')
+  const selection = <HTMLElement | null>document.querySelector('#vue-app-parameters')
   const token = selection?.dataset.token as string
   const gqlUrl = selection?.dataset.gqlUrl as string
   const site = selection?.dataset.site as string
