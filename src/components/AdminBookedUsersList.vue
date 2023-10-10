@@ -83,46 +83,50 @@ async function removeUserFromClass(enrollmentId: string, lateCancel: boolean) {
 
 <template>
   <!-- Enrollments -->
-  <table class="table">
-    <thead>
-      <tr>
-        <th>FIRST NAME</th>
-        <th>LAST NAME</th>
-        <th>SIGN IN</th>
-        <th>CANCEL RESERVATION</th>
-        <th>VIEW PROFILE</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="(item, index) in enrollments" v-bind:key="item.id" v-bind:index="index">
-        <td>{{ item.user?.firstName }}</td>
-        <td>{{ item.user?.lastName }}</td>
-        <td>
-          <CheckInCheckOutUserInClass
-            v-if="item.id != null && item.isCheckedIn != null"
-            :enrollment-id="item.id"
-            :is-checked-in="item.isCheckedIn"
-            @after-check-in-check-out="emits('afterCancelMemberReservation')"
-          ></CheckInCheckOutUserInClass>
-        </td>
-        <td>
-          <button
-            class="btn btn-primary"
-            type="button"
-            @click="onClickCancelMemberReservation(item.id)"
-          >
-            Cancel Member's Reservation
-          </button>
-        </td>
-        <td>
-          <button class="btn btn-primary" type="button">View Profile</button>
-        </td>
-      </tr>
-      <tr v-if="!isLoading && enrollments.length === 0">
-        <td colspan="4" class="tableMessageNoRecords">There are no users enrolled in this class</td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>FIRST NAME</th>
+          <th>LAST NAME</th>
+          <th>SIGN IN</th>
+          <th>CANCEL RESERVATION</th>
+          <th>VIEW PROFILE</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(item, index) in enrollments" v-bind:key="item.id" v-bind:index="index">
+          <td>{{ item.user?.firstName }}</td>
+          <td>{{ item.user?.lastName }}</td>
+          <td>
+            <CheckInCheckOutUserInClass
+              v-if="item.id != null && item.isCheckedIn != null"
+              :enrollment-id="item.id"
+              :is-checked-in="item.isCheckedIn"
+              @after-check-in-check-out="emits('afterCancelMemberReservation')"
+            ></CheckInCheckOutUserInClass>
+          </td>
+          <td>
+            <button
+              class="btn btn-primary"
+              type="button"
+              @click="onClickCancelMemberReservation(item.id)"
+            >
+              Cancel Member's Reservation
+            </button>
+          </td>
+          <td>
+            <button class="btn btn-primary" type="button">View Profile</button>
+          </td>
+        </tr>
+        <tr v-if="!isLoading && enrollments.length === 0">
+          <td colspan="4" class="tableMessageNoRecords">
+            There are no users enrolled in this class
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   <!-- Modal Cancel Reservation? -->
   <ModalComponent

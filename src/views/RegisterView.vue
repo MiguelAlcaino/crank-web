@@ -113,11 +113,14 @@ const rules = computed(() => {
         'Valid mobile number is required to redeem the trial package through an SMS validation code',
         required
       ),
-      validateUAEphone:  helpers.withMessage('A UAE phone number must start with +9715', validateUAEphone),
+      validateUAEphone: helpers.withMessage(
+        'A UAE phone number must start with +9715',
+        validateUAEphone
+      ),
       minLength: helpers.withMessage(
         'Valid mobile number is required to redeem the trial package through an SMS validation code',
         minLength(7)
-      ),
+      )
     },
     emergencyContactName: {
       required: helpers.withMessage('Emergency Contact Name is required', required)
@@ -137,7 +140,8 @@ const rules = computed(() => {
   }
 })
 
-const validateUAEphone = (phone: string) => phone.startsWith('+971') ? getFormattedPhoneNumber(phone).startsWith('+9715') : true
+const validateUAEphone = (phone: string) =>
+  phone.startsWith('+971') ? getFormattedPhoneNumber(phone).startsWith('+9715') : true
 
 const v$ = useVuelidate(rules, formData)
 const apiService = inject<ApiService>('gqlApiService')!

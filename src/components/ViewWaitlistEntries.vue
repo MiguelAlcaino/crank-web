@@ -115,44 +115,46 @@ function showConfirmModal(waitlistEntry: WaitlistEntry) {
               </button>
             </div>
             <div class="modal-body">
-              <table class="table table-sm">
-                <thead>
-                  <tr class="text-center">
-                    <th>NO</th>
-                    <th>FIRST NAME</th>
-                    <th>LAST NAME</th>
-                    <th>ACTION</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(item, index) in waitlistEntries" :key="index">
-                    <td class="text-center align-middle">
-                      {{ index + 1 }}
-                    </td>
-                    <td class="text-center align-middle">
-                      {{ item.user.firstName.toUpperCase() }}
-                    </td>
-                    <td class="text-center align-middle">
-                      {{ item.user.lastName.toUpperCase() }}
-                    </td>
-                    <td class="text-center align-middle">
-                      <DefaultButtonComponent
-                        text="REMOVE"
-                        type="button"
-                        @on-click="showConfirmModal(item)"
-                      ></DefaultButtonComponent>
-                    </td>
-                  </tr>
-                  <tr v-if="waitlistEntries.length === 0 && !isLoading">
-                    <td colspan="4" class="text-center">
-                      <p>NO DATA AVAILABLE IN TABLE</p>
-                    </td>
-                  </tr>
-                  <tr v-if="isLoading" class="text-center">
-                    <td colspan="4">LOADING...</td>
-                  </tr>
-                </tbody>
-              </table>
+              <div class="table-responsive">
+                <table class="table table-sm">
+                  <thead>
+                    <tr class="text-center">
+                      <th>NO</th>
+                      <th>FIRST NAME</th>
+                      <th>LAST NAME</th>
+                      <th>ACTION</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(item, index) in waitlistEntries" :key="index">
+                      <td class="text-center align-middle">
+                        {{ index + 1 }}
+                      </td>
+                      <td class="text-center align-middle">
+                        {{ item.user.firstName.toUpperCase() }}
+                      </td>
+                      <td class="text-center align-middle">
+                        {{ item.user.lastName.toUpperCase() }}
+                      </td>
+                      <td class="text-center align-middle">
+                        <DefaultButtonComponent
+                          text="REMOVE"
+                          type="button"
+                          @on-click="showConfirmModal(item)"
+                        ></DefaultButtonComponent>
+                      </td>
+                    </tr>
+                    <tr v-if="waitlistEntries.length === 0 && !isLoading">
+                      <td colspan="4" class="text-center">
+                        <p>NO DATA AVAILABLE IN TABLE</p>
+                      </td>
+                    </tr>
+                    <tr v-if="isLoading" class="text-center">
+                      <td colspan="4">LOADING...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
