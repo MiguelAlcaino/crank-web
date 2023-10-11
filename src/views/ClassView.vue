@@ -220,9 +220,9 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
     <div class="col-md-6 col-sm-4">
       <div class="text-right">
         <div class="form-group form-material">
-          <button type="button" class="btn btn-link" @click="$router.go(-1)">
+          <a class="nav-link" @click="$router.go(-1)" href="#">
             <font-awesome-icon icon="fa-solid fa-left-long" />&nbsp;Back to Calendar
-          </button>
+          </a>
         </div>
       </div>
     </div>
@@ -338,4 +338,32 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
   </ModalComponent>
 </template>
 
-<style scoped></style>
+<style scoped>
+a:link {
+  color: #000000;
+  background-color: transparent;
+  text-decoration: none;
+  font-family: 'BigJohn', sans-serif;
+}
+
+a:visited {
+  color: #000000;
+  background-color: transparent;
+  text-decoration: none;
+  font-family: 'BigJohn', sans-serif;
+}
+
+a:hover {
+  color: #ff7f61;
+  background-color: transparent;
+  text-decoration: none;
+  font-family: 'BigJohn', sans-serif;
+}
+
+a:active {
+  color: #000000;
+  background-color: transparent;
+  text-decoration: none;
+  font-family: 'BigJohn', sans-serif;
+}
+</style>

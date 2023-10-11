@@ -60,38 +60,40 @@ async function getCurrentUserWorkoutStats() {
   </div>
   <div class="row mt-3">
     <div class="col-12">
-      <table class="table table-sm">
-        <thead>
-          <tr class="text-center">
-            <th>DESCRIPTION</th>
-            <th>SPOT</th>
-            <th>DATE</th>
-            <th>DURATION</th>
-            <th>TOTAL ENERGY</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(item, index) in classStats" :key="index">
-            <td>{{ item.className }}</td>
-            <td class="text-center">{{ item.spotNumber }}</td>
-            <td class="text-center">
-              {{ dayjs(new Date(item.startDateTime)).format('DD/MM/YYYY h:mm A') }}
-            </td>
-            <td class="text-center">{{ item.duration }} mins.</td>
-            <td class="text-center">{{ item.totalEnergy }}</td>
-            <td class="text-center"></td>
-          </tr>
-          <tr v-if="classStats?.length === 0 && !isLoading">
-            <td colspan="6">
-              <p>No data available in table</p>
-            </td>
-          </tr>
-          <tr v-if="isLoading">
-            <td colspan="6">loading...</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table table-sm">
+          <thead>
+            <tr class="text-center">
+              <th>DESCRIPTION</th>
+              <th>SPOT</th>
+              <th>DATE</th>
+              <th>DURATION</th>
+              <th>TOTAL ENERGY</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(item, index) in classStats" :key="index">
+              <td>{{ item.className }}</td>
+              <td class="text-center">{{ item.spotNumber }}</td>
+              <td class="text-center">
+                {{ dayjs(new Date(item.startDateTime)).format('DD/MM/YYYY h:mm A') }}
+              </td>
+              <td class="text-center">{{ item.duration }} mins.</td>
+              <td class="text-center">{{ item.totalEnergy }}</td>
+              <td class="text-center"></td>
+            </tr>
+            <tr v-if="classStats?.length === 0 && !isLoading">
+              <td colspan="6">
+                <p>No data available in table</p>
+              </td>
+            </tr>
+            <tr v-if="isLoading">
+              <td colspan="6">loading...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
