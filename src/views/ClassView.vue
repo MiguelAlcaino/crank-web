@@ -116,7 +116,7 @@ function clickBookWaitList(): void {
   isWaitlistBooking.value = true
 
   confirmModalData.value.isLoading = false
-  confirmModalData.value.title = 'ENROLL ON THE WAITLIST'
+  confirmModalData.value.title = 'WAITLIST'
   confirmModalData.value.message = 'WOULD YOU LIKE TO ENROLL ON THE WAITLIST?'
 
   showModal.value = true
