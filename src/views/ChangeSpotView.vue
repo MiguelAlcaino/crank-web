@@ -4,7 +4,13 @@ import { useRoute } from 'vue-router'
 
 import dayjs from 'dayjs'
 
-import type { ClassInfo, EnrollmentInfo } from '@/gql/graphql'
+import {
+  PositionIconEnum,
+  type ClassInfo,
+  type EnrollmentInfo,
+  type BookableSpot,
+  EnrollmentStatusEnum
+} from '@/gql/graphql'
 
 import ModalComponent from '@/components/ModalComponent.vue'
 
@@ -38,6 +44,7 @@ const classInfo = ref<ClassInfo | null>(null)
 
 const enrollmentEnabled = ref<boolean>(true)
 const enrollmentInfo = ref<EnrollmentInfo | null>(null)
+const thereAreSpotsAvailable = ref<boolean>(false)
 
 interface SpotClickedEvent {
   spotNumber: number | null
@@ -71,7 +78,35 @@ async function getClassInfo() {
 
   classInfo.value = _classInfo
 
+  checkAvailableSpots(_classInfo)
+
   isLoading.value = false
+}
+
+function checkAvailableSpots(classInfo: ClassInfo | null) {
+  thereAreSpotsAvailable.value = false
+
+  if (classInfo?.roomLayout?.matrix) {
+    const matrix = classInfo?.roomLayout?.matrix
+    const enrollments = classInfo?.enrollments.filter(
+      (x) => x.enrollmentStatus === EnrollmentStatusEnum.Active
+    ) as EnrollmentInfo[]
+
+    for (let i = 0; i < matrix.length; i++) {
+      if (matrix[i].icon === PositionIconEnum.Spot) {
+        let bookableSpot = matrix[i] as BookableSpot
+
+        let isBooked = enrollments.find((x) => x.spotNumber === bookableSpot.spotNumber)
+          ? true
+          : false
+
+        if (!isBooked) {
+          thereAreSpotsAvailable.value = true
+          break
+        }
+      }
+    }
+  }
 }
 
 function confirmChangeSpot(event: SpotClickedEvent): void {
@@ -158,6 +193,12 @@ async function editCurrentUserEnrollment() {
       </div>
     </div>
 
+    <div class="row" v-if="!thereAreSpotsAvailable && classInfo !== null">
+      <div class="col-12 text-center">
+        <p class="spots-not-available">No other spots are available</p>
+      </div>
+    </div>
+
     <hr />
     <div class="container">
       <div class="row justify-content-center">
@@ -170,6 +211,7 @@ async function editCurrentUserEnrollment() {
             "
             :matrix="classInfo.roomLayout?.matrix"
             @click-spot="confirmChangeSpot"
+            :spot-number-booked-by-current-user="enrollmentInfo?.spotNumber"
           ></SpotMatrix>
         </div>
       </div>
@@ -211,4 +253,9 @@ async function editCurrentUserEnrollment() {
   ></ModalComponent>
 </template>
 
-<style scoped></style>
+<style scoped>
+p.spots-not-available {
+  font-family: 'BigJohn', sans-serif;
+  font-size: smaller;
+}
+</style>
