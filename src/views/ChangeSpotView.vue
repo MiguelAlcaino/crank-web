@@ -113,7 +113,7 @@ function confirmChangeSpot(event: SpotClickedEvent): void {
   newSpotNumber.value = event.spotNumber
 
   changingSpot.value = false
-  changeSpotMessage.value = 'WOULD YOU LIKE TO BOOK SPOT ' + newSpotNumber.value + '?'
+  changeSpotMessage.value = 'WOULD YOU LIKE TO MOVE TO SPOT ' + newSpotNumber.value + '?'
 
   changeSpotModalIsVisible.value = true
 }
