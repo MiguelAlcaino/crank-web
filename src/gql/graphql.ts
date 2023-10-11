@@ -297,6 +297,7 @@ export type EnrollmentInfo = EnrollmentInfoInterface & {
   id: Scalars['ID']
   isCheckedIn: Scalars['Boolean']
   spotInfo?: Maybe<SpotInfo>
+  spotNumber?: Maybe<Scalars['Int']>
   /** @deprecated This should be removed from here to avoid loops. */
   user?: Maybe<User>
 }
@@ -316,6 +317,7 @@ export type EnrollmentNotFoundError = Error & {
 
 export enum EnrollmentStatusEnum {
   Active = 'active',
+  /** @deprecated It does not make sense to have a cancelled status for an enrollment. Use lateCancelled instead */
   Cancelled = 'cancelled',
   LateCancelled = 'lateCancelled',
   Unknown = 'unknown',
@@ -1211,6 +1213,7 @@ export type ClassInfoQuery = {
     enrollments: Array<
       | {
           __typename: 'EnrollmentInfo'
+          isCheckedIn: boolean
           id: string
           enrollmentStatus: EnrollmentStatusEnum
           enrollmentDateTime: any
@@ -2502,6 +2505,7 @@ export const ClassInfoDocument = {
                         selectionSet: {
                           kind: 'SelectionSet',
                           selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'isCheckedIn' } },
                             {
                               kind: 'Field',
                               name: { kind: 'Name', value: 'spotInfo' },
