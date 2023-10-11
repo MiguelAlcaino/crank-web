@@ -296,6 +296,7 @@ export type EnrollmentInfo = EnrollmentInfoInterface & {
   enrollmentStatus: EnrollmentStatusEnum
   id: Scalars['ID']
   isCheckedIn: Scalars['Boolean']
+  /** @deprecated Use spotNumber instead. */
   spotInfo?: Maybe<SpotInfo>
   spotNumber?: Maybe<Scalars['Int']>
   /** @deprecated This should be removed from here to avoid loops. */
@@ -982,6 +983,7 @@ export type CurrentUserEnrollmentsQuery = {
     enrollmentInfo:
       | {
           __typename: 'EnrollmentInfo'
+          spotNumber?: number | null
           id: string
           enrollmentStatus: EnrollmentStatusEnum
           enrollmentDateTime: any
@@ -1018,6 +1020,7 @@ export type CurrentUserEnrollmentInClassQuery = {
     enrollmentInClass?:
       | {
           __typename: 'EnrollmentInfo'
+          spotNumber?: number | null
           id: string
           enrollmentStatus: EnrollmentStatusEnum
           enrollmentDateTime: any
@@ -1829,6 +1832,7 @@ export const CurrentUserEnrollmentsDocument = {
                         selectionSet: {
                           kind: 'SelectionSet',
                           selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } },
                             {
                               kind: 'Field',
                               name: { kind: 'Name', value: 'spotInfo' },
@@ -1923,6 +1927,7 @@ export const CurrentUserEnrollmentInClassDocument = {
                         selectionSet: {
                           kind: 'SelectionSet',
                           selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } },
                             {
                               kind: 'Field',
                               name: { kind: 'Name', value: 'spotInfo' },

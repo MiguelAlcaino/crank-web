@@ -2191,8 +2191,8 @@
               "name": "SpotInfo",
               "ofType": null
             },
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "Use spotNumber instead."
           },
           {
             "name": "spotNumber",
