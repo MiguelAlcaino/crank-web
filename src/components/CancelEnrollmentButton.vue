@@ -5,7 +5,7 @@
     @click="clickCancelEnrollment"
     :disabled="disabled || enrollmentStatus.toUpperCase() !== 'ACTIVE'"
   >
-    {{ buttonText }}
+    CANCEL
   </button>
 </template>
 
@@ -25,17 +25,10 @@ const emits = defineEmits<{
   (e: 'clickCancelEnrollment', enrollmentId: string, isLateCancel: boolean): void
 }>()
 
-const buttonText = ref<string>('')
 const isLateCancel = ref<boolean>(false)
 
 onMounted(() => {
   isLateCancel.value = dayjs(props.startOfClass).diff(dayjs(props.siteDateTimeNow), 'hour') < 12
-
-  if (isLateCancel.value) {
-    buttonText.value = 'LATE CANCEL'
-  } else {
-    buttonText.value = 'EARLY CANCEL'
-  }
 })
 
 function clickCancelEnrollment(): void {

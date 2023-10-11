@@ -174,6 +174,7 @@ export class ApiService {
             enrollmentStatus
             enrollmentDateTime
             ... on EnrollmentInfo {
+              spotNumber
               spotInfo {
                 __typename
                 isBooked
@@ -216,6 +217,7 @@ export class ApiService {
             enrollmentStatus
             enrollmentDateTime
             ... on EnrollmentInfo {
+              spotNumber
               spotInfo {
                 __typename
                 isBooked
@@ -517,6 +519,7 @@ export class ApiService {
             }
             ... on EnrollmentInfo {
               isCheckedIn
+              spotNumber
               spotInfo {
                 __typename
                 isBooked

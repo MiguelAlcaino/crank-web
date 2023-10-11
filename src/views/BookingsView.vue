@@ -225,7 +225,7 @@ async function removeCurrentUserFromWaitlist(waitlistEntryId: string): Promise<v
 
   switch (response['__typename']) {
     case 'RemoveFromWaitlistResult': {
-      successModalData.value.message = 'HAS BEEN SUCCESSFULLY REMOVED FROM WAITLIST'
+      successModalData.value.message = 'YOU HAVE BEEN REMOVED FROM THE WAITLIST'
       successModalData.value.isVisible = true
       break
     }
@@ -391,7 +391,7 @@ function setActive(menuItem: EnrollmentTypeEnum) {
   <!-- CONFIRM REMOVE FROM WAITLIST modal -->
   <ModalComponent
     title="Remove from waitlist"
-    message="Are you sure you want to be removed from the waitlist?"
+    message="ARE YOU SURE YOU WANT TO BE REMOVED FROM THE WAITLIST?"
     cancel-text="CANCEL"
     ok-text="OK"
     :ok-loading="isCancellingCurrentUserEnrollment"

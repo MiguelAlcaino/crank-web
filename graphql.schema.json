@@ -2191,6 +2191,18 @@
               "name": "SpotInfo",
               "ofType": null
             },
+            "isDeprecated": true,
+            "deprecationReason": "Use spotNumber instead."
+          },
+          {
+            "name": "spotNumber",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
             "isDeprecated": false,
             "deprecationReason": null
           },
@@ -2350,8 +2362,8 @@
           {
             "name": "cancelled",
             "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "It does not make sense to have a cancelled status for an enrollment. Use lateCancelled instead"
           },
           {
             "name": "lateCancelled",
