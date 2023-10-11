@@ -79,7 +79,7 @@ function clickRemoveFromWaitlist(waitlistEntryId: string): void {
           <th>SPOT</th>
           <th>RESERVATION DATE</th>
           <th>STATUS</th>
-          <th>ACTIONS</th>
+          <th v-if="enrollmentType !== EnrollmentTypeEnum.Historical">ACTIONS</th>
         </tr>
       </thead>
       <tbody>
@@ -156,7 +156,10 @@ function clickRemoveFromWaitlist(waitlistEntryId: string): void {
                 : enrollment.enrollmentInfo.enrollmentStatus.toUpperCase()
             }}
           </td>
-          <td class="text-center align-middle">
+          <td
+            class="text-center align-middle"
+            v-if="enrollmentType !== EnrollmentTypeEnum.Historical"
+          >
             <CancelEnrollmentButton
               v-if="
                 enrollmentType === EnrollmentTypeEnum.Upcoming &&
