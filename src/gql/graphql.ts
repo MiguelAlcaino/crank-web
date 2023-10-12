@@ -388,7 +388,9 @@ export type Mutation = {
   bookUserIntoClass: BookClassResultUnion
   /** Cancels an enrollment done by the current user */
   cancelCurrentUserEnrollment?: Maybe<CancelEnrollmentResultUnion>
+  /** Checks in a user in a class */
   checkinUserInClass?: Maybe<CheckinResultUnion>
+  /** Checks out a user from a class */
   checkoutUserInClass?: Maybe<CheckoutResultUnion>
   /** Creates a copy of the current user in the given site */
   createCurrentUserInSite?: Maybe<CreateCurrentUserInSiteUnion>
@@ -402,6 +404,8 @@ export type Mutation = {
   editClass: EditClassResultUnion
   /** Edits an enrollment made by the current user */
   editCurrentUserEnrollment?: Maybe<EditEnrollmentResultUnion>
+  /** Edits an enrollment */
+  editEnrollment?: Maybe<EditEnrollmentResultUnion>
   /** Edits a room layout */
   editRoomLayout: RoomLayout
   /** Enabled a spot in a class */
@@ -414,6 +418,7 @@ export type Mutation = {
   removeCurrentUserFromWaitlist?: Maybe<RemoveCurrentUserFromWaitlistUnion>
   /** Removes a user from a class */
   removeUserFromClass: CancelEnrollmentResultUnion
+  /** Removes a waitlist entry */
   removeUserFromWaitlist: RemoveUserFromWaitlistUnion
   /** Request a reset password link */
   requestPasswordLink?: Maybe<ResetPasswordLinkResultUnion>
@@ -483,6 +488,11 @@ export type MutationEditClassArgs = {
 }
 
 export type MutationEditCurrentUserEnrollmentArgs = {
+  input: EditEnrollmentInput
+  site: SiteEnum
+}
+
+export type MutationEditEnrollmentArgs = {
   input: EditEnrollmentInput
   site: SiteEnum
 }
@@ -1217,6 +1227,7 @@ export type ClassInfoQuery = {
       | {
           __typename: 'EnrollmentInfo'
           isCheckedIn: boolean
+          spotNumber?: number | null
           id: string
           enrollmentStatus: EnrollmentStatusEnum
           enrollmentDateTime: any
@@ -2511,6 +2522,7 @@ export const ClassInfoDocument = {
                           kind: 'SelectionSet',
                           selections: [
                             { kind: 'Field', name: { kind: 'Name', value: 'isCheckedIn' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } },
                             {
                               kind: 'Field',
                               name: { kind: 'Name', value: 'spotInfo' },

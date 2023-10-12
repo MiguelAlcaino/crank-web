@@ -3054,7 +3054,7 @@
           },
           {
             "name": "checkinUserInClass",
-            "description": null,
+            "description": "Checks in a user in a class",
             "args": [
               {
                 "name": "input",
@@ -3099,7 +3099,7 @@
           },
           {
             "name": "checkoutUserInClass",
-            "description": null,
+            "description": "Checks out a user from a class",
             "args": [
               {
                 "name": "input",
@@ -3334,6 +3334,51 @@
           {
             "name": "editCurrentUserEnrollment",
             "description": "Edits an enrollment made by the current user",
+            "args": [
+              {
+                "name": "input",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "EditEnrollmentInput",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "site",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "ENUM",
+                    "name": "SiteEnum",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "UNION",
+              "name": "EditEnrollmentResultUnion",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "editEnrollment",
+            "description": "Edits an enrollment",
             "args": [
               {
                 "name": "input",
@@ -3616,7 +3661,7 @@
           },
           {
             "name": "removeUserFromWaitlist",
-            "description": null,
+            "description": "Removes a waitlist entry",
             "args": [
               {
                 "name": "input",

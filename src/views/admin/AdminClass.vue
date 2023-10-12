@@ -22,6 +22,7 @@ interface ClassPosition {
   icon: PositionIconEnum
   spotNumber?: number
   enabled?: boolean
+  /** @deprecated Array of booked spots should be returned by other query to reduce complexity of creating SpotInfo instances. */
   spotInfo?: SpotInfo
 }
 
@@ -40,9 +41,10 @@ interface EnrollmentInfo {
   enrollmentStatus: EnrollmentStatusEnum
   id: string
   isCheckedIn?: boolean
-  /** @deprecated This should be removed from here to avoid loops. */
   user?: User
+  /** @deprecated Array of booked spots should be returned by other query to reduce complexity of creating SpotInfo instances. */
   spotInfo?: SpotInfo
+  spotNumber?: number
 }
 
 interface SpotInfo {
@@ -74,6 +76,13 @@ enum PositionIconEnum {
   Spot = 'spot',
   Tv = 'tv'
 }
+
+enum SpotActionEnum {
+  none,
+  asignUserToSpot,
+  changeMemberSpot,
+  swapSpot
+}
 </script>
 
 <script setup lang="ts">
@@ -96,8 +105,11 @@ import ViewWaitlistEntries from '@/components/ViewWaitlistEntries.vue'
 import CheckInCheckOutUserInClass from '@/components/CheckInCheckOutUserInClass.vue'
 
 import {
+  ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW,
   ERROR_LATE_CANCELLATION_REQUIRED,
+  ERROR_SPOT_ALREADY_RESERVED,
   ERROR_SPOT_NOT_FOUND,
+  ERROR_TRYING_TO_MOVE_SAME_SPOT,
   ERROR_UNKNOWN
 } from '@/utils/errorMessages'
 
@@ -107,11 +119,13 @@ const apiService = inject<ApiService>('gqlApiService')!
 const isLoading = ref<boolean>(false)
 const classInfo = ref<ClassInfo | null>(null)
 
-const assignUserToThisSpotVisible = ref<boolean>(false)
 const isEnablingDisablingSpot = ref<boolean>(false)
+const changingMemberSpot = ref<boolean>(false)
 
 const classId = ref<string>('')
 const totalSignedIn = ref<number>(0)
+
+const spotAction = ref<SpotActionEnum>(SpotActionEnum.none)
 
 const errorModalData = ref<{
   title: string
@@ -194,39 +208,45 @@ function getClassId(): string {
 }
 
 function spotClicked(event: BookableSpotClickedEvent) {
-  assignUserToThisSpotVisible.value = false
+  if (spotAction.value === SpotActionEnum.changeMemberSpot) {
+    changeSelectedMemberSpot(event.spotNumber!)
+  } else {
+    spotAction.value = SpotActionEnum.none
 
-  for (let index = 0; index < classInfo.value!.roomLayout!.matrix!.length; index++) {
-    const classPosition = classInfo.value!.roomLayout!.matrix![index]
+    for (let index = 0; index < classInfo.value!.roomLayout!.matrix!.length; index++) {
+      const classPosition = classInfo.value!.roomLayout!.matrix![index]
 
-    if (classPosition.icon === PositionIconEnum.Spot) {
-      if (classPosition.spotNumber === event.spotNumber) {
-        var fullName = ''
-        let isCheckedIn: boolean | undefined
-        var enrollmentId: string | null | undefined
+      if (classPosition.icon === PositionIconEnum.Spot) {
+        if (classPosition.spotNumber === event.spotNumber) {
+          let isBooked = false
+          let fullName = ''
+          let isCheckedIn: boolean | undefined
+          let enrollmentId: string | null | undefined
 
-        if (classInfo.value?.enrollments != null) {
-          for (let index = 0; index < classInfo.value?.enrollments.length; index++) {
-            const enrollment = classInfo.value?.enrollments[index]
-            isCheckedIn = enrollment.isCheckedIn
-            if (classPosition.spotNumber === enrollment.spotInfo?.spotNumber && enrollment.user) {
-              fullName =
-                (enrollment.user?.firstName ?? '') + ' ' + (enrollment.user?.lastName ?? '')
-              enrollmentId = enrollment.id
-              break
+          if (classInfo.value?.enrollments != null) {
+            for (let index = 0; index < classInfo.value?.enrollments.length; index++) {
+              const enrollment = classInfo.value?.enrollments[index]
+              isCheckedIn = enrollment.isCheckedIn
+              if (classPosition.spotNumber === enrollment.spotNumber && enrollment.user) {
+                isBooked = true
+                fullName =
+                  (enrollment.user?.firstName ?? '') + ' ' + (enrollment.user?.lastName ?? '')
+                enrollmentId = enrollment.id
+                break
+              }
             }
           }
-        }
 
-        selectedSpot.value = {
-          spotNumber: classPosition.spotInfo?.spotNumber,
-          isBooked: classPosition.spotInfo?.isBooked,
-          fullName: fullName,
-          enabled: classPosition.enabled,
-          enrollmentId: enrollmentId,
-          isCheckedIn: isCheckedIn
+          selectedSpot.value = {
+            spotNumber: classPosition.spotNumber,
+            isBooked: isBooked,
+            fullName: fullName,
+            enabled: classPosition.enabled,
+            enrollmentId: enrollmentId,
+            isCheckedIn: isCheckedIn
+          }
+          break
         }
-        break
       }
     }
   }
@@ -312,9 +332,42 @@ async function confirmLateCancelation() {
     errorModalData.value.isVisible = true
   }
 }
+
+async function changeSelectedMemberSpot(newSpotNumber: number) {
+  changingMemberSpot.value = true
+
+  try {
+    const response = await apiService.editEnrollment(appStore().site, {
+      enrollmentId: selectedSpot.value.enrollmentId!,
+      newSpotNumber: newSpotNumber
+    })
+
+    if (response.__typename !== 'Enrollment') {
+      if (response.__typename === 'SpotAlreadyReservedError') {
+        errorModalData.value.message = ERROR_SPOT_ALREADY_RESERVED
+      } else if (response.__typename === 'ClientIsOutsideSchedulingWindowError') {
+        errorModalData.value.message = ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW
+      } else if (response.__typename === 'TryToSwitchToSameSpotError') {
+        errorModalData.value.message = ERROR_TRYING_TO_MOVE_SAME_SPOT
+      } else {
+        errorModalData.value.message = ERROR_UNKNOWN
+      }
+      errorModalData.value.isVisible = true
+    }
+  } catch (error) {
+    errorModalData.value.message = ERROR_UNKNOWN
+    errorModalData.value.isVisible = true
+  } finally {
+    selectedSpot.value = {}
+    spotAction.value = SpotActionEnum.none
+    getClassInfo()
+    changingMemberSpot.value = false
+  }
+}
 </script>
 
 <template>
+  <!-- Class Description -->
   <div class="row">
     <div class="col-md-12">
       <h4>
@@ -329,9 +382,9 @@ async function confirmLateCancelation() {
       </h4>
     </div>
   </div>
-
   <h6 v-html="classInfo?.class?.description"></h6>
 
+  <!-- Change Layout Class and View Waitlist Entries Options -->
   <div class="row">
     <div class="col-md-12">
       <ChangeLayoutClass
@@ -344,6 +397,7 @@ async function confirmLateCancelation() {
       <ViewWaitlistEntries :class-id="classId"></ViewWaitlistEntries>
     </div>
   </div>
+  <!-- Enroll in Waitlist -->
   <div class="row" v-if="classInfo !== null && classInfo.class.waitListAvailable === true">
     <div class="col-md-12">
       <hr />
@@ -361,6 +415,7 @@ async function confirmLateCancelation() {
 
   <hr />
   <br />
+  <!-- Matrix -->
   <SpotMatrix
     v-if="
       classInfo !== null && classInfo.roomLayout !== null && classInfo.roomLayout?.matrix !== null
@@ -370,9 +425,11 @@ async function confirmLateCancelation() {
     :selectedSpotNumber="selectedSpot?.spotNumber"
     @click-spot="spotClicked"
     :enrollments="classInfo.enrollments"
+    :spot-action="spotAction"
   >
   </SpotMatrix>
 
+  <!-- Enroll without matrix option -->
   <EnrollSelectedMemberComponent
     :class-id="classId"
     v-if="classInfo !== null && classInfo.roomLayout === null && classInfo.enrollments !== null"
@@ -383,6 +440,7 @@ async function confirmLateCancelation() {
   >
   </EnrollSelectedMemberComponent>
 
+  <!-- List enrollments -->
   <AdminBookedUsersList
     v-if="classInfo !== null && classInfo.roomLayout === null && classInfo.enrollments !== null"
     :enrollments="classInfo.enrollments"
@@ -391,12 +449,13 @@ async function confirmLateCancelation() {
   >
   </AdminBookedUsersList>
 
+  <!-- Select empty spot options -->
   <div v-if="selectedSpot?.isBooked === false && selectedSpot.enabled === true">
     <h2>Choose an action :</h2>
     <DefaultButtonComponent
       text="Assign User to this Spot"
       type="button"
-      @on-click="assignUserToThisSpotVisible = true"
+      @on-click="spotAction = SpotActionEnum.asignUserToSpot"
       class="mr-1"
     ></DefaultButtonComponent>
     <DefaultButtonComponent
@@ -407,6 +466,7 @@ async function confirmLateCancelation() {
       :is-loading="isEnablingDisablingSpot"
     ></DefaultButtonComponent>
   </div>
+  <!-- Select under manteince spot options -->
   <div v-if="selectedSpot.enabled === false">
     <h2>Spot is under maintenance</h2>
     <DefaultButtonComponent
@@ -417,27 +477,64 @@ async function confirmLateCancelation() {
       :is-loading="isEnablingDisablingSpot"
     ></DefaultButtonComponent>
   </div>
+
+  <!-- Select booked spot options -->
   <div v-if="selectedSpot?.isBooked === true">
     <h2>Spot is reserved for - {{ selectedSpot.fullName }}</h2>
+    <!-- Cancel Member's Reservation Button -->
     <DefaultButtonComponent
+      v-if="spotAction !== SpotActionEnum.changeMemberSpot"
       text="Cancel Member's Reservation"
       type="button"
       @on-click="clickCancelMembersReservation"
       class="mr-1"
     ></DefaultButtonComponent>
+    <!-- Change Member's Spot button -->
+    <DefaultButtonComponent
+      text="Change Member's Spot"
+      :is-loading="changingMemberSpot"
+      type="button"
+      @on-click="spotAction = SpotActionEnum.changeMemberSpot"
+      class="mr-1"
+    >
+    </DefaultButtonComponent>
+    <!-- Cancel button  -->
+    <DefaultButtonComponent
+      v-if="spotAction === SpotActionEnum.changeMemberSpot"
+      :disabled="changingMemberSpot"
+      text="Cancel"
+      type="button"
+      @on-click="spotAction = SpotActionEnum.none"
+    ></DefaultButtonComponent>
 
-    <button class="btn btn-primary mr-1" :disabled="true">Change Member's Spot</button>
-    <button class="btn btn-primary mr-1" :disabled="true">Swap Spot</button>
+    <button
+      class="btn btn-primary mr-1"
+      :disabled="true"
+      v-if="spotAction !== SpotActionEnum.changeMemberSpot"
+    >
+      Swap Spot
+    </button>
+    <!-- Check In - Out button -->
     <CheckInCheckOutUserInClass
-      v-if="selectedSpot.enrollmentId != null && selectedSpot.isCheckedIn != null"
+      v-if="
+        selectedSpot.enrollmentId != null &&
+        selectedSpot.isCheckedIn != null &&
+        spotAction !== SpotActionEnum.changeMemberSpot
+      "
       :enrollment-id="selectedSpot.enrollmentId"
       :is-checked-in="selectedSpot.isCheckedIn"
       @after-check-in-check-out="getClassInfo()"
     ></CheckInCheckOutUserInClass>
-    <button class="btn btn-primary mr-1" :disabled="true">Go to Profile</button>
+    <button
+      class="btn btn-primary mr-1"
+      :disabled="true"
+      v-if="spotAction !== SpotActionEnum.changeMemberSpot"
+    >
+      Go to Profile
+    </button>
   </div>
 
-  <div v-if="assignUserToThisSpotVisible">
+  <div v-if="spotAction === SpotActionEnum.asignUserToSpot">
     <hr />
     <EnrollSelectedMemberComponent
       v-if="
@@ -453,6 +550,7 @@ async function confirmLateCancelation() {
     ></EnrollSelectedMemberComponent>
   </div>
 
+  <!----------------------------- Modals ----------------------------->
   <!-- ERROR modal -->
   <ModalComponent
     title="ERROR"
