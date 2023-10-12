@@ -1368,7 +1368,7 @@ export class ApiService {
           ... on SpotAlreadyReservedError {
             code
           }
-          ... on TryToSwitchToSameSpotError{
+          ... on TryToSwitchToSameSpotError {
             code
           }
           ... on ClientIsOutsideSchedulingWindowError {

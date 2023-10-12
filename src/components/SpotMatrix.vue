@@ -61,12 +61,20 @@ enum EnrollmentStatusEnum {
   Waitlisted = 'waitlisted'
 }
 
+enum SpotActionEnum {
+  none,
+  asignUserToSpot,
+  changeMemberSpot,
+  swapSpot
+}
+
 interface Props {
   matrix?: Array<BookableSpot | IconPosition>
   showUserInSpots?: boolean
   selectedSpotNumber?: number | null
   enrollments?: EnrollmentInfo[] | null
   spotNumberBookedByCurrentUser?: number | null
+  spotAction?: SpotActionEnum
 }
 
 const BOOKABLE_SPOT_KEY = 'BookableSpot'
@@ -219,6 +227,7 @@ function onClickSpotAdmin(spotNumber: number) {
               @click-spot="onClickSpotAdmin"
               :selected="props.selectedSpotNumber === spot?.spotInfo?.spotNumber"
               :is-checked-in="spot.isCheckedIn"
+              :spot-action="spotAction"
             />
             <bookable-spot-position
               v-else-if="!showUserInSpots && spot.positionType === BOOKABLE_SPOT_KEY"
