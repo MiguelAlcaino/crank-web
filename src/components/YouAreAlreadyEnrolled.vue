@@ -33,7 +33,7 @@ defineProps<{
     </p>
   </div>
   <div v-else-if="enrollmentInfo.enrollmentStatus === EnrollmentStatusEnum.Waitlisted">
-    <p><b>You are already on the waiting list</b></p>
+    <p><b>YOU ARE CURRENTLY ON THE WAITLIST</b></p>
   </div>
 </template>
 
