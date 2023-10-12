@@ -528,6 +528,7 @@ export class ApiService {
               }
             }
           }
+          onHoldSpots
         }
       }
     `

@@ -158,6 +158,7 @@ export type ClassInfo = {
   __typename: 'ClassInfo'
   class: Class
   enrollments: Array<EnrollmentInfoInterface>
+  onHoldSpots: Scalars['Int']
   roomLayout?: Maybe<RoomLayout>
 }
 
@@ -257,6 +258,7 @@ export type DisableEnableSpotResultUnion = DisableEnableSpotResult | SpotNotFoun
 
 export type EditClassInput = {
   classId: Scalars['ID']
+  onHoldSpots?: InputMaybe<Scalars['Int']>
   roomLayoutId?: InputMaybe<Scalars['ID']>
 }
 
@@ -1594,6 +1596,21 @@ export type CheckoutUserInClassMutation = {
   checkoutUserInClass?:
     | { __typename: 'CheckoutSuccess'; success: boolean }
     | { __typename: 'EnrollmentNotFoundError'; code: string }
+    | null
+}
+
+export type EditEnrollmentMutationVariables = Exact<{
+  site: SiteEnum
+  input: EditEnrollmentInput
+}>
+
+export type EditEnrollmentMutation = {
+  __typename: 'Mutation'
+  editEnrollment?:
+    | { __typename: 'ClientIsOutsideSchedulingWindowError'; code: string }
+    | { __typename: 'Enrollment' }
+    | { __typename: 'SpotAlreadyReservedError'; code: string }
+    | { __typename: 'TryToSwitchToSameSpotError'; code: string }
     | null
 }
 
@@ -4133,3 +4150,99 @@ export const CheckoutUserInClassDocument = {
     }
   ]
 } as unknown as DocumentNode<CheckoutUserInClassMutation, CheckoutUserInClassMutationVariables>
+export const EditEnrollmentDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'editEnrollment' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'EditEnrollmentInput' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'editEnrollment' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Enrollment' } },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: '__typename' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'SpotAlreadyReservedError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'TryToSwitchToSameSpotError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ClientIsOutsideSchedulingWindowError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<EditEnrollmentMutation, EditEnrollmentMutationVariables>
