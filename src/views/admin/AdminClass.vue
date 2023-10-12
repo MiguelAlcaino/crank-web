@@ -8,6 +8,7 @@ interface ClassInfo {
   class: Class
   enrollments: Array<EnrollmentInfo>
   roomLayout?: RoomLayout
+  onHoldSpots: number
 }
 
 interface RoomLayout {
@@ -103,6 +104,7 @@ import DefaultButtonComponent from '@/components/DefaultButtonComponent.vue'
 import ChangeLayoutClass from '@/components/ChangeLayoutClass.vue'
 import ViewWaitlistEntries from '@/components/ViewWaitlistEntries.vue'
 import CheckInCheckOutUserInClass from '@/components/CheckInCheckOutUserInClass.vue'
+import SetOnHoldSpots from '@/components/SetOnHoldSpots.vue'
 
 import {
   ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW,
@@ -395,6 +397,13 @@ async function changeSelectedMemberSpot(newSpotNumber: number) {
       ></ChangeLayoutClass>
       &nbsp;
       <ViewWaitlistEntries :class-id="classId"></ViewWaitlistEntries>
+      &nbsp;
+      <SetOnHoldSpots
+        v-if="classInfo"
+        :class-id="classId"
+        @after-set-on-hold-spots="getClassInfo()"
+        :on-hold-spots="classInfo?.onHoldSpots"
+      ></SetOnHoldSpots>
     </div>
   </div>
   <!-- Enroll in Waitlist -->
