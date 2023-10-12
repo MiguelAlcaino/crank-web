@@ -20,6 +20,7 @@ import type {
   EditClassInput,
   EditClassResultUnion,
   EditEnrollmentInput,
+  EditEnrollmentResultUnion,
   EditRoomLayoutInput,
   Enrollment,
   EnrollmentInfo,
@@ -1351,5 +1352,40 @@ export class ApiService {
     })
 
     return result.data.checkoutUserInClass as CheckoutResultUnion
+  }
+
+  async editEnrollment(
+    site: SiteEnum,
+    input: EditEnrollmentInput
+  ): Promise<EditEnrollmentResultUnion> {
+    const mutation = gql`
+      mutation editEnrollment($site: SiteEnum!, $input: EditEnrollmentInput!) {
+        editEnrollment(site: $site, input: $input) {
+          __typename
+          ... on Enrollment {
+            __typename
+          }
+          ... on SpotAlreadyReservedError {
+            code
+          }
+          ... on TryToSwitchToSameSpotError{
+            code
+          }
+          ... on ClientIsOutsideSchedulingWindowError {
+            code
+          }
+        }
+      }
+    `
+    const result = await this.authApiClient.mutate({
+      mutation: mutation,
+      variables: {
+        site: site,
+        input: input
+      },
+      fetchPolicy: 'no-cache'
+    })
+
+    return result.data.editEnrollment as EditEnrollmentResultUnion
   }
 }
