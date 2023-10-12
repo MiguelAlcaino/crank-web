@@ -41,6 +41,7 @@ const enrollmentIsLateCancel = ref<boolean>(false)
 const upcomingEnrollmentsIsLoading = ref<boolean>(false)
 const waitlistEnrollmentsIsLoading = ref<boolean>(false)
 const oldEnrollmentsIsLoading = ref<boolean>(false)
+const isFiltered = ref<boolean>(false)
 
 const dateRangeFilter = ref<[Date | null, Date | null] | undefined>()
 
@@ -100,6 +101,7 @@ async function getUserEnrollments() {
 }
 
 async function getUpcomingEnrollments() {
+  isFiltered.value = false
   try {
     upcomingEnrollments.value = []
 
@@ -111,6 +113,8 @@ async function getUpcomingEnrollments() {
 
       if (dateRangeFilter.value[1])
         params.endDate = dayjs(dateRangeFilter.value[1]).format('YYYY-MM-DD')
+
+      isFiltered.value = true
     }
 
     upcomingEnrollmentsIsLoading.value = true
@@ -352,6 +356,7 @@ function setActive(menuItem: EnrollmentTypeEnum) {
         @clickCancelEnrollment="clickCancelEnrollment"
         @clickRemoveFromWaitlist="clickRemoveFromWaitlist"
         @change-spot="goToChangeSpot"
+        :is-filtered="isFiltered"
       >
       </BookingsTable>
     </div>
@@ -368,6 +373,7 @@ function setActive(menuItem: EnrollmentTypeEnum) {
         @clickCancelEnrollment="clickCancelEnrollment"
         @clickRemoveFromWaitlist="clickRemoveFromWaitlist"
         @change-spot="goToChangeSpot"
+        :is-filtered="isFiltered"
       >
       </BookingsTable>
     </div>
@@ -383,6 +389,7 @@ function setActive(menuItem: EnrollmentTypeEnum) {
         :siteDateTimeNow="siteDateTimeNow"
         @clickRemoveFromWaitlist="clickRemoveFromWaitlist"
         @change-spot="goToChangeSpot"
+        :is-filtered="isFiltered"
       >
       </BookingsTable>
     </div>
