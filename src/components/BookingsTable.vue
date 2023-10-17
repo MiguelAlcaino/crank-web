@@ -210,7 +210,7 @@ function clickRemoveFromWaitlist(waitlistEntryId: string): void {
 </template>
 
 <style scoped>
-.lateCancelColor{
+.lateCancelColor {
   background-color: rgb(206, 206, 206);
 }
 </style>

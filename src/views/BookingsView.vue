@@ -256,12 +256,8 @@ function clickCancelEnrollment(enrollmentId: string, lateCancel: boolean): void 
   enrollmentIsLateCancel.value = lateCancel
 
   confirmModalData.value.title = 'CANCEL BOOKING'
-  confirmModalData.value.message = 'ARE YOU SURE YOU WANT TO CANCEL YOUR BOOKING?'
+  confirmModalData.value.message = 'ARE YOU SURE YOU WANT TO PROCEED?'
   confirmModalData.value.textConfirmButton = 'OK'
-
-  if (lateCancel) {
-    confirmModalData.value.message += ' YOU WILL STILL BE CHARGED A CREDIT FOR THIS CLASS'
-  }
 
   confirmModalData.value.isLoading = false
   confirmModalData.value.isVisible = true
