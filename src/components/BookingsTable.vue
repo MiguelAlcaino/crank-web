@@ -51,6 +51,7 @@ defineProps<{
   enrollmentType: EnrollmentTypeEnum
   siteDateTimeNow: Date
   isLoading: boolean
+  isFiltered: boolean
 }>()
 
 const emits = defineEmits<{
@@ -88,7 +89,7 @@ function clickRemoveFromWaitlist(waitlistEntryId: string): void {
           :key="index"
           :class="
             enrollment.enrollmentInfo.enrollmentStatus === EnrollmentStatusEnum.LateCancelled
-              ? 'table-danger'
+              ? 'lateCancelColor'
               : ''
           "
         >
@@ -184,14 +185,20 @@ function clickRemoveFromWaitlist(waitlistEntryId: string): void {
           </td>
         </tr>
         <tr v-if="enrollments.length === 0 && !isLoading">
-          <td colspan="7">
+          <td colspan="7" class="text-center align-middle">
             <p v-if="enrollmentType === EnrollmentTypeEnum.Upcoming">
-              YOU HAVE NO UPCOMING BOOKINGS
+              {{
+                'YOU HAVE NO UPCOMING BOOKINGS' + (isFiltered ? ' WITHIN THE FILTERED RANGE' : '')
+              }}
             </p>
             <p v-if="enrollmentType === EnrollmentTypeEnum.Waitlist">
-              YOU HAVE NO WAITLIST BOOKINGS
+              {{
+                'YOU HAVE NO WAITLIST BOOKINGS' + (isFiltered ? ' WITHIN THE FILTERED RANGE' : '')
+              }}
             </p>
-            <p v-if="enrollmentType === EnrollmentTypeEnum.Historical">YOU HAVE NO OLD BOOKINGS</p>
+            <p v-if="enrollmentType === EnrollmentTypeEnum.Historical">
+              {{ 'YOU HAVE NO OLD BOOKINGS' + (isFiltered ? ' WITHIN THE FILTERED RANGE' : '') }}
+            </p>
           </td>
         </tr>
         <tr v-if="isLoading">
@@ -202,4 +209,8 @@ function clickRemoveFromWaitlist(waitlistEntryId: string): void {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.lateCancelColor {
+  background-color: rgb(206, 206, 206);
+}
+</style>
