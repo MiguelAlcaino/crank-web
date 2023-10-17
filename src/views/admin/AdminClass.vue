@@ -209,9 +209,12 @@ function getClassId(): string {
   return route.params.id as string
 }
 
-function spotClicked(event: BookableSpotClickedEvent) {
+async function spotClicked(event: BookableSpotClickedEvent) {
   if (spotAction.value === SpotActionEnum.changeMemberSpot) {
-    changeSelectedMemberSpot(event.spotNumber!)
+    await changeSelectedMemberSpot(event.spotNumber!)
+  }
+  if (spotAction.value === SpotActionEnum.swapSpot) {
+    await swapSpot(event.spotNumber!)
   } else {
     spotAction.value = SpotActionEnum.none
 
@@ -362,7 +365,34 @@ async function changeSelectedMemberSpot(newSpotNumber: number) {
   } finally {
     selectedSpot.value = {}
     spotAction.value = SpotActionEnum.none
-    getClassInfo()
+    await getClassInfo()
+    changingMemberSpot.value = false
+  }
+}
+
+async function swapSpot(newSpotNumber: number) {
+  changingMemberSpot.value = true
+
+  try {
+    const response = await apiService.swapSpot(appStore().site, {
+      enrollmentId: selectedSpot.value.enrollmentId!,
+      newSpotNumber: newSpotNumber
+    })
+
+    if (response.__typename !== 'SwapSpotSuccess') {
+      if (response.__typename === 'TryToSwitchToSameSpotError') {
+        errorModalData.value.message = ERROR_TRYING_TO_MOVE_SAME_SPOT
+      }
+
+      errorModalData.value.isVisible = true
+    }
+  } catch (error) {
+    errorModalData.value.message = ERROR_UNKNOWN
+    errorModalData.value.isVisible = true
+  } finally {
+    selectedSpot.value = {}
+    spotAction.value = SpotActionEnum.none
+    await getClassInfo()
     changingMemberSpot.value = false
   }
 }
@@ -492,7 +522,9 @@ async function changeSelectedMemberSpot(newSpotNumber: number) {
     <h2>Spot is reserved for - {{ selectedSpot.fullName }}</h2>
     <!-- Cancel Member's Reservation Button -->
     <DefaultButtonComponent
-      v-if="spotAction !== SpotActionEnum.changeMemberSpot"
+      v-if="
+        spotAction !== SpotActionEnum.changeMemberSpot && spotAction !== SpotActionEnum.swapSpot
+      "
       text="Cancel Member's Reservation"
       type="button"
       @on-click="clickCancelMembersReservation"
@@ -503,32 +535,43 @@ async function changeSelectedMemberSpot(newSpotNumber: number) {
       text="Change Member's Spot"
       :is-loading="changingMemberSpot"
       type="button"
+      :disabled="spotAction === SpotActionEnum.changeMemberSpot"
       @on-click="spotAction = SpotActionEnum.changeMemberSpot"
+      v-if="spotAction !== SpotActionEnum.swapSpot"
       class="mr-1"
     >
     </DefaultButtonComponent>
+
+    <!-- Swap Spot Button -->
+    <DefaultButtonComponent
+      type="button"
+      text="Swap Spot"
+      :is-loading="changingMemberSpot"
+      :disabled="spotAction === SpotActionEnum.swapSpot"
+      v-if="spotAction !== SpotActionEnum.changeMemberSpot"
+      @on-click="spotAction = SpotActionEnum.swapSpot"
+      class="mr-1"
+    >
+    </DefaultButtonComponent>
+
     <!-- Cancel button  -->
     <DefaultButtonComponent
-      v-if="spotAction === SpotActionEnum.changeMemberSpot"
+      v-if="
+        spotAction === SpotActionEnum.changeMemberSpot || spotAction === SpotActionEnum.swapSpot
+      "
       :disabled="changingMemberSpot"
       text="Cancel"
       type="button"
       @on-click="spotAction = SpotActionEnum.none"
     ></DefaultButtonComponent>
 
-    <button
-      class="btn btn-primary mr-1"
-      :disabled="true"
-      v-if="spotAction !== SpotActionEnum.changeMemberSpot"
-    >
-      Swap Spot
-    </button>
     <!-- Check In - Out button -->
     <CheckInCheckOutUserInClass
       v-if="
         selectedSpot.enrollmentId != null &&
         selectedSpot.isCheckedIn != null &&
-        spotAction !== SpotActionEnum.changeMemberSpot
+        spotAction !== SpotActionEnum.changeMemberSpot &&
+        spotAction !== SpotActionEnum.swapSpot
       "
       :enrollment-id="selectedSpot.enrollmentId"
       :is-checked-in="selectedSpot.isCheckedIn"
@@ -537,7 +580,9 @@ async function changeSelectedMemberSpot(newSpotNumber: number) {
     <button
       class="btn btn-primary mr-1"
       :disabled="true"
-      v-if="spotAction !== SpotActionEnum.changeMemberSpot"
+      v-if="
+        spotAction !== SpotActionEnum.changeMemberSpot && spotAction !== SpotActionEnum.swapSpot
+      "
     >
       Go to Profile
     </button>

@@ -53,6 +53,26 @@ function selectSpot() {
       {{ spotInfo.spotNumber }}
     </div>
   </div>
+  <div v-else-if="spotAction === SpotActionEnum.swapSpot">
+    <div
+      v-if="spotInfo?.isBooked"
+      @click="selected ? null : selectSpot()"
+      :class="[
+        'changeMemberSpot-bookedSpot',
+        selected ? 'selectedSpot' : 'swapMemberSpot-bookedSpot'
+      ]"
+    >
+      {{ spotInfo.spotNumber + (isCheckedIn === true ? '✓' : '') }}
+      <br />
+      {{ user?.firstName }} {{ user?.lastName }}
+    </div>
+    <div v-else-if="enabled" :class="['empty-spot-not-selectable']">
+      {{ spotInfo.spotNumber }}
+    </div>
+    <div v-else :class="['changeMemberSpot-disabledSpot']">
+      {{ spotInfo.spotNumber }}
+    </div>
+  </div>
   <div v-else>
     <div
       v-if="spotInfo?.isBooked"
@@ -107,6 +127,20 @@ function selectSpot() {
   cursor: pointer;
 }
 
+.empty-spot-not-selectable {
+  background: #ffffff;
+  height: 60px;
+  width: 60px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #000;
+  border: 2px #000000 solid;
+  font-weight: 400;
+  font-size: 9px;
+}
+
 .selectedSpot {
   border: 2px dashed !important;
 }
@@ -152,5 +186,20 @@ function selectSpot() {
   border: 2px #000000 solid;
   font-weight: 400;
   font-size: 9px;
+}
+
+.swapMemberSpot-bookedSpot {
+  background: #ffffff;
+  height: 60px;
+  width: 60px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #000;
+  border: 2px #000000 solid;
+  font-weight: 400;
+  font-size: 9px;
+  cursor: pointer;
 }
 </style>
