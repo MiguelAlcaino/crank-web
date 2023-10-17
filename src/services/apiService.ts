@@ -38,6 +38,7 @@ import type {
   RoomLayout,
   RoomLayoutInput,
   SiteEnum,
+  SwapSpotResultUnion,
   UpdateCurrentUserPasswordInput,
   User,
   UserInput
@@ -1388,5 +1389,32 @@ export class ApiService {
     })
 
     return result.data.editEnrollment as EditEnrollmentResultUnion
+  }
+
+  async swapSpot(site: SiteEnum, input: EditEnrollmentInput): Promise<SwapSpotResultUnion> {
+    const mutation = gql`
+      mutation swapSpot($site: SiteEnum!, $input: EditEnrollmentInput!) {
+        swapSpot(site: $site, input: $input) {
+          __typename
+          ... on SwapSpotSuccess {
+            __typename
+          }
+          ... on TryToSwitchToSameSpotError {
+            __typename
+            code
+          }
+        }
+      }
+    `
+    const result = await this.authApiClient.mutate({
+      mutation: mutation,
+      variables: {
+        site: site,
+        input: input
+      },
+      fetchPolicy: 'no-cache'
+    })
+
+    return result.data.swapSpot as SwapSpotResultUnion
   }
 }

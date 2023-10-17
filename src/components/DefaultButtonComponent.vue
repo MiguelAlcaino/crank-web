@@ -28,7 +28,8 @@ const emits = defineEmits<{
     :class="{
       'btn-block': block,
       'btn-primary': variant === 'primary',
-      'btn-secondary': variant === 'secondary'
+      'btn-secondary': variant === 'secondary',
+      disabled: disabled
     }"
   >
     {{ text }}

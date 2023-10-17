@@ -426,6 +426,8 @@ export type Mutation = {
   requestPasswordLink?: Maybe<ResetPasswordLinkResultUnion>
   /** Resets the current user's password */
   resetPasswordForCurrentUser?: Maybe<ResetPasswordForCurrentUserUnion>
+  /** Swaps a spot in a class */
+  swapSpot?: Maybe<SwapSpotResultUnion>
   /** Updates the current user */
   updateCurrentUser?: Maybe<User>
   /** Updates a user's password in all the sites */
@@ -538,6 +540,11 @@ export type MutationRequestPasswordLinkArgs = {
 
 export type MutationResetPasswordForCurrentUserArgs = {
   input?: InputMaybe<ResetPasswordForCurrentUserInput>
+}
+
+export type MutationSwapSpotArgs = {
+  input: EditEnrollmentInput
+  site: SiteEnum
 }
 
 export type MutationUpdateCurrentUserArgs = {
@@ -794,6 +801,14 @@ export type State = {
   __typename: 'State'
   code: Scalars['String']
   name: Scalars['String']
+}
+
+export type SwapSpotResultUnion = SwapSpotSuccess | TryToSwitchToSameSpotError
+
+export type SwapSpotSuccess = {
+  __typename: 'SwapSpotSuccess'
+  affectedEnrollment?: Maybe<EnrollmentInfoInterface>
+  selectedEnrollment: EnrollmentInfoInterface
 }
 
 export type TooManyResetPasswordLinkRequestsError = Error & {
@@ -1197,6 +1212,7 @@ export type ClassInfoQuery = {
   __typename: 'Query'
   classInfo?: {
     __typename: 'ClassInfo'
+    onHoldSpots: number
     class: {
       __typename: 'Class'
       id: string
@@ -2557,7 +2573,8 @@ export const ClassInfoDocument = {
                       }
                     ]
                   }
-                }
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'onHoldSpots' } }
               ]
             }
           }
