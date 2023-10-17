@@ -89,7 +89,7 @@ function clickRemoveFromWaitlist(waitlistEntryId: string): void {
           :key="index"
           :class="
             enrollment.enrollmentInfo.enrollmentStatus === EnrollmentStatusEnum.LateCancelled
-              ? 'table-danger'
+              ? 'lateCancelColor'
               : ''
           "
         >
@@ -209,4 +209,8 @@ function clickRemoveFromWaitlist(waitlistEntryId: string): void {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.lateCancelColor{
+  background-color: rgb(206, 206, 206);
+}
+</style>
