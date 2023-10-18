@@ -6,9 +6,11 @@ import jwt_decode from 'jwt-decode'
 import { Config } from '@/model/Config'
 import type { SiteEnum } from '@/gql/graphql'
 import { appStore } from '@/stores/appStorage'
+import type { Role } from '@/utils/userRoles'
 
 interface JwtTokenPayload {
   exp: number
+  roles: string[]
 }
 
 export const authService = {
@@ -62,7 +64,6 @@ export const authService = {
     useAuthenticationStore().deleteSession()
     await router.push({ name: 'login' })
   },
-
   async validateResetPasswordToken(resetPasswordToken: string): Promise<string> {
     try {
       const response = await axios.get(
@@ -83,5 +84,20 @@ export const authService = {
 
       return 'unknown_error'
     }
+  },
+  userHasRole(role: Role): boolean {
+    const token = useAuthenticationStore().token
+
+    if (token) {
+      const decoded = jwt_decode<JwtTokenPayload>(token)
+
+      const userRoles = decoded.roles as Role[]
+
+      for (let index = 0; index < userRoles.length; index++) {
+        if (role === userRoles[index]) return true
+      }
+    }
+
+    return false
   }
 }

@@ -27,10 +27,15 @@ import type { ApiService } from '@/services/apiService'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 import CheckInCheckOutUserInClass from '@/components/CheckInCheckOutUserInClass.vue'
 
-defineProps<{
+interface Props {
   enrollments: EnrollmentInfo[]
   isLoading: boolean
-}>()
+  showEditOptions?: boolean
+}
+
+withDefaults(defineProps<Props>(), {
+  showEditOptions: false
+})
 
 const emits = defineEmits<{
   (e: 'afterCancelMemberReservation'): void
@@ -89,16 +94,16 @@ async function removeUserFromClass(enrollmentId: string, lateCancel: boolean) {
         <tr>
           <th>FIRST NAME</th>
           <th>LAST NAME</th>
-          <th>SIGN IN</th>
-          <th>CANCEL RESERVATION</th>
-          <th>VIEW PROFILE</th>
+          <th v-if="showEditOptions">SIGN IN</th>
+          <th v-if="showEditOptions">CANCEL RESERVATION</th>
+          <th v-if="showEditOptions">VIEW PROFILE</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="(item, index) in enrollments" v-bind:key="item.id" v-bind:index="index">
           <td>{{ item.user?.firstName }}</td>
           <td>{{ item.user?.lastName }}</td>
-          <td>
+          <td v-if="showEditOptions">
             <CheckInCheckOutUserInClass
               v-if="item.id != null && item.isCheckedIn != null"
               :enrollment-id="item.id"
@@ -106,7 +111,7 @@ async function removeUserFromClass(enrollmentId: string, lateCancel: boolean) {
               @after-check-in-check-out="emits('afterCancelMemberReservation')"
             ></CheckInCheckOutUserInClass>
           </td>
-          <td>
+          <td v-if="showEditOptions">
             <button
               class="btn btn-primary"
               type="button"
@@ -115,7 +120,7 @@ async function removeUserFromClass(enrollmentId: string, lateCancel: boolean) {
               Cancel Member's Reservation
             </button>
           </td>
-          <td>
+          <td v-if="showEditOptions">
             <button class="btn btn-primary" type="button">View Profile</button>
           </td>
         </tr>

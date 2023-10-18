@@ -75,13 +75,15 @@ interface Props {
   enrollments?: EnrollmentInfo[] | null
   spotNumberBookedByCurrentUser?: number | null
   spotAction?: SpotActionEnum
+  spotSelectionIsDisabled?: boolean
 }
 
 const BOOKABLE_SPOT_KEY = 'BookableSpot'
 const ICON_POSITION_KEY = 'IconPosition'
 
 const props = withDefaults(defineProps<Props>(), {
-  showUserInSpots: false
+  showUserInSpots: false,
+  spotSelectionIsDisabled: false
 })
 
 const emits = defineEmits<{
@@ -228,6 +230,7 @@ function onClickSpotAdmin(spotNumber: number) {
               :selected="props.selectedSpotNumber === spot?.spotInfo?.spotNumber"
               :is-checked-in="spot.isCheckedIn"
               :spot-action="spotAction"
+              :spot-selection-is-disabled="spotSelectionIsDisabled"
             />
             <bookable-spot-position
               v-else-if="!showUserInSpots && spot.positionType === BOOKABLE_SPOT_KEY"

@@ -18,14 +18,19 @@ enum SpotActionEnum {
 </script>
 
 <script setup lang="ts">
-const props = defineProps<{
+interface Props {
   spotInfo: BookableSpot
   user: User | null
   enabled: boolean
   selected: boolean
   isCheckedIn?: boolean
   spotAction?: SpotActionEnum
-}>()
+  spotSelectionIsDisabled?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  spotSelectionIsDisabled: false
+})
 
 const emits = defineEmits<{
   (e: 'clickSpot', spotNumber: number): void
@@ -46,7 +51,11 @@ function selectSpot() {
       <br />
       {{ user?.firstName }} {{ user?.lastName }}
     </div>
-    <div v-else-if="enabled" :class="['changeMemberSpot-spotAvailable']" @click="selectSpot()">
+    <div
+      v-else-if="enabled"
+      :class="['changeMemberSpot-spotAvailable']"
+      @click="spotSelectionIsDisabled ? null : selectSpot()"
+    >
       {{ spotInfo.spotNumber }}
     </div>
     <div v-else :class="['changeMemberSpot-disabledSpot']">
@@ -56,7 +65,7 @@ function selectSpot() {
   <div v-else-if="spotAction === SpotActionEnum.swapSpot">
     <div
       v-if="spotInfo?.isBooked"
-      @click="selected ? null : selectSpot()"
+      @click="selected ? null : spotSelectionIsDisabled ? null : selectSpot()"
       :class="[
         'changeMemberSpot-bookedSpot',
         selected ? 'selectedSpot' : 'swapMemberSpot-bookedSpot'
@@ -76,8 +85,11 @@ function selectSpot() {
   <div v-else>
     <div
       v-if="spotInfo?.isBooked"
-      @click="selectSpot()"
-      :class="['enabledSpot', selected ? 'selectedSpot' : '']"
+      @click="spotSelectionIsDisabled ? null : selectSpot()"
+      :class="[
+        spotSelectionIsDisabled ? 'spotEnabledNotClickable' : 'enabledSpot',
+        selected ? 'selectedSpot' : ''
+      ]"
     >
       {{ spotInfo.spotNumber + (isCheckedIn === true ? '✓' : '') }}
       <br />
@@ -85,12 +97,22 @@ function selectSpot() {
     </div>
     <div
       v-else-if="enabled"
-      :class="['enabledSpot', selected ? 'selectedSpot' : '']"
-      @click="selectSpot()"
+      :class="[
+        spotSelectionIsDisabled ? 'spotEnabledNotClickable' : 'enabledSpot',
+        selected ? 'selectedSpot' : ''
+      ]"
+      @click="spotSelectionIsDisabled ? null : selectSpot()"
     >
       {{ spotInfo.spotNumber }}
     </div>
-    <div v-else :class="['disabledSpot', selected ? 'selectedSpot' : '']" @click="selectSpot()">
+    <div
+      v-else
+      :class="[
+        spotSelectionIsDisabled ? 'disabledSpotNotClickable' : 'disabledSpot',
+        selected ? 'selectedSpot' : ''
+      ]"
+      @click="spotSelectionIsDisabled ? null : selectSpot()"
+    >
       {{ spotInfo.spotNumber }}
     </div>
   </div>
@@ -112,6 +134,20 @@ function selectSpot() {
   cursor: pointer;
 }
 
+.disabledSpotNotClickable {
+  background: #f37676;
+  height: 60px;
+  width: 60px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #000;
+  border: 2px #000000 solid;
+  font-weight: 400;
+  font-size: 9px;
+}
+
 .enabledSpot {
   background: #ffffff;
   height: 60px;
@@ -125,6 +161,20 @@ function selectSpot() {
   font-weight: 400;
   font-size: 9px;
   cursor: pointer;
+}
+
+.spotEnabledNotClickable {
+  background: #ffffff;
+  height: 60px;
+  width: 60px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #000;
+  border: 2px #000000 solid;
+  font-weight: 400;
+  font-size: 9px;
 }
 
 .empty-spot-not-selectable {

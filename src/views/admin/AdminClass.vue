@@ -114,6 +114,8 @@ import {
   ERROR_TRYING_TO_MOVE_SAME_SPOT,
   ERROR_UNKNOWN
 } from '@/utils/errorMessages'
+import { authService } from '@/services/authService'
+import { Role } from '@/utils/userRoles'
 
 const route = useRoute()
 
@@ -128,6 +130,8 @@ const classId = ref<string>('')
 const totalSignedIn = ref<number>(0)
 
 const spotAction = ref<SpotActionEnum>(SpotActionEnum.none)
+
+const userCanModifyClass = ref<boolean>(false)
 
 const errorModalData = ref<{
   title: string
@@ -187,6 +191,8 @@ const successModalData = ref<{
 onMounted(() => {
   classId.value = getClassId()
   getClassInfo()
+
+  userCanModifyClass.value = authService.userHasRole(Role.ROLE_STAFF)
 })
 
 async function getClassInfo() {
@@ -417,7 +423,7 @@ async function swapSpot(newSpotNumber: number) {
   <h6 v-html="classInfo?.class?.description"></h6>
 
   <!-- Change Layout Class and View Waitlist Entries Options -->
-  <div class="row">
+  <div class="row" v-if="userCanModifyClass">
     <div class="col-md-12">
       <ChangeLayoutClass
         v-if="classInfo"
@@ -436,6 +442,7 @@ async function swapSpot(newSpotNumber: number) {
       ></SetOnHoldSpots>
     </div>
   </div>
+
   <!-- Enroll in Waitlist -->
   <div class="row" v-if="classInfo !== null && classInfo.class.waitListAvailable === true">
     <div class="col-md-12">
@@ -465,13 +472,19 @@ async function swapSpot(newSpotNumber: number) {
     @click-spot="spotClicked"
     :enrollments="classInfo.enrollments"
     :spot-action="spotAction"
+    :spot-selection-is-disabled="!userCanModifyClass"
   >
   </SpotMatrix>
 
   <!-- Enroll without matrix option -->
   <EnrollSelectedMemberComponent
     :class-id="classId"
-    v-if="classInfo !== null && classInfo.roomLayout === null && classInfo.enrollments !== null"
+    v-if="
+      classInfo !== null &&
+      classInfo.roomLayout === null &&
+      classInfo.enrollments !== null &&
+      userCanModifyClass
+    "
     @after-enrolling="getClassInfo()"
     :spot-number="null"
     enrollButtonText="Enroll Selected Member"
@@ -485,123 +498,126 @@ async function swapSpot(newSpotNumber: number) {
     :enrollments="classInfo.enrollments"
     :isLoading="false"
     @after-cancel-member-reservation="getClassInfo()"
+    :show-edit-options="userCanModifyClass"
   >
   </AdminBookedUsersList>
 
-  <!-- Select empty spot options -->
-  <div v-if="selectedSpot?.isBooked === false && selectedSpot.enabled === true">
-    <h2>Choose an action :</h2>
-    <DefaultButtonComponent
-      text="Assign User to this Spot"
-      type="button"
-      @on-click="spotAction = SpotActionEnum.asignUserToSpot"
-      class="mr-1"
-    ></DefaultButtonComponent>
-    <DefaultButtonComponent
-      text="Put under maintenance"
-      type="button"
-      @on-click="clickPutUnderMaintenance"
-      class="mr-1"
-      :is-loading="isEnablingDisablingSpot"
-    ></DefaultButtonComponent>
-  </div>
-  <!-- Select under manteince spot options -->
-  <div v-if="selectedSpot.enabled === false">
-    <h2>Spot is under maintenance</h2>
-    <DefaultButtonComponent
-      text="Recover from maintenance"
-      type="button"
-      @on-click="clickRecoverFromMaintenance"
-      class="mr-1"
-      :is-loading="isEnablingDisablingSpot"
-    ></DefaultButtonComponent>
-  </div>
+  <div v-if="userCanModifyClass">
+    <!-- Select empty spot options -->
+    <div v-if="selectedSpot?.isBooked === false && selectedSpot.enabled === true">
+      <h2>Choose an action :</h2>
+      <DefaultButtonComponent
+        text="Assign User to this Spot"
+        type="button"
+        @on-click="spotAction = SpotActionEnum.asignUserToSpot"
+        class="mr-1"
+      ></DefaultButtonComponent>
+      <DefaultButtonComponent
+        text="Put under maintenance"
+        type="button"
+        @on-click="clickPutUnderMaintenance"
+        class="mr-1"
+        :is-loading="isEnablingDisablingSpot"
+      ></DefaultButtonComponent>
+    </div>
+    <!-- Select under manteince spot options -->
+    <div v-if="selectedSpot.enabled === false">
+      <h2>Spot is under maintenance</h2>
+      <DefaultButtonComponent
+        text="Recover from maintenance"
+        type="button"
+        @on-click="clickRecoverFromMaintenance"
+        class="mr-1"
+        :is-loading="isEnablingDisablingSpot"
+      ></DefaultButtonComponent>
+    </div>
 
-  <!-- Select booked spot options -->
-  <div v-if="selectedSpot?.isBooked === true">
-    <h2>Spot is reserved for - {{ selectedSpot.fullName }}</h2>
-    <!-- Cancel Member's Reservation Button -->
-    <DefaultButtonComponent
-      v-if="
-        spotAction !== SpotActionEnum.changeMemberSpot && spotAction !== SpotActionEnum.swapSpot
-      "
-      text="Cancel Member's Reservation"
-      type="button"
-      @on-click="clickCancelMembersReservation"
-      class="mr-1"
-    ></DefaultButtonComponent>
-    <!-- Change Member's Spot button -->
-    <DefaultButtonComponent
-      text="Change Member's Spot"
-      :is-loading="changingMemberSpot"
-      type="button"
-      :disabled="spotAction === SpotActionEnum.changeMemberSpot"
-      @on-click="spotAction = SpotActionEnum.changeMemberSpot"
-      v-if="spotAction !== SpotActionEnum.swapSpot"
-      class="mr-1"
-    >
-    </DefaultButtonComponent>
+    <!-- Select booked spot options -->
+    <div v-if="selectedSpot?.isBooked === true">
+      <h2>Spot is reserved for - {{ selectedSpot.fullName }}</h2>
+      <!-- Cancel Member's Reservation Button -->
+      <DefaultButtonComponent
+        v-if="
+          spotAction !== SpotActionEnum.changeMemberSpot && spotAction !== SpotActionEnum.swapSpot
+        "
+        text="Cancel Member's Reservation"
+        type="button"
+        @on-click="clickCancelMembersReservation"
+        class="mr-1"
+      ></DefaultButtonComponent>
+      <!-- Change Member's Spot button -->
+      <DefaultButtonComponent
+        text="Change Member's Spot"
+        :is-loading="changingMemberSpot"
+        type="button"
+        :disabled="spotAction === SpotActionEnum.changeMemberSpot"
+        @on-click="spotAction = SpotActionEnum.changeMemberSpot"
+        v-if="spotAction !== SpotActionEnum.swapSpot"
+        class="mr-1"
+      >
+      </DefaultButtonComponent>
 
-    <!-- Swap Spot Button -->
-    <DefaultButtonComponent
-      type="button"
-      text="Swap Spot"
-      :is-loading="changingMemberSpot"
-      :disabled="spotAction === SpotActionEnum.swapSpot"
-      v-if="spotAction !== SpotActionEnum.changeMemberSpot"
-      @on-click="spotAction = SpotActionEnum.swapSpot"
-      class="mr-1"
-    >
-    </DefaultButtonComponent>
+      <!-- Swap Spot Button -->
+      <DefaultButtonComponent
+        type="button"
+        text="Swap Spot"
+        :is-loading="changingMemberSpot"
+        :disabled="spotAction === SpotActionEnum.swapSpot"
+        v-if="spotAction !== SpotActionEnum.changeMemberSpot"
+        @on-click="spotAction = SpotActionEnum.swapSpot"
+        class="mr-1"
+      >
+      </DefaultButtonComponent>
 
-    <!-- Cancel button  -->
-    <DefaultButtonComponent
-      v-if="
-        spotAction === SpotActionEnum.changeMemberSpot || spotAction === SpotActionEnum.swapSpot
-      "
-      :disabled="changingMemberSpot"
-      text="Cancel"
-      type="button"
-      @on-click="spotAction = SpotActionEnum.none"
-    ></DefaultButtonComponent>
+      <!-- Cancel button  -->
+      <DefaultButtonComponent
+        v-if="
+          spotAction === SpotActionEnum.changeMemberSpot || spotAction === SpotActionEnum.swapSpot
+        "
+        :disabled="changingMemberSpot"
+        text="Cancel"
+        type="button"
+        @on-click="spotAction = SpotActionEnum.none"
+      ></DefaultButtonComponent>
 
-    <!-- Check In - Out button -->
-    <CheckInCheckOutUserInClass
-      v-if="
-        selectedSpot.enrollmentId != null &&
-        selectedSpot.isCheckedIn != null &&
-        spotAction !== SpotActionEnum.changeMemberSpot &&
-        spotAction !== SpotActionEnum.swapSpot
-      "
-      :enrollment-id="selectedSpot.enrollmentId"
-      :is-checked-in="selectedSpot.isCheckedIn"
-      @after-check-in-check-out="getClassInfo()"
-    ></CheckInCheckOutUserInClass>
-    <button
-      class="btn btn-primary mr-1"
-      :disabled="true"
-      v-if="
-        spotAction !== SpotActionEnum.changeMemberSpot && spotAction !== SpotActionEnum.swapSpot
-      "
-    >
-      Go to Profile
-    </button>
-  </div>
+      <!-- Check In - Out button -->
+      <CheckInCheckOutUserInClass
+        v-if="
+          selectedSpot.enrollmentId != null &&
+          selectedSpot.isCheckedIn != null &&
+          spotAction !== SpotActionEnum.changeMemberSpot &&
+          spotAction !== SpotActionEnum.swapSpot
+        "
+        :enrollment-id="selectedSpot.enrollmentId"
+        :is-checked-in="selectedSpot.isCheckedIn"
+        @after-check-in-check-out="getClassInfo()"
+      ></CheckInCheckOutUserInClass>
+      <button
+        class="btn btn-primary mr-1"
+        :disabled="true"
+        v-if="
+          spotAction !== SpotActionEnum.changeMemberSpot && spotAction !== SpotActionEnum.swapSpot
+        "
+      >
+        Go to Profile
+      </button>
+    </div>
 
-  <div v-if="spotAction === SpotActionEnum.asignUserToSpot">
-    <hr />
-    <EnrollSelectedMemberComponent
-      v-if="
-        classInfo !== null &&
-        selectedSpot.spotNumber !== null &&
-        selectedSpot.spotNumber !== undefined
-      "
-      :class-id="classId"
-      :spot-number="selectedSpot.spotNumber!"
-      enrollButtonText="Assign"
-      @after-enrolling="getClassInfo()"
-      :is-waitlist-booking="false"
-    ></EnrollSelectedMemberComponent>
+    <div v-if="spotAction === SpotActionEnum.asignUserToSpot">
+      <hr />
+      <EnrollSelectedMemberComponent
+        v-if="
+          classInfo !== null &&
+          selectedSpot.spotNumber !== null &&
+          selectedSpot.spotNumber !== undefined
+        "
+        :class-id="classId"
+        :spot-number="selectedSpot.spotNumber!"
+        enrollButtonText="Assign"
+        @after-enrolling="getClassInfo()"
+        :is-waitlist-booking="false"
+      ></EnrollSelectedMemberComponent>
+    </div>
   </div>
 
   <!----------------------------- Modals ----------------------------->
