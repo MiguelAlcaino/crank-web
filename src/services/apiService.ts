@@ -1417,4 +1417,23 @@ export class ApiService {
 
     return result.data.swapSpot as SwapSpotResultUnion
   }
+
+  async getCurrentUserSites(): Promise<SiteEnum[]> {
+    const query = gql`
+      query currentUser {
+        currentUser {
+          existsInSites
+        }
+      }
+    `
+
+    const queryResult = await this.authApiClient.query({
+      query: query,
+      fetchPolicy: 'no-cache'
+    })
+
+    const currentUser = queryResult.data.currentUser as User
+
+    return currentUser.existsInSites as SiteEnum[]
+  }
 }

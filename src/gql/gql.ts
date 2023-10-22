@@ -86,7 +86,9 @@ const documents = {
   '\n      mutation checkoutUserInClass($site: SiteEnum!, $input: CheckoutUserInClass!) {\n        checkoutUserInClass(site: $site, input: $input) {\n          __typename\n          ... on CheckoutSuccess {\n            success\n          }\n          ... on EnrollmentNotFoundError {\n            code\n          }\n        }\n      }\n    ':
     types.CheckoutUserInClassDocument,
   '\n      mutation editEnrollment($site: SiteEnum!, $input: EditEnrollmentInput!) {\n        editEnrollment(site: $site, input: $input) {\n          __typename\n          ... on Enrollment {\n            __typename\n          }\n          ... on SpotAlreadyReservedError {\n            code\n          }\n          ... on TryToSwitchToSameSpotError {\n            code\n          }\n          ... on ClientIsOutsideSchedulingWindowError {\n            code\n          }\n        }\n      }\n    ':
-    types.EditEnrollmentDocument
+    types.EditEnrollmentDocument,
+  '\n      mutation swapSpot($site: SiteEnum!, $input: EditEnrollmentInput!) {\n        swapSpot(site: $site, input: $input) {\n          __typename\n          ... on SwapSpotSuccess {\n            __typename\n          }\n          ... on TryToSwitchToSameSpotError {\n            __typename\n            code\n          }\n        }\n      }\n    ':
+    types.SwapSpotDocument
 }
 
 /**
@@ -325,6 +327,12 @@ export function graphql(
 export function graphql(
   source: '\n      mutation editEnrollment($site: SiteEnum!, $input: EditEnrollmentInput!) {\n        editEnrollment(site: $site, input: $input) {\n          __typename\n          ... on Enrollment {\n            __typename\n          }\n          ... on SpotAlreadyReservedError {\n            code\n          }\n          ... on TryToSwitchToSameSpotError {\n            code\n          }\n          ... on ClientIsOutsideSchedulingWindowError {\n            code\n          }\n        }\n      }\n    '
 ): (typeof documents)['\n      mutation editEnrollment($site: SiteEnum!, $input: EditEnrollmentInput!) {\n        editEnrollment(site: $site, input: $input) {\n          __typename\n          ... on Enrollment {\n            __typename\n          }\n          ... on SpotAlreadyReservedError {\n            code\n          }\n          ... on TryToSwitchToSameSpotError {\n            code\n          }\n          ... on ClientIsOutsideSchedulingWindowError {\n            code\n          }\n        }\n      }\n    ']
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n      mutation swapSpot($site: SiteEnum!, $input: EditEnrollmentInput!) {\n        swapSpot(site: $site, input: $input) {\n          __typename\n          ... on SwapSpotSuccess {\n            __typename\n          }\n          ... on TryToSwitchToSameSpotError {\n            __typename\n            code\n          }\n        }\n      }\n    '
+): (typeof documents)['\n      mutation swapSpot($site: SiteEnum!, $input: EditEnrollmentInput!) {\n        swapSpot(site: $site, input: $input) {\n          __typename\n          ... on SwapSpotSuccess {\n            __typename\n          }\n          ... on TryToSwitchToSameSpotError {\n            __typename\n            code\n          }\n        }\n      }\n    ']
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {}
