@@ -27,6 +27,7 @@ import { SUCCESS_RESET_PASSWORD } from '@/utils/successMessages'
 import router from '@/router'
 import { useRoute } from 'vue-router'
 import { authService } from '@/services/authService'
+import { appStore } from '@/stores/appStorage'
 
 const route = useRoute()
 
@@ -108,7 +109,7 @@ async function validateResetPasswordToken(resetPasswordToken: string) {
   validatingToken.value = false
 
   if (response === 'success') {
-    // do nothing
+    setCurrentUserSiteInStore()
   } else if (response === 'expired_reset_password_token') {
     errorMessage.value = ERROR_EXPIRED_RESET_PASSWORD_TOKEN
     errorValidateTokenModalIsVisible.value = true
@@ -118,6 +119,14 @@ async function validateResetPasswordToken(resetPasswordToken: string) {
   } else {
     errorMessage.value = ERROR_UNKNOWN
     errorValidateTokenModalIsVisible.value = true
+  }
+}
+
+async function setCurrentUserSiteInStore() {
+  const userSites = await apiService.getCurrentUserSites()
+
+  if (userSites && userSites.length > 0) {
+    appStore().setSite(userSites[0])
   }
 }
 </script>
