@@ -845,6 +845,7 @@ export type User = {
   emergencyContactPhone: Scalars['String']
   emergencyContactRelationship?: Maybe<Scalars['String']>
   enrollmentInClass?: Maybe<EnrollmentInfoInterface>
+  existsInSites: Array<SiteEnum>
   firstName: Scalars['String']
   gender?: Maybe<GenderEnum>
   hideMetrics?: Maybe<Scalars['Boolean']>
@@ -1626,6 +1627,19 @@ export type EditEnrollmentMutation = {
     | { __typename: 'ClientIsOutsideSchedulingWindowError'; code: string }
     | { __typename: 'Enrollment' }
     | { __typename: 'SpotAlreadyReservedError'; code: string }
+    | { __typename: 'TryToSwitchToSameSpotError'; code: string }
+    | null
+}
+
+export type SwapSpotMutationVariables = Exact<{
+  site: SiteEnum
+  input: EditEnrollmentInput
+}>
+
+export type SwapSpotMutation = {
+  __typename: 'Mutation'
+  swapSpot?:
+    | { __typename: 'SwapSpotSuccess' }
     | { __typename: 'TryToSwitchToSameSpotError'; code: string }
     | null
 }
@@ -4263,3 +4277,83 @@ export const EditEnrollmentDocument = {
     }
   ]
 } as unknown as DocumentNode<EditEnrollmentMutation, EditEnrollmentMutationVariables>
+export const SwapSpotDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'swapSpot' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'EditEnrollmentInput' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'swapSpot' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'SwapSpotSuccess' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: '__typename' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'TryToSwitchToSameSpotError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'code' } }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<SwapSpotMutation, SwapSpotMutationVariables>
