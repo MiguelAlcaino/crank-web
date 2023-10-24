@@ -12,6 +12,7 @@ import ForgotPasswordView from '../views/ForgotPasswordView.vue'
 import ChangeSpotView from '../views/ChangeSpotView.vue'
 import ResetPasswordView from '../views/ResetPasswordView.vue'
 import WorkoutStatsView from '../views/WorkoutStatsView.vue'
+import WorkoutSummaryView from '../views/WorkoutSummaryView.vue'
 
 import { authService } from '@/services/authService'
 import AdminClass from '@/views/admin/AdminClass.vue'
@@ -45,6 +46,11 @@ const router = createRouter({
           path: '/workout-stats',
           name: 'workout_stats',
           component: WorkoutStatsView
+        },
+        {
+          path: '/workout-summary/:id',
+          name: 'workout_summary',
+          component: WorkoutSummaryView
         },
         {
           path: '/change-password',

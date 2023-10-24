@@ -31,6 +31,7 @@ import { inject, onMounted, ref } from 'vue'
 import dayjs from 'dayjs'
 import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
+import router from '@/router'
 
 const apiService = inject<ApiService>('gqlApiService')!
 
@@ -73,7 +74,11 @@ async function getCurrentUserWorkoutStats() {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item, index) in classStats" :key="index">
+            <tr
+              v-for="(item, index) in classStats"
+              :key="index"
+              @click="router.push('workout-summary/' + item.classId)"
+            >
               <td>{{ item.className }}</td>
               <td class="text-center">{{ item.spotNumber }}</td>
               <td class="text-center">
@@ -97,3 +102,12 @@ async function getCurrentUserWorkoutStats() {
     </div>
   </div>
 </template>
+
+<style>
+tr {
+  cursor: pointer;
+}
+tr:hover {
+  background-color: #dadada !important;
+}
+</style>
