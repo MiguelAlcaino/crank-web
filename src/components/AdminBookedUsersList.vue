@@ -18,6 +18,12 @@ enum EnrollmentStatusEnum {
   Unknown = 'unknown',
   Waitlisted = 'waitlisted'
 }
+
+interface Props {
+  enrollments: EnrollmentInfo[]
+  isLoading: boolean
+  showEditOptions?: boolean
+}
 </script>
 
 <script setup lang="ts">
@@ -26,12 +32,6 @@ import ModalComponent from '@/components/ModalComponent.vue'
 import type { ApiService } from '@/services/apiService'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 import CheckInCheckOutUserInClass from '@/components/CheckInCheckOutUserInClass.vue'
-
-interface Props {
-  enrollments: EnrollmentInfo[]
-  isLoading: boolean
-  showEditOptions?: boolean
-}
 
 withDefaults(defineProps<Props>(), {
   showEditOptions: false
