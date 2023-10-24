@@ -1,0 +1,105 @@
+<script lang="ts">
+interface ChartPoint {
+  power?: number
+  rpm?: number
+  time?: number
+}
+
+interface Serie {
+  name: string
+  data: number[]
+}
+
+interface Props {
+  chartPoints?: ChartPoint[]
+}
+</script>
+
+<script setup lang="ts">
+import { ref, watch } from 'vue'
+
+const props = withDefaults(defineProps<Props>(), {
+  chartPoints: () => []
+})
+
+watch(
+  () => props.chartPoints,
+  (chartPoints) => {
+    updateChart(chartPoints)
+  }
+)
+
+const chartOptions = ref({
+  chart: {
+    id: 'class-stats',
+    height: '400px',
+    toolbar: {
+      show: false
+    }
+  },
+  xaxis: {
+    categories: ['']
+  },
+  colors: ['#FF7F61', '#5DDBD3'],
+  title: { text: 'CLASS STATS' }
+})
+const series = ref([
+  {
+    name: 'RPM',
+    data: [30, 40, 35, 50, 49, 60, 70, 91]
+  },
+  {
+    name: 'POWER',
+    data: [30, 40, 25, 50, 49, 60, 70, 91]
+  }
+])
+
+function updateChart(chartPoints?: ChartPoint[]) {
+  let tempCategories: string[] = []
+  let tempSeries: Serie[] = []
+
+  let rpmSerie: Serie = { name: 'RPM', data: [] }
+  let powerSerie: Serie = { name: 'POWER', data: [] }
+
+  if (chartPoints) {
+    for (let i = 0; i < chartPoints.length; i++) {
+      const chartPoint = chartPoints[i] as ChartPoint
+
+      tempCategories.push(secondsToMMSS(chartPoint.time!))
+      rpmSerie.data.push(chartPoint.rpm!)
+      powerSerie.data.push(chartPoint.power!)
+    }
+  }
+
+  tempSeries.push(rpmSerie)
+  tempSeries.push(powerSerie)
+
+  chartOptions.value = {
+    ...chartOptions.value,
+    xaxis: {
+      categories: tempCategories
+    }
+  }
+
+  series.value = tempSeries
+}
+
+function secondsToMMSS(seconds: number): string{
+    let minutes = Math.floor(seconds / 60);
+
+    let minutesStr = minutes.toString();
+    if(minutesStr.length < 2) minutesStr = '0'+ minutesStr;
+
+    let secondsStr = (seconds - (minutes * 60)).toString();
+    if(secondsStr.length < 2) secondsStr = '0'+ secondsStr;
+    
+    return minutesStr + ":" + secondsStr;
+  }
+</script>
+
+<template>
+  <div></div>
+  <apexchart type="line" :options="chartOptions" :series="series"></apexchart>
+</template>
+
+<style scoped></style>
