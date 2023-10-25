@@ -83,7 +83,7 @@ const apiService = inject<ApiService>('gqlApiService')!
 
 onMounted(() => {
   getSiteDateTimeNow()
-  getUserEnrollments()
+  getUserEnrollments(true)
 })
 
 async function getSiteDateTimeNow() {
@@ -94,10 +94,13 @@ async function getSiteDateTimeNow() {
   if (siteSetting) siteDateTimeNow.value = new Date(siteSetting.siteDateTimeNow)
 }
 
-async function getUserEnrollments() {
-  getUpcomingEnrollments()
-  getWaitlistEnrollments()
+async function getUserEnrollments(isOnMount: boolean = false) {
   getOldEnrollments()
+  await getUpcomingEnrollments()
+  await getWaitlistEnrollments()
+
+  if (isOnMount && upcomingEnrollments.value.length === 0 && waitlistEnrollments.value.length > 0)
+    setActive(EnrollmentTypeEnum.Waitlist)
 }
 
 async function getUpcomingEnrollments() {
