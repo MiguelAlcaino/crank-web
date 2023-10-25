@@ -41,6 +41,8 @@ import type {
   SwapSpotResultUnion,
   UpdateCurrentUserPasswordInput,
   User,
+  UserInClassRanking,
+  UserInRankingParams,
   UserInput
 } from '@/gql/graphql'
 import { EnrollmentTypeEnum, type SiteSetting } from '@/gql/graphql'
@@ -1435,5 +1437,40 @@ export class ApiService {
     const currentUser = queryResult.data.currentUser as User
 
     return currentUser.existsInSites as SiteEnum[]
+  }
+
+  async getCurrentUserRankingInClass(
+    site: SiteEnum,
+    params: UserInRankingParams
+  ): Promise<UserInClassRanking> {
+    const query = gql`
+      query currentUserRankingInClass($site: SiteEnum!, $params: UserInRankingParams) {
+        currentUserRankingInClass(site: $site, params: $params) {
+          totalRanking {
+            positionInRanking
+            totalMembersInRanking
+          }
+          genderRanking {
+            gender
+            ranking {
+              positionInRanking
+              totalMembersInRanking
+            }
+          }
+        }
+      }
+    `
+
+    const queryResult = await this.authApiClient.query({
+      query: query,
+      variables: {
+        site: site,
+        params: params,
+        query: query
+      },
+      fetchPolicy: 'no-cache'
+    })
+
+    return queryResult.data.currentUserRankingInClass as UserInClassRanking
   }
 }
