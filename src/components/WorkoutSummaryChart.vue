@@ -18,6 +18,8 @@ interface Props {
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
+import { secondsToMMSS } from '@/utils/utility-functions'
+
 const props = withDefaults(defineProps<Props>(), {
   chartPoints: () => []
 })
@@ -46,11 +48,11 @@ const chartOptions = ref({
 const series = ref([
   {
     name: 'RPM',
-    data: [30, 40, 35, 50, 49, 60, 70, 91]
+    data: [0]
   },
   {
     name: 'POWER',
-    data: [30, 40, 25, 50, 49, 60, 70, 91]
+    data: [0]
   }
 ])
 
@@ -83,18 +85,6 @@ function updateChart(chartPoints?: ChartPoint[]) {
 
   series.value = tempSeries
 }
-
-function secondsToMMSS(seconds: number): string{
-    let minutes = Math.floor(seconds / 60);
-
-    let minutesStr = minutes.toString();
-    if(minutesStr.length < 2) minutesStr = '0'+ minutesStr;
-
-    let secondsStr = (seconds - (minutes * 60)).toString();
-    if(secondsStr.length < 2) secondsStr = '0'+ secondsStr;
-    
-    return minutesStr + ":" + secondsStr;
-  }
 </script>
 
 <template>
