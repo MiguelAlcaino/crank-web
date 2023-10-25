@@ -32,7 +32,12 @@ import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
 import { useRoute } from 'vue-router'
 
+import { secondsToMMSS } from '@/utils/utility-functions'
 import WorkoutSummaryChart from '@/components/WorkoutSummaryChart.vue'
+import StatIconWidget from '@/components/StatIconWidget.vue'
+import SpotIconWidget from '@/components/SpotIconWidget.vue'
+import RankWidget from '@/components/RankWidget.vue'
+import StatSlashWidget from '@/components/StatSlashWidget.vue'
 
 const route = useRoute()
 
@@ -3102,14 +3107,57 @@ async function getWorkoutSummary() {
     </div>
   </div>
   <div class="row mt-3">
-    <div class="col-6">DURATION</div>
-    <div class="col-6">DISTANCE</div>
-    <div class="col-6">CALORIES</div>
-    <div class="col-6">TOTAL ENERGY</div>
-    <div class="col-6">SPOT</div>
-    <div class="col-6">RANK</div>
-    <div class="col-6">POWER</div>
-    <div class="col-6">RPM</div>
+    <div class="col-sm-6">
+      <StatIconWidget
+        icon="duration"
+        :value="secondsToMMSS(classStat?.duration)"
+        title="DURATION"
+      ></StatIconWidget>
+    </div>
+    <div class="col-sm-6">
+      <StatIconWidget
+        icon="distance"
+        :value="(classStat?.distance?.toFixed(1) ?? '0') + 'KM'"
+        title="DISTANCE"
+      ></StatIconWidget>
+    </div>
+    <div class="col-sm-6">
+      <StatIconWidget
+        icon="calories"
+        :value="(classStat?.calories!.toFixed(1) ?? '0')"
+        title="CALORIES"
+      ></StatIconWidget>
+    </div>
+    <div class="col-sm-6">
+      <StatIconWidget
+        icon="total_energy"
+        :value="(classStat?.totalEnergy!.toFixed(1) ?? '0')"
+        title="TOTAL ENERGY"
+      ></StatIconWidget>
+    </div>
+    <div class="col-sm-6">
+      <SpotIconWidget
+        :class-name="classStat?.className"
+        :spot-number="classStat?.spotNumber"
+      ></SpotIconWidget>
+    </div>
+    <div class="col-sm-6">
+      <RankWidget :class-id="classStat?.classId"></RankWidget>
+    </div>
+    <div class="col-sm-6">
+      <StatSlashWidget
+        title="POWER"
+        :avg-value="classStat?.averagePower ?? 0"
+        :high-value="classStat?.highPower ?? 0"
+      ></StatSlashWidget>
+    </div>
+    <div class="col-sm-6">
+      <StatSlashWidget
+        title="RPM"
+        :avg-value="classStat?.averageRpm ?? 0"
+        :high-value="classStat?.highRpm ?? 0"
+      ></StatSlashWidget>
+    </div>
   </div>
 </template>
 
