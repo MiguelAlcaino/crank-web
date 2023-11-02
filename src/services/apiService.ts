@@ -1436,4 +1436,39 @@ export class ApiService {
 
     return currentUser.existsInSites as SiteEnum[]
   }
+
+  async getCalendarClassesForList(
+    site: SiteEnum,
+    startDate: Date,
+    endDate: Date
+  ): Promise<Class[]> {
+    const query = gql`
+      query getCalendarClassesForList($site: SiteEnum!, $params: CalendarClassesParams) {
+        calendarClasses(site: $site, params: $params) {
+          id
+          name
+          startWithNoTimeZone
+        }
+      }
+    `
+
+    const stgStartDate = dayjs(startDate).format('YYYY-MM-DD')
+    const stgEndDate = dayjs(endDate).format('YYYY-MM-DD')
+
+    const params: CalendarClassesParams = {
+      startDate: stgStartDate,
+      endDate: stgEndDate
+    }
+
+    const queryResult = await this.anonymousApiClient.query({
+      query: query,
+      fetchPolicy: 'no-cache',
+      variables: {
+        site: site,
+        params: params
+      }
+    })
+
+    return queryResult.data.calendarClasses as Class[]
+  }
 }
