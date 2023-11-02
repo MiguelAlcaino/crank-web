@@ -12,6 +12,7 @@ import ForgotPasswordView from '../views/ForgotPasswordView.vue'
 import ChangeSpotView from '../views/ChangeSpotView.vue'
 import ResetPasswordView from '../views/ResetPasswordView.vue'
 import WorkoutStatsView from '../views/WorkoutStatsView.vue'
+import AdminClassView from '@/views/admin/AdminClassView.vue'
 
 import { authService } from '@/services/authService'
 import AdminClass from '@/views/admin/AdminClass.vue'
@@ -106,6 +107,11 @@ const router = createRouter({
       path: '/admin/class/:id',
       name: 'admin_class',
       component: AdminClass
+    },
+    {
+      path: '/admin/calendar-class',
+      name: 'admin_calendar_class',
+      component: AdminClassView
     },
     {
       path: '/admin/room-layout/list',
