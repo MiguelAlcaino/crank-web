@@ -1,4 +1,5 @@
 <script lang="ts">
+// TODO: Add total number of spots and enrolled
 interface Class {
   id: string
   name: string
@@ -118,7 +119,7 @@ function goToNextWeek(): void {
     </div>
     <div class="row" v-if="isLoading">
       <div class="col-12 text-center">
-        <CrankCircularProgressIndicator></CrankCircularProgressIndicator>
+        <CrankCircularProgressIndicator text="Loading..."></CrankCircularProgressIndicator>
       </div>
     </div>
     <div id="ClassesSection">
