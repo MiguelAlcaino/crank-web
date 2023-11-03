@@ -148,9 +148,11 @@ export type Class = {
   id: Scalars['ID']
   instructorName: Scalars['String']
   isSubstitute: Scalars['Boolean']
+  maxCapacity: Scalars['Int']
   name: Scalars['String']
   start: Scalars['DateTime']
   startWithNoTimeZone: Scalars['DateTimeWithoutTimeZone']
+  totalBooked: Scalars['Int']
   waitListAvailable: Scalars['Boolean']
 }
 
@@ -1642,6 +1644,30 @@ export type SwapSpotMutation = {
     | { __typename: 'SwapSpotSuccess' }
     | { __typename: 'TryToSwitchToSameSpotError'; code: string }
     | null
+}
+
+export type CurrentUserSitesQueryVariables = Exact<{ [key: string]: never }>
+
+export type CurrentUserSitesQuery = {
+  __typename: 'Query'
+  currentUser?: { __typename: 'User'; existsInSites: Array<SiteEnum> } | null
+}
+
+export type GetCalendarClassesForListQueryVariables = Exact<{
+  site: SiteEnum
+  params?: InputMaybe<CalendarClassesParams>
+}>
+
+export type GetCalendarClassesForListQuery = {
+  __typename: 'Query'
+  calendarClasses: Array<{
+    __typename: 'Class'
+    id: string
+    name: string
+    startWithNoTimeZone: any
+    maxCapacity: number
+    totalBooked: number
+  }>
 }
 
 export const SiteSettingsDocument = {
@@ -4357,3 +4383,85 @@ export const SwapSpotDocument = {
     }
   ]
 } as unknown as DocumentNode<SwapSpotMutation, SwapSpotMutationVariables>
+export const CurrentUserSitesDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'currentUserSites' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentUser' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'Field', name: { kind: 'Name', value: 'existsInSites' } }]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<CurrentUserSitesQuery, CurrentUserSitesQueryVariables>
+export const GetCalendarClassesForListDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'getCalendarClassesForList' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'params' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'CalendarClassesParams' } }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'calendarClasses' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'params' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'params' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'startWithNoTimeZone' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'maxCapacity' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'totalBooked' } }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  GetCalendarClassesForListQuery,
+  GetCalendarClassesForListQueryVariables
+>
