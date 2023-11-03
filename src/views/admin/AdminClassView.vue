@@ -1,19 +1,17 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 
 import ClassDetails from '@/components/ClassDetails.vue'
 import CalendarList from '@/components/CalendarList.vue'
 
 const classId = ref<string | null>(null)
 
-const calendarList = ref<InstanceType<typeof CalendarList> | null>(null)
-
 function selectClass(id: string | null) {
   classId.value = id
 }
 
 function afterClassChanged() {
-  calendarList.value?.getCalendarClasses() 
+
 }
 </script>
 
