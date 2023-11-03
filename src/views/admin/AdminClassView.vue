@@ -10,8 +10,8 @@ function selectClass(id: string | null) {
   classId.value = id
 }
 
-function afterClassChanged() {
-
+function availableSpotsChanged() {
+  console.log('availableSpotsChanged')
 }
 </script>
 
@@ -21,7 +21,10 @@ function afterClassChanged() {
       <CalendarList @select-class="selectClass"></CalendarList>
     </div>
     <div class="col-lg-9 col-md-9 col-sm-8">
-      <ClassDetails :class-id="classId" @after-class-changed="afterClassChanged"></ClassDetails>
+      <ClassDetails
+        :class-id="classId"
+        @available-spots-changed="availableSpotsChanged"
+      ></ClassDetails>
     </div>
   </div>
 </template>
