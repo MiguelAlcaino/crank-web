@@ -4,6 +4,9 @@ interface Class {
   id: string
   name: string
   startWithNoTimeZone: Date
+  maxCapacity: number
+  totalBooked: number
+  totalUnderMaintenanceSpots: number
 }
 
 interface WeekDays {
@@ -39,8 +42,12 @@ onMounted(() => {
   getCalendarClasses()
 })
 
-async function getCalendarClasses(): Promise<void> {
-  emits('selectClass', null)
+defineExpose({
+  getCalendarClasses
+})
+
+async function getCalendarClasses(resetSelectedClass: boolean = true): Promise<void> {
+  if (resetSelectedClass) emits('selectClass', null)
 
   weekDays.value = []
 
@@ -69,7 +76,10 @@ async function getCalendarClasses(): Promise<void> {
       weekDays.value[weekDaysIndex].classes.push({
         id: calendarClass.id,
         name: calendarClass.name,
-        startWithNoTimeZone: calendarClass.startWithNoTimeZone
+        startWithNoTimeZone: calendarClass.startWithNoTimeZone,
+        maxCapacity: calendarClass.maxCapacity,
+        totalBooked: calendarClass.totalBooked,
+        totalUnderMaintenanceSpots: calendarClass.totalUnderMaintenanceSpots
       })
     }
   } catch (error) {
@@ -136,7 +146,9 @@ function goToNextWeek(): void {
             <desc style="display: inline-block; width: 100%; align-self: stretch">{{
               c.name
             }}</desc>
-            <span>(0/3)</span>
+            <span>{{
+              '(' + (c.totalBooked + c.totalUnderMaintenanceSpots) + '/' + c.maxCapacity + ')'
+            }}</span>
           </div>
         </div>
       </div>

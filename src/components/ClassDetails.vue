@@ -121,6 +121,10 @@ const props = defineProps<{
   classId: string | null
 }>()
 
+const emits = defineEmits<{
+  (e: 'availableSpotsChanged'): void
+}>()
+
 watch(
   () => props.classId,
   (classId) => {
@@ -274,6 +278,7 @@ async function clickPutUnderMaintenance() {
 
   if (response === 'Success') {
     await getClassInfo()
+    emits('availableSpotsChanged')
   } else if (response === 'SpotNotFoundError') {
     errorModalData.value.message = ERROR_SPOT_NOT_FOUND
     errorModalData.value.isVisible = true
@@ -294,6 +299,7 @@ async function clickRecoverFromMaintenance() {
 
   if (response === 'Success') {
     await getClassInfo()
+    emits('availableSpotsChanged')
   } else if (response === 'SpotNotFoundError') {
     errorModalData.value.message = ERROR_SPOT_NOT_FOUND
     errorModalData.value.isVisible = true
@@ -319,6 +325,7 @@ async function removeUserFromClass() {
 
   if (response === 'CancelUserEnrollmentSuccess') {
     await getClassInfo()
+    emits('availableSpotsChanged')
   } else if (response === 'LateCancellationRequiredError') {
     confirmModalLateCancelReservationData.value.isLoading = false
     confirmModalLateCancelReservationData.value.isVisible = true
@@ -339,6 +346,7 @@ async function confirmLateCancelation() {
 
   if (response === 'CancelUserEnrollmentSuccess') {
     await getClassInfo()
+    emits('availableSpotsChanged')
   } else if (response === 'LateCancellationRequiredError') {
     confirmModalLateCancelReservationData.value.isLoading = false
     confirmModalLateCancelReservationData.value.isVisible = true
@@ -405,6 +413,11 @@ async function swapSpot(newSpotNumber: number) {
     await getClassInfo()
     changingMemberSpot.value = false
   }
+}
+
+function afterEnrollingUser() {
+  emits('availableSpotsChanged')
+  getClassInfo()
 }
 </script>
 
@@ -503,7 +516,7 @@ async function swapSpot(newSpotNumber: number) {
           classInfo.enrollments !== null &&
           userCanModifyClass
         "
-        @after-enrolling="getClassInfo()"
+        @after-enrolling="afterEnrollingUser()"
         :spot-number="null"
         enrollButtonText="Enroll Selected Member"
         :is-waitlist-booking="false"
@@ -635,7 +648,7 @@ async function swapSpot(newSpotNumber: number) {
             :class-id="classId"
             :spot-number="selectedSpot.spotNumber!"
             enrollButtonText="Assign"
-            @after-enrolling="getClassInfo()"
+            @after-enrolling="afterEnrollingUser()"
             :is-waitlist-booking="false"
           ></EnrollSelectedMemberComponent>
         </div>

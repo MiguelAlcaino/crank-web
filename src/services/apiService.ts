@@ -1420,7 +1420,7 @@ export class ApiService {
 
   async getCurrentUserSites(): Promise<SiteEnum[]> {
     const query = gql`
-      query currentUser {
+      query currentUserSites {
         currentUser {
           existsInSites
         }
@@ -1448,6 +1448,9 @@ export class ApiService {
           id
           name
           startWithNoTimeZone
+          maxCapacity
+          totalBooked
+          totalUnderMaintenanceSpots
         }
       }
     `
