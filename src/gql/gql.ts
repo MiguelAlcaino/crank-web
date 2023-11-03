@@ -91,7 +91,7 @@ const documents = {
     types.SwapSpotDocument,
   '\n      query currentUserSites {\n        currentUser {\n          existsInSites\n        }\n      }\n    ':
     types.CurrentUserSitesDocument,
-  '\n      query getCalendarClassesForList($site: SiteEnum!, $params: CalendarClassesParams) {\n        calendarClasses(site: $site, params: $params) {\n          id\n          name\n          startWithNoTimeZone\n          maxCapacity\n          totalBooked\n        }\n      }\n    ':
+  '\n      query getCalendarClassesForList($site: SiteEnum!, $params: CalendarClassesParams) {\n        calendarClasses(site: $site, params: $params) {\n          id\n          name\n          startWithNoTimeZone\n          maxCapacity\n          totalBooked\n          totalUnderMaintenanceSpots\n        }\n      }\n    ':
     types.GetCalendarClassesForListDocument
 }
 
@@ -347,8 +347,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: '\n      query getCalendarClassesForList($site: SiteEnum!, $params: CalendarClassesParams) {\n        calendarClasses(site: $site, params: $params) {\n          id\n          name\n          startWithNoTimeZone\n          maxCapacity\n          totalBooked\n        }\n      }\n    '
-): (typeof documents)['\n      query getCalendarClassesForList($site: SiteEnum!, $params: CalendarClassesParams) {\n        calendarClasses(site: $site, params: $params) {\n          id\n          name\n          startWithNoTimeZone\n          maxCapacity\n          totalBooked\n        }\n      }\n    ']
+  source: '\n      query getCalendarClassesForList($site: SiteEnum!, $params: CalendarClassesParams) {\n        calendarClasses(site: $site, params: $params) {\n          id\n          name\n          startWithNoTimeZone\n          maxCapacity\n          totalBooked\n          totalUnderMaintenanceSpots\n        }\n      }\n    '
+): (typeof documents)['\n      query getCalendarClassesForList($site: SiteEnum!, $params: CalendarClassesParams) {\n        calendarClasses(site: $site, params: $params) {\n          id\n          name\n          startWithNoTimeZone\n          maxCapacity\n          totalBooked\n          totalUnderMaintenanceSpots\n        }\n      }\n    ']
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {}

@@ -153,6 +153,7 @@ export type Class = {
   start: Scalars['DateTime']
   startWithNoTimeZone: Scalars['DateTimeWithoutTimeZone']
   totalBooked: Scalars['Int']
+  totalUnderMaintenanceSpots: Scalars['Int']
   waitListAvailable: Scalars['Boolean']
 }
 
@@ -1667,6 +1668,7 @@ export type GetCalendarClassesForListQuery = {
     startWithNoTimeZone: any
     maxCapacity: number
     totalBooked: number
+    totalUnderMaintenanceSpots: number
   }>
 }
 
@@ -4453,7 +4455,8 @@ export const GetCalendarClassesForListDocument = {
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'startWithNoTimeZone' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'maxCapacity' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'totalBooked' } }
+                { kind: 'Field', name: { kind: 'Name', value: 'totalBooked' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'totalUnderMaintenanceSpots' } }
               ]
             }
           }
