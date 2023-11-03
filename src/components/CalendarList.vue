@@ -42,8 +42,12 @@ onMounted(() => {
   getCalendarClasses()
 })
 
-async function getCalendarClasses(): Promise<void> {
-  emits('selectClass', null)
+defineExpose({
+  getCalendarClasses
+})
+
+async function getCalendarClasses(resetSelectedClass: boolean = true): Promise<void> {
+  if (resetSelectedClass) emits('selectClass', null)
 
   weekDays.value = []
 
