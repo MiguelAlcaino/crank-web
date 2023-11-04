@@ -730,3 +730,9 @@ async function login() {
   >
   </ModalComponent>
 </template>
+
+<style scoped>
+h3 {
+  color: #737373;
+}
+</style>
