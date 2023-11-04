@@ -45,12 +45,17 @@ interface BookableSpot extends ClassPositionInterface {
 interface IconPosition extends ClassPositionInterface {}
 
 interface EnrollmentInfo {
-  user?: User | null
+  identifiableUser?: IdentifiableUser | null
   enrollmentDateTime: Date
   enrollmentStatus: EnrollmentStatusEnum
   id: string
   isCheckedIn?: boolean
   spotInfo?: SpotInfo | null
+}
+
+interface IdentifiableUser {
+  id?: string
+  user?: User
 }
 
 enum EnrollmentStatusEnum {
@@ -161,7 +166,7 @@ function getMatrixOfSpotPositions(matrix: Array<BookableSpot | IconPosition>): S
               const enrollment = props.enrollments[index]
               isCheckedIn = enrollment.isCheckedIn
               if (enrollment.spotInfo?.spotNumber === spotInfo.spotNumber) {
-                user = enrollment.user
+                user = enrollment.identifiableUser?.user
                 break
               }
             }

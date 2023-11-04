@@ -42,7 +42,7 @@ interface EnrollmentInfo {
   enrollmentStatus: EnrollmentStatusEnum
   id: string
   isCheckedIn?: boolean
-  user?: User
+  identifiableUser?: IdentifiableUser
   /** @deprecated Array of booked spots should be returned by other query to reduce complexity of creating SpotInfo instances. */
   spotInfo?: SpotInfo
   spotNumber?: number
@@ -52,6 +52,11 @@ interface SpotInfo {
   /** @deprecated Array of booked spots should be returned by other query to reduce complexity of creating SpotInfo instances. */
   isBooked: boolean
   spotNumber: number
+}
+
+interface IdentifiableUser {
+  id?: string
+  user?: User
 }
 
 interface User {
@@ -105,6 +110,7 @@ import ViewWaitlistEntries from '@/components/ViewWaitlistEntries.vue'
 import CheckInCheckOutUserInClass from '@/components/CheckInCheckOutUserInClass.vue'
 import SetOnHoldSpots from '@/components/SetOnHoldSpots.vue'
 import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
+import UserProfile from '@/components/UserProfile.vue'
 
 import {
   ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW,
@@ -242,10 +248,15 @@ async function spotClicked(event: BookableSpotClickedEvent) {
             for (let index = 0; index < classInfo.value?.enrollments.length; index++) {
               const enrollment = classInfo.value?.enrollments[index]
               isCheckedIn = enrollment.isCheckedIn
-              if (classPosition.spotNumber === enrollment.spotNumber && enrollment.user) {
+              if (
+                classPosition.spotNumber === enrollment.spotNumber &&
+                enrollment.identifiableUser
+              ) {
                 isBooked = true
                 fullName =
-                  (enrollment.user?.firstName ?? '') + ' ' + (enrollment.user?.lastName ?? '')
+                  (enrollment.identifiableUser?.user?.firstName ?? '') +
+                  ' ' +
+                  (enrollment.identifiableUser?.user?.lastName ?? '')
                 enrollmentId = enrollment.id
                 break
               }
@@ -626,16 +637,13 @@ function afterEnrollingUser() {
             :is-checked-in="selectedSpot.isCheckedIn"
             @after-check-in-check-out="getClassInfo()"
           ></CheckInCheckOutUserInClass>
-          <button
-            class="btn btn-primary mr-1"
-            :disabled="true"
+          <UserProfile
             v-if="
               spotAction !== SpotActionEnum.changeMemberSpot &&
               spotAction !== SpotActionEnum.swapSpot
             "
-          >
-            Go to Profile
-          </button>
+            :user-id="'40607'"
+          ></UserProfile>
         </div>
 
         <div v-if="spotAction === SpotActionEnum.asignUserToSpot">

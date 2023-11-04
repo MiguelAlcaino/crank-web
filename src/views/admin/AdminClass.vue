@@ -42,10 +42,15 @@ interface EnrollmentInfo {
   enrollmentStatus: EnrollmentStatusEnum
   id: string
   isCheckedIn?: boolean
-  user?: User
+  identifiableUser?: IdentifiableUser
   /** @deprecated Array of booked spots should be returned by other query to reduce complexity of creating SpotInfo instances. */
   spotInfo?: SpotInfo
   spotNumber?: number
+}
+
+interface IdentifiableUser {
+  id?: string
+  user?: User
 }
 
 interface SpotInfo {
@@ -238,10 +243,15 @@ async function spotClicked(event: BookableSpotClickedEvent) {
             for (let index = 0; index < classInfo.value?.enrollments.length; index++) {
               const enrollment = classInfo.value?.enrollments[index]
               isCheckedIn = enrollment.isCheckedIn
-              if (classPosition.spotNumber === enrollment.spotNumber && enrollment.user) {
+              if (
+                classPosition.spotNumber === enrollment.spotNumber &&
+                enrollment.identifiableUser?.user
+              ) {
                 isBooked = true
                 fullName =
-                  (enrollment.user?.firstName ?? '') + ' ' + (enrollment.user?.lastName ?? '')
+                  (enrollment.identifiableUser?.user?.firstName ?? '') +
+                  ' ' +
+                  (enrollment.identifiableUser?.user?.lastName ?? '')
                 enrollmentId = enrollment.id
                 break
               }

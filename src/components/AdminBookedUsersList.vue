@@ -2,8 +2,13 @@
 interface EnrollmentInfo {
   id: string
   enrollmentStatus?: EnrollmentStatusEnum
-  user?: User | null
+  identifiableUser?: IdentifiableUser
   isCheckedIn?: boolean
+}
+
+interface IdentifiableUser {
+  id?: string
+  user?: User
 }
 
 interface User {
@@ -18,6 +23,12 @@ enum EnrollmentStatusEnum {
   Unknown = 'unknown',
   Waitlisted = 'waitlisted'
 }
+
+interface Props {
+  enrollments: EnrollmentInfo[]
+  isLoading: boolean
+  showEditOptions?: boolean
+}
 </script>
 
 <script setup lang="ts">
@@ -26,12 +37,7 @@ import ModalComponent from '@/components/ModalComponent.vue'
 import type { ApiService } from '@/services/apiService'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 import CheckInCheckOutUserInClass from '@/components/CheckInCheckOutUserInClass.vue'
-
-interface Props {
-  enrollments: EnrollmentInfo[]
-  isLoading: boolean
-  showEditOptions?: boolean
-}
+import UserProfile from '@/components/UserProfile.vue'
 
 withDefaults(defineProps<Props>(), {
   showEditOptions: false
@@ -53,10 +59,6 @@ function onClickCancelMemberReservation(enrollmentId: string) {
   removingUserFromClass.value = false
   selectedEnrollmentId.value = enrollmentId
   modalCancelReservationIsVisible.value = true
-}
-
-function onClickViewProfile() {
-  //TODO: view profile functionality
 }
 
 function onClickConfirmCancelMemberReservation() {
@@ -101,8 +103,8 @@ async function removeUserFromClass(enrollmentId: string, lateCancel: boolean) {
       </thead>
       <tbody>
         <tr v-for="(item, index) in enrollments" v-bind:key="item.id" v-bind:index="index">
-          <td>{{ item.user?.firstName }}</td>
-          <td>{{ item.user?.lastName }}</td>
+          <td>{{ item.identifiableUser?.user?.firstName }}</td>
+          <td>{{ item.identifiableUser?.user?.lastName }}</td>
           <td v-if="showEditOptions">
             <CheckInCheckOutUserInClass
               v-if="item.id != null && item.isCheckedIn != null"
@@ -121,7 +123,7 @@ async function removeUserFromClass(enrollmentId: string, lateCancel: boolean) {
             </button>
           </td>
           <td v-if="showEditOptions">
-            <button class="btn btn-primary" type="button">View Profile</button>
+            <UserProfile :user-id="'40607'"></UserProfile>
           </td>
         </tr>
         <tr v-if="!isLoading && enrollments.length === 0">
