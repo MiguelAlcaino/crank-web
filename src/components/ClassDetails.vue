@@ -514,6 +514,7 @@ function afterEnrollingUser() {
           classInfo !== null &&
           classInfo.roomLayout === null &&
           classInfo.enrollments !== null &&
+          classInfo.class.waitListAvailable === false &&
           userCanModifyClass
         "
         @after-enrolling="afterEnrollingUser()"
