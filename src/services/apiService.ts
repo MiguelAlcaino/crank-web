@@ -1422,7 +1422,7 @@ export class ApiService {
 
   async getCurrentUserSites(): Promise<SiteEnum[]> {
     const query = gql`
-      query currentUser {
+      query currentUserSites {
         currentUser {
           existsInSites
         }
