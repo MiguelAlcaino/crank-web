@@ -123,7 +123,10 @@ async function removeUserFromClass(enrollmentId: string, lateCancel: boolean) {
             </button>
           </td>
           <td v-if="showEditOptions">
-            <UserProfile :user-id="'40607'"></UserProfile>
+            <UserProfile
+              v-if="item.identifiableUser?.id"
+              :user-id="item.identifiableUser?.id"
+            ></UserProfile>
           </td>
         </tr>
         <tr v-if="!isLoading && enrollments.length === 0">
