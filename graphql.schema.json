@@ -918,6 +918,22 @@
             "deprecationReason": null
           },
           {
+            "name": "displayableStart",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "DateTime",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "duration",
             "description": null,
             "args": [],
@@ -1031,7 +1047,7 @@
           },
           {
             "name": "startWithNoTimeZone",
-            "description": null,
+            "description": "Same as start but without timezone. If start is 2023-11-04T10:15:00+04:00 then this value will be 2023-11-04T10:15:00",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -2243,6 +2259,18 @@
             "deprecationReason": null
           },
           {
+            "name": "identifiableUser",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "IdentifiableUser",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "isCheckedIn",
             "description": null,
             "args": [],
@@ -2281,18 +2309,6 @@
             },
             "isDeprecated": false,
             "deprecationReason": null
-          },
-          {
-            "name": "user",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "OBJECT",
-              "name": "User",
-              "ofType": null
-            },
-            "isDeprecated": true,
-            "deprecationReason": "This should be removed from here to avoid loops."
           }
         ],
         "inputFields": null,
@@ -2360,16 +2376,16 @@
             "deprecationReason": null
           },
           {
-            "name": "user",
+            "name": "identifiableUser",
             "description": null,
             "args": [],
             "type": {
               "kind": "OBJECT",
-              "name": "User",
+              "name": "IdentifiableUser",
               "ofType": null
             },
-            "isDeprecated": true,
-            "deprecationReason": "This should be removed from here to avoid loops."
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "inputFields": null,
@@ -4530,7 +4546,7 @@
           },
           {
             "name": "roomLayout",
-            "description": null,
+            "description": "Returns a specific room layout",
             "args": [
               {
                 "name": "id",
@@ -4680,6 +4696,35 @@
                 "name": "SiteSetting",
                 "ofType": null
               }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "user",
+            "description": "Returns a user",
+            "args": [
+              {
+                "name": "id",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "ID",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "OBJECT",
+              "name": "IdentifiableUser",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -6741,16 +6786,16 @@
             "deprecationReason": null
           },
           {
-            "name": "user",
+            "name": "identifiableUser",
             "description": null,
             "args": [],
             "type": {
               "kind": "OBJECT",
-              "name": "User",
+              "name": "IdentifiableUser",
               "ofType": null
             },
-            "isDeprecated": true,
-            "deprecationReason": "This should be removed from here to avoid loops."
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "inputFields": null,

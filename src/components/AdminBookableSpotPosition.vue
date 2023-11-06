@@ -15,9 +15,7 @@ enum SpotActionEnum {
   changeMemberSpot,
   swapSpot
 }
-</script>
 
-<script setup lang="ts">
 interface Props {
   spotInfo: BookableSpot
   user: User | null
@@ -27,7 +25,9 @@ interface Props {
   spotAction?: SpotActionEnum
   spotSelectionIsDisabled?: boolean
 }
+</script>
 
+<script setup lang="ts">
 const props = withDefaults(defineProps<Props>(), {
   spotSelectionIsDisabled: false
 })

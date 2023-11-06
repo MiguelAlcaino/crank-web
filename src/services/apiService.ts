@@ -514,13 +514,17 @@ export class ApiService {
             id
             enrollmentStatus
             enrollmentDateTime
-            user {
-              __typename
-              firstName
-              lastName
-              email
-              leaderboardUsername
+            identifiableUser {
+              id
+              user {
+                __typename
+                firstName
+                lastName
+                email
+                leaderboardUsername
+              }
             }
+
             ... on EnrollmentInfo {
               isCheckedIn
               spotNumber
@@ -1252,9 +1256,12 @@ export class ApiService {
             id
             enrollmentStatus
             enrollmentDateTime
-            user {
-              firstName
-              lastName
+            identifiableUser {
+              id
+              user {
+                firstName
+                lastName
+              }
             }
           }
         }
@@ -1500,7 +1507,7 @@ export class ApiService {
       endDate: stgEndDate
     }
 
-    const queryResult = await this.anonymousApiClient.query({
+    const queryResult = await this.authApiClient.query({
       query: query,
       fetchPolicy: 'no-cache',
       variables: {
@@ -1510,5 +1517,52 @@ export class ApiService {
     })
 
     return queryResult.data.calendarClasses as Class[]
+  }
+
+  async getUser(id: string): Promise<IdentifiableUser> {
+    const query = gql`
+      query getUser($id: ID!) {
+        user(id: $id) {
+          id
+          user {
+            firstName
+            lastName
+            email
+            leaderboardUsername
+            weight
+            gender
+            birthdate
+            country {
+              code
+              name
+            }
+            state {
+              code
+              name
+            }
+            city
+            address1
+            address2
+            zipCode
+            phone
+            emergencyContactName
+            emergencyContactPhone
+            emergencyContactRelationship
+            hideMetrics
+            existsInSites
+          }
+        }
+      }
+    `
+
+    const queryResult = await this.authApiClient.query({
+      query: query,
+      fetchPolicy: 'no-cache',
+      variables: {
+        id: id
+      }
+    })
+
+    return queryResult.data.user as IdentifiableUser
   }
 }
