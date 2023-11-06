@@ -144,6 +144,7 @@ export type Class = {
   __typename: 'Class'
   bookingWindow: BookingWindow
   description: Scalars['String']
+  displayableStart: Scalars['DateTime']
   duration: Scalars['Int']
   id: Scalars['ID']
   instructorName: Scalars['String']
@@ -151,6 +152,7 @@ export type Class = {
   maxCapacity: Scalars['Int']
   name: Scalars['String']
   start: Scalars['DateTime']
+  /** Same as start but without timezone. If start is 2023-11-04T10:15:00+04:00 then this value will be 2023-11-04T10:15:00 */
   startWithNoTimeZone: Scalars['DateTimeWithoutTimeZone']
   totalBooked: Scalars['Int']
   totalUnderMaintenanceSpots: Scalars['Int']
@@ -300,20 +302,18 @@ export type EnrollmentInfo = EnrollmentInfoInterface & {
   enrollmentDateTime: Scalars['DateTime']
   enrollmentStatus: EnrollmentStatusEnum
   id: Scalars['ID']
+  identifiableUser?: Maybe<IdentifiableUser>
   isCheckedIn: Scalars['Boolean']
   /** @deprecated Use spotNumber instead. */
   spotInfo?: Maybe<SpotInfo>
   spotNumber?: Maybe<Scalars['Int']>
-  /** @deprecated This should be removed from here to avoid loops. */
-  user?: Maybe<User>
 }
 
 export type EnrollmentInfoInterface = {
   enrollmentDateTime: Scalars['DateTime']
   enrollmentStatus: EnrollmentStatusEnum
   id: Scalars['ID']
-  /** @deprecated This should be removed from here to avoid loops. */
-  user?: Maybe<User>
+  identifiableUser?: Maybe<IdentifiableUser>
 }
 
 export type EnrollmentNotFoundError = Error & {
@@ -614,6 +614,7 @@ export type Query = {
   currentUserRankingInClass?: Maybe<UserInClassRanking>
   /** Get current user's workout stats */
   currentUserWorkoutStats: Array<Maybe<ClassStat>>
+  /** Returns a specific room layout */
   roomLayout?: Maybe<RoomLayout>
   /** Returns a list of available RoomLayouts for a site */
   roomLayouts: Array<RoomLayout>
@@ -621,6 +622,8 @@ export type Query = {
   searchUser?: Maybe<Array<Maybe<IdentifiableUser>>>
   /** Settings of a site */
   siteSettings: SiteSetting
+  /** Returns a user */
+  user?: Maybe<IdentifiableUser>
 }
 
 export type QueryCalendarClassesArgs = {
@@ -671,6 +674,10 @@ export type QuerySearchUserArgs = {
 
 export type QuerySiteSettingsArgs = {
   site?: InputMaybe<SiteEnum>
+}
+
+export type QueryUserArgs = {
+  id: Scalars['ID']
 }
 
 export type RegisterUserInput = {
@@ -918,8 +925,7 @@ export type WaitlistEntry = EnrollmentInfoInterface & {
   enrollmentDateTime: Scalars['DateTime']
   enrollmentStatus: EnrollmentStatusEnum
   id: Scalars['ID']
-  /** @deprecated This should be removed from here to avoid loops. */
-  user?: Maybe<User>
+  identifiableUser?: Maybe<IdentifiableUser>
 }
 
 export type WaitlistEntryNotFoundError = Error & {
@@ -1254,12 +1260,16 @@ export type ClassInfoQuery = {
           enrollmentStatus: EnrollmentStatusEnum
           enrollmentDateTime: any
           spotInfo?: { __typename: 'SpotInfo'; isBooked: boolean; spotNumber: number } | null
-          user?: {
-            __typename: 'User'
-            firstName: string
-            lastName: string
-            email: string
-            leaderboardUsername?: string | null
+          identifiableUser?: {
+            __typename: 'IdentifiableUser'
+            id?: string | null
+            user?: {
+              __typename: 'User'
+              firstName: string
+              lastName: string
+              email: string
+              leaderboardUsername?: string | null
+            } | null
           } | null
         }
       | {
@@ -1267,12 +1277,16 @@ export type ClassInfoQuery = {
           id: string
           enrollmentStatus: EnrollmentStatusEnum
           enrollmentDateTime: any
-          user?: {
-            __typename: 'User'
-            firstName: string
-            lastName: string
-            email: string
-            leaderboardUsername?: string | null
+          identifiableUser?: {
+            __typename: 'IdentifiableUser'
+            id?: string | null
+            user?: {
+              __typename: 'User'
+              firstName: string
+              lastName: string
+              email: string
+              leaderboardUsername?: string | null
+            } | null
           } | null
         }
     >
@@ -1569,14 +1583,22 @@ export type ClassWaitlistEntriesQuery = {
           id: string
           enrollmentStatus: EnrollmentStatusEnum
           enrollmentDateTime: any
-          user?: { __typename: 'User'; firstName: string; lastName: string } | null
+          identifiableUser?: {
+            __typename: 'IdentifiableUser'
+            id?: string | null
+            user?: { __typename: 'User'; firstName: string; lastName: string } | null
+          } | null
         }
       | {
           __typename: 'WaitlistEntry'
           id: string
           enrollmentStatus: EnrollmentStatusEnum
           enrollmentDateTime: any
-          user?: { __typename: 'User'; firstName: string; lastName: string } | null
+          identifiableUser?: {
+            __typename: 'IdentifiableUser'
+            id?: string | null
+            user?: { __typename: 'User'; firstName: string; lastName: string } | null
+          } | null
         }
     >
   } | null
@@ -1670,6 +1692,40 @@ export type GetCalendarClassesForListQuery = {
     totalBooked: number
     totalUnderMaintenanceSpots: number
   }>
+}
+
+export type GetUserQueryVariables = Exact<{
+  id: Scalars['ID']
+}>
+
+export type GetUserQuery = {
+  __typename: 'Query'
+  user?: {
+    __typename: 'IdentifiableUser'
+    id?: string | null
+    user?: {
+      __typename: 'User'
+      firstName: string
+      lastName: string
+      email: string
+      leaderboardUsername?: string | null
+      weight?: number | null
+      gender?: GenderEnum | null
+      birthdate?: any | null
+      city: string
+      address1: string
+      address2?: string | null
+      zipCode: string
+      phone: string
+      emergencyContactName: string
+      emergencyContactPhone: string
+      emergencyContactRelationship?: string | null
+      hideMetrics?: boolean | null
+      existsInSites: Array<SiteEnum>
+      country: { __typename: 'Country'; code: string; name: string }
+      state?: { __typename: 'State'; code: string; name: string } | null
+    } | null
+  } | null
 }
 
 export const SiteSettingsDocument = {
@@ -2575,15 +2631,28 @@ export const ClassInfoDocument = {
                       { kind: 'Field', name: { kind: 'Name', value: 'enrollmentDateTime' } },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'user' },
+                        name: { kind: 'Name', value: 'identifiableUser' },
                         selectionSet: {
                           kind: 'SelectionSet',
                           selections: [
-                            { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'firstName' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'lastName' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'email' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'leaderboardUsername' } }
+                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'user' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'firstName' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'lastName' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'email' } },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'leaderboardUsername' }
+                                  }
+                                ]
+                              }
+                            }
                           ]
                         }
                       },
@@ -3966,12 +4035,22 @@ export const ClassWaitlistEntriesDocument = {
                       { kind: 'Field', name: { kind: 'Name', value: 'enrollmentDateTime' } },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'user' },
+                        name: { kind: 'Name', value: 'identifiableUser' },
                         selectionSet: {
                           kind: 'SelectionSet',
                           selections: [
-                            { kind: 'Field', name: { kind: 'Name', value: 'firstName' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'lastName' } }
+                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'user' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: 'firstName' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'lastName' } }
+                                ]
+                              }
+                            }
                           ]
                         }
                       }
@@ -4468,3 +4547,96 @@ export const GetCalendarClassesForListDocument = {
   GetCalendarClassesForListQuery,
   GetCalendarClassesForListQueryVariables
 >
+export const GetUserDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'getUser' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'user' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'id' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'user' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'firstName' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'lastName' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'email' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'leaderboardUsername' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'weight' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'gender' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'birthdate' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'country' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'name' } }
+                          ]
+                        }
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'state' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'name' } }
+                          ]
+                        }
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'address1' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'address2' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'zipCode' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'phone' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'emergencyContactName' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'emergencyContactPhone' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'emergencyContactRelationship' }
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'hideMetrics' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'existsInSites' } }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<GetUserQuery, GetUserQueryVariables>

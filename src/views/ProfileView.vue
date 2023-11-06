@@ -195,7 +195,6 @@ const submitForm = async () => {
       errorModalIsVisible.value = true
     }
   } else {
-    console.log(formData)
     console.error('error form')
   }
 }
@@ -668,5 +667,9 @@ function onChangeCountry() {
 .custom-control-input-green:not(:disabled):active ~ .custom-control-label::before {
   background-color: #ff6f60 !important;
   border-color: #ff6f60 !important;
+}
+
+h3 {
+  color: #737373;
 }
 </style>
