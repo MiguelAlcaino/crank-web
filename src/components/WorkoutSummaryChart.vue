@@ -88,8 +88,13 @@ function updateChart(chartPoints?: ChartPoint[]) {
 </script>
 
 <template>
-  <div></div>
-  <apexchart type="line" :options="chartOptions" :series="series"></apexchart>
+  <apexchart
+    type="line"
+    :options="chartOptions"
+    :series="series"
+    width="100%"
+    height="600"
+  ></apexchart>
 </template>
 
 <style scoped></style>

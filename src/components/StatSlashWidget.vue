@@ -45,7 +45,7 @@ defineProps<{
 <style scoped>
 p {
   font-family: 'BigJohn', sans-serif;
-  font-size: large;
+  font-size: x-large;
 }
 h4 {
   color: #737373;

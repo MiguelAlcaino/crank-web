@@ -114,7 +114,7 @@ const router = createRouter({
     {
       path: '/admin/calendar-class',
       name: 'admin_calendar_class',
-      component: () => import('../views/admin/AdminClassView.vue')   
+      component: () => import('../views/admin/AdminClassView.vue')
     },
     {
       path: '/admin/room-layout/list',
