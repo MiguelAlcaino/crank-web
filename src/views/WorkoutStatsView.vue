@@ -1,28 +1,23 @@
 <script lang="ts">
-interface ChartPoint {
-  power?: number
-  rpm?: number
-  time?: number
+interface ClassStat {
+  enrollment: Enrollment
+  totalEnergy?: number
 }
 
-interface ClassStat {
-  adjustedChartPoints: Array<ChartPoint>
-  averagePower?: number
-  averageRpm?: number
-  calories?: number
-  chartPoints: Array<ChartPoint>
-  classId: string
-  className?: string
-  distance?: number
-  distanceUnit?: string
-  /** Class duration in minutes */
-  duration?: number
-  highPower?: number
-  highRpm?: number
-  instructorName?: string
+interface Enrollment {
+  class: Class
+  enrollmentInfo: EnrollmentInfo
+}
+
+interface Class {
+  duration: number
+  name: string
+  start: Date
+}
+
+interface EnrollmentInfo {
+  id: string
   spotNumber?: number
-  startDateTime: Date
-  totalEnergy?: number
 }
 </script>
 
@@ -31,10 +26,14 @@ import { inject, onMounted, ref } from 'vue'
 import dayjs from 'dayjs'
 import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
+import router from '@/router'
+import { ERROR_UNKNOWN } from '@/utils/errorMessages'
+import ModalComponent from '@/components/ModalComponent.vue'
 
 const apiService = inject<ApiService>('gqlApiService')!
 
 const isLoading = ref<boolean>(false)
+const errorModalIsVisible = ref<boolean>(false)
 const classStats = ref<ClassStat[]>([])
 
 onMounted(() => {
@@ -44,11 +43,14 @@ onMounted(() => {
 async function getCurrentUserWorkoutStats() {
   classStats.value = []
 
-  isLoading.value = true
-
-  classStats.value = (await apiService.getCurrentUserWorkoutStats(appStore().site)) as ClassStat[]
-
-  isLoading.value = false
+  try {
+    isLoading.value = true
+    classStats.value = (await apiService.getCurrentUserWorkoutStats(appStore().site)) as ClassStat[]
+  } catch (error) {
+    errorModalIsVisible.value = true
+  } finally {
+    isLoading.value = false
+  }
 }
 </script>
 
@@ -73,14 +75,18 @@ async function getCurrentUserWorkoutStats() {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item, index) in classStats" :key="index">
-              <td>{{ item.className }}</td>
-              <td class="text-center">{{ item.spotNumber }}</td>
+            <tr
+              v-for="(item, index) in classStats"
+              :key="index"
+              @click="router.push('workout-summary/' + item.enrollment.enrollmentInfo.id)"
+            >
+              <td>{{ item.enrollment.class.name }}</td>
+              <td class="text-center">{{ item.enrollment.enrollmentInfo.spotNumber }}</td>
               <td class="text-center">
-                {{ dayjs(new Date(item.startDateTime)).format('DD/MM/YYYY h:mm A') }}
+                {{ dayjs(new Date(item.enrollment.class.start)).format('DD/MM/YYYY h:mm A') }}
               </td>
-              <td class="text-center">{{ item.duration }} mins.</td>
-              <td class="text-center">{{ item.totalEnergy }}</td>
+              <td class="text-center">{{ item.enrollment.class.duration }} mins.</td>
+              <td class="text-center">{{ item.totalEnergy?.toFixed(1) ?? '0' }}</td>
               <td class="text-center"></td>
             </tr>
             <tr v-if="classStats?.length === 0 && !isLoading">
@@ -96,4 +102,23 @@ async function getCurrentUserWorkoutStats() {
       </div>
     </div>
   </div>
+
+  <!-- Error Modal -->
+  <ModalComponent
+    v-if="errorModalIsVisible"
+    title="Error"
+    :message="ERROR_UNKNOWN"
+    :cancel-text="null"
+    @on-ok="errorModalIsVisible = false"
+  >
+  </ModalComponent>
 </template>
+
+<style scoped>
+tr {
+  cursor: pointer;
+}
+tr:hover {
+  background-color: #dadada !important;
+}
+</style>

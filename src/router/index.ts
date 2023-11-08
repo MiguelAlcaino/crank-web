@@ -12,7 +12,7 @@ import ForgotPasswordView from '../views/ForgotPasswordView.vue'
 import ChangeSpotView from '../views/ChangeSpotView.vue'
 import ResetPasswordView from '../views/ResetPasswordView.vue'
 import WorkoutStatsView from '../views/WorkoutStatsView.vue'
-
+import WorkoutSummaryView from '../views/WorkoutSummaryView.vue'
 import { authService } from '@/services/authService'
 import RoomLayoutListView from '@/views/admin/RoomLayoutListView.vue'
 import MenuLayout from '@/layouts/MenuLayout.vue'
@@ -44,6 +44,11 @@ const router = createRouter({
           path: '/workout-stats',
           name: 'workout_stats',
           component: WorkoutStatsView
+        },
+        {
+          path: '/workout-summary/:id',
+          name: 'workout_summary',
+          component: WorkoutSummaryView
         },
         {
           path: '/change-password',
@@ -109,7 +114,7 @@ const router = createRouter({
     {
       path: '/admin/calendar-class',
       name: 'admin_calendar_class',
-      component: () => import('../views/admin/AdminClassView.vue')   
+      component: () => import('../views/admin/AdminClassView.vue')
     },
     {
       path: '/admin/room-layout/list',
