@@ -126,14 +126,14 @@ async function currentUserSingleWorkoutStat() {
     <div class="col-sm-6">
       <StatIconWidget
         icon="calories"
-        :value="(classStat?.calories!.toFixed(1) ?? '0')"
+        :value="(classStat?.calories?.toFixed(1) ?? '0')"
         title="CALORIES"
       ></StatIconWidget>
     </div>
     <div class="col-sm-6">
       <StatIconWidget
         icon="total_energy"
-        :value="(classStat?.totalEnergy!.toFixed(1) ?? '0')"
+        :value="(classStat?.totalEnergy?.toFixed(1) ?? '0')"
         title="TOTAL ENERGY"
       ></StatIconWidget>
     </div>

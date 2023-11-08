@@ -86,7 +86,7 @@ async function getCurrentUserWorkoutStats() {
                 {{ dayjs(new Date(item.enrollment.class.start)).format('DD/MM/YYYY h:mm A') }}
               </td>
               <td class="text-center">{{ item.enrollment.class.duration }} mins.</td>
-              <td class="text-center">{{ item.totalEnergy }}</td>
+              <td class="text-center">{{ item.totalEnergy?.toFixed(1) ?? '0' }}</td>
               <td class="text-center"></td>
             </tr>
             <tr v-if="classStats?.length === 0 && !isLoading">
