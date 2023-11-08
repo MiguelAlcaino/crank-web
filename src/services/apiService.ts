@@ -128,22 +128,48 @@ export class ApiService {
     }
   }
 
-  async getCurrentUserWorkoutStats(site: SiteEnum): Promise<ClassStat[] | null> {
-    const CURRENT_USER_WORKOUT_STATS_QUERY = gql`
+  async getCurrentUserWorkoutStats(site: SiteEnum): Promise<ClassStat[]> {
+    const query = gql`
       query currentUserWorkoutStats($site: SiteEnum!) {
         currentUserWorkoutStats(site: $site) {
-          classId
-          className
-          startDateTime
-          spotNumber
-          averagePower
-          highPower
+          enrollment {
+            enrollmentInfo {
+              id
+              ... on EnrollmentInfo {
+                spotNumber
+              }
+            }
+            class {
+              name
+              start
+              duration
+            }
+          }
+          totalEnergy
+        }
+      }
+    `
+
+    const queryResult = await this.authApiClient.query({
+      query: query,
+      variables: {
+        site: site
+      }
+    })
+
+    return queryResult.data.currentUserWorkoutStats as ClassStat[]
+  }
+
+  async currentUserSingleWorkoutStat(enrollmentId: string): Promise<ClassStat> {
+    const query = gql`
+      query currentUserSingleWorkoutStat($enrollmentId: ID!) {
+        currentUserSingleWorkoutStat(enrollmentId: $enrollmentId) {
           averageRpm
           highRpm
           totalEnergy
           calories
           distance
-          duration
+
           adjustedChartPoints(amountOfPoints: 62) {
             time
             rpm
@@ -152,18 +178,15 @@ export class ApiService {
         }
       }
     `
-    try {
-      const queryResult = await this.authApiClient.query({
-        query: CURRENT_USER_WORKOUT_STATS_QUERY,
-        variables: {
-          site: site
-        }
-      })
 
-      return queryResult.data.currentUserWorkoutStats as ClassStat[]
-    } catch (error) {
-      return null
-    }
+    const queryResult = await this.authApiClient.query({
+      query: query,
+      variables: {
+        enrollmentId: enrollmentId
+      }
+    })
+
+    return queryResult.data.currentUserSingleWorkoutStat as ClassStat
   }
 
   async getCurrentUserEnrollments(
