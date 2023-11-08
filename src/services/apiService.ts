@@ -164,12 +164,28 @@ export class ApiService {
     const query = gql`
       query currentUserSingleWorkoutStat($enrollmentId: ID!) {
         currentUserSingleWorkoutStat(enrollmentId: $enrollmentId) {
+          enrollment {
+            enrollmentInfo {
+              id
+              ... on EnrollmentInfo {
+                spotNumber
+              }
+            }
+            class {
+              id
+              name
+              start
+              duration
+              instructorName
+            }
+          }
+          averagePower
+          highPower
           averageRpm
           highRpm
           totalEnergy
           calories
           distance
-
           adjustedChartPoints(amountOfPoints: 62) {
             time
             rpm

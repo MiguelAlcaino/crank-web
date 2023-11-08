@@ -13,8 +13,12 @@ interface ClassStat {
 
 interface Enrollment {
   class: Class
+  enrollmentInfo: EnrollmentInfo
+}
+
+interface EnrollmentInfo {
+  id?: string
   spotNumber?: number
-  //enrollmentInfo: EnrollmentInfoInterface;
 }
 
 interface Class {
@@ -136,7 +140,7 @@ async function currentUserSingleWorkoutStat() {
     <div class="col-sm-6">
       <SpotIconWidget
         :class-name="classStat?.enrollment.class.name"
-        :spot-number="classStat?.enrollment.spotNumber"
+        :spot-number="classStat?.enrollment.enrollmentInfo.spotNumber"
       ></SpotIconWidget>
     </div>
     <div class="col-sm-6">
