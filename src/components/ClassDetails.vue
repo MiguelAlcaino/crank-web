@@ -220,7 +220,7 @@ async function getClassInfo() {
   selectedSpot.value = {}
 
   isLoading.value = true
-  classInfo.value = (await apiService.getClassInfo(appStore().site, props.classId)) as ClassInfo
+  classInfo.value = (await apiService.getClassInfoAdmin(appStore().site, props.classId)) as ClassInfo
   isLoading.value = false
 
   totalSignedIn.value =
