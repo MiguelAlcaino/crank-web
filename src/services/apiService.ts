@@ -427,6 +427,10 @@ export class ApiService {
           duration
           waitListAvailable
           isSubstitute
+          bookingWindow {
+            startDateTime
+            endDateTime
+          }
         }
         enrollmentsWaitlist: currentUserEnrollments(
           site: $site
