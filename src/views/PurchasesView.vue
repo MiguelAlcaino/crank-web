@@ -17,6 +17,7 @@ import { appStore } from '@/stores/appStorage'
 
 const apiService = inject<ApiService>('gqlApiService')!
 
+const siteDateTimeNow = ref<Date>(new Date())
 const isLoading = ref<boolean>(false)
 const purchases = ref<Purchase[]>([])
 
@@ -29,9 +30,23 @@ async function getCurrentUserPurchases() {
 
   isLoading.value = true
 
+  await getSiteDateTimeNow()
+
   purchases.value = (await apiService.getCurrentUserPurchases(appStore().site)) as Purchase[]
 
+  purchases.value = purchases.value
+    .slice()
+    .sort((a, b) => (a.paymentDateTime > b.paymentDateTime ? -1 : 1))
+
   isLoading.value = false
+}
+
+async function getSiteDateTimeNow() {
+  siteDateTimeNow.value = new Date()
+
+  const siteSetting = await apiService.getSiteSettings(appStore().site)
+
+  if (siteSetting) siteDateTimeNow.value = new Date(siteSetting.siteDateTimeNow)
 }
 </script>
 
@@ -53,10 +68,19 @@ async function getCurrentUserPurchases() {
               <th>PURCHASED ON</th>
               <th>ACTIVATED ON</th>
               <th>EXPIRY DATE</th>
+              <th>STATUS</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item, index) in purchases" :key="index">
+            <tr
+              v-for="(item, index) in purchases"
+              :key="index"
+              :class="{
+                isDisabled:
+                  dayjs(new Date(item.expirationDateTime)).isBefore(siteDateTimeNow) ||
+                  item.allowanceRemaining === 0
+              }"
+            >
               <td class="align-middle">
                 <div class="row">
                   <div class="col-1" style="text-align: right">
@@ -78,14 +102,21 @@ async function getCurrentUserPurchases() {
               <td class="text-center align-middle">
                 {{ dayjs(new Date(item.expirationDateTime)).format('DD/MM/YYYY') }}
               </td>
+              <td class="text-center align-middle">
+                <span v-if="dayjs(new Date(item.expirationDateTime)).isBefore(siteDateTimeNow)">
+                  EXPIRED
+                </span>
+                <span v-else-if="item.allowanceRemaining === 0"> FULLY CONSUMED </span>
+                <span v-else> ACTIVE </span>
+              </td>
             </tr>
             <tr v-if="purchases?.length === 0 && !isLoading">
-              <td colspan="6">
+              <td colspan="7">
                 <p>No data available in table</p>
               </td>
             </tr>
-            <tr v-if="isLoading">
-              <td colspan="6">loading...</td>
+            <tr v-if="isLoading" class="text-center align-middle">
+              <td colspan="7">LOADING...</td>
             </tr>
           </tbody>
         </table>
@@ -93,3 +124,9 @@ async function getCurrentUserPurchases() {
     </div>
   </div>
 </template>
+
+<style scoped>
+.isDisabled {
+  background-color: rgb(214, 214, 214);
+}
+</style>
