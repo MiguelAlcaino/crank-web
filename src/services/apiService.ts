@@ -562,7 +562,7 @@ export class ApiService {
                 spotNumber
               }
             }
-          }          
+          }
         }
       }
     `
