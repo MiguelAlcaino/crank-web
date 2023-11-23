@@ -378,7 +378,7 @@ function calendarCardIsDisabled(dataClass?: Class): boolean {
           </thead>
           <tbody>
             <tr v-for="(colRow, key) in calendarDays" :key="key">
-              <td style="border-left: 0px !important">
+              <td style="border-left: 0px !important; min-width: 110px">
                 <CalendarCard
                   :classInfo="colRow.MON"
                   :isEnrolled="
@@ -387,7 +387,7 @@ function calendarCardIsDisabled(dataClass?: Class): boolean {
                   :disabled="calendarCardIsDisabled(colRow.MON)"
                 ></CalendarCard>
               </td>
-              <td>
+              <td style="min-width: 110px">
                 <CalendarCard
                   :classInfo="colRow.TUE"
                   :isEnrolled="
@@ -396,7 +396,7 @@ function calendarCardIsDisabled(dataClass?: Class): boolean {
                   :disabled="calendarCardIsDisabled(colRow.TUE)"
                 ></CalendarCard>
               </td>
-              <td>
+              <td style="min-width: 110px">
                 <CalendarCard
                   :classInfo="colRow.WED"
                   :isEnrolled="
@@ -405,7 +405,7 @@ function calendarCardIsDisabled(dataClass?: Class): boolean {
                   :disabled="calendarCardIsDisabled(colRow.WED)"
                 ></CalendarCard>
               </td>
-              <td>
+              <td style="min-width: 110px">
                 <CalendarCard
                   :classInfo="colRow.THU"
                   :isEnrolled="
@@ -415,7 +415,7 @@ function calendarCardIsDisabled(dataClass?: Class): boolean {
                   >></CalendarCard
                 >
               </td>
-              <td>
+              <td style="min-width: 110px">
                 <CalendarCard
                   :classInfo="colRow.FRI"
                   :isEnrolled="
@@ -424,7 +424,7 @@ function calendarCardIsDisabled(dataClass?: Class): boolean {
                   :disabled="calendarCardIsDisabled(colRow.FRI)"
                 ></CalendarCard>
               </td>
-              <td>
+              <td style="min-width: 110px">
                 <CalendarCard
                   :classInfo="colRow.SAT"
                   :isEnrolled="
@@ -433,7 +433,7 @@ function calendarCardIsDisabled(dataClass?: Class): boolean {
                   :disabled="calendarCardIsDisabled(colRow.SAT)"
                 ></CalendarCard>
               </td>
-              <td>
+              <td style="min-width: 110px">
                 <CalendarCard
                   :classInfo="colRow.SUN"
                   :isEnrolled="
