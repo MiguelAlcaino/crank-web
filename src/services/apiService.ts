@@ -275,7 +275,7 @@ export class ApiService {
       const queryResult = await this.authApiClient.query({
         query: CURRENT_USER_ENROLLMENT_IN_CLASS_QUERY,
         variables: { classId: classId },
-        fetchPolicy: 'network-only'
+        fetchPolicy: 'no-cache'
       })
 
       if (queryResult.data.currentUser.enrollmentInClass) {
