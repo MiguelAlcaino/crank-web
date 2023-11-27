@@ -150,6 +150,7 @@ watch(
 const apiService = inject<ApiService>('gqlApiService')!
 const isLoading = ref<boolean>(false)
 const classInfo = ref<ClassInfo | null>(null)
+const enrollments = ref<EnrollmentInfo[]>([])
 
 const isEnablingDisablingSpot = ref<boolean>(false)
 const changingMemberSpot = ref<boolean>(false)
@@ -224,6 +225,14 @@ async function getClassInfo() {
     appStore().site,
     props.classId
   )) as ClassInfo
+
+  enrollments.value =
+    classInfo.value?.enrollments.filter(
+      (x) =>
+        x.enrollmentStatus !== EnrollmentStatusEnum.Cancelled &&
+        x.enrollmentStatus !== EnrollmentStatusEnum.LateCancelled
+    ) ?? []
+
   isLoading.value = false
 
   totalSignedIn.value =
@@ -514,7 +523,7 @@ function afterEnrollingUser() {
         :show-user-in-spots="true"
         :selectedSpotNumber="selectedSpot?.spotNumber"
         @click-spot="spotClicked"
-        :enrollments="classInfo.enrollments"
+        :enrollments="enrollments"
         :spot-action="spotAction"
         :spot-selection-is-disabled="!userCanModifyClass"
       >
@@ -540,7 +549,7 @@ function afterEnrollingUser() {
       <!-- List enrollments -->
       <AdminBookedUsersList
         v-if="classInfo !== null && classInfo.roomLayout === null && classInfo.enrollments !== null"
-        :enrollments="classInfo.enrollments"
+        :enrollments="enrollments"
         :isLoading="false"
         @after-cancel-member-reservation="getClassInfo()"
         :show-edit-options="userCanModifyClass"
