@@ -35,28 +35,43 @@ const spotNumber = ref<number | null>(null)
 const isWaitlistBooking = ref<boolean | null>(null)
 
 const isLoading = ref<boolean>(false)
-const showSuccessModal = ref<boolean>(false)
-const showErrorModal = ref<boolean>(false)
-const showModal = ref<boolean>(false)
 const classInfo = ref<ClassInfo | null>(null)
 
 const enrollmentEnabled = ref<boolean>(true)
 const enrollmentInfo = ref<EnrollmentInfo | null>(null)
 
-const confirmModalData = ref<{ title: string; message: string; isLoading: boolean }>({
+const confirmModalData = ref<{
+  title: string
+  message: string
+  isLoading: boolean
+  isVisible: boolean
+}>({
   title: '',
   message: '',
-  isLoading: false
+  isLoading: false,
+  isVisible: false
 })
-const errorModalData = ref<{ title: string; message: string; isLoading: boolean }>({
+const errorModalData = ref<{
+  title: string
+  message: string
+  isLoading: boolean
+  isVisible: boolean
+}>({
   title: '',
   message: '',
-  isLoading: false
+  isLoading: false,
+  isVisible: false
 })
-const successModalData = ref<{ title: string; message: string; isLoading: boolean }>({
+const successModalData = ref<{
+  title: string
+  message: string
+  isLoading: boolean
+  isVisible: boolean
+}>({
   title: '',
   message: '',
-  isLoading: false
+  isLoading: false,
+  isVisible: false
 })
 
 const paymentErrorModal = ref<boolean>(false)
@@ -108,7 +123,7 @@ function confirmBookSpot(event: SpotClickedEvent): void {
   confirmModalData.value.title = 'BOOK YOUR SPOT'
   confirmModalData.value.message = 'WOULD YOU LIKE TO BOOK SPOT ' + event.spotNumber + '?'
 
-  showModal.value = true
+  confirmModalData.value.isVisible = true
 }
 
 function clickBookWaitList(): void {
@@ -119,7 +134,7 @@ function clickBookWaitList(): void {
   confirmModalData.value.title = 'WAITLIST'
   confirmModalData.value.message = 'WOULD YOU LIKE TO ENROLL ON THE WAITLIST?'
 
-  showModal.value = true
+  confirmModalData.value.isVisible = true
 }
 
 function confirmBookClass(): void {
@@ -130,11 +145,11 @@ function confirmBookClass(): void {
   confirmModalData.value.title = 'BOOK THIS CLASS'
   confirmModalData.value.message = 'WOULD YOU LIKE TO BOOK THIS CLASS?'
 
-  showModal.value = true
+  confirmModalData.value.isVisible = true
 }
 
 function acceptSuccessModal() {
-  showSuccessModal.value = false
+  successModalData.value.isVisible = false
   router.replace({ name: 'calendar' })
 }
 
@@ -155,58 +170,58 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
   })
 
   confirmModalData.value.isLoading = false
-  showModal.value = false
+  confirmModalData.value.isVisible = false
 
   if (response === 'BookClassSuccess') {
     successModalData.value.title = 'SUCCESS'
     successModalData.value.message = SUCCESS_BOOK_CLASS
-    showSuccessModal.value = true
+    successModalData.value.isVisible = true
   } else if (response === 'AddedToWaitlistSuccess') {
     successModalData.value.title = 'SUCCESS'
     successModalData.value.message = SUCCESS_ADDED_TO_WAITLIST
-    showSuccessModal.value = true
+    successModalData.value.isVisible = true
   } else {
     if (response === 'PaymentRequiredError') {
       paymentErrorModal.value = true
     } else if (response === 'ClientIsAlreadyBookedError') {
       errorModalData.value.message = ERROR_CLIENT_IS_ALREADY_BOOKED
-      showErrorModal.value = true
+      errorModalData.value.isVisible = true
       enrollmentEnabled.value = false
       getClassInfo()
     } else if (response === 'ClientIsAlreadyOnWaitlistError') {
       errorModalData.value.message = ERROR_CLIENT_IS_ALREADY__ON_WAITLIST
-      showErrorModal.value = true
+      errorModalData.value.isVisible = true
       enrollmentEnabled.value = false
       getClassInfo()
     } else if (response === 'WaitlistFullError') {
       errorModalData.value.message = ERROR_WAITLIST_FULL_ERROR
-      showErrorModal.value = true
+      errorModalData.value.isVisible = true
       enrollmentEnabled.value = false
       getClassInfo()
     } else if (response === 'ClientIsOutsideSchedulingWindowError') {
       errorModalData.value.message = ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW
-      showErrorModal.value = true
+      errorModalData.value.isVisible = true
       enrollmentEnabled.value = false
     } else if (response === 'SpotAlreadyReservedError') {
       errorModalData.value.message = ERROR_SPOT_ALREADY_RESERVED
-      showErrorModal.value = true
+      errorModalData.value.isVisible = true
       getClassInfo()
     } else if (response === 'BookedButInOtherSpotError') {
       //TODO: BookedButInOtherSpotError action
       errorModalData.value.message = 'BOOKED BUT IN OTHER SPOT ERROR.'
-      showErrorModal.value = true
+      errorModalData.value.isVisible = true
       getClassInfo()
     } else if (response === 'ClassIsFullError') {
       errorModalData.value.message = ERROR_CLASS_IS_FULL
-      showErrorModal.value = true
+      errorModalData.value.isVisible = true
       enrollmentEnabled.value = false
       getClassInfo()
     } else if (response === 'UnknownError') {
       errorModalData.value.message = ERROR_UNKNOWN
-      showErrorModal.value = true
+      errorModalData.value.isVisible = true
     } else {
       errorModalData.value.message = ERROR_UNKNOWN
-      showErrorModal.value = true
+      errorModalData.value.isVisible = true
     }
   }
 }
@@ -294,12 +309,13 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
     </div>
   </div>
 
+  <!-- Confirm Modal -->
   <ModalComponent
-    v-if="showModal"
+    v-if="confirmModalData.isVisible"
     :title="confirmModalData.title"
     :message="confirmModalData.message"
     :ok-loading="confirmModalData.isLoading"
-    @on-cancel="showModal = false"
+    @on-cancel="confirmModalData.isVisible = false"
     @on-ok="bookClass(classId, spotNumber, isWaitlistBooking!)"
     :closable="false"
   >
@@ -312,7 +328,7 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
     :closable="false"
     @on-ok="acceptSuccessModal"
     :cancel-text="null"
-    v-if="showSuccessModal"
+    v-if="successModalData.isVisible"
   >
   </ModalComponent>
 
@@ -322,8 +338,8 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
     :message="errorModalData.message"
     title="ERROR"
     :closable="false"
-    v-if="showErrorModal"
-    @on-ok="showErrorModal = false"
+    v-if="errorModalData.isVisible"
+    @on-ok="errorModalData.isVisible = false"
   ></ModalComponent>
 
   <!-- Error Payment Modal -->
