@@ -12,6 +12,7 @@ import ReserveSpotButton from '@/components/ReserveSpotButton.vue'
 import SpotMatrix from '@/components/SpotMatrix.vue'
 import WaitlistButton from '@/components/WaitlistButton.vue'
 import YouAreAlreadyEnrolled from '@/components/YouAreAlreadyEnrolled.vue'
+import CancelEnrollment from '@/components/CancelEnrollment.vue'
 
 import router from '@/router'
 import type { ApiService } from '@/services/apiService'
@@ -288,7 +289,7 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
               classInfo !== null &&
               classInfo.roomLayout?.matrix !== null &&
               (!classInfo.class.waitListAvailable || enrollmentInfo !== null) &&
-              enrollmentInfo?.enrollmentStatus !== 'waitlisted'
+              enrollmentInfo?.enrollmentStatus !== EnrollmentStatusEnum.Waitlisted
             "
             :matrix="classInfo.roomLayout?.matrix"
             @click-spot="confirmBookSpot"
@@ -298,12 +299,29 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
             v-if="
               classInfo !== null &&
               classInfo.roomLayout === null &&
-              !classInfo.class.waitListAvailable
+              !classInfo.class.waitListAvailable &&           
+              enrollmentInfo?.enrollmentStatus !== EnrollmentStatusEnum.Waitlisted &&
+              enrollmentInfo?.enrollmentStatus !== EnrollmentStatusEnum.Active
             "
             @click-book-class="confirmBookClass"
             :enrollmentEnabled="enrollmentEnabled"
           >
-          </ReserveSpotButton>
+          </ReserveSpotButton>        
+        </div>
+      </div>
+
+      <div class="row justify-content-center">
+        <div class="col-4">
+          <CancelEnrollment
+            v-if="
+              enrollmentInfo?.enrollmentStatus &&
+              (enrollmentInfo.enrollmentStatus === EnrollmentStatusEnum.Waitlisted ||
+                enrollmentInfo.enrollmentStatus === EnrollmentStatusEnum.Active)
+            "
+            :enrollment-status="enrollmentInfo?.enrollmentStatus"
+            :enrollment-id="enrollmentInfo.id"
+            @after-cancelling="acceptSuccessModal()"
+          ></CancelEnrollment>
         </div>
       </div>
     </div>
