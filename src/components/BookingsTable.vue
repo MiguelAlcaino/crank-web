@@ -42,9 +42,8 @@ enum EnrollmentStatusEnum {
 <script setup lang="ts">
 import dayjs from 'dayjs'
 
-import CancelEnrollmentButton from '@/components/CancelEnrollmentButton.vue'
-import RemoveFromWaitlistButton from '@/components/RemoveFromWaitlistButton.vue'
 import ClassIcon from '@/components/ClassIcon.vue'
+import CancelEnrollment from '@/components/CancelEnrollment.vue'
 
 defineProps<{
   enrollments: Enrollment[]
@@ -56,17 +55,8 @@ defineProps<{
 
 const emits = defineEmits<{
   (e: 'changeSpot', classId: string): void
-  (e: 'clickCancelEnrollment', enrollmentId: string, isLateCancel: boolean): void
-  (e: 'clickRemoveFromWaitlist', waitlistEntryId: string): void
+  (e: 'afterCancelling'): void
 }>()
-
-function clickCancelEnrollment(enrollmentId: string, isLateCancel: boolean): void {
-  emits('clickCancelEnrollment', enrollmentId, isLateCancel)
-}
-
-function clickRemoveFromWaitlist(waitlistEntryId: string): void {
-  emits('clickRemoveFromWaitlist', waitlistEntryId)
-}
 </script>
 
 <template>
@@ -157,31 +147,16 @@ function clickRemoveFromWaitlist(waitlistEntryId: string): void {
                 : enrollment.enrollmentInfo.enrollmentStatus.toUpperCase()
             }}
           </td>
-          <td
-            class="text-center align-middle"
-            v-if="enrollmentType !== EnrollmentTypeEnum.Historical"
-          >
-            <CancelEnrollmentButton
+          <td class="align-middle" v-if="enrollmentType !== EnrollmentTypeEnum.Historical">
+            <CancelEnrollment
               v-if="
-                enrollmentType === EnrollmentTypeEnum.Upcoming &&
-                enrollment.enrollmentInfo.enrollmentStatus === 'active'
+                enrollmentType === EnrollmentTypeEnum.Upcoming ||
+                enrollmentType === EnrollmentTypeEnum.Waitlist
               "
-              :disabled="isLoading"
-              :siteDateTimeNow="siteDateTimeNow"
-              :enrollmentStatus="enrollment.enrollmentInfo.enrollmentStatus"
-              :startOfClass="new Date(enrollment.class.start)"
-              :enrollmentId="enrollment.enrollmentInfo.id"
-              @clickCancelEnrollment="clickCancelEnrollment"
-            >
-            </CancelEnrollmentButton>
-            <RemoveFromWaitlistButton
-              v-if="enrollmentType === EnrollmentTypeEnum.Waitlist"
-              :disabled="false"
-              :enrollmentId="enrollment.enrollmentInfo.id"
-              @clickRemoveFromWaitlist="clickRemoveFromWaitlist"
-              class="ml-1"
-            >
-            </RemoveFromWaitlistButton>
+              :enrollment-status="enrollment.enrollmentInfo.enrollmentStatus"
+              :enrollment-id="enrollment.enrollmentInfo.id"
+              @after-cancelling="emits('afterCancelling')"
+            ></CancelEnrollment>
           </td>
         </tr>
         <tr v-if="enrollments.length === 0 && !isLoading">
