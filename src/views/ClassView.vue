@@ -299,14 +299,14 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
             v-if="
               classInfo !== null &&
               classInfo.roomLayout === null &&
-              !classInfo.class.waitListAvailable &&           
+              !classInfo.class.waitListAvailable &&
               enrollmentInfo?.enrollmentStatus !== EnrollmentStatusEnum.Waitlisted &&
               enrollmentInfo?.enrollmentStatus !== EnrollmentStatusEnum.Active
             "
             @click-book-class="confirmBookClass"
             :enrollmentEnabled="enrollmentEnabled"
           >
-          </ReserveSpotButton>        
+          </ReserveSpotButton>
         </div>
       </div>
 
