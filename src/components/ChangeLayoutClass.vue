@@ -93,16 +93,16 @@ async function assignRoomLayoutId() {
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header border-0">
-              <h5 class="modal-title">Change room layout for this class</h5>
+              <h5 class="modal-title">CHANGE LAYOUT</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true" @click="modalIsVisible = false">&times;</span>
               </button>
             </div>
             <div class="modal-body">
               <p>
-                Current Room Layout: <b>{{ currentNameRoomLayout }}</b>
+                Current Layout: <b>{{ currentNameRoomLayout }}</b>
               </p>
-              <label for="countryRegistration" class="input-label">Available Room Layouts:</label>
+              <label for="countryRegistration" class="input-label">Layout Options:</label>
               <select
                 class="custom-select"
                 v-model="selectedRoomLayoutId"
@@ -117,7 +117,7 @@ async function assignRoomLayoutId() {
             </div>
             <div class="modal-footer border-0">
               <DefaultButtonComponent
-                text="CHANGE LAYOUT"
+                text="CHANGE"
                 type="button"
                 :is-loading="isSaving"
                 v-if="selectedRoomLayoutId !== roomLayoutId && !isLoading"
