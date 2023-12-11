@@ -607,9 +607,9 @@ function afterEnrollingUser() {
             @on-click="clickCancelMembersReservation"
             class="mr-1"
           ></DefaultButtonComponent>
-          <!-- Change Member's Spot button -->
+          <!-- CHANGE SPOT button -->
           <DefaultButtonComponent
-            text="Change Member's Spot"
+            text="CHANGE SPOT"
             :is-loading="changingMemberSpot"
             type="button"
             :disabled="spotAction === SpotActionEnum.changeMemberSpot"
