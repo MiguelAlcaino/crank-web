@@ -523,7 +523,7 @@ async function goToRoomLayoutList() {
       </template>
     </context-menu-item>
     <context-menu-sperator />
-    <context-menu-item label="Create Seat" @click="setSpotType(PositionIconEnum.Spot)">
+    <context-menu-item label="Create Bike Spot" @click="setSpotType(PositionIconEnum.Spot)">
       <template #icon>
         <i class="bi bi-bicycle"></i>
       </template>
@@ -552,7 +552,7 @@ async function goToRoomLayoutList() {
       </template>
     </context-menu-item>
     <context-menu-sperator />
-    <context-menu-item label="Clear Seat" @click="setSpotType(PositionIconEnum.Empty)">
+    <context-menu-item label="Clear Bike Spot" @click="setSpotType(PositionIconEnum.Empty)">
       <template #icon>
         <i class="bi bi-x-circle"></i>
       </template>
