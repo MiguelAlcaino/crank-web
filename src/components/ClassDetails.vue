@@ -561,7 +561,7 @@ function afterEnrollingUser() {
         <div v-if="selectedSpot?.isBooked === false && selectedSpot.enabled === true">
           <h2>Choose an action :</h2>
           <DefaultButtonComponent
-            text="Assign User to this Spot"
+            text="ASSIGN CLIENT"
             type="button"
             @on-click="spotAction = SpotActionEnum.asignUserToSpot"
             class="mr-1"
