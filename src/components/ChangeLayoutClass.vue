@@ -82,7 +82,7 @@ async function assignRoomLayoutId() {
 
 <template>
   <DefaultButtonComponent
-    text="Change Room Layout"
+    text="CHANGE LAYOUT"
     type="button"
     @on-click="openModal()"
   ></DefaultButtonComponent>
@@ -117,7 +117,7 @@ async function assignRoomLayoutId() {
             </div>
             <div class="modal-footer border-0">
               <DefaultButtonComponent
-                text="Change Room Layout"
+                text="CHANGE LAYOUT"
                 type="button"
                 :is-loading="isSaving"
                 v-if="selectedRoomLayoutId !== roomLayoutId && !isLoading"
