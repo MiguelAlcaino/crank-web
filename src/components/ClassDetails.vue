@@ -541,7 +541,7 @@ function afterEnrollingUser() {
         "
         @after-enrolling="afterEnrollingUser()"
         :spot-number="null"
-        enrollButtonText="Enroll Selected Member"
+        enrollButtonText="BOOK"
         :is-waitlist-booking="false"
       >
       </EnrollSelectedMemberComponent>

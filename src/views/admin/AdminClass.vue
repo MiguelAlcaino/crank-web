@@ -509,7 +509,7 @@ async function swapSpot(newSpotNumber: number) {
     "
     @after-enrolling="getClassInfo()"
     :spot-number="null"
-    enrollButtonText="Enroll Selected Member"
+    enrollButtonText="BOOK"
     :is-waitlist-booking="false"
   >
   </EnrollSelectedMemberComponent>
