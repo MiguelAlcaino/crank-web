@@ -596,13 +596,13 @@ function afterEnrollingUser() {
               (selectedSpot.identifiableUser?.user?.lastName ?? '')
             }}
           </h2>
-          <!-- Cancel Member's Reservation Button -->
+          <!-- CANCEL BOOKING Button -->
           <DefaultButtonComponent
             v-if="
               spotAction !== SpotActionEnum.changeMemberSpot &&
               spotAction !== SpotActionEnum.swapSpot
             "
-            text="Cancel Member's Reservation"
+            text="CANCEL BOOKING"
             type="button"
             @on-click="clickCancelMembersReservation"
             class="mr-1"

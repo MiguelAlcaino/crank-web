@@ -557,12 +557,12 @@ async function swapSpot(newSpotNumber: number) {
     <!-- Select booked spot options -->
     <div v-if="selectedSpot?.isBooked === true">
       <h2>Spot is reserved for - {{ selectedSpot.fullName }}</h2>
-      <!-- Cancel Member's Reservation Button -->
+      <!-- CCANCEL BOOKING Button -->
       <DefaultButtonComponent
         v-if="
           spotAction !== SpotActionEnum.changeMemberSpot && spotAction !== SpotActionEnum.swapSpot
         "
-        text="Cancel Member's Reservation"
+        text="CANCEL BOOKING"
         type="button"
         @on-click="clickCancelMembersReservation"
         class="mr-1"
