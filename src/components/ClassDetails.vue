@@ -503,7 +503,7 @@ function afterEnrollingUser() {
             v-if="classInfo !== null && classInfo.class.waitListAvailable === true"
             @after-enrolling="getClassInfo()"
             :spot-number="null"
-            enrollButtonText="Enroll In Waitlist"
+            enrollButtonText="ADD TO WAITLIST"
             :is-waitlist-booking="true"
           >
           </EnrollSelectedMemberComponent>
