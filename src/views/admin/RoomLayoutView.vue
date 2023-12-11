@@ -61,6 +61,7 @@ import { ERROR_UNIQUE_NAMES_SPOTS_LAYOUT, ERROR_UNKNOWN } from '@/utils/errorMes
 import DefaultButtonComponent from '@/components/DefaultButtonComponent.vue'
 import ModalComponent from '@/components/ModalComponent.vue'
 import { useRoute } from 'vue-router'
+import Slider from '@vueform/slider'
 
 const route = useRoute()
 const apiService = inject<ApiService>('gqlApiService')!
@@ -396,28 +397,30 @@ async function goToRoomLayoutList() {
     <div class="row">
       <div class="form-group col-md-6">
         <label for="formControlRange">Rows - {{ layoutSize.rows }}</label>
-        <input
-          type="range"
-          class="form-control-range"
-          id="formControlRange"
-          min="1"
-          max="50"
-          step="1"
+        <Slider
+          id="formControlRangeRows"
           v-model="layoutSize.rows"
+          class="slider-crank"
+          :max="50"
+          :min="0"
+          :step="1"
+          showTooltip="drag"
+          :lazy="false"
         />
       </div>
     </div>
     <div class="row">
       <div class="form-group col-md-6">
         <label for="formControlRange">Columns - {{ layoutSize.cols }}</label>
-        <input
-          type="range"
-          class="form-control-range"
-          id="formControlRange"
-          min="1"
-          max="50"
-          step="1"
+        <Slider
+          id="formControlRangeCols"
           v-model="layoutSize.cols"
+          class="slider-crank"
+          :max="50"
+          :min="0"
+          :step="1"
+          showTooltip="drag"
+          :lazy="false"
         />
       </div>
     </div>
@@ -618,4 +621,11 @@ td.highlighted {
 .hasError {
   border: 1px solid red !important;
 }
+
+.slider-crank {
+  --slider-connect-bg: #ff7f61;
+  --slider-tooltip-bg: #ff7f61;
+  --slider-handle-ring-color: #ff7f61;
+}
 </style>
+<style src="@vueform/slider/themes/default.css"></style>
