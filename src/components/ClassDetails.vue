@@ -697,8 +697,8 @@ function afterEnrollingUser() {
 
   <ModalComponent
     v-if="confirmModalCancelReservationData.isVisible"
-    title="Cancel Reservation?"
-    message="ARE YOU SURE, YOU WANT TO CANCEL THE RESERVATION?"
+    title="CANCEL BOOKING"
+    message="Are you sure you want to proceed?"
     :ok-loading="confirmModalCancelReservationData.isLoading"
     @on-cancel="confirmModalCancelReservationData.isVisible = false"
     @on-ok="removeUserFromClass()"

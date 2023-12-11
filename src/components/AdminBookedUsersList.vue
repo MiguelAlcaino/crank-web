@@ -141,8 +141,8 @@ async function removeUserFromClass(enrollmentId: string, lateCancel: boolean) {
   <!-- Modal Cancel Reservation? -->
   <ModalComponent
     v-if="modalCancelReservationIsVisible"
-    title="Cancel Reservation?"
-    message="ARE YOU SURE, YOU WANT TO CANCEL THE RESERVATION?"
+    title="CANCEL BOOKING"
+    message="Are you sure you want to proceed?"
     cancel-text="No"
     ok-text="Yes"
     :ok-loading="removingUserFromClass"
