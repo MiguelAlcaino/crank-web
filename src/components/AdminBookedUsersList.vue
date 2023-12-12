@@ -155,7 +155,7 @@ async function removeUserFromClass(enrollmentId: string, lateCancel: boolean) {
   <ModalComponent
     v-if="modalLateCancelIsVisible"
     title="Warning"
-    message="You are outsade the early cancellation window. you can only make a late cancellaiton."
+    message="You are outside the early cancellation window. you can only make a late cancellaiton."
     cancel-button-text="No"
     confirm-button-text="Confirm"
     @on-cancel="modalLateCancelIsVisible = false"
