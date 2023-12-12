@@ -158,9 +158,9 @@ async function removeUserFromClass(enrollmentId: string, lateCancel: boolean) {
     message="You are outsade the early cancellation window. you can only make a late cancellaiton."
     cancel-button-text="No"
     confirm-button-text="Confirm"
-    @cancel="modalLateCancelIsVisible = false"
+    @on-cancel="modalLateCancelIsVisible = false"
     :ok-loading="removingUserFromClass"
-    @confirm="onClickConfirmLateCancelMemberReservation()"
+    @on-ok="onClickConfirmLateCancelMemberReservation()"
   >
   </ModalComponent>
 
