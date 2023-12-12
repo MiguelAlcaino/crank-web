@@ -169,7 +169,7 @@ function itemProjectionFunction(item: any) {
   <ModalComponent
     v-if="paymentRequiredErrorModalIsVisible"
     title="Warning"
-    message="This user does not have any class packages purchases available for this class. Would you like to override the enrollment?"
+    message="This client has no credits in his account. Do you want to continue?"
     cancel-text="No"
     ok-text="Yes"
     @on-cancel="paymentRequiredErrorModalIsVisible = false"

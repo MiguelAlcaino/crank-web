@@ -503,7 +503,7 @@ function afterEnrollingUser() {
             v-if="classInfo !== null && classInfo.class.waitListAvailable === true"
             @after-enrolling="getClassInfo()"
             :spot-number="null"
-            enrollButtonText="Enroll In Waitlist"
+            enrollButtonText="ADD TO WAITLIST"
             :is-waitlist-booking="true"
           >
           </EnrollSelectedMemberComponent>
@@ -541,7 +541,7 @@ function afterEnrollingUser() {
         "
         @after-enrolling="afterEnrollingUser()"
         :spot-number="null"
-        enrollButtonText="Enroll Selected Member"
+        enrollButtonText="BOOK"
         :is-waitlist-booking="false"
       >
       </EnrollSelectedMemberComponent>
@@ -561,7 +561,7 @@ function afterEnrollingUser() {
         <div v-if="selectedSpot?.isBooked === false && selectedSpot.enabled === true">
           <h2>Choose an action :</h2>
           <DefaultButtonComponent
-            text="Assign User to this Spot"
+            text="ASSIGN CLIENT"
             type="button"
             @on-click="spotAction = SpotActionEnum.asignUserToSpot"
             class="mr-1"
@@ -596,20 +596,20 @@ function afterEnrollingUser() {
               (selectedSpot.identifiableUser?.user?.lastName ?? '')
             }}
           </h2>
-          <!-- Cancel Member's Reservation Button -->
+          <!-- CANCEL BOOKING Button -->
           <DefaultButtonComponent
             v-if="
               spotAction !== SpotActionEnum.changeMemberSpot &&
               spotAction !== SpotActionEnum.swapSpot
             "
-            text="Cancel Member's Reservation"
+            text="CANCEL BOOKING"
             type="button"
             @on-click="clickCancelMembersReservation"
             class="mr-1"
           ></DefaultButtonComponent>
-          <!-- Change Member's Spot button -->
+          <!-- CHANGE SPOT button -->
           <DefaultButtonComponent
-            text="Change Member's Spot"
+            text="CHANGE SPOT"
             :is-loading="changingMemberSpot"
             type="button"
             :disabled="spotAction === SpotActionEnum.changeMemberSpot"
@@ -697,8 +697,8 @@ function afterEnrollingUser() {
 
   <ModalComponent
     v-if="confirmModalCancelReservationData.isVisible"
-    title="Cancel Reservation?"
-    message="ARE YOU SURE, YOU WANT TO CANCEL THE RESERVATION?"
+    title="CANCEL BOOKING"
+    message="Are you sure you want to proceed?"
     :ok-loading="confirmModalCancelReservationData.isLoading"
     @on-cancel="confirmModalCancelReservationData.isVisible = false"
     @on-ok="removeUserFromClass()"

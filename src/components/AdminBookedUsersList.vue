@@ -119,7 +119,7 @@ async function removeUserFromClass(enrollmentId: string, lateCancel: boolean) {
               type="button"
               @click="onClickCancelMemberReservation(item.id)"
             >
-              Cancel Member's Reservation
+             CANCEL BOOKING
             </button>
           </td>
           <td v-if="showEditOptions">
@@ -141,8 +141,8 @@ async function removeUserFromClass(enrollmentId: string, lateCancel: boolean) {
   <!-- Modal Cancel Reservation? -->
   <ModalComponent
     v-if="modalCancelReservationIsVisible"
-    title="Cancel Reservation?"
-    message="ARE YOU SURE, YOU WANT TO CANCEL THE RESERVATION?"
+    title="CANCEL BOOKING"
+    message="Are you sure you want to proceed?"
     cancel-text="No"
     ok-text="Yes"
     :ok-loading="removingUserFromClass"
@@ -155,12 +155,12 @@ async function removeUserFromClass(enrollmentId: string, lateCancel: boolean) {
   <ModalComponent
     v-if="modalLateCancelIsVisible"
     title="Warning"
-    message="You are outsade the early cancellation window. you can only make a late cancellaiton."
+    message="You are outside the early cancellation window. you can only make a late cancellaiton."
     cancel-button-text="No"
     confirm-button-text="Confirm"
-    @cancel="modalLateCancelIsVisible = false"
+    @on-cancel="modalLateCancelIsVisible = false"
     :ok-loading="removingUserFromClass"
-    @confirm="onClickConfirmLateCancelMemberReservation()"
+    @on-ok="onClickConfirmLateCancelMemberReservation()"
   >
   </ModalComponent>
 
