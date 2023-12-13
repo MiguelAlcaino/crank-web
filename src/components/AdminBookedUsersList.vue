@@ -119,7 +119,7 @@ async function removeUserFromClass(enrollmentId: string, lateCancel: boolean) {
               type="button"
               @click="onClickCancelMemberReservation(item.id)"
             >
-             CANCEL BOOKING
+              CANCEL BOOKING
             </button>
           </td>
           <td v-if="showEditOptions">
