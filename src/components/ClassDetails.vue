@@ -160,6 +160,7 @@ const totalSignedIn = ref<number>(0)
 const spotAction = ref<SpotActionEnum>(SpotActionEnum.none)
 
 const userCanModifyClass = ref<boolean>(false)
+const waitListAvailable = ref<boolean>(false)
 
 const errorModalData = ref<{
   title: string
@@ -225,6 +226,8 @@ async function getClassInfo() {
     appStore().site,
     props.classId
   )) as ClassInfo
+
+  waitListAvailable.value = classInfo.value?.class.waitListAvailable ?? false
 
   enrollments.value =
     classInfo.value?.enrollments.filter(
@@ -436,9 +439,16 @@ async function swapSpot(newSpotNumber: number) {
   }
 }
 
-function afterEnrollingUser() {
+async function afterEnrollingUser() {
   emits('availableSpotsChanged')
-  getClassInfo()
+  await getClassInfo()
+  checkWaitlistIsEnable()
+}
+
+async function checkWaitlistIsEnable() {
+  await new Promise((f) => setTimeout(f, 5000))
+
+  waitListAvailable.value = await apiService.classWaitlistIsEnabled(appStore().site, props.classId!)
 }
 </script>
 
@@ -494,12 +504,12 @@ function afterEnrollingUser() {
       </div>
 
       <!-- Enroll in Waitlist -->
-      <div class="row" v-if="classInfo !== null && classInfo.class.waitListAvailable === true">
+      <div class="row" v-if="classInfo !== null && waitListAvailable === true">
         <div class="col-md-12">
           <hr />
           <EnrollSelectedMemberComponent
             :class-id="classId"
-            v-if="classInfo !== null && classInfo.class.waitListAvailable === true"
+            v-if="classInfo !== null && waitListAvailable === true"
             @after-enrolling="getClassInfo()"
             :spot-number="null"
             enrollButtonText="ADD TO WAITLIST"
@@ -535,7 +545,7 @@ function afterEnrollingUser() {
           classInfo !== null &&
           classInfo.roomLayout === null &&
           classInfo.enrollments !== null &&
-          classInfo.class.waitListAvailable === false &&
+          waitListAvailable === false &&
           userCanModifyClass
         "
         @after-enrolling="afterEnrollingUser()"
@@ -550,7 +560,7 @@ function afterEnrollingUser() {
         v-if="classInfo !== null && classInfo.roomLayout === null && classInfo.enrollments !== null"
         :enrollments="enrollments"
         :isLoading="false"
-        @after-cancel-member-reservation="getClassInfo()"
+        @after-cancel-member-reservation="afterEnrollingUser()"
         :show-edit-options="userCanModifyClass"
       >
       </AdminBookedUsersList>
