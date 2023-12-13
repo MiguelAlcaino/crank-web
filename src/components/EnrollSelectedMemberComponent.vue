@@ -48,6 +48,8 @@ const successModalIsVisible = ref<boolean>(false)
 const successMessage = ref<string>('')
 const paymentRequiredErrorModalIsVisible = ref<boolean>(false)
 
+const refSimpleTypeahead = ref();
+
 function onClickEnrollSelectedMember() {
   bookUserIntoClass(props.classId, selectedUser.value!.id!, props.spotNumber, true)
 }
@@ -73,12 +75,14 @@ async function bookUserIntoClass(
   if (response === 'BookClassSuccess') {
     users.value = []
     selectedUser.value = null
+    refSimpleTypeahead.value?.clearInput()
     paymentRequiredErrorModalIsVisible.value = false
 
     emits('afterEnrolling')
   } else if (response === 'AddedToWaitlistSuccess') {
     users.value = []
     selectedUser.value = null
+    refSimpleTypeahead.value?.clearInput()
     paymentRequiredErrorModalIsVisible.value = false
 
     successMessage.value = SUCCESS_ADDED_USER_TO_WAITLIST
@@ -141,6 +145,7 @@ function itemProjectionFunction(item: any) {
         @onInput="onInputEventHandler"
         @onBlur="onBlurEventHandler"
         :itemProjection="itemProjectionFunction"
+        ref="refSimpleTypeahead"
       >
         <template #list-item-text="slot"
           ><span v-html="slot.boldMatchText(slot.itemProjection(slot.item))"></span
