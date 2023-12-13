@@ -1673,4 +1673,29 @@ export class ApiService {
 
     return queryResult.data.user as IdentifiableUser
   }
+
+  async classWaitlistIsEnabled(site: SiteEnum, id: string): Promise<boolean> {
+    const query = gql`
+      query classWaitlistIsEnabled($site: SiteEnum!, $id: ID!) {
+        classInfo(site: $site, id: $id) {
+          class {
+            waitListAvailable
+          }
+        }
+      }
+    `
+
+    const queryResult = await this.authApiClient.query({
+      query: query,
+      fetchPolicy: 'no-cache',
+      variables: {
+        site: site,
+        id: id
+      }
+    })
+
+    const classInfo = queryResult.data.classInfo as ClassInfo
+
+    return classInfo.class.waitListAvailable
+  }
 }

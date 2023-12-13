@@ -48,7 +48,7 @@ const successModalIsVisible = ref<boolean>(false)
 const successMessage = ref<string>('')
 const paymentRequiredErrorModalIsVisible = ref<boolean>(false)
 
-const refSimpleTypeahead = ref();
+const refSimpleTypeahead = ref()
 
 function onClickEnrollSelectedMember() {
   bookUserIntoClass(props.classId, selectedUser.value!.id!, props.spotNumber, true)
