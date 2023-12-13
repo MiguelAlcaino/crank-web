@@ -219,8 +219,7 @@ async function getClassInfo() {
 
   isLoading.value = false
 
-  totalSignedIn.value =
-    classInfo.value?.enrollments.filter((x) => x.isCheckedIn === true).length ?? 0
+  totalSignedIn.value = enrollments.value?.filter((x) => x.isCheckedIn === true).length ?? 0
 }
 
 function getClassId(): string {
@@ -251,9 +250,9 @@ async function spotClicked(event: BookableSpotClickedEvent) {
           let isCheckedIn: boolean | undefined
           let enrollmentId: string | null | undefined
 
-          if (classInfo.value?.enrollments != null) {
-            for (let index = 0; index < classInfo.value?.enrollments.length; index++) {
-              const enrollment = classInfo.value?.enrollments[index]
+          if (enrollments.value != null) {
+            for (let index = 0; index < enrollments.value?.length; index++) {
+              const enrollment = enrollments.value[index]
               isCheckedIn = enrollment.isCheckedIn
               if (
                 classPosition.spotNumber === enrollment.spotNumber &&
