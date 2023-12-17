@@ -24,7 +24,7 @@ async function syncAllClasses() {
   try {
     await apiService.syncAllClasses(appStore().site)
     emits('afterSyncAllClasses')
-  } catch (error) { 
+  } catch (error) {
     errorModalIsVisible.value = true
   } finally {
     isSyncing.value = false

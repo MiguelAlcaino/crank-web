@@ -23,6 +23,7 @@ import dayjs from 'dayjs'
 import { inject, onMounted, ref } from 'vue'
 import ModalComponent from '@/components/ModalComponent.vue'
 import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
+import SyncAllClassesButton from '@/components/SyncAllClassesButton.vue'
 
 dayjs.Ls.en.weekStart = 1
 
@@ -151,6 +152,14 @@ function goToNextWeek(): void {
             }}</span>
           </div>
         </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 text-center">
+        <SyncAllClassesButton
+          :disabled="false"
+          @after-sync-all-classes="getCalendarClasses(true)"
+        ></SyncAllClassesButton>
       </div>
     </div>
   </div>
