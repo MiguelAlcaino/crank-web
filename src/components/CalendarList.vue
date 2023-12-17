@@ -24,6 +24,8 @@ import { inject, onMounted, ref } from 'vue'
 import ModalComponent from '@/components/ModalComponent.vue'
 import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
 import SyncAllClassesButton from '@/components/SyncAllClassesButton.vue'
+import { Role } from '@/utils/userRoles'
+import { authService } from '@/services/authService'
 
 dayjs.Ls.en.weekStart = 1
 
@@ -34,6 +36,7 @@ const errorModalIsVisible = ref<boolean>(false)
 const startDate = ref<Date>(dayjs(Date()).startOf('week').toDate())
 const endDate = ref<Date>(dayjs(Date()).endOf('week').toDate())
 const weekDays = ref<WeekDays[]>([])
+const userCanSyncClasses = ref<boolean>(false)
 
 const emits = defineEmits<{
   (e: 'selectClass', classId: string | null): void
@@ -41,6 +44,8 @@ const emits = defineEmits<{
 
 onMounted(() => {
   getCalendarClasses()
+
+  userCanSyncClasses.value = authService.userHasRole(Role.ROLE_SUPER_ADMIN)
 })
 
 defineExpose({
@@ -159,6 +164,7 @@ function goToNextWeek(): void {
         <SyncAllClassesButton
           :disabled="false"
           @after-sync-all-classes="getCalendarClasses(true)"
+          v-if="userCanSyncClasses"
         ></SyncAllClassesButton>
       </div>
     </div>
