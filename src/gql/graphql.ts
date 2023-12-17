@@ -144,7 +144,6 @@ export type Class = {
   __typename: 'Class'
   bookingWindow: BookingWindow
   description: Scalars['String']
-  displayableStart: Scalars['DateTime']
   duration: Scalars['Int']
   id: Scalars['ID']
   instructorName: Scalars['String']
@@ -425,6 +424,10 @@ export type Mutation = {
   resetPasswordForCurrentUser?: Maybe<ResetPasswordForCurrentUserUnion>
   /** Swaps a spot in a class */
   swapSpot?: Maybe<SwapSpotResultUnion>
+  /** Sync all classes */
+  syncAllClasses: Array<Class>
+  /** Sync one class */
+  syncClass: ClassInfo
   /** Updates the current user */
   updateCurrentUser?: Maybe<User>
   /** Updates a user's password in all the sites */
@@ -541,6 +544,15 @@ export type MutationResetPasswordForCurrentUserArgs = {
 
 export type MutationSwapSpotArgs = {
   input: EditEnrollmentInput
+  site: SiteEnum
+}
+
+export type MutationSyncAllClassesArgs = {
+  site: SiteEnum
+}
+
+export type MutationSyncClassArgs = {
+  classId: Scalars['ID']
   site: SiteEnum
 }
 
@@ -985,7 +997,17 @@ export type CurrentUserWorkoutStatsQueryVariables = Exact<{
 
 export type CurrentUserWorkoutStatsQuery = {
   __typename: 'Query'
-  currentUserWorkoutStats: Array<{ __typename: 'ClassStat'; totalEnergy?: number | null } | null>
+  currentUserWorkoutStats: Array<{
+    __typename: 'ClassStat'
+    totalEnergy?: number | null
+    enrollment: {
+      __typename: 'Enrollment'
+      enrollmentInfo:
+        | { __typename: 'EnrollmentInfo'; spotNumber?: number | null; id: string }
+        | { __typename: 'WaitlistEntry'; id: string }
+      class: { __typename: 'Class'; name: string; start: any; duration: number }
+    }
+  } | null>
 }
 
 export type CurrentUserSingleWorkoutStatQueryVariables = Exact<{
@@ -996,11 +1018,27 @@ export type CurrentUserSingleWorkoutStatQuery = {
   __typename: 'Query'
   currentUserSingleWorkoutStat?: {
     __typename: 'ClassStat'
+    averagePower?: number | null
+    highPower?: number | null
     averageRpm?: number | null
     highRpm?: number | null
     totalEnergy?: number | null
     calories?: number | null
     distance?: number | null
+    enrollment: {
+      __typename: 'Enrollment'
+      enrollmentInfo:
+        | { __typename: 'EnrollmentInfo'; spotNumber?: number | null; id: string }
+        | { __typename: 'WaitlistEntry'; id: string }
+      class: {
+        __typename: 'Class'
+        id: string
+        name: string
+        start: any
+        duration: number
+        instructorName: string
+      }
+    }
     adjustedChartPoints: Array<{
       __typename: 'ChartPoint'
       time?: number | null
@@ -1156,6 +1194,7 @@ export type CustomCalendarClassesQuery = {
     duration: number
     waitListAvailable: boolean
     isSubstitute: boolean
+    bookingWindow: { __typename: 'BookingWindow'; startDateTime: any; endDateTime: any }
   }>
   enrollmentsWaitlist: Array<{
     __typename: 'Enrollment'
@@ -1221,6 +1260,63 @@ export type ClassInfoQueryVariables = Exact<{
 }>
 
 export type ClassInfoQuery = {
+  __typename: 'Query'
+  classInfo?: {
+    __typename: 'ClassInfo'
+    class: {
+      __typename: 'Class'
+      id: string
+      name: string
+      description: string
+      instructorName: string
+      start: any
+      startWithNoTimeZone: any
+      duration: number
+      waitListAvailable: boolean
+    }
+    roomLayout?: {
+      __typename: 'RoomLayout'
+      id: string
+      name: string
+      matrix?: Array<
+        | {
+            __typename: 'BookableSpot'
+            enabled?: boolean | null
+            spotNumber: number
+            x: number
+            y: number
+            icon: PositionIconEnum
+            spotInfo: { __typename: 'SpotInfo'; spotNumber: number; isBooked: boolean }
+          }
+        | { __typename: 'IconPosition'; x: number; y: number; icon: PositionIconEnum }
+      > | null
+    } | null
+    enrollments: Array<
+      | {
+          __typename: 'EnrollmentInfo'
+          isCheckedIn: boolean
+          spotNumber?: number | null
+          id: string
+          enrollmentStatus: EnrollmentStatusEnum
+          enrollmentDateTime: any
+          spotInfo?: { __typename: 'SpotInfo'; isBooked: boolean; spotNumber: number } | null
+        }
+      | {
+          __typename: 'WaitlistEntry'
+          id: string
+          enrollmentStatus: EnrollmentStatusEnum
+          enrollmentDateTime: any
+        }
+    >
+  } | null
+}
+
+export type ClassInfoAdminQueryVariables = Exact<{
+  site: SiteEnum
+  id: Scalars['ID']
+}>
+
+export type ClassInfoAdminQuery = {
   __typename: 'Query'
   classInfo?: {
     __typename: 'ClassInfo'
@@ -1756,6 +1852,19 @@ export type GetUserQuery = {
   } | null
 }
 
+export type ClassWaitlistIsEnabledQueryVariables = Exact<{
+  site: SiteEnum
+  id: Scalars['ID']
+}>
+
+export type ClassWaitlistIsEnabledQuery = {
+  __typename: 'Query'
+  classInfo?: {
+    __typename: 'ClassInfo'
+    class: { __typename: 'Class'; waitListAvailable: boolean }
+  } | null
+}
+
 export const SiteSettingsDocument = {
   kind: 'Document',
   definitions: [
@@ -1901,7 +2010,53 @@ export const CurrentUserWorkoutStatsDocument = {
             ],
             selectionSet: {
               kind: 'SelectionSet',
-              selections: [{ kind: 'Field', name: { kind: 'Name', value: 'totalEnergy' } }]
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'enrollment' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'enrollmentInfo' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                            {
+                              kind: 'InlineFragment',
+                              typeCondition: {
+                                kind: 'NamedType',
+                                name: { kind: 'Name', value: 'EnrollmentInfo' }
+                              },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'class' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'start' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'duration' } }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'totalEnergy' } }
+              ]
             }
           }
         ]
@@ -1942,6 +2097,54 @@ export const CurrentUserSingleWorkoutStatDocument = {
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'enrollment' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'enrollmentInfo' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                            {
+                              kind: 'InlineFragment',
+                              typeCondition: {
+                                kind: 'NamedType',
+                                name: { kind: 'Name', value: 'EnrollmentInfo' }
+                              },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'class' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'start' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'duration' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'instructorName' } }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'averagePower' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'highPower' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'averageRpm' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'highRpm' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'totalEnergy' } },
@@ -2443,7 +2646,18 @@ export const CustomCalendarClassesDocument = {
                 { kind: 'Field', name: { kind: 'Name', value: 'startWithNoTimeZone' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'duration' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'waitListAvailable' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'isSubstitute' } }
+                { kind: 'Field', name: { kind: 'Name', value: 'isSubstitute' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'bookingWindow' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'startDateTime' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'endDateTime' } }
+                    ]
+                  }
+                }
               ]
             }
           },
@@ -2694,6 +2908,174 @@ export const ClassInfoDocument = {
                       { kind: 'Field', name: { kind: 'Name', value: 'enrollmentStatus' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'enrollmentDateTime' } },
                       {
+                        kind: 'InlineFragment',
+                        typeCondition: {
+                          kind: 'NamedType',
+                          name: { kind: 'Name', value: 'EnrollmentInfo' }
+                        },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'isCheckedIn' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'spotInfo' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'isBooked' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<ClassInfoQuery, ClassInfoQueryVariables>
+export const ClassInfoAdminDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'classInfoAdmin' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'classInfo' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'id' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'class' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'instructorName' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'start' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'startWithNoTimeZone' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'duration' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'waitListAvailable' } }
+                    ]
+                  }
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'roomLayout' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'matrix' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'x' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'y' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'icon' } },
+                            {
+                              kind: 'InlineFragment',
+                              typeCondition: {
+                                kind: 'NamedType',
+                                name: { kind: 'Name', value: 'BookableSpot' }
+                              },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: 'enabled' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'spotInfo' },
+                                    selectionSet: {
+                                      kind: 'SelectionSet',
+                                      selections: [
+                                        {
+                                          kind: 'Field',
+                                          name: { kind: 'Name', value: 'spotNumber' }
+                                        },
+                                        { kind: 'Field', name: { kind: 'Name', value: 'isBooked' } }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'enrollments' },
+                  arguments: [
+                    {
+                      kind: 'Argument',
+                      name: { kind: 'Name', value: 'status' },
+                      value: { kind: 'EnumValue', value: 'active' }
+                    }
+                  ],
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'enrollmentStatus' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'enrollmentDateTime' } },
+                      {
                         kind: 'Field',
                         name: { kind: 'Name', value: 'identifiableUser' },
                         selectionSet: {
@@ -2757,7 +3139,7 @@ export const ClassInfoDocument = {
       }
     }
   ]
-} as unknown as DocumentNode<ClassInfoQuery, ClassInfoQueryVariables>
+} as unknown as DocumentNode<ClassInfoAdminQuery, ClassInfoAdminQueryVariables>
 export const RegisterUserDocument = {
   kind: 'Document',
   definitions: [
@@ -4793,3 +5175,67 @@ export const GetUserDocument = {
     }
   ]
 } as unknown as DocumentNode<GetUserQuery, GetUserQueryVariables>
+export const ClassWaitlistIsEnabledDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'classWaitlistIsEnabled' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'classInfo' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'id' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'class' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'waitListAvailable' } }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<ClassWaitlistIsEnabledQuery, ClassWaitlistIsEnabledQueryVariables>

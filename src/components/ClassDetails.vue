@@ -120,6 +120,7 @@ import CheckInCheckOutUserInClass from '@/components/CheckInCheckOutUserInClass.
 import SetOnHoldSpots from '@/components/SetOnHoldSpots.vue'
 import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
 import UserProfile from '@/components/UserProfile.vue'
+import SyncClassButton from '@/components/SyncClassButton.vue'
 
 import {
   ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW,
@@ -467,7 +468,7 @@ async function checkWaitlistIsEnable() {
     <div v-else>
       <!-- Class Description -->
       <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-10">
           <h4>
             {{ classInfo?.class?.name }} - {{ classInfo?.class.instructorName }} ({{
               dayjs(classInfo?.class.startWithNoTimeZone).format('DD/MM/YYYY')
@@ -479,8 +480,14 @@ async function checkWaitlistIsEnable() {
             {{ classInfo?.class?.duration }} mins
           </h4>
         </div>
-      </div>
-      <h6 v-html="classInfo?.class?.description"></h6>
+        <div class="col-md-2">
+          <SyncClassButton
+            v-if="classInfo?.class.id"
+            :class-id="classInfo?.class.id"
+            @after-sync-class="getClassInfo()"
+          ></SyncClassButton>
+        </div>
+      </div>     
 
       <!-- Change Layout Class and View Waitlist Entries Options -->
       <div class="row" v-if="userCanModifyClass">
@@ -701,6 +708,7 @@ async function checkWaitlistIsEnable() {
     :closable="false"
     v-if="errorModalData.isVisible"
     @on-ok="errorModalData.isVisible = false"
+    :cancel-text="null"
   >
   </ModalComponent>
 

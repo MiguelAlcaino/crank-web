@@ -1698,4 +1698,96 @@ export class ApiService {
 
     return classInfo.class.waitListAvailable
   }
+
+  async syncClass(site: SiteEnum, classId: string): Promise<ClassInfo> {
+    const mutation = gql`
+      mutation syncClass($site: SiteEnum!, $classId: ID!) {
+        syncClass(site: $site, classId: $classId) {
+          class {
+            id
+            name
+            description
+            instructorName
+            start
+            startWithNoTimeZone
+            duration
+            waitListAvailable
+          }
+          roomLayout {
+            id
+            name
+            matrix {
+              __typename
+              x
+              y
+              icon
+              ... on BookableSpot {
+                enabled
+                spotNumber
+                spotInfo {
+                  spotNumber
+                  isBooked
+                }
+              }
+            }
+          }
+          enrollments(status: active) {
+            id
+            enrollmentStatus
+            enrollmentDateTime
+            identifiableUser {
+              id
+              user {
+                __typename
+                firstName
+                lastName
+                email
+                leaderboardUsername
+              }
+            }
+
+            ... on EnrollmentInfo {
+              isCheckedIn
+              spotNumber
+              spotInfo {
+                __typename
+                isBooked
+                spotNumber
+              }
+            }
+          }
+          onHoldSpots
+        }
+      }
+    `
+    const result = await this.authApiClient.mutate({
+      mutation: mutation,
+      variables: {
+        site: site,
+        classId: classId
+      },
+      fetchPolicy: 'no-cache'
+    })
+
+    return result.data.syncClass as ClassInfo
+  }
+
+  async syncAllClasses(site: SiteEnum): Promise<Class[]> {
+    const mutation = gql`
+      mutation syncAllClasses($site: SiteEnum!) {
+        syncAllClasses(site: $site) {
+          id
+        }
+      }
+    `
+    const result = await this.authApiClient.mutate({
+      mutation: mutation,
+      variables: {
+        site: site
+      },
+      fetchPolicy: 'no-cache'
+    })
+
+    return result.data.syncAllClasses as Class[]
+  }
 }
