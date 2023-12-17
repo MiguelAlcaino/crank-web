@@ -161,6 +161,7 @@ const totalSignedIn = ref<number>(0)
 const spotAction = ref<SpotActionEnum>(SpotActionEnum.none)
 
 const userCanModifyClass = ref<boolean>(false)
+const userCanSyncClasses = ref<boolean>(false)
 const waitListAvailable = ref<boolean>(false)
 
 const errorModalData = ref<{
@@ -215,6 +216,7 @@ onMounted(() => {
   getClassInfo()
 
   userCanModifyClass.value = authService.userHasRole(Role.ROLE_STAFF)
+  userCanSyncClasses.value = authService.userHasRole(Role.ROLE_SUPER_ADMIN)
 })
 
 async function getClassInfo() {
@@ -482,12 +484,12 @@ async function checkWaitlistIsEnable() {
         </div>
         <div class="col-md-2">
           <SyncClassButton
-            v-if="classInfo?.class.id"
+            v-if="classInfo?.class.id && userCanSyncClasses"
             :class-id="classInfo?.class.id"
             @after-sync-class="getClassInfo()"
           ></SyncClassButton>
         </div>
-      </div>     
+      </div>
 
       <!-- Change Layout Class and View Waitlist Entries Options -->
       <div class="row" v-if="userCanModifyClass">
