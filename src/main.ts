@@ -73,7 +73,7 @@ async function startApp() {
     // In case the refresh token is invalid
     useAuthenticationStore().deleteSession()
   }
-
+  let authToken = null
   if (site) {
     let siteEnum: SiteEnum
 
@@ -88,6 +88,7 @@ async function startApp() {
     if (!authService.isLoggedId()) {
       appStore().setSite(siteEnum)
     } else {
+      authToken = useAuthenticationStore().token
       const apiService = new ApiService(
         newAuthenticatedApolloClient(Config.GRAPHQL_SERVICE_URL),
         newAnonymousClient(Config.GRAPHQL_SERVICE_URL)
@@ -123,6 +124,8 @@ async function startApp() {
     const urlParams = new URLSearchParams(window.location.search)
     const token = urlParams.get('token')
     await router.push('/reset-password?token=' + token)
+  } else if(view == 'payments'){
+    await router.push('/payments?authToken=' + authToken)
   }
 
   app.mount('#app')
