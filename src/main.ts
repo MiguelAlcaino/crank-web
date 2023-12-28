@@ -123,6 +123,8 @@ async function startApp() {
     const urlParams = new URLSearchParams(window.location.search)
     const token = urlParams.get('token')
     await router.push('/reset-password?token=' + token)
+  } else if (view == 'payments') {
+    await router.push('/payments')
   }
 
   app.mount('#app')

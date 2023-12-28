@@ -16,6 +16,7 @@ import WorkoutSummaryView from '../views/WorkoutSummaryView.vue'
 import { authService } from '@/services/authService'
 import RoomLayoutListView from '@/views/admin/RoomLayoutListView.vue'
 import MenuLayout from '@/layouts/MenuLayout.vue'
+import PaymentsIframeView from '@/views/PaymentsIframeView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -97,7 +98,11 @@ const router = createRouter({
       name: 'change_spot',
       component: ChangeSpotView
     },
-
+    {
+      path: '/payments',
+      name: 'payments',
+      component: PaymentsIframeView
+    },
     {
       path: '/about',
       name: 'about',
