@@ -155,10 +155,7 @@ function acceptSuccessModal() {
 }
 
 function goToThePackagesScreen() {
-  const paymentRedirectUrl = (import.meta.env.VITE_PAYMENT_REDIRECT_URL ?? null) as string | null
-  if (paymentRedirectUrl) {
-    window.location.href = paymentRedirectUrl
-  }
+  router.push({ name: 'payments' })
 }
 
 async function bookClass(classId: string, spotNumber: number | null, isWaitlistBooking: boolean) {
