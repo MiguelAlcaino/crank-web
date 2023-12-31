@@ -21,7 +21,7 @@ async function startApp() {
   const site = selection?.dataset.site as string
 
   const app = createApp({
-    setup() {  
+    setup() {
       provide(
         'gqlApiService',
         new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
