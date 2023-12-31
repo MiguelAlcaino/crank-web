@@ -71,4 +71,8 @@ a.list-group-item:hover {
   text-decoration: none;
   background-color: #eee;
 }
+
+a {
+  color: #000000;
+}
 </style>

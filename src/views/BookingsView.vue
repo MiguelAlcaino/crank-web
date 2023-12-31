@@ -278,4 +278,14 @@ function setActive(menuItem: EnrollmentTypeEnum) {
   </ModalComponent>
 </template>
 
-<style scoped></style>
+<style scoped>
+a {
+  color: #000000;
+}
+
+a:hover {
+  color: #757575;
+  text-decoration: none;
+  background-color: #eee;
+}
+</style>
