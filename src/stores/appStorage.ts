@@ -7,12 +7,12 @@ export const appStore = defineStore({
   id: 'appStore',
   state: () => ({
     calendarStartDate:
-      localStorage.getItem('calendarStartDate') !== null
-        ? dayjs(localStorage.getItem('calendarStartDate')).toDate()
+      sessionStorage.getItem('calendarStartDate') !== null
+        ? dayjs(sessionStorage.getItem('calendarStartDate')).toDate()
         : dayjs(Date()).startOf('week').toDate(),
     calendarEndDate:
-      localStorage.getItem('calendarEndDate') !== null
-        ? dayjs(localStorage.getItem('calendarEndDate')).toDate()
+      sessionStorage.getItem('calendarEndDate') !== null
+        ? dayjs(sessionStorage.getItem('calendarEndDate')).toDate()
         : dayjs(Date()).endOf('week').toDate(),
     site:
       localStorage.getItem('site') != null
@@ -21,10 +21,10 @@ export const appStore = defineStore({
   }),
   actions: {
     setCalendarDates(calendarStartDate: Date, calendarEndDate: Date) {
-      localStorage.setItem('calendarStartDate', dayjs(calendarStartDate).toISOString())
+      sessionStorage.setItem('calendarStartDate', dayjs(calendarStartDate).toISOString())
       this.calendarStartDate = calendarStartDate
 
-      localStorage.setItem('calendarEndDate', dayjs(calendarEndDate).toISOString())
+      sessionStorage.setItem('calendarEndDate', dayjs(calendarEndDate).toISOString())
       this.calendarEndDate = calendarEndDate
     },
     setSite(site: SiteEnum) {
