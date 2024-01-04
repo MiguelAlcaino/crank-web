@@ -451,9 +451,11 @@ function calendarCardIsDisabled(dataClass?: Class): boolean {
   <!-- icons -->
   <div class="row gy-5 mt-5">
     <div class="offset-3"></div>
-    <div class="col-md-2"><IconCalendarCard letter="E"></IconCalendarCard>Enrolled</div>
-    <div class="col-md-2"><IconCalendarCard letter="W"></IconCalendarCard>Waitlist</div>
-    <div class="col-md-2"><IconCalendarCard letter="S"></IconCalendarCard>Substitute</div>
+    <div class="col-md-2 avenir-font"><IconCalendarCard letter="E"></IconCalendarCard>Enrolled</div>
+    <div class="col-md-2 avenir-font"><IconCalendarCard letter="W"></IconCalendarCard>Waitlist</div>
+    <div class="col-md-2 avenir-font">
+      <IconCalendarCard letter="S"></IconCalendarCard>Substitute
+    </div>
     <div class="offset-3"></div>
   </div>
 
@@ -467,6 +469,9 @@ function calendarCardIsDisabled(dataClass?: Class): boolean {
   >
   </ModalComponent>
 </template>
+
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>
 
 <style>
 .CalendarWeekTable > tbody > tr > td > div {
@@ -507,5 +512,9 @@ thead {
   display: table-header-group;
   vertical-align: middle;
   border-color: inherit;
+}
+
+.avenir-font {
+  font-family: 'Avenir', sans-serif;
 }
 </style>

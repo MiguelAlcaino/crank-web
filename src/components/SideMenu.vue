@@ -53,6 +53,9 @@ const route = useRoute()
   </div>
 </template>
 
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>
+
 <style scoped>
 .list-group a.active {
   background-color: #000000;
@@ -74,5 +77,6 @@ a.list-group-item:hover {
 
 a {
   color: #000000;
+  font-family: 'Avenir', sans-serif;
 }
 </style>

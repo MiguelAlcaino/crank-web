@@ -79,7 +79,7 @@ function onClickDeleteLayout(roomLayout: RoomLayout) {
             </td>
           </tr>
           <tr v-if="!isLoading && roomLayouts?.length === 0">
-            <td colspan="3" class="text-center">No data available in table</td>
+            <td colspan="3" class="text-center"><p>NO DATA AVAILABLE IN TABLE</p></td>
           </tr>
           <tr v-if="isLoading">
             <td colspan="3" class="text-center">loading...</td>
@@ -90,4 +90,5 @@ function onClickDeleteLayout(roomLayout: RoomLayout) {
   </div>
 </template>
 
-<style scoped></style>
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>

@@ -253,6 +253,9 @@ async function editCurrentUserEnrollment() {
   ></ModalComponent>
 </template>
 
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>
+
 <style scoped>
 p.spots-not-available {
   font-family: 'BigJohn', sans-serif;

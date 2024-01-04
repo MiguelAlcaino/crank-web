@@ -162,6 +162,9 @@ async function requestPasswordLink() {
   </ModalComponent>
 </template>
 
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>
+
 <style scoped>
 .page-login-v3 .panel .panel-body {
   padding: 50px 40px 40px;

@@ -90,12 +90,12 @@ async function getCurrentUserWorkoutStats() {
               <td class="text-center"></td>
             </tr>
             <tr v-if="classStats?.length === 0 && !isLoading">
-              <td colspan="6">
-                <p>No data available in table</p>
+              <td colspan="6" class="text-center">
+                <p>NO DATA AVAILABLE IN TABLE</p>
               </td>
             </tr>
             <tr v-if="isLoading">
-              <td colspan="6">loading...</td>
+              <td colspan="6" class="text-center"><p>LOADING...</p></td>
             </tr>
           </tbody>
         </table>
@@ -114,11 +114,18 @@ async function getCurrentUserWorkoutStats() {
   </ModalComponent>
 </template>
 
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>
+
 <style scoped>
 tr {
   cursor: pointer;
 }
 tr:hover {
   background-color: #dadada !important;
+}
+
+p {
+  font-family: 'Avenir', sans-serif;
 }
 </style>

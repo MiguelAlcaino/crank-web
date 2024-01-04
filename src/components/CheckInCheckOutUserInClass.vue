@@ -109,4 +109,5 @@ async function checkOutUserInClass() {
   </ModalComponent>
 </template>
 
-<style></style>
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>

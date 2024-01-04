@@ -175,4 +175,5 @@ async function assignRoomLayoutId() {
   </ModalComponent>
 </template>
 
-<style scoped></style>
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>

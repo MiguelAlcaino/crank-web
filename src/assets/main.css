@@ -132,12 +132,28 @@ h6 {
   font-family: 'BigJohn', sans-serif;
 }
 
+p {
+  font-family: 'Avenir', sans-serif;
+}
+
 .input-label {
   color: #ff7f61;
   font-family: 'Avenir', sans-serif;
 }
 
 input {
+  font-family: 'Avenir', sans-serif;
+}
+
+select {
+  font-family: 'Avenir', sans-serif;
+}
+
+span {
+  font-family: 'Avenir', sans-serif;
+}
+
+label {
   font-family: 'Avenir', sans-serif;
 }
 

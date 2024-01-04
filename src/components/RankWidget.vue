@@ -85,6 +85,9 @@ async function getCurrentUserRankingInClass(classId?: string) {
   </div>
 </template>
 
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>
+
 <style scoped>
 p {
   font-family: 'BigJohn', sans-serif;

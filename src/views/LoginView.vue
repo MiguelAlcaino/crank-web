@@ -181,7 +181,13 @@ function setCalendarDates() {
   </div>
 </template>
 
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>
+
 <style scoped>
+p {
+  font-family: 'Avenir', sans-serif;
+}
 .page-login-v3 .panel .panel-body {
   padding: 50px 40px 40px;
 }
