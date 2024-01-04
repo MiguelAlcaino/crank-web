@@ -771,10 +771,10 @@ h3 {
   color: var(--dp-primary-text-color);
 }
 
-span {
+li > span {
   font-family: 'Avenir', sans-serif;
 }
-strong {
+li > strong {
   font-family: 'Avenir', sans-serif;
 }
 </style>

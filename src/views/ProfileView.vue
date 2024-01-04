@@ -712,10 +712,10 @@ input {
   font-family: 'Avenir', sans-serif;
 }
 
-span {
+li > span {
   font-family: 'Avenir', sans-serif;
 }
-strong {
+li > strong {
   font-family: 'Avenir', sans-serif;
 }
 </style>
