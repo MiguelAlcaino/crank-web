@@ -175,6 +175,9 @@ async function removeUserFromClass(enrollmentId: string, lateCancel: boolean) {
   </ModalComponent>
 </template>
 
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>
+
 <style scoped>
 .tableMessageNoRecords {
   text-align: center;

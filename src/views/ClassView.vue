@@ -369,6 +369,9 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
   </ModalComponent>
 </template>
 
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>
+
 <style scoped>
 a:link {
   color: #000000;
@@ -396,5 +399,13 @@ a:active {
   background-color: transparent;
   text-decoration: none;
   font-family: 'BigJohn', sans-serif;
+}
+
+b {
+  font-family: 'BigJohn', sans-serif;
+}
+
+p {
+  font-family: 'Avenir', sans-serif;
 }
 </style>

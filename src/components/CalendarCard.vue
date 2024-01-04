@@ -46,23 +46,25 @@ async function selectClass() {
         <div class="popover-header">
           <b class="className">{{ classInfo?.name }}</b>
         </div>
-        <div v-html="classInfo?.description" class="popover-body"></div>
+        <div v-html="classInfo?.description" class="popover-body card-font"></div>
       </template>
     </Popper>
     <div class="row">
-      <div class="col-8">{{ classInfo?.instructorName }}</div>
+      <div class="col-8 card-font">{{ classInfo?.instructorName }}</div>
       <div class="col-4 colIcon">
         <IconCalendarCard v-if="classInfo?.isSubstitute" letter="S"></IconCalendarCard>
       </div>
     </div>
     <div class="row">
-      <div class="col-8">{{ dayjs(classInfo?.startWithNoTimeZone).format('h:mm a') }}</div>
+      <div class="col-8 card-font">
+        {{ dayjs(classInfo?.startWithNoTimeZone).format('h:mm a') }}
+      </div>
       <div class="col-4 colIcon">
         <IconCalendarCard v-if="isEnrolled" letter="E"></IconCalendarCard>
       </div>
     </div>
     <div class="row">
-      <div class="col-8">{{ classInfo?.duration + ' mins.' }}</div>
+      <div class="col-8 card-font">{{ classInfo?.duration + ' mins.' }}</div>
       <div class="col-4 colIcon">
         <IconCalendarCard v-if="classInfo?.waitListAvailable" letter="W"></IconCalendarCard>
       </div>
@@ -70,7 +72,14 @@ async function selectClass() {
   </div>
 </template>
 
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>
+
 <style scoped>
+.card-font {
+  font-family: 'Avenir', sans-serif;
+}
+
 .disabledCard {
   background-color: #f5f5f5 !important;
   cursor: not-allowed;
@@ -91,6 +100,7 @@ async function selectClass() {
 
 .className {
   text-transform: uppercase;
+  font-family: 'BigJohn', sans-serif;
 }
 
 .light-popover {

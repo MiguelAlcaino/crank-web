@@ -249,6 +249,9 @@ async function getUser(userId: string) {
   </ModalComponent>
 </template>
 
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>
+
 <style scoped>
 h6 {
   color: #737373;

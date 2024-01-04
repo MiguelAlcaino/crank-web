@@ -177,15 +177,22 @@ const emits = defineEmits<{
           </td>
         </tr>
         <tr v-if="isLoading">
-          <td colspan="7">loading...</td>
+          <td colspan="7" class="text-center"><p>LOADING...</p></td>
         </tr>
       </tbody>
     </table>
   </div>
 </template>
 
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>
+
 <style scoped>
 .lateCancelColor {
   background-color: rgb(206, 206, 206);
+}
+
+p {
+  font-family: 'Avenir', sans-serif;
 }
 </style>

@@ -111,12 +111,12 @@ async function getSiteDateTimeNow() {
               </td>
             </tr>
             <tr v-if="purchases?.length === 0 && !isLoading">
-              <td colspan="7">
-                <p>No data available in table</p>
+              <td colspan="7" style="text-align: center" class="text-center">
+                <p>NO DATA AVAILABLE IN TABLE</p>
               </td>
             </tr>
             <tr v-if="isLoading" class="text-center align-middle">
-              <td colspan="7">LOADING...</td>
+              <td colspan="7"><p>LOADING...</p></td>
             </tr>
           </tbody>
         </table>
@@ -125,8 +125,15 @@ async function getSiteDateTimeNow() {
   </div>
 </template>
 
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>
+
 <style scoped>
 .isDisabled {
   background-color: rgb(214, 214, 214);
+}
+
+p {
+  font-family: 'Avenir', sans-serif;
 }
 </style>

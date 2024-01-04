@@ -21,4 +21,5 @@ defineProps<{ className: string }>()
   />
 </template>
 
-<style></style>
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>

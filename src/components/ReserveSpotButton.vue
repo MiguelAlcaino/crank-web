@@ -28,6 +28,9 @@ function onClickBookClassBtn(): void {
   </div>
 </template>
 
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>
+
 <style scoped>
 .btn-primary {
   color: #fff;

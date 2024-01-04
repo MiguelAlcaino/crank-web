@@ -25,9 +25,9 @@ import { faLeftLong, faStepBackward, faStepForward } from '@fortawesome/free-sol
 library.add(faStepBackward, faStepForward, faLeftLong)
 
 import 'vue3-simple-typeahead/dist/vue3-simple-typeahead.css'
-import 'bootstrap/dist/css/bootstrap.min.css'
+//import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
-import './assets/main.css'
+//import './assets/main.css'
 
 import { authService } from '@/services/authService'
 import { ApiService } from '@/services/apiService'

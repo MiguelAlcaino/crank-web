@@ -644,6 +644,9 @@ function onChangeCountry() {
   </ModalComponent>
 </template>
 
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>
+
 <style lang="css" scoped>
 .custom-control-input:focus ~ .custom-control-label::before {
   border-color: #ff6f60 !important;
@@ -671,5 +674,48 @@ function onChangeCountry() {
 
 h3 {
   color: #737373;
+}
+</style>
+
+<style lang="css">
+/* Datepicker Theming */
+.dp__theme_light {
+  --dp-background-color: #ffffff;
+  --dp-text-color: #212121;
+  --dp-hover-color: #f3f3f3;
+  --dp-hover-text-color: #212121;
+  --dp-hover-icon-color: #959595;
+  --dp-primary-color: #000000;
+  --dp-primary-text-color: #f8f5f5;
+  --dp-secondary-color: #c0c4cc;
+  --dp-border-color: #ddd;
+  --dp-menu-border-color: #ddd;
+  --dp-border-color-hover: #aaaeb7;
+  --dp-disabled-color: #f6f6f6;
+  --dp-scroll-bar-background: #f3f3f3;
+  --dp-scroll-bar-color: #959595;
+  --dp-success-color: #000000;
+  --dp-success-color-disabled: #a3d9b1;
+  --dp-icon-color: #959595;
+  --dp-danger-color: #ff6f60;
+  --dp-highlight-color: rgba(255, 127, 97, 0.1);
+}
+
+.dp__range_end,
+.dp__range_start,
+.dp__active_date {
+  background: var(--dp-danger-color);
+  color: var(--dp-primary-text-color);
+}
+
+input {
+  font-family: 'Avenir', sans-serif;
+}
+
+span {
+  font-family: 'Avenir', sans-serif;
+}
+strong {
+  font-family: 'Avenir', sans-serif;
 }
 </style>
