@@ -679,14 +679,12 @@ async function login() {
               id="acceptTermsAndConditionsCheck"
               v-model="formData.acceptTermsAndConditions"
             />
-            <label class="custom-control-label" for="acceptTermsAndConditionsCheck"
-              >I understand and accept the
-              <b>
-                <a href="https://www.crank-fit.com/terms-conditions" target="_blank"
-                  >Terms & Conditions</a
-                >
-              </b></label
-            >
+            <label class="custom-control-label" for="acceptTermsAndConditionsCheck">
+              I understand and accept the
+              <a href="https://www.crank-fit.com/terms-conditions" target="_blank">
+                Terms & Conditions
+              </a>
+            </label>
           </div>
           <small
             v-for="error in v$.acceptTermsAndConditions.$errors"
