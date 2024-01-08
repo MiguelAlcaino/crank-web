@@ -208,7 +208,7 @@ async function setCurrentUserSiteInStore() {
 
   <!-- Success Modal -->
   <ModalComponent
-    title="RESET PASSWORD"
+    title="SUCCESS"
     :message="SUCCESS_RESET_PASSWORD"
     :closable="false"
     @on-ok="router.replace({ name: 'calendar' })"
