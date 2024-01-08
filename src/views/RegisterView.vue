@@ -672,20 +672,22 @@ async function login() {
     <div class="form-row">
       <div class="col-md-12 mb-3">
         <div class="form-check">
-          <input
-            class="form-check-input"
-            type="checkbox"
-            v-model="formData.acceptTermsAndConditions"
-            id="acceptTermsAndConditionsRegistration"
-          />
-          <label class="form-check-label" for="acceptTermsAndConditionsRegistration">
-            I understand and accept the
-            <b>
-              <a href="https://www.crank-fit.com/terms-conditions" target="_blank"
-                >Terms & Conditions</a
-              >
-            </b>
-          </label>
+          <div class="custom-control custom-checkbox">
+            <input
+              type="checkbox"
+              class="custom-control-input"
+              id="acceptTermsAndConditionsCheck"
+              v-model="formData.acceptTermsAndConditions"
+            />
+            <label class="custom-control-label" for="acceptTermsAndConditionsCheck"
+              >I understand and accept the
+              <b>
+                <a href="https://www.crank-fit.com/terms-conditions" target="_blank"
+                  >Terms & Conditions</a
+                >
+              </b></label
+            >
+          </div>
           <small
             v-for="error in v$.acceptTermsAndConditions.$errors"
             :key="error.$uid"
@@ -747,6 +749,23 @@ a {
 a:hover {
   color: #000000;
   font-weight: bold;
+}
+
+.custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
+  background-color: #ff7f61 !important;
+  border-color: #ff7f61 !important;
+}
+.custom-checkbox .custom-control-input:checked:focus ~ .custom-control-label::before {
+  box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem #ff7f61;
+  border-color: #ff7f61 !important;
+}
+.custom-checkbox .custom-control-input:focus ~ .custom-control-label::before {
+  box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(0, 0, 0, 0.25);
+  border-color: #ff7f61 !important;
+}
+.custom-checkbox .custom-control-input:active ~ .custom-control-label::before {
+  background-color: #ffc6b9;
+  border-color: #ff7f61 !important;
 }
 </style>
 
