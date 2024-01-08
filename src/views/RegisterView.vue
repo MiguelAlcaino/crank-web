@@ -680,11 +680,11 @@ async function login() {
           />
           <label class="form-check-label" for="acceptTermsAndConditionsRegistration">
             I understand and accept the
-            <b
-              ><a href="https://www.crank-fit.com/terms-conditions" target="_blank"
+            <b>
+              <a href="https://www.crank-fit.com/terms-conditions" target="_blank"
                 >Terms & Conditions</a
-              ></b
-            >
+              >
+            </b>
           </label>
           <small
             v-for="error in v$.acceptTermsAndConditions.$errors"
@@ -737,6 +737,16 @@ async function login() {
 <style scoped>
 h3 {
   color: #737373;
+}
+
+a {
+  color: #000000;
+  font-weight: bold;
+  text-decoration: underline;
+}
+a:hover {
+  color: #000000;
+  font-weight: bold;
 }
 </style>
 
