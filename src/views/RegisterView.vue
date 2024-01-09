@@ -672,20 +672,20 @@ async function login() {
     <div class="form-row">
       <div class="col-md-12 mb-3">
         <div class="form-check">
-          <input
-            class="form-check-input"
-            type="checkbox"
-            v-model="formData.acceptTermsAndConditions"
-            id="acceptTermsAndConditionsRegistration"
-          />
-          <label class="form-check-label" for="acceptTermsAndConditionsRegistration">
-            I understand and accept the
-            <b
-              ><a href="https://www.crank-fit.com/terms-conditions" target="_blank"
-                >Terms & Conditions</a
-              ></b
-            >
-          </label>
+          <div class="custom-control custom-checkbox">
+            <input
+              type="checkbox"
+              class="custom-control-input"
+              id="acceptTermsAndConditionsCheck"
+              v-model="formData.acceptTermsAndConditions"
+            />
+            <label class="custom-control-label" for="acceptTermsAndConditionsCheck">
+              I understand and accept the
+              <a href="https://www.crank-fit.com/terms-conditions" target="_blank">
+                Terms & Conditions
+              </a>
+            </label>
+          </div>
           <small
             v-for="error in v$.acceptTermsAndConditions.$errors"
             :key="error.$uid"
@@ -738,37 +738,68 @@ async function login() {
 h3 {
   color: #737373;
 }
+
+a {
+  color: #000000;
+  font-weight: bold;
+  text-decoration: underline;
+}
+a:hover {
+  color: #000000;
+  font-weight: bold;
+}
+
+.custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
+  background-color: #ff7f61 !important;
+  border-color: #ff7f61 !important;
+}
+.custom-checkbox .custom-control-input:checked:focus ~ .custom-control-label::before {
+  box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem #ff7f61;
+  border-color: #ff7f61 !important;
+}
+.custom-checkbox .custom-control-input:focus ~ .custom-control-label::before {
+  box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(0, 0, 0, 0.25);
+  border-color: #ff7f61 !important;
+}
+.custom-checkbox .custom-control-input:active ~ .custom-control-label::before {
+  background-color: #ffc6b9;
+  border-color: #ff7f61 !important;
+}
 </style>
 
 <style lang="css">
 /* Datepicker Theming */
 .dp__theme_light {
-  --dp-background-color: #ffffff;
-  --dp-text-color: #212121;
-  --dp-hover-color: #f3f3f3;
-  --dp-hover-text-color: #212121;
-  --dp-hover-icon-color: #959595;
-  --dp-primary-color: #000000;
-  --dp-primary-text-color: #f8f5f5;
-  --dp-secondary-color: #c0c4cc;
-  --dp-border-color: #ddd;
-  --dp-menu-border-color: #ddd;
-  --dp-border-color-hover: #aaaeb7;
-  --dp-disabled-color: #f6f6f6;
-  --dp-scroll-bar-background: #f3f3f3;
-  --dp-scroll-bar-color: #959595;
-  --dp-success-color: #000000;
-  --dp-success-color-disabled: #a3d9b1;
-  --dp-icon-color: #959595;
-  --dp-danger-color: #ff6f60;
-  --dp-highlight-color: rgba(255, 127, 97, 0.1);
+  --dp-background-color: #ffffff !important;
+  --dp-text-color: #212121 !important;
+  --dp-hover-color: #f3f3f3 !important;
+  --dp-hover-text-color: #212121 !important;
+  --dp-hover-icon-color: #959595 !important;
+  --dp-primary-color: #ff7f61 !important;
+  --dp-primary-text-color: #f8f5f5 !important;
+  --dp-secondary-color: #c0c4cc !important;
+  --dp-border-color: #ddd !important;
+  --dp-menu-border-color: #ddd !important;
+  --dp-border-color-hover: #aaaeb7 !important;
+  --dp-disabled-color: #f6f6f6 !important;
+  --dp-scroll-bar-background: #f3f3f3 !important;
+  --dp-scroll-bar-color: #959595 !important;
+  --dp-success-color: #000000 !important;
+  --dp-success-color-disabled: #a3d9b1 !important;
+  --dp-icon-color: #959595 !important;
+  --dp-danger-color: #ff6f60 !important;
+  --dp-highlight-color: rgba(255, 127, 97, 0.1) !important;
 }
 
 .dp__range_end,
 .dp__range_start,
 .dp__active_date {
-  background: var(--dp-danger-color);
-  color: var(--dp-primary-text-color);
+  background: var(--dp-danger-color) !important;
+  color: var(--dp-primary-text-color) !important;
+}
+.dp__action_select {
+  background: #000000 !important;
+  color: var(--dp-primary-text-color) !important;
 }
 
 li > span {
