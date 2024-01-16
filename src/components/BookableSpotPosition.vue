@@ -47,6 +47,7 @@ function selectSpot() {
   font-weight: 400;
   border-radius: 50%;
   font-size: 14px;
+  font-family: 'Avenir', sans-serif;
 }
 
 .bookedSpotByCurrentUser {
@@ -62,6 +63,7 @@ function selectSpot() {
   font-weight: 400;
   border-radius: 50%;
   font-size: 14px;
+  font-family: 'Avenir', sans-serif;
 }
 
 .enabledSpot {
@@ -80,10 +82,12 @@ function selectSpot() {
   text-decoration: none;
   font-weight: 400;
   font-size: 14px;
+  font-family: 'Avenir', sans-serif;
 }
 
 .enabledSpot:hover {
   background-color: black;
   color: white;
+  font-family: 'Avenir', sans-serif;
 }
 </style>
