@@ -294,6 +294,7 @@ export type Enrollment = {
 export type EnrollmentInfo = EnrollmentInfoInterface & {
   __typename: 'EnrollmentInfo'
   enrollmentDateTime: Scalars['DateTime']
+  enrollmentDateTimeWithNoTimeZone: Scalars['DateTimeWithoutTimeZone']
   enrollmentStatus: EnrollmentStatusEnum
   id: Scalars['ID']
   identifiableUser?: Maybe<IdentifiableUser>
@@ -305,6 +306,7 @@ export type EnrollmentInfo = EnrollmentInfoInterface & {
 
 export type EnrollmentInfoInterface = {
   enrollmentDateTime: Scalars['DateTime']
+  enrollmentDateTimeWithNoTimeZone: Scalars['DateTimeWithoutTimeZone']
   enrollmentStatus: EnrollmentStatusEnum
   id: Scalars['ID']
   identifiableUser?: Maybe<IdentifiableUser>
@@ -936,6 +938,7 @@ export type ValidateResetPasswordTokenInput = {
 export type WaitlistEntry = EnrollmentInfoInterface & {
   __typename: 'WaitlistEntry'
   enrollmentDateTime: Scalars['DateTime']
+  enrollmentDateTimeWithNoTimeZone: Scalars['DateTimeWithoutTimeZone']
   enrollmentStatus: EnrollmentStatusEnum
   id: Scalars['ID']
   identifiableUser?: Maybe<IdentifiableUser>
