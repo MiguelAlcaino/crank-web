@@ -1,9 +1,8 @@
 <script setup lang="ts">
-
 const props = defineProps<{
   isBookedByCurrentUser?: boolean | null
   spotNumber: number
-  isUsed:boolean
+  isUsed: boolean
 }>()
 
 const emits = defineEmits<{
@@ -17,10 +16,7 @@ function selectSpot() {
 
 <template>
   <div>
-    <div
-      v-if="isUsed"
-      :class="isBookedByCurrentUser ? 'bookedSpotByCurrentUser' : 'bookedSpot'"
-    >
+    <div v-if="isUsed" :class="isBookedByCurrentUser ? 'bookedSpotByCurrentUser' : 'bookedSpot'">
       {{ spotNumber }}
     </div>
     <div v-else class="enabledSpot" @click="selectSpot()">{{ spotNumber }}</div>
