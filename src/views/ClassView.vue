@@ -41,6 +41,8 @@ const classInfo = ref<ClassInfo | null>(null)
 const enrollmentEnabled = ref<boolean>(true)
 const enrollmentInfo = ref<EnrollmentInfo | null>(null)
 
+const siteDateTimeNow = ref<Date>(new Date())
+
 const confirmModalData = ref<{
   title: string
   message: string
@@ -101,6 +103,9 @@ async function getClassInfo() {
 
   const classId = route.params.id as string
   const _classInfo = await apiService.getClassInfo(appStore().site, classId)
+  const siteSettings = await await apiService.getSiteSettings(appStore().site)
+
+  if (siteSettings) siteDateTimeNow.value = siteSettings.siteDateTimeNow
 
   if (_classInfo) {
     enrollmentInfo.value = await apiService.getCurrentUserEnrollmentInClass(classId)
@@ -319,6 +324,8 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
             :enrollment-status="enrollmentInfo?.enrollmentStatus"
             :enrollment-id="enrollmentInfo.id"
             @after-cancelling="acceptSuccessModal()"
+            :site-date-time-now="siteDateTimeNow"
+            :start="classInfo!.class.start"
           ></CancelEnrollment>
         </div>
       </div>

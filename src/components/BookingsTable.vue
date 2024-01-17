@@ -158,6 +158,8 @@ const emits = defineEmits<{
               :enrollment-status="enrollment.enrollmentInfo.enrollmentStatus"
               :enrollment-id="enrollment.enrollmentInfo.id"
               @after-cancelling="emits('afterCancelling')"
+              :site-date-time-now="siteDateTimeNow"
+              :start="enrollment.class.start"
             ></CancelEnrollment>
           </td>
         </tr>

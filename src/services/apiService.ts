@@ -26,7 +26,6 @@ import type {
   ResetPasswordForCurrentUserUnion,
   ResetPasswordLinkResultUnion,
   SiteEnum,
-  SwapSpotResultUnion,
   UpdateCurrentUserPasswordInput,
   User,
   UserInClassRanking,
