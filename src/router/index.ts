@@ -14,7 +14,6 @@ import ResetPasswordView from '../views/ResetPasswordView.vue'
 import WorkoutStatsView from '../views/WorkoutStatsView.vue'
 import WorkoutSummaryView from '../views/WorkoutSummaryView.vue'
 import { authService } from '@/services/authService'
-import RoomLayoutListView from '@/views/admin/RoomLayoutListView.vue'
 import MenuLayout from '@/layouts/MenuLayout.vue'
 import PaymentsIframeView from '@/views/PaymentsIframeView.vue'
 
@@ -102,39 +101,6 @@ const router = createRouter({
       path: '/payments',
       name: 'payments',
       component: PaymentsIframeView
-    },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue')
-    },
-    {
-      path: '/admin/class/:id',
-      name: 'admin_class',
-      component: () => import('../views/admin/AdminClass.vue')
-    },
-    {
-      path: '/admin/calendar-class',
-      name: 'admin_calendar_class',
-      component: () => import('../views/admin/AdminClassView.vue')
-    },
-    {
-      path: '/admin/room-layout/list',
-      name: 'admin_room_layout_list',
-      component: RoomLayoutListView
-    },
-    {
-      path: '/admin/room-layout/create',
-      name: 'admin_room_layout_create',
-      component: () => import('../views/admin/RoomLayoutView.vue')
-    },
-    {
-      path: '/admin/room-layout/edit/:id',
-      name: 'admin_room_layout_edit',
-      component: () => import('../views/admin/RoomLayoutView.vue')
     }
   ]
 })

@@ -2,7 +2,6 @@
 import { onMounted, ref, watch } from 'vue'
 import BookableSpotPosition from '@/components/BookableSpotPosition.vue'
 import IconPositionNotBookable from '@/components/icons/IconPositionNotBookable.vue'
-import AdminBookableSpotPosition from '@/components/AdminBookableSpotPosition.vue'
 
 interface SpotPosition {
   x: number
@@ -75,7 +74,6 @@ enum SpotActionEnum {
 
 interface Props {
   matrix?: Array<BookableSpot | IconPosition>
-  showUserInSpots?: boolean
   selectedSpotNumber?: number | null
   enrollments?: EnrollmentInfo[] | null
   spotNumberBookedByCurrentUser?: number | null
@@ -87,7 +85,6 @@ const BOOKABLE_SPOT_KEY = 'BookableSpot'
 const ICON_POSITION_KEY = 'IconPosition'
 
 const props = withDefaults(defineProps<Props>(), {
-  showUserInSpots: false,
   spotSelectionIsDisabled: false
 })
 
@@ -203,21 +200,6 @@ function onClickSpotBtn(spotNumber: number) {
     spotNumber: spotNumber
   } as BookableSpotClickedEvent)
 }
-
-function isSpotForAdmin(spot: SpotPosition): boolean {
-  return (
-    props.showUserInSpots &&
-    spot.spotInfo !== undefined &&
-    spot.user !== undefined &&
-    spot.positionType === BOOKABLE_SPOT_KEY
-  )
-}
-
-function onClickSpotAdmin(spotNumber: number) {
-  emits('clickSpot', {
-    spotNumber: spotNumber
-  } as BookableSpotClickedEvent)
-}
 </script>
 
 <template>
@@ -226,19 +208,8 @@ function onClickSpotAdmin(spotNumber: number) {
       <tbody>
         <tr v-for="(colRow, rowKey) in spotsTable" :key="rowKey" class="text-center">
           <td class="class-position" v-for="(spot, columnKey) in colRow" :key="columnKey">
-            <admin-bookable-spot-position
-              v-if="isSpotForAdmin(spot)"
-              :spot-info="spot.spotInfo!"
-              :user="spot.user!"
-              :enabled="spot.enabled!"
-              @click-spot="onClickSpotAdmin"
-              :selected="props.selectedSpotNumber === spot?.spotInfo?.spotNumber"
-              :is-checked-in="spot.isCheckedIn"
-              :spot-action="spotAction"
-              :spot-selection-is-disabled="spotSelectionIsDisabled"
-            />
             <bookable-spot-position
-              v-else-if="!showUserInSpots && spot.positionType === BOOKABLE_SPOT_KEY"
+              v-if="spot.positionType === BOOKABLE_SPOT_KEY"
               :spotInfo="spot.spotInfo"
               @click-spot="onClickSpotBtn"
               :is-booked-by-current-user="
