@@ -16,10 +16,12 @@ interface Class {
   instructorName: string
   name: string
   start: Date
+  startWithNoTimeZone: Date
 }
 
 interface EnrollmentInfo {
   enrollmentDateTime: Date
+  enrollmentDateTimeWithNoTimeZone: Date
   enrollmentStatus: EnrollmentStatusEnum
   id: string
   spotInfo?: SpotInfo
@@ -95,7 +97,7 @@ const emits = defineEmits<{
           </td>
           <td class="align-middle">{{ enrollment.class.instructorName }}</td>
           <td class="text-center align-middle">
-            {{ dayjs(new Date(enrollment.class.start)).format('YYYY-MM-DD h:mm a') }}
+            {{ dayjs(new Date(enrollment.class.startWithNoTimeZone)).format('YYYY-MM-DD h:mm a') }}
           </td>
           <td class="text-center align-middle">
             <div class="row">
@@ -135,7 +137,7 @@ const emits = defineEmits<{
           </td>
           <td class="text-center align-middle">
             {{
-              dayjs(new Date(enrollment.enrollmentInfo.enrollmentDateTime)).format(
+              dayjs(new Date(enrollment.enrollmentInfo.enrollmentDateTimeWithNoTimeZone)).format(
                 'YYYY-MM-DD h:mm a'
               )
             }}

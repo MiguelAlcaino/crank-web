@@ -216,6 +216,7 @@ export class ApiService {
             id
             enrollmentStatus
             enrollmentDateTime
+            enrollmentDateTimeWithNoTimeZone
             ... on EnrollmentInfo {
               spotNumber
               spotInfo {
