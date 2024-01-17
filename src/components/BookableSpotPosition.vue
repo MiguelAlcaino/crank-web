@@ -1,12 +1,9 @@
 <script setup lang="ts">
-interface BookableSpot {
-  spotNumber: number
-  isBooked: boolean
-}
 
 const props = defineProps<{
-  spotInfo?: BookableSpot | null
   isBookedByCurrentUser?: boolean | null
+  spotNumber: number
+  isUsed:boolean
 }>()
 
 const emits = defineEmits<{
@@ -14,19 +11,19 @@ const emits = defineEmits<{
 }>()
 
 function selectSpot() {
-  emits('clickSpot', props.spotInfo!.spotNumber)
+  emits('clickSpot', props.spotNumber)
 }
 </script>
 
 <template>
   <div>
     <div
-      v-if="spotInfo?.isBooked"
+      v-if="isUsed"
       :class="isBookedByCurrentUser ? 'bookedSpotByCurrentUser' : 'bookedSpot'"
     >
-      {{ spotInfo.spotNumber }}
+      {{ spotNumber }}
     </div>
-    <div v-else class="enabledSpot" @click="selectSpot()">{{ spotInfo?.spotNumber }}</div>
+    <div v-else class="enabledSpot" @click="selectSpot()">{{ spotNumber }}</div>
   </div>
 </template>
 
@@ -47,6 +44,7 @@ function selectSpot() {
   font-weight: 400;
   border-radius: 50%;
   font-size: 14px;
+  font-family: 'Avenir', sans-serif;
 }
 
 .bookedSpotByCurrentUser {
@@ -62,6 +60,7 @@ function selectSpot() {
   font-weight: 400;
   border-radius: 50%;
   font-size: 14px;
+  font-family: 'Avenir', sans-serif;
 }
 
 .enabledSpot {
@@ -80,10 +79,12 @@ function selectSpot() {
   text-decoration: none;
   font-weight: 400;
   font-size: 14px;
+  font-family: 'Avenir', sans-serif;
 }
 
 .enabledSpot:hover {
   background-color: black;
   color: white;
+  font-family: 'Avenir', sans-serif;
 }
 </style>

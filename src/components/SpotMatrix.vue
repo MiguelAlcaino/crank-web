@@ -2,94 +2,48 @@
 import { onMounted, ref, watch } from 'vue'
 import BookableSpotPosition from '@/components/BookableSpotPosition.vue'
 import IconPositionNotBookable from '@/components/icons/IconPositionNotBookable.vue'
-import AdminBookableSpotPosition from '@/components/AdminBookableSpotPosition.vue'
 
 interface SpotPosition {
   x: number
   y: number
   positionType: string
   positionIcon: string
-  spotInfo?: SpotInfo
-  user?: User | null
-  enabled?: boolean
-  isCheckedIn?: boolean
+  spotNumber?: number
 }
 
-interface ClassPositionInterface {
-  __typename?: string
+interface BookableSpotClickedEvent {
+  spotNumber: number | null
+}
+
+interface BookableSpot {
+  x: number
+  y: number
+  icon: string
+  spotNumber: number
+}
+
+interface IconPosition  {
   x: number
   y: number
   icon: string
 }
 
-interface BookableSpotClickedEvent {
-  spotNumber: number | null
-  isBooked: boolean
-}
-
-interface SpotInfo {
-  isBooked: boolean
-  spotNumber: number
-}
-
-interface User {
-  firstName: string
-  lastName: string
-}
-
-interface BookableSpot extends ClassPositionInterface {
-  spotInfo: SpotInfo
-  enabled: boolean
-}
-
-interface IconPosition extends ClassPositionInterface {}
-
-interface EnrollmentInfo {
-  identifiableUser?: IdentifiableUser | null
-  enrollmentDateTime: Date
-  enrollmentStatus: EnrollmentStatusEnum
-  id: string
-  isCheckedIn?: boolean
-  spotInfo?: SpotInfo | null
-}
-
-interface IdentifiableUser {
-  id?: string
-  user?: User
-}
-
-enum EnrollmentStatusEnum {
-  Active = 'active',
-  Cancelled = 'cancelled',
-  LateCancelled = 'lateCancelled',
-  Unknown = 'unknown',
-  Waitlisted = 'waitlisted'
-}
-
-enum SpotActionEnum {
-  none,
-  asignUserToSpot,
-  changeMemberSpot,
-  swapSpot
-}
-
-interface Props {
-  matrix?: Array<BookableSpot | IconPosition>
-  showUserInSpots?: boolean
-  selectedSpotNumber?: number | null
-  enrollments?: EnrollmentInfo[] | null
-  spotNumberBookedByCurrentUser?: number | null
-  spotAction?: SpotActionEnum
-  spotSelectionIsDisabled?: boolean
+interface ClassPosition {
+  x: number
+  y: number
+  icon: string
+  spotNumber?: number
 }
 
 const BOOKABLE_SPOT_KEY = 'BookableSpot'
 const ICON_POSITION_KEY = 'IconPosition'
 
-const props = withDefaults(defineProps<Props>(), {
-  showUserInSpots: false,
-  spotSelectionIsDisabled: false
-})
+const props = defineProps<{
+  matrix?: Array<BookableSpot | IconPosition>
+  selectedSpotNumber?: number | null
+  spotNumberBookedByCurrentUser?: number | null
+  usedSpots: number[]
+}>()
 
 const emits = defineEmits<{
   (e: 'clickSpot', event: BookableSpotClickedEvent): void
@@ -110,28 +64,15 @@ watch(
   }
 )
 
-watch(
-  () => props.enrollments,
-  () => {
-    spotsTable.value = getMatrixOfSpotPositions(props.matrix!)
-  }
-)
-
-function newSpotPosition(
-  classPosition: BookableSpot | IconPosition,
-  user: User | null | undefined,
-  isCheckedIn?: boolean
-): SpotPosition {
-  if ('spotInfo' in classPosition) {
+function newSpotPosition(classPosition: ClassPosition): SpotPosition {
+  if (classPosition.icon === 'spot') {
+   const bookableSpot = classPosition as BookableSpot
     return {
-      x: classPosition.x,
-      y: classPosition.y,
+      x: bookableSpot.x,
+      y: bookableSpot.y,
       positionType: BOOKABLE_SPOT_KEY,
-      positionIcon: classPosition.icon,
-      spotInfo: classPosition.spotInfo,
-      user: user,
-      enabled: classPosition.enabled,
-      isCheckedIn: isCheckedIn
+      positionIcon: bookableSpot.icon,
+      spotNumber: bookableSpot.spotNumber,   
     }
   }
   return {
@@ -145,8 +86,6 @@ function newSpotPosition(
 function getMatrixOfSpotPositions(matrix: Array<BookableSpot | IconPosition>): SpotPosition[][] {
   let rows: Array<Array<SpotPosition>> = []
   let classPosition: BookableSpot | IconPosition
-  let user: User | null | undefined
-  let isCheckedIn: boolean | undefined
 
   for (let i = 0; i < matrix.length; i++) {
     for (let j = 0; j < matrix.length; j++) {
@@ -156,24 +95,7 @@ function getMatrixOfSpotPositions(matrix: Array<BookableSpot | IconPosition>): S
           rows.push([])
         }
 
-        user = null
-        isCheckedIn = false
-
-        if ('spotInfo' in classPosition) {
-          let spotInfo = classPosition.spotInfo as SpotInfo
-          if (spotInfo.spotNumber && props.enrollments) {
-            for (let index = 0; index < props.enrollments.length; index++) {
-              const enrollment = props.enrollments[index]
-              isCheckedIn = enrollment.isCheckedIn
-              if (enrollment.spotInfo?.spotNumber === spotInfo.spotNumber) {
-                user = enrollment.identifiableUser?.user
-                break
-              }
-            }
-          }
-        }
-
-        rows[i].push(newSpotPosition(classPosition, user, isCheckedIn))
+        rows[i].push(newSpotPosition(classPosition))
       }
     }
   }
@@ -203,21 +125,6 @@ function onClickSpotBtn(spotNumber: number) {
     spotNumber: spotNumber
   } as BookableSpotClickedEvent)
 }
-
-function isSpotForAdmin(spot: SpotPosition): boolean {
-  return (
-    props.showUserInSpots &&
-    spot.spotInfo !== undefined &&
-    spot.user !== undefined &&
-    spot.positionType === BOOKABLE_SPOT_KEY
-  )
-}
-
-function onClickSpotAdmin(spotNumber: number) {
-  emits('clickSpot', {
-    spotNumber: spotNumber
-  } as BookableSpotClickedEvent)
-}
 </script>
 
 <template>
@@ -226,23 +133,13 @@ function onClickSpotAdmin(spotNumber: number) {
       <tbody>
         <tr v-for="(colRow, rowKey) in spotsTable" :key="rowKey" class="text-center">
           <td class="class-position" v-for="(spot, columnKey) in colRow" :key="columnKey">
-            <admin-bookable-spot-position
-              v-if="isSpotForAdmin(spot)"
-              :spot-info="spot.spotInfo!"
-              :user="spot.user!"
-              :enabled="spot.enabled!"
-              @click-spot="onClickSpotAdmin"
-              :selected="props.selectedSpotNumber === spot?.spotInfo?.spotNumber"
-              :is-checked-in="spot.isCheckedIn"
-              :spot-action="spotAction"
-              :spot-selection-is-disabled="spotSelectionIsDisabled"
-            />
             <bookable-spot-position
-              v-else-if="!showUserInSpots && spot.positionType === BOOKABLE_SPOT_KEY"
-              :spotInfo="spot.spotInfo"
+              v-if="spot.positionType === BOOKABLE_SPOT_KEY"
+              :spotNumber="spot.spotNumber!"
+              :is-used="usedSpots.some(x=> x === spot.spotNumber)"
               @click-spot="onClickSpotBtn"
               :is-booked-by-current-user="
-                props.spotNumberBookedByCurrentUser === spot?.spotInfo?.spotNumber
+                props.spotNumberBookedByCurrentUser === spot.spotNumber
               "
             />
             <icon-position-not-bookable
