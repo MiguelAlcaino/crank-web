@@ -524,6 +524,7 @@ export class ApiService {
             duration
             waitListAvailable
           }
+          usedSpots
           roomLayout {
             id
             name
@@ -532,27 +533,12 @@ export class ApiService {
               x
               y
               icon
-              ... on BookableSpot {
-                enabled
+              ... on BookableSpot {                
                 spotNumber
                 spotInfo {
                   spotNumber
                   isBooked
                 }
-              }
-            }
-          }
-          enrollments(status: active) {
-            id
-            enrollmentStatus
-            enrollmentDateTime
-            ... on EnrollmentInfo {
-              isCheckedIn
-              spotNumber
-              spotInfo {
-                __typename
-                isBooked
-                spotNumber
               }
             }
           }

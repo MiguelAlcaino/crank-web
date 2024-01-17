@@ -1,12 +1,9 @@
 <script setup lang="ts">
-interface BookableSpot {
-  spotNumber: number
-  isBooked: boolean
-}
 
 const props = defineProps<{
-  spotInfo?: BookableSpot | null
   isBookedByCurrentUser?: boolean | null
+  spotNumber: number
+  isUsed:boolean
 }>()
 
 const emits = defineEmits<{
@@ -14,19 +11,19 @@ const emits = defineEmits<{
 }>()
 
 function selectSpot() {
-  emits('clickSpot', props.spotInfo!.spotNumber)
+  emits('clickSpot', props.spotNumber)
 }
 </script>
 
 <template>
   <div>
     <div
-      v-if="spotInfo?.isBooked"
+      v-if="isUsed"
       :class="isBookedByCurrentUser ? 'bookedSpotByCurrentUser' : 'bookedSpot'"
     >
-      {{ spotInfo.spotNumber }}
+      {{ spotNumber }}
     </div>
-    <div v-else class="enabledSpot" @click="selectSpot()">{{ spotInfo?.spotNumber }}</div>
+    <div v-else class="enabledSpot" @click="selectSpot()">{{ spotNumber }}</div>
   </div>
 </template>
 

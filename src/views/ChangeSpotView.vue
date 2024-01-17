@@ -88,15 +88,12 @@ function checkAvailableSpots(classInfo: ClassInfo | null) {
 
   if (classInfo?.roomLayout?.matrix) {
     const matrix = classInfo?.roomLayout?.matrix
-    const enrollments = classInfo?.enrollments.filter(
-      (x) => x.enrollmentStatus === EnrollmentStatusEnum.Active
-    ) as EnrollmentInfo[]
 
     for (let i = 0; i < matrix.length; i++) {
       if (matrix[i].icon === PositionIconEnum.Spot) {
         let bookableSpot = matrix[i] as BookableSpot
 
-        let isBooked = enrollments.find((x) => x.spotNumber === bookableSpot.spotNumber)
+        let isBooked = classInfo?.usedSpots?.find((x) => x === bookableSpot.spotNumber)
           ? true
           : false
 
@@ -212,6 +209,7 @@ async function editCurrentUserEnrollment() {
             :matrix="classInfo.roomLayout?.matrix"
             @click-spot="confirmChangeSpot"
             :spot-number-booked-by-current-user="enrollmentInfo?.spotNumber"
+            :used-spots="classInfo.usedSpots!"
           ></SpotMatrix>
         </div>
       </div>

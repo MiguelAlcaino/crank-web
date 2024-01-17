@@ -290,7 +290,8 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
             "
             :matrix="classInfo.roomLayout?.matrix"
             @click-spot="confirmBookSpot"
-            :spot-number-booked-by-current-user="enrollmentInfo?.spotInfo?.spotNumber"
+            :spot-number-booked-by-current-user="enrollmentInfo?.spotNumber"
+            :used-spots="classInfo.usedSpots!"
           ></SpotMatrix>
           <ReserveSpotButton
             v-if="
