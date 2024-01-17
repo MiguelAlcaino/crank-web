@@ -131,10 +131,18 @@ function setCalendarDates() {
                   maxlength="100"
                   required
                 />
-                <div class="input-group-prepend" @click="passwordIsVisible = !passwordIsVisible" style="cursor: pointer;">
-                  <span class="input-group-text" id="passwordEye">
-                    <i v-if="passwordIsVisible" class="bi bi-eye-slash"></i>
-                    <i v-else class="bi bi-eye"></i>
+                <div
+                  class="input-group-prepend"
+                  @click="passwordIsVisible = !passwordIsVisible"
+                  style="cursor: pointer"
+                >
+                  <span
+                    class="input-group-text"
+                    id="passwordEye"
+                    style="background-color: transparent"
+                  >
+                    <i v-if="passwordIsVisible" class="bi bi-eye-slash-fill"></i>
+                    <i v-else class="bi bi-eye-fill"></i>
                   </span>
                 </div>
                 <small
