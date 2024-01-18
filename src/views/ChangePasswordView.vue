@@ -19,6 +19,10 @@ const errorMessage = ref<string>('')
 
 const checkPass = helpers.regex(/^(?=.*[a-zA-Z])(?=.*\d).+$/)
 
+const currentPasswordIsVisible = ref<boolean>(false)
+const newPasswordIsVisible = ref<boolean>(false)
+const confirmNewPasswordIsVisible = ref<boolean>(false)
+
 const formData = reactive({
   currentPassword: '',
   newPassword: '',
@@ -93,38 +97,70 @@ const submitForm = async () => {
         <!-- current password -->
         <div class="col-md-6 mb-3">
           <label for="currentPassword" class="input-label">Current Password *</label>
-          <input
-            id="currentPassword"
-            class="form-control"
-            v-model="formData.currentPassword"
-            type="password"
-            placeholder="Current Password"
-            maxlength="50"
-            required
-          />
-          <small
-            v-for="error in v$.currentPassword.$errors"
-            :key="error.$uid"
-            class="form-text"
-            style="color: red"
-          >
-            {{ error.$message }}
-          </small>
+          <div class="input-group">
+            <input
+              id="currentPassword"
+              class="form-control"
+              v-model="formData.currentPassword"
+              :type="currentPasswordIsVisible ? 'text' : 'password'"
+              placeholder="Current Password"
+              maxlength="50"
+              required
+            />
+            <div
+              class="input-group-prepend"
+              @click="currentPasswordIsVisible = !currentPasswordIsVisible"
+              style="cursor: pointer"
+            >
+              <span
+                class="input-group-text"
+                id="currentPasswordEye"
+                style="background-color: transparent"
+              >
+                <i v-if="currentPasswordIsVisible" class="bi bi-eye-slash-fill"></i>
+                <i v-else class="bi bi-eye-fill"></i>
+              </span>
+            </div>
+            <small
+              v-for="error in v$.currentPassword.$errors"
+              :key="error.$uid"
+              class="form-text"
+              style="color: red"
+            >
+              {{ error.$message }}
+            </small>
+          </div>
         </div>
       </div>
       <div class="form-row">
         <!-- new password -->
         <div class="col-md-6 mb-3">
           <label for="newPassword" class="input-label">New Password *</label>
-          <input
-            id="newPassword"
-            class="form-control"
-            v-model="formData.newPassword"
-            type="password"
-            placeholder="New Password"
-            maxlength="50"
-            required
-          />
+          <div class="input-group">
+            <input
+              id="newPassword"
+              class="form-control"
+              v-model="formData.newPassword"
+              :type="newPasswordIsVisible ? 'text' : 'password'"
+              placeholder="New Password"
+              maxlength="50"
+              required
+            />
+            <div
+              class="input-group-prepend"
+              @click="newPasswordIsVisible = !newPasswordIsVisible"
+              style="cursor: pointer"
+            >
+              <span
+                class="input-group-text"
+                id="newPasswordEye"
+                style="background-color: transparent"
+              >
+                <i v-if="newPasswordIsVisible" class="bi bi-eye-slash-fill"></i>
+                <i v-else class="bi bi-eye-fill"></i>
+              </span>
+            </div>
+          </div>
           <small
             v-for="error in v$.newPassword.$errors"
             :key="error.$uid"
@@ -139,15 +175,31 @@ const submitForm = async () => {
       <div class="form-row">
         <div class="col-md-6 mb-3">
           <label for="confirmNewPassword" class="input-label">Confirm New Password *</label>
-          <input
-            id="confirmNewPassword"
-            class="form-control"
-            v-model="formData.confirmNewPassword"
-            type="password"
-            placeholder="Confirm New Password"
-            maxlength="50"
-            required
-          />
+          <div class="input-group">
+            <input
+              id="confirmNewPassword"
+              class="form-control"
+              v-model="formData.confirmNewPassword"
+              :type="confirmNewPasswordIsVisible ? 'text' : 'password'"
+              placeholder="Confirm New Password"
+              maxlength="50"
+              required
+            />
+            <div
+              class="input-group-prepend"
+              @click="confirmNewPasswordIsVisible = !confirmNewPasswordIsVisible"
+              style="cursor: pointer"
+            >
+              <span
+                class="input-group-text"
+                id="confirmNewPasswordEye"
+                style="background-color: transparent"
+              >
+                <i v-if="confirmNewPasswordIsVisible" class="bi bi-eye-slash-fill"></i>
+                <i v-else class="bi bi-eye-fill"></i>
+              </span>
+            </div>
+          </div>
           <small
             v-for="error in v$.confirmNewPassword.$errors"
             :key="error.$uid"

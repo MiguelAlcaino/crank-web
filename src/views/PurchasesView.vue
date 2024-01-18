@@ -136,4 +136,7 @@ async function getSiteDateTimeNow() {
 p {
   font-family: 'Avenir', sans-serif;
 }
+td {
+  font-family: 'Avenir', sans-serif;
+}
 </style>

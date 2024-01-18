@@ -137,7 +137,11 @@ async function getOldEnrollments() {
 
     oldEnrollmentsIsLoading.value = true
 
-    oldEnrollments.value = await apiService.getCurrentUserEnrollments(appStore().site, params)
+    const _oldEnrollments = await apiService.getCurrentUserEnrollments(appStore().site, params)
+
+    oldEnrollments.value = _oldEnrollments
+      .slice()
+      .sort((a, b) => (a.class.start > b.class.start ? -1 : 1))
   } catch (error) {
     errorModalData.value.message = ERROR_UNKNOWN
     errorModalData.value.isVisible = true

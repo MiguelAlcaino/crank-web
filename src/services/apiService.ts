@@ -26,7 +26,6 @@ import type {
   ResetPasswordForCurrentUserUnion,
   ResetPasswordLinkResultUnion,
   SiteEnum,
-  SwapSpotResultUnion,
   UpdateCurrentUserPasswordInput,
   User,
   UserInClassRanking,
@@ -533,7 +532,7 @@ export class ApiService {
               x
               y
               icon
-              ... on BookableSpot {                
+              ... on BookableSpot {
                 spotNumber
                 spotInfo {
                   spotNumber

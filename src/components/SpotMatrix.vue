@@ -22,7 +22,7 @@ interface BookableSpot {
   spotNumber: number
 }
 
-interface IconPosition  {
+interface IconPosition {
   x: number
   y: number
   icon: string
@@ -66,13 +66,13 @@ watch(
 
 function newSpotPosition(classPosition: ClassPosition): SpotPosition {
   if (classPosition.icon === 'spot') {
-   const bookableSpot = classPosition as BookableSpot
+    const bookableSpot = classPosition as BookableSpot
     return {
       x: bookableSpot.x,
       y: bookableSpot.y,
       positionType: BOOKABLE_SPOT_KEY,
       positionIcon: bookableSpot.icon,
-      spotNumber: bookableSpot.spotNumber,   
+      spotNumber: bookableSpot.spotNumber
     }
   }
   return {
@@ -136,11 +136,9 @@ function onClickSpotBtn(spotNumber: number) {
             <bookable-spot-position
               v-if="spot.positionType === BOOKABLE_SPOT_KEY"
               :spotNumber="spot.spotNumber!"
-              :is-used="usedSpots.some(x=> x === spot.spotNumber)"
+              :is-used="usedSpots.some((x) => x === spot.spotNumber)"
               @click-spot="onClickSpotBtn"
-              :is-booked-by-current-user="
-                props.spotNumberBookedByCurrentUser === spot.spotNumber
-              "
+              :is-booked-by-current-user="props.spotNumberBookedByCurrentUser === spot.spotNumber"
             />
             <icon-position-not-bookable
               v-else-if="spot.positionType === ICON_POSITION_KEY"

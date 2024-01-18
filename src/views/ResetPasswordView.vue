@@ -45,6 +45,9 @@ const successModalIsVisible = ref<boolean>(false)
 const errorMessage = ref<string>('')
 const errorModalVisible = ref<boolean>(false)
 
+const passwordIsVisible = ref<boolean>(false)
+const confirmPasswordIsVisible = ref<boolean>(false)
+
 const checkPass = helpers.regex(/^(?=.*[a-zA-Z])(?=.*\d).+$/)
 
 const rules = computed(() => {
@@ -144,15 +147,31 @@ async function setCurrentUserSiteInStore() {
           <div class="form-row">
             <div class="col-md-12 mb-3">
               <label for="passwordRegistration" class="input-label">Password *</label>
-              <input
-                id="passwordRegistration"
-                class="form-control"
-                v-model="formData.password"
-                type="password"
-                placeholder="Password"
-                maxlength="50"
-                required
-              />
+              <div class="input-group">
+                <input
+                  id="passwordRegistration"
+                  class="form-control"
+                  v-model="formData.password"
+                  :type="passwordIsVisible ? 'text' : 'password'"
+                  placeholder="Password"
+                  maxlength="50"
+                  required
+                />
+                <div
+                  class="input-group-prepend"
+                  @click="passwordIsVisible = !passwordIsVisible"
+                  style="cursor: pointer"
+                >
+                  <span
+                    class="input-group-text"
+                    id="passwordEye"
+                    style="background-color: transparent"
+                  >
+                    <i v-if="passwordIsVisible" class="bi bi-eye-slash-fill"></i>
+                    <i v-else class="bi bi-eye-fill"></i>
+                  </span>
+                </div>
+              </div>
               <small
                 v-for="error in v$.password.$errors"
                 :key="error.$uid"
@@ -169,15 +188,31 @@ async function setCurrentUserSiteInStore() {
               <label for="confirmPasswordRegistration" class="input-label"
                 >Confirm Password *</label
               >
-              <input
-                id="confirmPasswordRegistration"
-                class="form-control"
-                v-model="formData.confirmPassword"
-                type="password"
-                placeholder="Confirm Password"
-                maxlength="50"
-                required
-              />
+              <div class="input-group">
+                <input
+                  id="confirmPasswordRegistration"
+                  class="form-control"
+                  v-model="formData.confirmPassword"
+                  :type="confirmPasswordIsVisible ? 'text' : 'password'"
+                  placeholder="Confirm Password"
+                  maxlength="50"
+                  required
+                />
+                <div
+                  class="input-group-prepend"
+                  @click="confirmPasswordIsVisible = !confirmPasswordIsVisible"
+                  style="cursor: pointer"
+                >
+                  <span
+                    class="input-group-text"
+                    id="confirmPasswordEye"
+                    style="background-color: transparent"
+                  >
+                    <i v-if="confirmPasswordIsVisible" class="bi bi-eye-slash-fill"></i>
+                    <i v-else class="bi bi-eye-fill"></i>
+                  </span>
+                </div>
+              </div>
               <small
                 v-for="error in v$.confirmPassword.$errors"
                 :key="error.$uid"

@@ -11,17 +11,20 @@ enum EnrollmentStatusEnum {
 <script setup lang="ts">
 import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
-import { inject, ref } from 'vue'
+import { computed, inject, ref } from 'vue'
 
 import DefaultButtonComponent from '@/components/DefaultButtonComponent.vue'
 import ModalComponent from '@/components/ModalComponent.vue'
 import { ERROR_LATE_CANCELLATION_REQUIRED, ERROR_UNKNOWN } from '@/utils/errorMessages'
+import dayjs from 'dayjs'
 
 const apiService = inject<ApiService>('gqlApiService')!
 
 const props = defineProps<{
   enrollmentId: string
   enrollmentStatus: EnrollmentStatusEnum
+  siteDateTimeNow: Date
+  start: Date
 }>()
 
 const emits = defineEmits<{
@@ -40,10 +43,19 @@ const successModalMessage = ref<string>('')
 const errorModalIsVisible = ref<boolean>(false)
 const errorModalMessage = ref<string>('')
 
+const isLateCancel = computed<boolean>(() => {
+  return dayjs(props.start).diff(dayjs(props.siteDateTimeNow), 'hour') < 12
+})
+
 function onClickOpenConfirmModal() {
   if (props.enrollmentStatus === EnrollmentStatusEnum.Waitlisted) {
     confirmRemoveFromWaitlistModalIsVisible.value = true
   } else if (props.enrollmentStatus === EnrollmentStatusEnum.Active) {
+    if (isLateCancel.value) {
+      confirmLateCancelModalIsVisible.value = true
+      return
+    }
+
     confirmEarlyCancelModalIsVisible.value = true
   }
 }
@@ -117,7 +129,13 @@ function acceptSuccessModal() {
 
 <template>
   <DefaultButtonComponent
-    :text="enrollmentStatus === EnrollmentStatusEnum.Waitlisted ? 'REMOVE FROM WAITLIST' : 'CANCEL'"
+    :text="
+      enrollmentStatus === EnrollmentStatusEnum.Waitlisted
+        ? 'REMOVE FROM WAITLIST'
+        : isLateCancel
+        ? 'LATE CANCEL'
+        : 'CANCEL'
+    "
     type="button"
     @on-click="onClickOpenConfirmModal()"
     :block="true"

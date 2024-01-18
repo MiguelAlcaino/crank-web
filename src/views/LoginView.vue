@@ -15,6 +15,7 @@ import { useRoute } from 'vue-router'
 const displayLoginError = ref(false)
 const isSubmitting = ref(false)
 const selectedSite = ref('dubai')
+const passwordIsVisible = ref(false)
 
 const formData = reactive({
   location: SiteEnum.Dubai,
@@ -120,23 +121,39 @@ function setCalendarDates() {
             <!-- password -->
             <div class="col-md-12 mb-3">
               <label for="passwordRegistration" class="input-label">Password *</label>
-              <input
-                id="passwordRegistration"
-                class="form-control"
-                v-model="formData.password"
-                type="password"
-                placeholder="Password"
-                maxlength="100"
-                required
-              />
-              <small
-                v-for="error in v$.password.$errors"
-                :key="error.$uid"
-                class="form-text"
-                style="color: red"
-              >
-                {{ error.$message }}
-              </small>
+              <div class="input-group">
+                <input
+                  id="passwordRegistration"
+                  class="form-control"
+                  v-model="formData.password"
+                  :type="passwordIsVisible ? 'text' : 'password'"
+                  placeholder="Password"
+                  maxlength="100"
+                  required
+                />
+                <div
+                  class="input-group-prepend"
+                  @click="passwordIsVisible = !passwordIsVisible"
+                  style="cursor: pointer"
+                >
+                  <span
+                    class="input-group-text"
+                    id="passwordEye"
+                    style="background-color: transparent"
+                  >
+                    <i v-if="passwordIsVisible" class="bi bi-eye-slash-fill"></i>
+                    <i v-else class="bi bi-eye-fill"></i>
+                  </span>
+                </div>
+                <small
+                  v-for="error in v$.password.$errors"
+                  :key="error.$uid"
+                  class="form-text"
+                  style="color: red"
+                >
+                  {{ error.$message }}
+                </small>
+              </div>
             </div>
           </div>
 
