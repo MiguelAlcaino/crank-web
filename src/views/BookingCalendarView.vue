@@ -50,6 +50,7 @@ import { inject, onMounted, ref } from 'vue'
 import dayjs from 'dayjs'
 
 import CalendarCard from '@/components/CalendarCard.vue'
+import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
 import IconCalendarCard from '@/components/icons/IconCalendarCard.vue'
 import ModalComponent from '@/components/ModalComponent.vue'
 import { appStore } from '@/stores/appStorage'
@@ -354,98 +355,96 @@ function calendarCardIsDisabled(dataClass?: Class): boolean {
       </button>
     </div>
   </div>
+
   <!-- calendar -->
   <div class="row">
-    <div class="col-12">
-      <div class="d-flex justify-content-center" v-if="calendarIsLoading">
-        <div class="spinner-border" role="status"></div>
-        &nbsp;&nbsp;Loading...
-      </div>
-      <div v-else>
-        <table class="table table-borderless CalendarWeekTable">
-          <thead>
-            <tr>
-              <th
-                class="text-center"
-                v-for="(colName, key) in columnsNames"
-                :key="key"
-                :class="colName.isCurrentDate ? 'today' : ''"
+    <div class="col-12" style="text-align: center" v-if="calendarIsLoading">
+      <CrankCircularProgressIndicator text="Loading..."></CrankCircularProgressIndicator>
+    </div>
+    <div v-else class="col-12">
+      <table class="table table-borderless CalendarWeekTable">
+        <thead>
+          <tr>
+            <th
+              class="text-center"
+              v-for="(colName, key) in columnsNames"
+              :key="key"
+              :class="colName.isCurrentDate ? 'today' : ''"
+            >
+              {{ colName.dayName }}<br />
+              {{ colName.dateNumber }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(colRow, key) in calendarDays" :key="key">
+            <td style="border-left: 0px !important; min-width: 110px">
+              <CalendarCard
+                :classInfo="colRow.MON"
+                :isEnrolled="
+                  colRow.MON != null && enrollmentClassIds.indexOf(colRow.MON?.id) !== -1
+                "
+                :disabled="calendarCardIsDisabled(colRow.MON)"
+              ></CalendarCard>
+            </td>
+            <td style="min-width: 110px">
+              <CalendarCard
+                :classInfo="colRow.TUE"
+                :isEnrolled="
+                  colRow.TUE != null && enrollmentClassIds.indexOf(colRow.TUE?.id) !== -1
+                "
+                :disabled="calendarCardIsDisabled(colRow.TUE)"
+              ></CalendarCard>
+            </td>
+            <td style="min-width: 110px">
+              <CalendarCard
+                :classInfo="colRow.WED"
+                :isEnrolled="
+                  colRow.WED != null && enrollmentClassIds.indexOf(colRow.WED?.id) !== -1
+                "
+                :disabled="calendarCardIsDisabled(colRow.WED)"
+              ></CalendarCard>
+            </td>
+            <td style="min-width: 110px">
+              <CalendarCard
+                :classInfo="colRow.THU"
+                :isEnrolled="
+                  colRow.THU != null && enrollmentClassIds.indexOf(colRow.THU?.id) !== -1
+                "
+                :disabled="calendarCardIsDisabled(colRow.THU)"
+                >></CalendarCard
               >
-                {{ colName.dayName }}<br />
-                {{ colName.dateNumber }}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(colRow, key) in calendarDays" :key="key">
-              <td style="border-left: 0px !important; min-width: 110px">
-                <CalendarCard
-                  :classInfo="colRow.MON"
-                  :isEnrolled="
-                    colRow.MON != null && enrollmentClassIds.indexOf(colRow.MON?.id) !== -1
-                  "
-                  :disabled="calendarCardIsDisabled(colRow.MON)"
-                ></CalendarCard>
-              </td>
-              <td style="min-width: 110px">
-                <CalendarCard
-                  :classInfo="colRow.TUE"
-                  :isEnrolled="
-                    colRow.TUE != null && enrollmentClassIds.indexOf(colRow.TUE?.id) !== -1
-                  "
-                  :disabled="calendarCardIsDisabled(colRow.TUE)"
-                ></CalendarCard>
-              </td>
-              <td style="min-width: 110px">
-                <CalendarCard
-                  :classInfo="colRow.WED"
-                  :isEnrolled="
-                    colRow.WED != null && enrollmentClassIds.indexOf(colRow.WED?.id) !== -1
-                  "
-                  :disabled="calendarCardIsDisabled(colRow.WED)"
-                ></CalendarCard>
-              </td>
-              <td style="min-width: 110px">
-                <CalendarCard
-                  :classInfo="colRow.THU"
-                  :isEnrolled="
-                    colRow.THU != null && enrollmentClassIds.indexOf(colRow.THU?.id) !== -1
-                  "
-                  :disabled="calendarCardIsDisabled(colRow.THU)"
-                  >></CalendarCard
-                >
-              </td>
-              <td style="min-width: 110px">
-                <CalendarCard
-                  :classInfo="colRow.FRI"
-                  :isEnrolled="
-                    colRow.FRI != null && enrollmentClassIds.indexOf(colRow.FRI?.id) !== -1
-                  "
-                  :disabled="calendarCardIsDisabled(colRow.FRI)"
-                ></CalendarCard>
-              </td>
-              <td style="min-width: 110px">
-                <CalendarCard
-                  :classInfo="colRow.SAT"
-                  :isEnrolled="
-                    colRow.SAT != null && enrollmentClassIds.indexOf(colRow.SAT?.id) !== -1
-                  "
-                  :disabled="calendarCardIsDisabled(colRow.SAT)"
-                ></CalendarCard>
-              </td>
-              <td style="min-width: 110px">
-                <CalendarCard
-                  :classInfo="colRow.SUN"
-                  :isEnrolled="
-                    colRow.SUN != null && enrollmentClassIds.indexOf(colRow.SUN?.id) !== -1
-                  "
-                  :disabled="calendarCardIsDisabled(colRow.SUN)"
-                ></CalendarCard>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+            </td>
+            <td style="min-width: 110px">
+              <CalendarCard
+                :classInfo="colRow.FRI"
+                :isEnrolled="
+                  colRow.FRI != null && enrollmentClassIds.indexOf(colRow.FRI?.id) !== -1
+                "
+                :disabled="calendarCardIsDisabled(colRow.FRI)"
+              ></CalendarCard>
+            </td>
+            <td style="min-width: 110px">
+              <CalendarCard
+                :classInfo="colRow.SAT"
+                :isEnrolled="
+                  colRow.SAT != null && enrollmentClassIds.indexOf(colRow.SAT?.id) !== -1
+                "
+                :disabled="calendarCardIsDisabled(colRow.SAT)"
+              ></CalendarCard>
+            </td>
+            <td style="min-width: 110px">
+              <CalendarCard
+                :classInfo="colRow.SUN"
+                :isEnrolled="
+                  colRow.SUN != null && enrollmentClassIds.indexOf(colRow.SUN?.id) !== -1
+                "
+                :disabled="calendarCardIsDisabled(colRow.SUN)"
+              ></CalendarCard>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
   <!-- icons -->
