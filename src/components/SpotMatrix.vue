@@ -42,7 +42,7 @@ const props = defineProps<{
   matrix?: Array<BookableSpot | IconPosition>
   selectedSpotNumber?: number | null
   spotNumberBookedByCurrentUser?: number | null
-  usedSpots: number[]
+  usedSpots?: number[] | null
 }>()
 
 const emits = defineEmits<{
@@ -136,7 +136,7 @@ function onClickSpotBtn(spotNumber: number) {
             <bookable-spot-position
               v-if="spot.positionType === BOOKABLE_SPOT_KEY"
               :spotNumber="spot.spotNumber!"
-              :is-used="usedSpots.some((x) => x === spot.spotNumber)"
+              :is-used="usedSpots?.some((x) => x === spot.spotNumber) ?? false"
               @click-spot="onClickSpotBtn"
               :is-booked-by-current-user="props.spotNumberBookedByCurrentUser === spot.spotNumber"
             />

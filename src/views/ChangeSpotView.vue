@@ -209,7 +209,7 @@ async function editCurrentUserEnrollment() {
             :matrix="classInfo.roomLayout?.matrix"
             @click-spot="confirmChangeSpot"
             :spot-number-booked-by-current-user="enrollmentInfo?.spotNumber"
-            :used-spots="classInfo.usedSpots!"
+            :used-spots="classInfo.usedSpots"
           ></SpotMatrix>
         </div>
       </div>
