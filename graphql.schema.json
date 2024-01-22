@@ -57,7 +57,7 @@
         "description": null,
         "fields": [
           {
-            "name": "code",
+            "name": "success",
             "description": null,
             "args": [],
             "type": {
@@ -65,7 +65,7 @@
               "name": null,
               "ofType": {
                 "kind": "SCALAR",
-                "name": "String",
+                "name": "Boolean",
                 "ofType": null
               }
             },
@@ -5200,7 +5200,7 @@
         "description": null,
         "fields": [
           {
-            "name": "code",
+            "name": "success",
             "description": null,
             "args": [],
             "type": {
@@ -5208,7 +5208,7 @@
               "name": null,
               "ofType": {
                 "kind": "SCALAR",
-                "name": "String",
+                "name": "Boolean",
                 "ofType": null
               }
             },

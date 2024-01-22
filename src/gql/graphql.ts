@@ -26,7 +26,7 @@ export type AcceptLateCancelledSpotInClassResultUnion = AcceptLateCancelledSpotI
 
 export type AcceptLateCancelledSpotInClassSuccess = {
   __typename: 'AcceptLateCancelledSpotInClassSuccess'
-  code: Scalars['String']
+  success: Scalars['Boolean']
 }
 
 export type AddedToWaitlistSuccess = {
@@ -733,7 +733,7 @@ export type RejectLateCancelledSpotInClassInput = {
 
 export type RejectLateCancelledSpotInClassSuccess = {
   __typename: 'RejectLateCancelledSpotInClassSuccess'
-  code: Scalars['String']
+  success: Scalars['Boolean']
 }
 
 export type RemoveCurrentUserFromWaitlistInput = {
@@ -1081,6 +1081,7 @@ export type CurrentUserEnrollmentsQuery = {
         }
       | {
           __typename: 'WaitlistEntry'
+          canBeTurnedIntoEnrollment: boolean
           id: string
           enrollmentStatus: EnrollmentStatusEnum
           enrollmentDateTime: any
@@ -1549,6 +1550,32 @@ export type CurrentUserRankingInClassQuery = {
   } | null
 }
 
+export type AcceptLateCancelledSpotInClassMutationVariables = Exact<{
+  site: SiteEnum
+  input: AcceptLateCancelledSpotInClassInput
+}>
+
+export type AcceptLateCancelledSpotInClassMutation = {
+  __typename: 'Mutation'
+  acceptLateCancelledSpotInClass?: {
+    __typename: 'AcceptLateCancelledSpotInClassSuccess'
+    success: boolean
+  } | null
+}
+
+export type RejectLateCancelledSpotInClassMutationVariables = Exact<{
+  site: SiteEnum
+  input: RejectLateCancelledSpotInClassInput
+}>
+
+export type RejectLateCancelledSpotInClassMutation = {
+  __typename: 'Mutation'
+  rejectLateCancelledSpotInClass?:
+    | { __typename: 'PositionAlreadyTakenError'; code: string }
+    | { __typename: 'RejectLateCancelledSpotInClassSuccess'; success: boolean }
+    | null
+}
+
 export const SiteSettingsDocument = {
   kind: 'Document',
   definitions: [
@@ -1941,6 +1968,22 @@ export const CurrentUserEnrollmentsDocument = {
                                   { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } }
                                 ]
                               }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        kind: 'InlineFragment',
+                        typeCondition: {
+                          kind: 'NamedType',
+                          name: { kind: 'Name', value: 'WaitlistEntry' }
+                        },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'canBeTurnedIntoEnrollment' }
                             }
                           ]
                         }
@@ -3710,4 +3753,167 @@ export const CurrentUserRankingInClassDocument = {
 } as unknown as DocumentNode<
   CurrentUserRankingInClassQuery,
   CurrentUserRankingInClassQueryVariables
+>
+export const AcceptLateCancelledSpotInClassDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'acceptLateCancelledSpotInClass' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'AcceptLateCancelledSpotInClassInput' }
+            }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'acceptLateCancelledSpotInClass' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'AcceptLateCancelledSpotInClassSuccess' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'success' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  AcceptLateCancelledSpotInClassMutation,
+  AcceptLateCancelledSpotInClassMutationVariables
+>
+export const RejectLateCancelledSpotInClassDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'rejectLateCancelledSpotInClass' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'RejectLateCancelledSpotInClassInput' }
+            }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'rejectLateCancelledSpotInClass' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Error' } },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'PositionAlreadyTakenError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'RejectLateCancelledSpotInClassSuccess' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'success' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  RejectLateCancelledSpotInClassMutation,
+  RejectLateCancelledSpotInClassMutationVariables
 >
