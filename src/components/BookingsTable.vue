@@ -167,6 +167,7 @@ const emits = defineEmits<{
             <LateCancelResponse
               v-if="enrollment.enrollmentInfo.canBeTurnedIntoEnrollment === true"
               :waitlist-entry-id="enrollment.enrollmentInfo.id"
+              @after-accept-reject="emits('afterCancelling')"
             ></LateCancelResponse>
           </td>
         </tr>

@@ -91,7 +91,13 @@ async function rejectLateCancelledSpotInClass() {
 }
 
 function acceptSuccessModal() {
+  emits('afterAcceptReject')
   successModalIsVisible.value = false
+}
+
+function acceptErrorModal() {
+  emits('afterAcceptReject')
+  errorModalIsVisible.value = false
 }
 </script>
 
@@ -165,7 +171,7 @@ function acceptSuccessModal() {
     :closable="false"
     :cancel-text="null"
     v-if="errorModalIsVisible"
-    @on-ok="errorModalIsVisible = false"
+    @on-ok="acceptErrorModal()"
   >
   </ModalComponent>
 </template>
