@@ -1,6 +1,7 @@
 <script setup lang="ts">
 interface LateCancelledSpotInClassResult {
   code?: string
+  success: boolean
 }
 
 import { inject, ref } from 'vue'
@@ -41,14 +42,16 @@ async function acceptLateCancelledSpotInClass() {
       props.waitlistEntryId
     )) as LateCancelledSpotInClassResult
 
-    if (response.code === 'success') {
+    console.log(response)
+
+    if (response.success === true) {
       successModalMessage.value = 'CONGRATULATIONS! YOU HAVE BEEN ADDED TO THE CLASS.'
       successModalIsVisible.value = true
     } else {
       errorModalMessage.value = ERROR_UNKNOWN
       errorModalIsVisible.value = true
     }
-    console.log(response)
+
   } catch (error) {
     console.log(error)
     errorModalMessage.value = ERROR_UNKNOWN
@@ -67,7 +70,9 @@ async function rejectLateCancelledSpotInClass() {
       props.waitlistEntryId
     )) as LateCancelledSpotInClassResult
 
-    if (response.code === 'success') {
+    console.log(response)
+
+    if (response.success === true) {
       successModalMessage.value =
         'YOU HAVE REJECTED THE SPOT. YOU WILL BE REMOVED FROM THE WAITLIST'
       successModalIsVisible.value = true
@@ -75,7 +80,7 @@ async function rejectLateCancelledSpotInClass() {
       errorModalMessage.value = ERROR_UNKNOWN
       errorModalIsVisible.value = true
     }
-    console.log(response)
+
   } catch (error) {
     console.log(error)
     errorModalMessage.value = ERROR_UNKNOWN
