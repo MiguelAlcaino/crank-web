@@ -119,11 +119,12 @@ const emits = defineEmits<{
                   @click="emits('changeSpot', enrollment.class.id)"
                   :disabled="
                     isLoading ||
-                    enrollment.enrollmentInfo.enrollmentStatus.toUpperCase() !== 'ACTIVE' ||
+                    enrollment.enrollmentInfo.enrollmentStatus !== EnrollmentStatusEnum.Active ||
                     enrollment.enrollmentInfo.spotInfo?.spotNumber === null ||
                     enrollment.enrollmentInfo.spotInfo?.spotNumber === undefined
                   "
                   v-if="
+                   enrollment.enrollmentInfo.enrollmentStatus === EnrollmentStatusEnum.Active &&
                     enrollmentType !== EnrollmentTypeEnum.Historical &&
                     enrollmentType !== EnrollmentTypeEnum.Waitlist &&
                     dayjs(enrollment.class.start) > dayjs(siteDateTimeNow) &&
