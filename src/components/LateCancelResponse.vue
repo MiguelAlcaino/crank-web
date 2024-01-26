@@ -51,7 +51,6 @@ async function acceptLateCancelledSpotInClass() {
       errorModalMessage.value = ERROR_UNKNOWN
       errorModalIsVisible.value = true
     }
-
   } catch (error) {
     console.log(error)
     errorModalMessage.value = ERROR_UNKNOWN
@@ -80,7 +79,6 @@ async function rejectLateCancelledSpotInClass() {
       errorModalMessage.value = ERROR_UNKNOWN
       errorModalIsVisible.value = true
     }
-
   } catch (error) {
     console.log(error)
     errorModalMessage.value = ERROR_UNKNOWN

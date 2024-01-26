@@ -27,6 +27,7 @@ interface Class {
   startWithNoTimeZone: Date
   start: Date
   bookingWindow: BookingWindow
+  showAsDisabled: boolean
 }
 
 interface BookingWindow {
@@ -320,6 +321,8 @@ function getPivot() {
 
 function calendarCardIsDisabled(dataClass?: Class): boolean {
   if (dataClass == null) {
+    return true
+  } else if (dataClass.showAsDisabled === true) {
     return true
   } else if (dayjs(dataClass?.startWithNoTimeZone).isBefore(siteDateTimeNow.value)) {
     return true

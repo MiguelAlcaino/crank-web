@@ -374,6 +374,7 @@ export class ApiService {
             startDateTime
             endDateTime
           }
+          showAsDisabled
         }
       }
     `
@@ -426,6 +427,7 @@ export class ApiService {
             startDateTime
             endDateTime
           }
+          showAsDisabled
         }
         enrollmentsWaitlist: currentUserEnrollments(
           site: $site

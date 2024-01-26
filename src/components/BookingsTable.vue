@@ -124,7 +124,7 @@ const emits = defineEmits<{
                     enrollment.enrollmentInfo.spotInfo?.spotNumber === undefined
                   "
                   v-if="
-                   enrollment.enrollmentInfo.enrollmentStatus === EnrollmentStatusEnum.Active &&
+                    enrollment.enrollmentInfo.enrollmentStatus === EnrollmentStatusEnum.Active &&
                     enrollmentType !== EnrollmentTypeEnum.Historical &&
                     enrollmentType !== EnrollmentTypeEnum.Waitlist &&
                     dayjs(enrollment.class.start) > dayjs(siteDateTimeNow) &&
