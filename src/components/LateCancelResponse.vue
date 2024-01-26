@@ -1,18 +1,20 @@
-<script setup lang="ts">
+<script lang="ts">
 interface LateCancelledSpotInClassResult {
   code?: string
   success: boolean
 }
+</script>
 
+<script setup lang="ts">
 import { inject, ref } from 'vue'
-
-const apiService = inject<ApiService>('gqlApiService')!
 
 import DefaultButtonComponent from '@/components/DefaultButtonComponent.vue'
 import ModalComponent from '@/components/ModalComponent.vue'
 import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
+
+const apiService = inject<ApiService>('gqlApiService')!
 
 const props = defineProps<{
   waitlistEntryId: string
