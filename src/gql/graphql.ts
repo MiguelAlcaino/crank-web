@@ -150,6 +150,7 @@ export type Class = {
   isSubstitute: Scalars['Boolean']
   maxCapacity: Scalars['Int']
   name: Scalars['String']
+  showAsDisabled: Scalars['Boolean']
   start: Scalars['DateTime']
   /** Same as start but without timezone. If start is 2023-11-04T10:15:00+04:00 then this value will be 2023-11-04T10:15:00 */
   startWithNoTimeZone: Scalars['DateTimeWithoutTimeZone']
