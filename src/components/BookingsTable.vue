@@ -25,11 +25,11 @@ interface EnrollmentInfo {
   enrollmentStatus: EnrollmentStatusEnum
   id: string
   spotInfo?: SpotInfo
+  spotNumber?: number
+  canBeTurnedIntoEnrollment?: boolean
 }
 
 interface SpotInfo {
-  /** @deprecated Array of booked spots should be returned by other query to reduce complexity of creating SpotInfo instances. */
-  isBooked: boolean
   spotNumber: number
 }
 
@@ -46,6 +46,7 @@ import dayjs from 'dayjs'
 
 import ClassIcon from '@/components/ClassIcon.vue'
 import CancelEnrollment from '@/components/CancelEnrollment.vue'
+import LateCancelResponse from '@/components/LateCancelResponse.vue'
 
 defineProps<{
   enrollments: Enrollment[]
@@ -118,11 +119,12 @@ const emits = defineEmits<{
                   @click="emits('changeSpot', enrollment.class.id)"
                   :disabled="
                     isLoading ||
-                    enrollment.enrollmentInfo.enrollmentStatus.toUpperCase() !== 'ACTIVE' ||
+                    enrollment.enrollmentInfo.enrollmentStatus !== EnrollmentStatusEnum.Active ||
                     enrollment.enrollmentInfo.spotInfo?.spotNumber === null ||
                     enrollment.enrollmentInfo.spotInfo?.spotNumber === undefined
                   "
                   v-if="
+                    enrollment.enrollmentInfo.enrollmentStatus === EnrollmentStatusEnum.Active &&
                     enrollmentType !== EnrollmentTypeEnum.Historical &&
                     enrollmentType !== EnrollmentTypeEnum.Waitlist &&
                     dayjs(enrollment.class.start) > dayjs(siteDateTimeNow) &&
@@ -152,15 +154,22 @@ const emits = defineEmits<{
           <td class="align-middle" v-if="enrollmentType !== EnrollmentTypeEnum.Historical">
             <CancelEnrollment
               v-if="
-                enrollmentType === EnrollmentTypeEnum.Upcoming ||
-                enrollmentType === EnrollmentTypeEnum.Waitlist
+                (enrollmentType === EnrollmentTypeEnum.Upcoming ||
+                  enrollmentType === EnrollmentTypeEnum.Waitlist) &&
+                enrollment.enrollmentInfo.canBeTurnedIntoEnrollment !== true &&
+                enrollment.enrollmentInfo.enrollmentStatus !== EnrollmentStatusEnum.LateCancelled
               "
               :enrollment-status="enrollment.enrollmentInfo.enrollmentStatus"
               :enrollment-id="enrollment.enrollmentInfo.id"
               @after-cancelling="emits('afterCancelling')"
               :site-date-time-now="siteDateTimeNow"
-              :start="enrollment.class.start"
+              :start="new Date(enrollment.class.start)"
             ></CancelEnrollment>
+            <LateCancelResponse
+              v-if="enrollment.enrollmentInfo.canBeTurnedIntoEnrollment === true"
+              :waitlist-entry-id="enrollment.enrollmentInfo.id"
+              @after-accept-reject="emits('afterCancelling')"
+            ></LateCancelResponse>
           </td>
         </tr>
         <tr v-if="enrollments.length === 0 && !isLoading">

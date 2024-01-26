@@ -30,7 +30,11 @@ import type {
   User,
   UserInClassRanking,
   UserInRankingParams,
-  UserInput
+  UserInput,
+  AcceptLateCancelledSpotInClassInput,
+  AcceptLateCancelledSpotInClassResultUnion,
+  RejectLateCancelledSpotInClassInput,
+  RejectLateBookingResultUnion
 } from '@/gql/graphql'
 import { EnrollmentTypeEnum, type SiteSetting } from '@/gql/graphql'
 import { ApolloClient, ApolloError } from '@apollo/client/core'
@@ -212,6 +216,9 @@ export class ApiService {
                 spotNumber
               }
             }
+            ... on WaitlistEntry {
+              canBeTurnedIntoEnrollment
+            }
           }
           class {
             id
@@ -367,6 +374,7 @@ export class ApiService {
             startDateTime
             endDateTime
           }
+          showAsDisabled
         }
       }
     `
@@ -419,6 +427,7 @@ export class ApiService {
             startDateTime
             endDateTime
           }
+          showAsDisabled
         }
         enrollmentsWaitlist: currentUserEnrollments(
           site: $site
@@ -1126,5 +1135,75 @@ export class ApiService {
     })
 
     return queryResult.data.currentUserRankingInClass as UserInClassRanking
+  }
+
+  async acceptLateCancelledSpotInClass(
+    site: SiteEnum,
+    waitlistEntryId: string
+  ): Promise<AcceptLateCancelledSpotInClassResultUnion> {
+    const input = { waitlistEntryId: waitlistEntryId } as AcceptLateCancelledSpotInClassInput
+
+    const mutation = gql`
+      mutation acceptLateCancelledSpotInClass(
+        $site: SiteEnum!
+        $input: AcceptLateCancelledSpotInClassInput!
+      ) {
+        acceptLateCancelledSpotInClass(site: $site, input: $input) {
+          __typename
+          ... on AcceptLateCancelledSpotInClassSuccess {
+            success
+          }
+        }
+      }
+    `
+
+    const result = await this.authApiClient.mutate({
+      mutation: mutation,
+      variables: {
+        site: site,
+        input: input
+      },
+      fetchPolicy: 'network-only'
+    })
+
+    return result.data.acceptLateCancelledSpotInClass as AcceptLateCancelledSpotInClassResultUnion
+  }
+
+  async rejectLateCancelledSpotInClass(
+    site: SiteEnum,
+    waitlistEntryId: string
+  ): Promise<RejectLateBookingResultUnion> {
+    const input = { waitlistEntryId: waitlistEntryId } as RejectLateCancelledSpotInClassInput
+
+    const mutation = gql`
+      mutation rejectLateCancelledSpotInClass(
+        $site: SiteEnum!
+        $input: RejectLateCancelledSpotInClassInput!
+      ) {
+        rejectLateCancelledSpotInClass(site: $site, input: $input) {
+          __typename
+          ... on Error {
+            code
+          }
+          ... on PositionAlreadyTakenError {
+            code
+          }
+          ... on RejectLateCancelledSpotInClassSuccess {
+            success
+          }
+        }
+      }
+    `
+
+    const result = await this.authApiClient.mutate({
+      mutation: mutation,
+      variables: {
+        site: site,
+        input: input
+      },
+      fetchPolicy: 'network-only'
+    })
+
+    return result.data.rejectLateCancelledSpotInClass as RejectLateBookingResultUnion
   }
 }
