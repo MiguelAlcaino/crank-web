@@ -72,7 +72,7 @@ const emits = defineEmits<{
           <th>DATE</th>
           <th>SPOT</th>
           <th>RESERVATION DATE</th>
-          <th>STATUS</th>
+          <th v-if="enrollmentType !== EnrollmentTypeEnum.Waitlist">STATUS</th>
           <th v-if="enrollmentType !== EnrollmentTypeEnum.Historical">ACTIONS</th>
         </tr>
       </thead>
@@ -144,7 +144,10 @@ const emits = defineEmits<{
               )
             }}
           </td>
-          <td class="text-center align-middle">
+          <td
+            class="text-center align-middle"
+            v-if="enrollmentType !== EnrollmentTypeEnum.Waitlist"
+          >
             {{
               enrollment.enrollmentInfo.enrollmentStatus === 'lateCancelled'
                 ? 'LATE CANCELLED'
