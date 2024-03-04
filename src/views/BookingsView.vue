@@ -30,9 +30,14 @@ const waitlistEnrollmentsIsLoading = ref<boolean>(false)
 const oldEnrollmentsIsLoading = ref<boolean>(false)
 
 const siteDateTimeNow = ref<Date>(new Date())
-const isFiltered = ref<boolean>(false)
 
-const dateRangeFilter = ref<[Date | null, Date | null] | undefined>()
+const isFilteredUpcoming = ref<boolean>(false)
+const isFilteredWaitlist = ref<boolean>(false)
+const isFilteredHistorical = ref<boolean>(false)
+
+const dateRangeFilterUpcoming = ref<[Date | null, Date | null] | undefined>()
+const dateRangeFilterWaitlist = ref<[Date | null, Date | null] | undefined>()
+const dateRangeFilterHistorical = ref<[Date | null, Date | null] | undefined>()
 
 const errorModalData = ref<{
   message: string
@@ -69,20 +74,20 @@ async function getUserEnrollments(isOnMount: boolean = false) {
 }
 
 async function getUpcomingEnrollments() {
-  isFiltered.value = false
+  isFilteredUpcoming.value = false
   try {
     upcomingEnrollments.value = []
 
     const params = { enrollmentType: EnrollmentTypeEnum.Upcoming } as CurrentUserEnrollmentsParams
 
-    if (dateRangeFilter.value) {
-      if (dateRangeFilter.value[0])
-        params.startDate = dayjs(dateRangeFilter.value[0]).format('YYYY-MM-DD')
+    if (dateRangeFilterUpcoming.value) {
+      if (dateRangeFilterUpcoming.value[0])
+        params.startDate = dayjs(dateRangeFilterUpcoming.value[0]).format('YYYY-MM-DD')
 
-      if (dateRangeFilter.value[1])
-        params.endDate = dayjs(dateRangeFilter.value[1]).format('YYYY-MM-DD')
+      if (dateRangeFilterUpcoming.value[1])
+        params.endDate = dayjs(dateRangeFilterUpcoming.value[1]).format('YYYY-MM-DD')
 
-      isFiltered.value = true
+      isFilteredUpcoming.value = true
     }
 
     upcomingEnrollmentsIsLoading.value = true
@@ -97,17 +102,20 @@ async function getUpcomingEnrollments() {
 }
 
 async function getWaitlistEnrollments() {
+  isFilteredWaitlist.value = false
   try {
     waitlistEnrollments.value = []
 
     const params = { enrollmentType: EnrollmentTypeEnum.Waitlist } as CurrentUserEnrollmentsParams
 
-    if (dateRangeFilter.value) {
-      if (dateRangeFilter.value[0])
-        params.startDate = dayjs(dateRangeFilter.value[0]).format('YYYY-MM-DD')
+    if (dateRangeFilterWaitlist.value) {
+      if (dateRangeFilterWaitlist.value[0])
+        params.startDate = dayjs(dateRangeFilterWaitlist.value[0]).format('YYYY-MM-DD')
 
-      if (dateRangeFilter.value[1])
-        params.endDate = dayjs(dateRangeFilter.value[1]).format('YYYY-MM-DD')
+      if (dateRangeFilterWaitlist.value[1])
+        params.endDate = dayjs(dateRangeFilterWaitlist.value[1]).format('YYYY-MM-DD')
+
+      isFilteredWaitlist.value = true
     }
 
     waitlistEnrollmentsIsLoading.value = true
@@ -122,17 +130,20 @@ async function getWaitlistEnrollments() {
 }
 
 async function getOldEnrollments() {
+  isFilteredHistorical.value = false
   try {
     oldEnrollments.value = []
 
     const params = { enrollmentType: EnrollmentTypeEnum.Historical } as CurrentUserEnrollmentsParams
 
-    if (dateRangeFilter.value) {
-      if (dateRangeFilter.value[0])
-        params.startDate = dayjs(dateRangeFilter.value[0]).format('YYYY-MM-DD')
+    if (dateRangeFilterHistorical.value) {
+      if (dateRangeFilterHistorical.value[0])
+        params.startDate = dayjs(dateRangeFilterHistorical.value[0]).format('YYYY-MM-DD')
 
-      if (dateRangeFilter.value[1])
-        params.endDate = dayjs(dateRangeFilter.value[1]).format('YYYY-MM-DD')
+      if (dateRangeFilterHistorical.value[1])
+        params.endDate = dayjs(dateRangeFilterHistorical.value[1]).format('YYYY-MM-DD')
+
+      isFilteredHistorical.value = true
     }
 
     oldEnrollmentsIsLoading.value = true
@@ -168,20 +179,64 @@ function setActive(menuItem: EnrollmentTypeEnum) {
     <div class="col-md-6">
       <h1>Bookings</h1>
     </div>
-    <div class="col-md-5 col-sm-6 text-right justify-content-end">
+    <div
+      v-if="activeItem === EnrollmentTypeEnum.Upcoming"
+      class="col-md-5 col-sm-6 text-right justify-content-end"
+    >
       <VueDatePicker
-        v-model="dateRangeFilter"
+        v-model="dateRangeFilterUpcoming"
         range
         :enable-time-picker="false"
         placeholder="Date Range"
+        :min-date="new Date()"
       />
     </div>
-    <div class="col-1">
+    <div v-if="activeItem === EnrollmentTypeEnum.Upcoming" class="col-1">
       <DefaultButtonComponent
-        @on-click="getUserEnrollments()"
-        :is-loading="
-          upcomingEnrollmentsIsLoading || waitlistEnrollmentsIsLoading || oldEnrollmentsIsLoading
-        "
+        @on-click="getUpcomingEnrollments()"
+        :is-loading="upcomingEnrollmentsIsLoading"
+        text="Go"
+        type="button"
+        class="input-group-append"
+      ></DefaultButtonComponent>
+    </div>
+    <div
+      v-if="activeItem === EnrollmentTypeEnum.Waitlist"
+      class="col-md-5 col-sm-6 text-right justify-content-end"
+    >
+      <VueDatePicker
+        v-model="dateRangeFilterWaitlist"
+        range
+        :enable-time-picker="false"
+        placeholder="Date Range"
+        :min-date="new Date()"
+      />
+    </div>
+    <div v-if="activeItem === EnrollmentTypeEnum.Waitlist" class="col-1">
+      <DefaultButtonComponent
+        @on-click="getWaitlistEnrollments()"
+        :is-loading="waitlistEnrollmentsIsLoading"
+        text="Go"
+        type="button"
+        class="input-group-append"
+      ></DefaultButtonComponent>
+    </div>
+    <div
+      v-if="activeItem === EnrollmentTypeEnum.Historical"
+      class="col-md-5 col-sm-6 text-right justify-content-end"
+    >
+      <VueDatePicker
+        v-model="dateRangeFilterHistorical"
+        range
+        :enable-time-picker="false"
+        placeholder="Date Range"
+        :max-date="new Date()"
+      />
+    </div>
+    <div v-if="activeItem === EnrollmentTypeEnum.Historical" class="col-1">
+      <DefaultButtonComponent
+        @on-click="getOldEnrollments()"
+        :is-loading="oldEnrollmentsIsLoading"
         text="Go"
         type="button"
         class="input-group-append"
@@ -232,7 +287,7 @@ function setActive(menuItem: EnrollmentTypeEnum) {
         :enrollmentType="EnrollmentTypeEnum.Upcoming"
         :siteDateTimeNow="siteDateTimeNow"
         @change-spot="goToChangeSpot"
-        :is-filtered="isFiltered"
+        :is-filtered="isFilteredUpcoming"
         @after-cancelling="getUpcomingEnrollments()"
       >
       </BookingsTable>
@@ -248,7 +303,7 @@ function setActive(menuItem: EnrollmentTypeEnum) {
         :enrollmentType="EnrollmentTypeEnum.Waitlist"
         :siteDateTimeNow="siteDateTimeNow"
         @change-spot="goToChangeSpot"
-        :is-filtered="isFiltered"
+        :is-filtered="isFilteredWaitlist"
         @after-cancelling="getWaitlistEnrollments()"
       >
       </BookingsTable>
@@ -263,7 +318,7 @@ function setActive(menuItem: EnrollmentTypeEnum) {
         :isLoading="oldEnrollmentsIsLoading"
         :enrollmentType="EnrollmentTypeEnum.Historical"
         :siteDateTimeNow="siteDateTimeNow"
-        :is-filtered="isFiltered"
+        :is-filtered="isFilteredHistorical"
       >
       </BookingsTable>
     </div>
