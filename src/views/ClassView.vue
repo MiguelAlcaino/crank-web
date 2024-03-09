@@ -216,8 +216,7 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
       errorModalData.value.isVisible = true
       getClassInfo()
     } else if (response === 'BookedButInOtherSpotError') {
-      //TODO: BookedButInOtherSpotError action
-      errorModalData.value.message = 'BOOKED BUT IN OTHER SPOT ERROR.'
+      errorModalData.value.message = ERROR_BOOKING_OVERLAPS_ANOTHER_ONE
       errorModalData.value.isVisible = true
       getClassInfo()
     } else if (response === 'ClassIsFullError') {
