@@ -104,7 +104,7 @@ async function getClassInfo() {
 
   const classId = route.params.id as string
   const _classInfo = await apiService.getClassInfo(appStore().site, classId)
-  const siteSettings = await await apiService.getSiteSettings(appStore().site)
+  const siteSettings = await apiService.getSiteSettings(appStore().site)
 
   if (siteSettings) siteDateTimeNow.value = siteSettings.siteDateTimeNow
 
@@ -294,7 +294,7 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
           <SpotMatrix
             v-if="
               classInfo !== null &&
-              classInfo.roomLayout?.matrix !== null &&
+              classInfo?.roomLayout?.matrix !== null &&
               (!classInfo.class.waitListAvailable || enrollmentInfo !== null) &&
               enrollmentInfo?.enrollmentStatus !== EnrollmentStatusEnum.Waitlisted
             "
