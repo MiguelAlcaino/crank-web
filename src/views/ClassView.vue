@@ -330,7 +330,7 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
             :enrollment-id="enrollmentInfo.id"
             @after-cancelling="acceptSuccessModal()"
             :site-date-time-now="siteDateTimeNow"
-            :start="classInfo!.class.start"
+            :start="new Date(classInfo!.class.start)"
           ></CancelEnrollment>
         </div>
       </div>
