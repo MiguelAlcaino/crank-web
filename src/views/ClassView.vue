@@ -13,6 +13,7 @@ import SpotMatrix from '@/components/SpotMatrix.vue'
 import WaitlistButton from '@/components/WaitlistButton.vue'
 import YouAreAlreadyEnrolled from '@/components/YouAreAlreadyEnrolled.vue'
 import CancelEnrollment from '@/components/CancelEnrollment.vue'
+import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
 
 import router from '@/router'
 import type { ApiService } from '@/services/apiService'
@@ -281,6 +282,11 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-12" style="text-align: center">
+          <CrankCircularProgressIndicator
+            text="Loading..."
+            v-if="isLoading"
+          ></CrankCircularProgressIndicator>
+
           <WaitlistButton
             v-if="
               classInfo !== null &&
