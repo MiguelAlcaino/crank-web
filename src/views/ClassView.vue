@@ -191,8 +191,8 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
       errorModalData.value.message = ERROR_CLIENT_IS_ALREADY_BOOKED
       errorModalData.value.isVisible = true
       await getClassInfo()
-      enrollmentEnabled.value = false    
-     } else if (response === 'BookingOverlapsAnotherOneError') {
+      enrollmentEnabled.value = false
+    } else if (response === 'BookingOverlapsAnotherOneError') {
       errorModalData.value.message = ERROR_BOOKING_OVERLAPS_ANOTHER_ONE
       errorModalData.value.isVisible = true
       await getClassInfo()
