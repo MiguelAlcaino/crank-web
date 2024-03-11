@@ -210,11 +210,6 @@ export class ApiService {
             enrollmentDateTimeWithNoTimeZone
             ... on EnrollmentInfo {
               spotNumber
-              spotInfo {
-                __typename
-                isBooked
-                spotNumber
-              }
             }
             ... on WaitlistEntry {
               canBeTurnedIntoEnrollment

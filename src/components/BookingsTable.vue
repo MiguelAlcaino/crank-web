@@ -24,13 +24,8 @@ interface EnrollmentInfo {
   enrollmentDateTimeWithNoTimeZone: Date
   enrollmentStatus: EnrollmentStatusEnum
   id: string
-  spotInfo?: SpotInfo
   spotNumber?: number
   canBeTurnedIntoEnrollment?: boolean
-}
-
-interface SpotInfo {
-  spotNumber: number
 }
 
 enum EnrollmentStatusEnum {
@@ -105,10 +100,9 @@ const emits = defineEmits<{
               <div class="col text-right">
                 <b>
                   {{
-                    enrollment.enrollmentInfo.spotInfo?.spotNumber === null ||
-                    enrollment.enrollmentInfo.spotInfo?.spotNumber === undefined
-                      ? 'N/A'
-                      : enrollment.enrollmentInfo.spotInfo?.spotNumber
+                    enrollment.enrollmentInfo?.spotNumber
+                      ? enrollment.enrollmentInfo.spotNumber
+                      : 'N/A'
                   }}
                 </b>
               </div>
@@ -120,16 +114,16 @@ const emits = defineEmits<{
                   :disabled="
                     isLoading ||
                     enrollment.enrollmentInfo.enrollmentStatus !== EnrollmentStatusEnum.Active ||
-                    enrollment.enrollmentInfo.spotInfo?.spotNumber === null ||
-                    enrollment.enrollmentInfo.spotInfo?.spotNumber === undefined
+                    enrollment.enrollmentInfo?.spotNumber === null ||
+                    enrollment.enrollmentInfo?.spotNumber === undefined
                   "
                   v-if="
                     enrollment.enrollmentInfo.enrollmentStatus === EnrollmentStatusEnum.Active &&
                     enrollmentType !== EnrollmentTypeEnum.Historical &&
                     enrollmentType !== EnrollmentTypeEnum.Waitlist &&
                     dayjs(enrollment.class.start) > dayjs(siteDateTimeNow) &&
-                    enrollment.enrollmentInfo.spotInfo?.spotNumber !== null &&
-                    enrollment.enrollmentInfo.spotInfo?.spotNumber !== undefined
+                    enrollment.enrollmentInfo?.spotNumber !== null &&
+                    enrollment.enrollmentInfo?.spotNumber !== undefined
                   "
                 >
                   CHANGE
