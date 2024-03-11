@@ -8,8 +8,7 @@ import {
   PositionIconEnum,
   type ClassInfo,
   type EnrollmentInfo,
-  type BookableSpot,
-  EnrollmentStatusEnum
+  type BookableSpot
 } from '@/gql/graphql'
 
 import ModalComponent from '@/components/ModalComponent.vue'

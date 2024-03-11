@@ -251,11 +251,6 @@ export class ApiService {
             enrollmentDateTime
             ... on EnrollmentInfo {
               spotNumber
-              spotInfo {
-                __typename
-                isBooked
-                spotNumber
-              }
             }
           }
         }
