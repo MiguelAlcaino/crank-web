@@ -533,10 +533,6 @@ export class ApiService {
               icon
               ... on BookableSpot {
                 spotNumber
-                spotInfo {
-                  spotNumber
-                  isBooked
-                }
               }
             }
           }
