@@ -106,7 +106,7 @@ async function getClassInfo() {
   const _classInfo = await apiService.getClassInfo(appStore().site, classId)
   const siteSettings = await apiService.getSiteSettings(appStore().site)
 
-  if (siteSettings) siteDateTimeNow.value = siteSettings.siteDateTimeNow
+  if (siteSettings) siteDateTimeNow.value = new Date(siteSettings.siteDateTimeNow)
 
   if (_classInfo) {
     enrollmentInfo.value = await apiService.getCurrentUserEnrollmentInClass(classId)
