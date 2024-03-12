@@ -8,14 +8,14 @@ import {
   PositionIconEnum,
   type ClassInfo,
   type EnrollmentInfo,
-  type BookableSpot,
-  EnrollmentStatusEnum
+  type BookableSpot
 } from '@/gql/graphql'
 
 import ModalComponent from '@/components/ModalComponent.vue'
 
 import SpotMatrix from '@/components/SpotMatrix.vue'
 import YouAreAlreadyEnrolled from '@/components/YouAreAlreadyEnrolled.vue'
+import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
 
 import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
@@ -200,6 +200,11 @@ async function editCurrentUserEnrollment() {
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-12" style="text-align: center">
+          <CrankCircularProgressIndicator
+            text="Loading..."
+            v-if="isLoading"
+          ></CrankCircularProgressIndicator>
+
           <SpotMatrix
             v-if="
               classInfo !== null &&

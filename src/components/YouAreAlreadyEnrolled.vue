@@ -7,13 +7,9 @@ enum EnrollmentStatusEnum {
   Waitlisted = 'waitlisted'
 }
 
-interface SpotInfo {
-  spotNumber: number
-}
-
 interface EnrollmentInfo {
   enrollmentStatus: EnrollmentStatusEnum
-  spotInfo?: SpotInfo | null
+  spotNumber?: number | null
 }
 </script>
 
@@ -25,11 +21,11 @@ defineProps<{
 
 <template>
   <div v-if="enrollmentInfo.enrollmentStatus === EnrollmentStatusEnum.Active">
-    <p v-if="enrollmentInfo.spotInfo === null">
+    <p v-if="enrollmentInfo.spotNumber === null || enrollmentInfo.spotNumber === undefined">
       <b>YOU ARE ALREADY BOOKED IN THIS CLASS</b>
     </p>
     <p v-else>
-      <b>YOU ARE BOOKED IN SPOT {{ enrollmentInfo.spotInfo!.spotNumber }}</b>
+      <b>YOU ARE BOOKED IN SPOT {{ enrollmentInfo.spotNumber }}</b>
     </p>
   </div>
   <div v-else-if="enrollmentInfo.enrollmentStatus === EnrollmentStatusEnum.Waitlisted">

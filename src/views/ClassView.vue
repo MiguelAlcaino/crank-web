@@ -13,6 +13,7 @@ import SpotMatrix from '@/components/SpotMatrix.vue'
 import WaitlistButton from '@/components/WaitlistButton.vue'
 import YouAreAlreadyEnrolled from '@/components/YouAreAlreadyEnrolled.vue'
 import CancelEnrollment from '@/components/CancelEnrollment.vue'
+import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
 
 import router from '@/router'
 import type { ApiService } from '@/services/apiService'
@@ -104,9 +105,9 @@ async function getClassInfo() {
 
   const classId = route.params.id as string
   const _classInfo = await apiService.getClassInfo(appStore().site, classId)
-  const siteSettings = await await apiService.getSiteSettings(appStore().site)
+  const siteSettings = await apiService.getSiteSettings(appStore().site)
 
-  if (siteSettings) siteDateTimeNow.value = siteSettings.siteDateTimeNow
+  if (siteSettings) siteDateTimeNow.value = new Date(siteSettings.siteDateTimeNow)
 
   if (_classInfo) {
     enrollmentInfo.value = await apiService.getCurrentUserEnrollmentInClass(classId)
@@ -191,8 +192,8 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
       errorModalData.value.message = ERROR_CLIENT_IS_ALREADY_BOOKED
       errorModalData.value.isVisible = true
       await getClassInfo()
-      enrollmentEnabled.value = false    
-     } else if (response === 'BookingOverlapsAnotherOneError') {
+      enrollmentEnabled.value = false
+    } else if (response === 'BookingOverlapsAnotherOneError') {
       errorModalData.value.message = ERROR_BOOKING_OVERLAPS_ANOTHER_ONE
       errorModalData.value.isVisible = true
       await getClassInfo()
@@ -281,6 +282,11 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-12" style="text-align: center">
+          <CrankCircularProgressIndicator
+            text="Loading..."
+            v-if="isLoading"
+          ></CrankCircularProgressIndicator>
+
           <WaitlistButton
             v-if="
               classInfo !== null &&
@@ -294,7 +300,7 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
           <SpotMatrix
             v-if="
               classInfo !== null &&
-              classInfo.roomLayout?.matrix !== null &&
+              classInfo?.roomLayout?.matrix !== null &&
               (!classInfo.class.waitListAvailable || enrollmentInfo !== null) &&
               enrollmentInfo?.enrollmentStatus !== EnrollmentStatusEnum.Waitlisted
             "
@@ -330,7 +336,7 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
             :enrollment-id="enrollmentInfo.id"
             @after-cancelling="acceptSuccessModal()"
             :site-date-time-now="siteDateTimeNow"
-            :start="classInfo!.class.start"
+            :start="new Date(classInfo!.class.start)"
           ></CancelEnrollment>
         </div>
       </div>

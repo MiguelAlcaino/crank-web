@@ -1,11 +1,16 @@
+<script lang="ts">
+enum SiteEnum {
+  AbuDhabi = 'abu_dhabi',
+  Dubai = 'dubai'
+}
+</script>
+
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
 import router from '@/router'
 import { authService } from '@/services/authService'
 import { helpers, required, email } from '@vuelidate/validators'
 import useVuelidate from '@vuelidate/core'
-
-import { SiteEnum } from '@/gql/graphql'
 
 import DefaultButtonComponent from '../components/DefaultButtonComponent.vue'
 import dayjs from 'dayjs'
@@ -47,8 +52,6 @@ async function login() {
     isSubmitting.value = true
     displayLoginError.value = false
 
-    setCalendarDates()
-
     try {
       await authService.login(formData.email, formData.password, selectedSite.value)
       let redirectTo = route.query.redirect ?? '/'
@@ -62,11 +65,6 @@ async function login() {
     }
     isSubmitting.value = false
   }
-}
-
-function setCalendarDates() {
-  const now = dayjs()
-  appStore().setCalendarDates(now.startOf('week').toDate(), now.endOf('week').toDate())
 }
 </script>
 

@@ -49,6 +49,8 @@ interface WeekCalendar {
 <script setup lang="ts">
 import { inject, onMounted, ref } from 'vue'
 import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
 
 import CalendarCard from '@/components/CalendarCard.vue'
 import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
@@ -62,6 +64,7 @@ import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 const columnsNames = ref<ColumnName[]>([])
 const calendarDays = ref<WeekCalendar[]>([])
 const siteDateTimeNow = ref<Date>(new Date())
+const siteTimezone = ref<string>('Asia/Dubai')
 const calendarIsLoading = ref<boolean>(false)
 const hasPreviousWeek = ref<boolean>(false)
 const daysOfTheWeek = ref<DayOfTheWeek[]>([])
@@ -70,6 +73,9 @@ const errorModalIsVisible = ref<boolean>(false)
 const enrollmentClassIds = ref<string[]>([])
 
 dayjs.Ls.en.weekStart = 1
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 onMounted(() => {
   getClassesOfTheWeek()
@@ -84,10 +90,10 @@ function getClassesOfTheWeek() {
 }
 
 function goToNextWeek(): void {
-  const date = dayjs(appStore().calendarStartDate)
+  const date = dayjs(appStore().calendarStartDate).tz(siteTimezone.value)
 
-  const firstDayOfNextWeek = date.add(1, 'weeks').startOf('week').toDate()
-  const lastDayOfNextWeek = date.add(1, 'weeks').endOf('week').toDate()
+  const firstDayOfNextWeek = date.add(1, 'weeks').startOf('week').format('YYYY-MM-DD')
+  const lastDayOfNextWeek = date.add(1, 'weeks').endOf('week').format('YYYY-MM-DD')
 
   appStore().setCalendarDates(firstDayOfNextWeek, lastDayOfNextWeek)
 
@@ -95,10 +101,10 @@ function goToNextWeek(): void {
 }
 
 function goToPrevWeek(): void {
-  const date = dayjs(appStore().calendarStartDate)
+  const date = dayjs(appStore().calendarStartDate).tz(siteTimezone.value)
 
-  const firstDayOfPrevWeek = date.subtract(1, 'weeks').startOf('week').toDate()
-  const lastDayOfPrevWeek = date.subtract(1, 'weeks').endOf('week').toDate()
+  const firstDayOfPrevWeek = date.subtract(1, 'weeks').startOf('week').format('YYYY-MM-DD')
+  const lastDayOfPrevWeek = date.subtract(1, 'weeks').endOf('week').format('YYYY-MM-DD')
 
   const actualDate = new Date()
 
@@ -114,21 +120,36 @@ async function getCustomCalendarClasses(): Promise<void> {
   daysOfTheWeek.value = []
   enrollmentClassIds.value = []
 
-  const firstDayWeek = appStore().calendarStartDate
-  const lastDayWeek = appStore().calendarEndDate
+  const calendarStartDate =
+    appStore().calendarStartDate != null && dayjs(appStore().calendarStartDate).isValid()
+      ? (appStore().calendarStartDate as string)
+      : dayjs().startOf('week').format('YYYY-MM-DD')
+
+  const calendarEndDate =
+    appStore().calendarEndDate != null && dayjs(appStore().calendarEndDate).isValid()
+      ? (appStore().calendarEndDate as string)
+      : dayjs().endOf('week').format('YYYY-MM-DD')
+
+  appStore().setCalendarDates(calendarStartDate, calendarEndDate)
 
   try {
     calendarIsLoading.value = true
 
     let customCalendarClasses = await apiService.getCustomCalendarClasses(
       appStore().site,
-      firstDayWeek,
-      lastDayWeek
+      calendarStartDate,
+      calendarEndDate
     )
 
-    if (customCalendarClasses != null) {
-      siteDateTimeNow.value = customCalendarClasses.siteSettings.siteDateTimeNow
+    if (customCalendarClasses?.siteSettings?.siteTimezone) {
+      siteTimezone.value = customCalendarClasses.siteSettings.siteTimezone
+    }
 
+    if (customCalendarClasses?.siteSettings?.siteDateTimeNow) {
+      siteDateTimeNow.value = customCalendarClasses.siteSettings.siteDateTimeNow
+    }
+
+    if (customCalendarClasses != null) {
       for (let index = 0; index < customCalendarClasses.enrollmentsUpcoming.length; index++) {
         const enrollment = customCalendarClasses.enrollmentsUpcoming[index]
         if (
@@ -142,7 +163,9 @@ async function getCustomCalendarClasses(): Promise<void> {
       columnsNames.value = []
 
       let dates: Date[] = []
-      let day = dayjs(firstDayWeek)
+
+      let day = dayjs(calendarStartDate).tz(siteTimezone.value)
+
       for (let i = 0; i < 7; i++) {
         dates.push(day.toDate())
 
@@ -155,16 +178,16 @@ async function getCustomCalendarClasses(): Promise<void> {
         day = day.add(1, 'day')
       }
 
-      const _actualDate = new Date()
+      const _currentDate = customCalendarClasses.siteSettings.siteDateTimeNow as Date
 
       for (let i = 0; i < dates.length; i++) {
-        let date = dayjs(dates[i])
+        let date = dayjs(dates[i]).tz(siteTimezone.value)
 
-        const disabled: boolean = date.isBefore(_actualDate, 'day')
-        const selected: boolean = date.isSame(_actualDate, 'day')
+        const disabled: boolean = date.isBefore(_currentDate, 'day')
+        const selected: boolean = date.isSame(_currentDate, 'day')
 
         const calendarClasses: Class[] = customCalendarClasses.calendarClasses.filter((x) =>
-          dayjs(new Date(x.start)).isSame(date, 'day')
+          dayjs(x.start).tz(siteTimezone.value).isSame(date, 'day')
         )
 
         daysOfTheWeek.value.push({
@@ -174,7 +197,7 @@ async function getCustomCalendarClasses(): Promise<void> {
           classes: calendarClasses
         })
 
-        if (date.isSame(_actualDate, 'day')) hasPreviousWeek.value = false
+        if (date.isSame(_currentDate, 'day')) hasPreviousWeek.value = false
       }
 
       getPivot()
@@ -191,27 +214,43 @@ async function getCalendarClasses(): Promise<void> {
   daysOfTheWeek.value = []
   enrollmentClassIds.value = []
 
-  const firstDayWeek = appStore().calendarStartDate
-  const lastDayWeek = appStore().calendarEndDate
+  const calendarStartDate =
+    appStore().calendarStartDate != null && dayjs(appStore().calendarStartDate).isValid()
+      ? (appStore().calendarStartDate as string)
+      : dayjs().startOf('week').format('YYYY-MM-DD')
+
+  const calendarEndDate =
+    appStore().calendarEndDate != null && dayjs(appStore().calendarEndDate).isValid()
+      ? (appStore().calendarEndDate as string)
+      : dayjs().endOf('week').format('YYYY-MM-DD')
+
+  appStore().setCalendarDates(calendarStartDate, calendarEndDate)
 
   calendarIsLoading.value = true
 
   try {
     const calendarClasses = await apiService.getCalendarClasses(
       appStore().site,
-      firstDayWeek,
-      lastDayWeek
+      calendarStartDate,
+      calendarEndDate
     )
 
     const siteSettings = await apiService.getSiteSettings(appStore().site)
 
-    if (calendarClasses != null) {
-      siteDateTimeNow.value = siteSettings?.siteDateTimeNow ?? Date()
+    if (siteSettings?.siteTimezone) {
+      siteTimezone.value = siteSettings.siteTimezone
+    }
 
+    if (siteSettings?.siteDateTimeNow) {
+      siteDateTimeNow.value = siteSettings.siteDateTimeNow
+    }
+
+    if (calendarClasses != null) {
       columnsNames.value = []
 
       let dates: Date[] = []
-      let day = dayjs(firstDayWeek)
+      let day = dayjs(calendarStartDate).tz(siteTimezone.value)
+
       for (let i = 0; i < 7; i++) {
         dates.push(day.toDate())
 
@@ -224,16 +263,16 @@ async function getCalendarClasses(): Promise<void> {
         day = day.add(1, 'day')
       }
 
-      const _actualDate = new Date()
+      const _actualDate = siteSettings?.siteDateTimeNow as Date
 
       for (let i = 0; i < dates.length; i++) {
-        let date = dayjs(dates[i])
+        let date = dayjs(dates[i]).tz(siteTimezone.value)
 
         const disabled: boolean = date.isBefore(_actualDate, 'day')
         const selected: boolean = date.isSame(_actualDate, 'day')
 
         const calendarClassesTemp: Class[] = calendarClasses.filter((x) =>
-          dayjs(new Date(x.start)).isSame(date, 'day')
+          dayjs(x.start).tz(siteTimezone.value).isSame(date, 'day')
         )
 
         daysOfTheWeek.value.push({
