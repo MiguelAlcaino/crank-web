@@ -52,8 +52,6 @@ async function login() {
     isSubmitting.value = true
     displayLoginError.value = false
 
-    setCalendarDates()
-
     try {
       await authService.login(formData.email, formData.password, selectedSite.value)
       let redirectTo = route.query.redirect ?? '/'
@@ -67,11 +65,6 @@ async function login() {
     }
     isSubmitting.value = false
   }
-}
-
-function setCalendarDates() {
-  const now = dayjs()
-  appStore().setCalendarDates(now.startOf('week').toDate(), now.endOf('week').toDate())
 }
 </script>
 

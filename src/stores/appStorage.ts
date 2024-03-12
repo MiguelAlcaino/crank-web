@@ -8,23 +8,23 @@ export const appStore = defineStore({
   state: () => ({
     calendarStartDate:
       sessionStorage.getItem('calendarStartDate') !== null
-        ? dayjs(sessionStorage.getItem('calendarStartDate')).toDate()
-        : dayjs(Date()).startOf('week').toDate(),
+        ? sessionStorage.getItem('calendarStartDate')
+        : null,
     calendarEndDate:
       sessionStorage.getItem('calendarEndDate') !== null
-        ? dayjs(sessionStorage.getItem('calendarEndDate')).toDate()
-        : dayjs(Date()).endOf('week').toDate(),
+        ? sessionStorage.getItem('calendarEndDate')
+        : null,
     site:
       localStorage.getItem('site') != null
         ? (localStorage.getItem('site') as SiteEnum)
         : SiteEnum.Dubai
   }),
   actions: {
-    setCalendarDates(calendarStartDate: Date, calendarEndDate: Date) {
-      sessionStorage.setItem('calendarStartDate', dayjs(calendarStartDate).toISOString())
+    setCalendarDates(calendarStartDate: string, calendarEndDate: string) {
+      sessionStorage.setItem('calendarStartDate', calendarStartDate)
       this.calendarStartDate = calendarStartDate
 
-      sessionStorage.setItem('calendarEndDate', dayjs(calendarEndDate).toISOString())
+      sessionStorage.setItem('calendarEndDate', calendarEndDate)
       this.calendarEndDate = calendarEndDate
     },
     setSite(site: SiteEnum) {

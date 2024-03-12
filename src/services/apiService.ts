@@ -55,6 +55,7 @@ export class ApiService {
       query siteSettings($site: SiteEnum!) {
         siteSettings(site: $site) {
           siteDateTimeNow
+          siteTimezone
         }
       }
     `
@@ -347,7 +348,7 @@ export class ApiService {
     }
   }
 
-  async getCalendarClasses(site: SiteEnum, startDate: Date, endDate: Date): Promise<Class[]> {
+  async getCalendarClasses(site: SiteEnum, startDate: string, endDate: string): Promise<Class[]> {
     const CALENDAR_CLASSES_QUERY = gql`
       query calendarClasses($site: SiteEnum!, $params: CalendarClassesParams) {
         calendarClasses(site: $site, params: $params) {
@@ -369,12 +370,9 @@ export class ApiService {
       }
     `
 
-    const stgStartDate = dayjs(startDate).format('YYYY-MM-DD')
-    const stgEndDate = dayjs(endDate).format('YYYY-MM-DD')
-
     const params: CalendarClassesParams = {
-      startDate: stgStartDate,
-      endDate: stgEndDate
+      startDate: startDate,
+      endDate: endDate
     }
 
     const queryResult = await this.anonymousApiClient.query({
@@ -390,8 +388,8 @@ export class ApiService {
 
   async getCustomCalendarClasses(
     site: SiteEnum,
-    startDate: Date,
-    endDate: Date
+    startDate: string,
+    endDate: string
   ): Promise<CustomCalendarClasses> {
     const CUSTOM_CALENDAR_CLASSES_QUERY = gql`
       query customCalendarClasses(
@@ -402,6 +400,7 @@ export class ApiService {
       ) {
         siteSettings(site: $site) {
           siteDateTimeNow
+          siteTimezone
         }
         calendarClasses(site: $site, params: $params) {
           id
@@ -464,24 +463,21 @@ export class ApiService {
       }
     `
 
-    const stgStartDate = dayjs(startDate).format('YYYY-MM-DD')
-    const stgEndDate = dayjs(endDate).format('YYYY-MM-DD')
-
     const params: CalendarClassesParams = {
-      startDate: stgStartDate,
-      endDate: stgEndDate
+      startDate: startDate,
+      endDate: endDate
     }
 
     const enrollmentsWaitlistParams: CurrentUserEnrollmentsParams = {
       enrollmentType: EnrollmentTypeEnum.Waitlist,
-      startDate: stgStartDate,
-      endDate: stgEndDate
+      startDate: startDate,
+      endDate: endDate
     }
 
     const enrollmentsUpcomingParams: CurrentUserEnrollmentsParams = {
       enrollmentType: EnrollmentTypeEnum.Upcoming,
-      startDate: stgStartDate,
-      endDate: stgEndDate
+      startDate: startDate,
+      endDate: endDate
     }
 
     const queryResult = await this.authApiClient.query({
