@@ -182,6 +182,11 @@
           },
           {
             "kind": "OBJECT",
+            "name": "BookingOverlapsAnotherOneError",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
             "name": "ClassIsFullError",
             "ofType": null
           },
@@ -489,6 +494,39 @@
               "ofType": {
                 "kind": "SCALAR",
                 "name": "Int",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "Error",
+            "ofType": null
+          }
+        ],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "BookingOverlapsAnotherOneError",
+        "description": null,
+        "fields": [
+          {
+            "name": "code",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
                 "ofType": null
               }
             },
@@ -2530,6 +2568,11 @@
           {
             "kind": "OBJECT",
             "name": "BookedButInOtherSpotError",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "BookingOverlapsAnotherOneError",
             "ofType": null
           },
           {
@@ -4746,6 +4789,18 @@
             "description": "Returns a list of available RoomLayouts for a site",
             "args": [
               {
+                "name": "params",
+                "description": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "RoomLayoutsInput",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
                 "name": "site",
                 "description": null,
                 "type": {
@@ -5705,6 +5760,29 @@
         "possibleTypes": null
       },
       {
+        "kind": "INPUT_OBJECT",
+        "name": "RoomLayoutsInput",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "usersCapacity",
+            "description": "Amount of usable spots in the class",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
         "kind": "ENUM",
         "name": "SiteEnum",
         "description": null,
@@ -5739,6 +5817,18 @@
             "type": {
               "kind": "SCALAR",
               "name": "DateTime",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "siteTimezone",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
               "ofType": null
             },
             "isDeprecated": false,

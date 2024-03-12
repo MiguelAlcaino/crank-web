@@ -44,6 +44,7 @@ export type BookClassResultUnion =
   | AddedToWaitlistSuccess
   | BookClassSuccess
   | BookedButInOtherSpotError
+  | BookingOverlapsAnotherOneError
   | ClassIsFullError
   | ClientIsAlreadyBookedError
   | ClientIsAlreadyOnWaitlistError
@@ -83,6 +84,11 @@ export type BookedButInOtherSpotError = Error & {
   code: Scalars['String']
   givenSpot: Scalars['Int']
   requiredSpot: Scalars['Int']
+}
+
+export type BookingOverlapsAnotherOneError = Error & {
+  __typename: 'BookingOverlapsAnotherOneError'
+  code: Scalars['String']
 }
 
 export type BookingWindow = {
@@ -687,6 +693,7 @@ export type QueryRoomLayoutArgs = {
 }
 
 export type QueryRoomLayoutsArgs = {
+  params?: InputMaybe<RoomLayoutsInput>
   site: SiteEnum
 }
 
@@ -797,6 +804,11 @@ export type RoomLayoutInput = {
   rows: Scalars['Int']
 }
 
+export type RoomLayoutsInput = {
+  /** Amount of usable spots in the class */
+  usersCapacity?: InputMaybe<Scalars['Int']>
+}
+
 export enum SiteEnum {
   AbuDhabi = 'abu_dhabi',
   Dubai = 'dubai'
@@ -805,6 +817,7 @@ export enum SiteEnum {
 export type SiteSetting = {
   __typename: 'SiteSetting'
   siteDateTimeNow?: Maybe<Scalars['DateTime']>
+  siteTimezone?: Maybe<Scalars['String']>
 }
 
 /** Error returned when trying to book a class with a spot that is already booked */
@@ -1078,7 +1091,6 @@ export type CurrentUserEnrollmentsQuery = {
           enrollmentStatus: EnrollmentStatusEnum
           enrollmentDateTime: any
           enrollmentDateTimeWithNoTimeZone: any
-          spotInfo?: { __typename: 'SpotInfo'; isBooked: boolean; spotNumber: number } | null
         }
       | {
           __typename: 'WaitlistEntry'
@@ -1117,7 +1129,6 @@ export type CurrentUserEnrollmentInClassQuery = {
           id: string
           enrollmentStatus: EnrollmentStatusEnum
           enrollmentDateTime: any
-          spotInfo?: { __typename: 'SpotInfo'; isBooked: boolean; spotNumber: number } | null
         }
       | {
           __typename: 'WaitlistEntry'
@@ -1185,6 +1196,7 @@ export type CalendarClassesQuery = {
     startWithNoTimeZone: any
     duration: number
     waitListAvailable: boolean
+    showAsDisabled: boolean
     bookingWindow: { __typename: 'BookingWindow'; startDateTime: any; endDateTime: any }
   }>
 }
@@ -1210,6 +1222,7 @@ export type CustomCalendarClassesQuery = {
     duration: number
     waitListAvailable: boolean
     isSubstitute: boolean
+    showAsDisabled: boolean
     bookingWindow: { __typename: 'BookingWindow'; startDateTime: any; endDateTime: any }
   }>
   enrollmentsWaitlist: Array<{
@@ -1302,7 +1315,6 @@ export type ClassInfoQuery = {
             x: number
             y: number
             icon: PositionIconEnum
-            spotInfo: { __typename: 'SpotInfo'; spotNumber: number; isBooked: boolean }
           }
         | { __typename: 'IconPosition'; x: number; y: number; icon: PositionIconEnum }
       > | null
@@ -1340,6 +1352,7 @@ export type BookClassMutation = {
     | { __typename: 'AddedToWaitlistSuccess' }
     | { __typename: 'BookClassSuccess' }
     | { __typename: 'BookedButInOtherSpotError' }
+    | { __typename: 'BookingOverlapsAnotherOneError' }
     | { __typename: 'ClassIsFullError' }
     | { __typename: 'ClientIsAlreadyBookedError' }
     | { __typename: 'ClientIsAlreadyOnWaitlistError' }
@@ -1388,6 +1401,7 @@ export type BookUserIntoClassMutation = {
     | { __typename: 'AddedToWaitlistSuccess' }
     | { __typename: 'BookClassSuccess' }
     | { __typename: 'BookedButInOtherSpotError' }
+    | { __typename: 'BookingOverlapsAnotherOneError' }
     | { __typename: 'ClassIsFullError' }
     | { __typename: 'ClientIsAlreadyBookedError' }
     | { __typename: 'ClientIsAlreadyOnWaitlistError' }
@@ -1957,19 +1971,7 @@ export const CurrentUserEnrollmentsDocument = {
                         selectionSet: {
                           kind: 'SelectionSet',
                           selections: [
-                            { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'spotInfo' },
-                              selectionSet: {
-                                kind: 'SelectionSet',
-                                selections: [
-                                  { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
-                                  { kind: 'Field', name: { kind: 'Name', value: 'isBooked' } },
-                                  { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } }
-                                ]
-                              }
-                            }
+                            { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } }
                           ]
                         }
                       },
@@ -2068,19 +2070,7 @@ export const CurrentUserEnrollmentInClassDocument = {
                         selectionSet: {
                           kind: 'SelectionSet',
                           selections: [
-                            { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'spotInfo' },
-                              selectionSet: {
-                                kind: 'SelectionSet',
-                                selections: [
-                                  { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
-                                  { kind: 'Field', name: { kind: 'Name', value: 'isBooked' } },
-                                  { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } }
-                                ]
-                              }
-                            }
+                            { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } }
                           ]
                         }
                       }
@@ -2287,7 +2277,8 @@ export const CalendarClassesDocument = {
                       { kind: 'Field', name: { kind: 'Name', value: 'endDateTime' } }
                     ]
                   }
-                }
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'showAsDisabled' } }
               ]
             }
           }
@@ -2389,7 +2380,8 @@ export const CustomCalendarClassesDocument = {
                       { kind: 'Field', name: { kind: 'Name', value: 'endDateTime' } }
                     ]
                   }
-                }
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'showAsDisabled' } }
               ]
             }
           },
@@ -2599,21 +2591,7 @@ export const ClassInfoDocument = {
                               selectionSet: {
                                 kind: 'SelectionSet',
                                 selections: [
-                                  { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } },
-                                  {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'spotInfo' },
-                                    selectionSet: {
-                                      kind: 'SelectionSet',
-                                      selections: [
-                                        {
-                                          kind: 'Field',
-                                          name: { kind: 'Name', value: 'spotNumber' }
-                                        },
-                                        { kind: 'Field', name: { kind: 'Name', value: 'isBooked' } }
-                                      ]
-                                    }
-                                  }
+                                  { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } }
                                 ]
                               }
                             }
