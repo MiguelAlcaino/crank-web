@@ -186,8 +186,11 @@ async function getCustomCalendarClasses(): Promise<void> {
         const disabled: boolean = date.isBefore(_currentDate, 'day')
         const selected: boolean = date.isSame(_currentDate, 'day')
 
-        const calendarClasses: Class[] = customCalendarClasses.calendarClasses.filter((x) =>
-          dayjs(x.start).tz(siteTimezone.value).isSame(date, 'day')
+        const calendarClasses: Class[] = customCalendarClasses.calendarClasses.filter(
+          (x) =>
+            dayjs(x.start).tz(siteTimezone.value).isSame(date, 'day') &&
+            (x.showAsDisabled == false ||
+              (x.showAsDisabled === true && enrollmentClassIds.value.includes(x.id)))
         )
 
         daysOfTheWeek.value.push({
