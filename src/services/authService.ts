@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios'
 import { useAuthenticationStore } from '@/stores/authToken'
-import { IncorrectCredentialsLoginError } from '@/model/Exception'
+import { IncorrectCredentialsLoginError, ResetPasswordRequiredError } from '@/model/Exception'
 import router from '@/router'
 import jwt_decode from 'jwt-decode'
 import { Config } from '@/model/Config'
@@ -35,6 +35,12 @@ export const authService = {
         this.startRefreshTokenTimer()
       }
     } catch (error) {
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 470) {
+          throw new ResetPasswordRequiredError()
+        }
+      }
+
       throw new IncorrectCredentialsLoginError()
     }
   },
