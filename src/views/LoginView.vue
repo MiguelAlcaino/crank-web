@@ -12,15 +12,17 @@ import { authService } from '@/services/authService'
 import { helpers, required, email } from '@vuelidate/validators'
 import useVuelidate from '@vuelidate/core'
 
-import DefaultButtonComponent from '../components/DefaultButtonComponent.vue'
-import dayjs from 'dayjs'
-import { appStore } from '@/stores/appStorage'
+import DefaultButtonComponent from '@/components/DefaultButtonComponent.vue'
+import ModalComponent from '@/components/ModalComponent.vue'
+
 import { useRoute } from 'vue-router'
+import { ResetPasswordRequiredError } from '@/model/Exception'
 
 const displayLoginError = ref(false)
 const isSubmitting = ref(false)
 const selectedSite = ref('dubai')
 const passwordIsVisible = ref(false)
+const modalResetPasswordRequiredIsVisible = ref(false)
 
 const formData = reactive({
   location: SiteEnum.Dubai,
@@ -61,7 +63,11 @@ async function login() {
         await router.push({ name: 'calendar' })
       }
     } catch (error) {
-      displayLoginError.value = true
+      if (error instanceof ResetPasswordRequiredError) {
+        modalResetPasswordRequiredIsVisible.value = true
+      } else {
+        displayLoginError.value = true
+      }
     }
     isSubmitting.value = false
   }
@@ -194,6 +200,16 @@ async function login() {
       </div>
     </div>
   </div>
+
+  <ModalComponent
+    v-if="modalResetPasswordRequiredIsVisible"
+    title="Reset password is required"
+    message="YOU NEED TO RESET YOUR PASSWORD AS IT HAS EXPIRED. GO TO FORGOT PASSWORD TO CREATE A NEW ONE."
+    ok-text="OK"
+    :cancel-text="null"
+    :closable="false"
+    @on-ok="router.push({ name: 'forgot_password' })"
+  ></ModalComponent>
 </template>
 
 <style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
