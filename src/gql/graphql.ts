@@ -64,8 +64,8 @@ export type BookUserIntoClassInput = {
   classId: Scalars['ID']
   isPaymentRequired?: InputMaybe<Scalars['Boolean']>
   isWaitlistBooking?: InputMaybe<Scalars['Boolean']>
+  siteUserId: Scalars['ID']
   spotNumber?: InputMaybe<Scalars['Int']>
-  userId: Scalars['ID']
 }
 
 export type BookableSpot = ClassPositionInterface & {
@@ -292,6 +292,13 @@ export type EditRoomLayoutInput = {
   roomLayoutInput: RoomLayoutInput
 }
 
+export type EditUserInput = {
+  siteUserInput?: InputMaybe<Array<SiteUserInput>>
+  userDataInput: UserInput
+  /** This is not the same ID as the IdentifiableUser. This is the ID of the user not linked to any site */
+  userId: Scalars['ID']
+}
+
 export type Enrollment = {
   __typename: 'Enrollment'
   class: Class
@@ -304,7 +311,7 @@ export type EnrollmentInfo = EnrollmentInfoInterface & {
   enrollmentDateTimeWithNoTimeZone: Scalars['DateTimeWithoutTimeZone']
   enrollmentStatus: EnrollmentStatusEnum
   id: Scalars['ID']
-  identifiableUser?: Maybe<IdentifiableUser>
+  identifiableSiteUser?: Maybe<IdentifiableSiteUser>
   isCheckedIn: Scalars['Boolean']
   /** @deprecated Use spotNumber instead. */
   spotInfo?: Maybe<SpotInfo>
@@ -316,7 +323,7 @@ export type EnrollmentInfoInterface = {
   enrollmentDateTimeWithNoTimeZone: Scalars['DateTimeWithoutTimeZone']
   enrollmentStatus: EnrollmentStatusEnum
   id: Scalars['ID']
-  identifiableUser?: Maybe<IdentifiableUser>
+  identifiableSiteUser?: Maybe<IdentifiableSiteUser>
 }
 
 export type EnrollmentNotFoundError = Error & {
@@ -373,6 +380,12 @@ export type IconPositionInput = {
   y: Scalars['Int']
 }
 
+export type IdentifiableSiteUser = {
+  __typename: 'IdentifiableSiteUser'
+  id?: Maybe<Scalars['ID']>
+  identifiableUser?: Maybe<IdentifiableUser>
+}
+
 export type IdentifiableUser = {
   __typename: 'IdentifiableUser'
   id?: Maybe<Scalars['ID']>
@@ -416,10 +429,12 @@ export type Mutation = {
   editEnrollment?: Maybe<EditEnrollmentResultUnion>
   /** Edits a room layout */
   editRoomLayout: RoomLayout
+  /** Edits a user */
+  editUser?: Maybe<IdentifiableUser>
   /** Enabled a spot in a class */
   enableSpot?: Maybe<DisableEnableSpotResultUnion>
   /** Registers a new user and returns an IdentifiableUser type */
-  registerIdentifiableUser?: Maybe<IdentifiableUser>
+  registerIdentifiableUser?: Maybe<IdentifiableSiteUser>
   /** Registers a new user */
   registerUser?: Maybe<User>
   /** Rejects a late-cancelled spot in a class */
@@ -518,6 +533,10 @@ export type MutationEditRoomLayoutArgs = {
   site: SiteEnum
 }
 
+export type MutationEditUserArgs = {
+  input: EditUserInput
+}
+
 export type MutationEnableSpotArgs = {
   input?: InputMaybe<DisableEnableSpotInput>
 }
@@ -552,7 +571,6 @@ export type MutationRemoveUserFromWaitlistArgs = {
 
 export type MutationRequestPasswordLinkArgs = {
   input?: InputMaybe<RequestPasswordLinkInput>
-  site: SiteEnum
 }
 
 export type MutationResetPasswordForCurrentUserArgs = {
@@ -644,9 +662,11 @@ export type Query = {
   /** Returns a list of available RoomLayouts for a site */
   roomLayouts: Array<RoomLayout>
   /** Returns the matched users given the query provided */
-  searchUser?: Maybe<Array<Maybe<IdentifiableUser>>>
+  searchSiteUser?: Maybe<Array<Maybe<IdentifiableSiteUser>>>
   /** Settings of a site */
   siteSettings: SiteSetting
+  /** Returns a user in a specific site */
+  siteUser?: Maybe<IdentifiableSiteUser>
   /** Returns a user */
   user?: Maybe<IdentifiableUser>
 }
@@ -697,13 +717,17 @@ export type QueryRoomLayoutsArgs = {
   site: SiteEnum
 }
 
-export type QuerySearchUserArgs = {
+export type QuerySearchSiteUserArgs = {
   query?: InputMaybe<Scalars['String']>
   site?: InputMaybe<SiteEnum>
 }
 
 export type QuerySiteSettingsArgs = {
   site?: InputMaybe<SiteEnum>
+}
+
+export type QuerySiteUserArgs = {
+  id: Scalars['ID']
 }
 
 export type QueryUserArgs = {
@@ -809,6 +833,12 @@ export type RoomLayoutsInput = {
   usersCapacity?: InputMaybe<Scalars['Int']>
 }
 
+export type SimpleSiteUser = {
+  __typename: 'SimpleSiteUser'
+  externalUserId: Scalars['ID']
+  site: SiteEnum
+}
+
 export enum SiteEnum {
   AbuDhabi = 'abu_dhabi',
   Dubai = 'dubai'
@@ -818,6 +848,11 @@ export type SiteSetting = {
   __typename: 'SiteSetting'
   siteDateTimeNow?: Maybe<Scalars['DateTime']>
   siteTimezone?: Maybe<Scalars['String']>
+}
+
+export type SiteUserInput = {
+  externalID: Scalars['ID']
+  site: SiteEnum
 }
 
 /** Error returned when trying to book a class with a spot that is already booked */
@@ -891,6 +926,7 @@ export type User = {
   emergencyContactPhone: Scalars['String']
   emergencyContactRelationship?: Maybe<Scalars['String']>
   enrollmentInClass?: Maybe<EnrollmentInfoInterface>
+  /** @deprecated Use siteUsers instead */
   existsInSites: Array<SiteEnum>
   firstName: Scalars['String']
   gender?: Maybe<GenderEnum>
@@ -898,6 +934,7 @@ export type User = {
   lastName: Scalars['String']
   leaderboardUsername?: Maybe<Scalars['String']>
   phone: Scalars['String']
+  siteUsers: Array<SimpleSiteUser>
   state?: Maybe<State>
   weight?: Maybe<Scalars['Float']>
   zipCode: Scalars['String']
@@ -963,7 +1000,7 @@ export type WaitlistEntry = EnrollmentInfoInterface & {
   enrollmentDateTimeWithNoTimeZone: Scalars['DateTimeWithoutTimeZone']
   enrollmentStatus: EnrollmentStatusEnum
   id: Scalars['ID']
-  identifiableUser?: Maybe<IdentifiableUser>
+  identifiableSiteUser?: Maybe<IdentifiableSiteUser>
 }
 
 export type WaitlistEntryNotFoundError = Error & {
@@ -982,7 +1019,11 @@ export type SiteSettingsQueryVariables = Exact<{
 
 export type SiteSettingsQuery = {
   __typename: 'Query'
-  siteSettings: { __typename: 'SiteSetting'; siteDateTimeNow?: any | null }
+  siteSettings: {
+    __typename: 'SiteSetting'
+    siteDateTimeNow?: any | null
+    siteTimezone?: string | null
+  }
 }
 
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never }>
@@ -1210,7 +1251,11 @@ export type CustomCalendarClassesQueryVariables = Exact<{
 
 export type CustomCalendarClassesQuery = {
   __typename: 'Query'
-  siteSettings: { __typename: 'SiteSetting'; siteDateTimeNow?: any | null }
+  siteSettings: {
+    __typename: 'SiteSetting'
+    siteDateTimeNow?: any | null
+    siteTimezone?: string | null
+  }
   calendarClasses: Array<{
     __typename: 'Class'
     id: string
@@ -1460,7 +1505,6 @@ export type EditCurrentUserEnrollmentMutation = {
 }
 
 export type RequestPasswordLinkMutationVariables = Exact<{
-  site: SiteEnum
   input?: InputMaybe<RequestPasswordLinkInput>
 }>
 
@@ -1623,7 +1667,10 @@ export const SiteSettingsDocument = {
             ],
             selectionSet: {
               kind: 'SelectionSet',
-              selections: [{ kind: 'Field', name: { kind: 'Name', value: 'siteDateTimeNow' } }]
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'siteDateTimeNow' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'siteTimezone' } }
+              ]
             }
           }
         ]
@@ -2340,7 +2387,10 @@ export const CustomCalendarClassesDocument = {
             ],
             selectionSet: {
               kind: 'SelectionSet',
-              selections: [{ kind: 'Field', name: { kind: 'Name', value: 'siteDateTimeNow' } }]
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'siteDateTimeNow' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'siteTimezone' } }
+              ]
             }
           },
           {
@@ -3185,14 +3235,6 @@ export const RequestPasswordLinkDocument = {
       variableDefinitions: [
         {
           kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
-          }
-        },
-        {
-          kind: 'VariableDefinition',
           variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
           type: { kind: 'NamedType', name: { kind: 'Name', value: 'RequestPasswordLinkInput' } }
         }
@@ -3204,11 +3246,6 @@ export const RequestPasswordLinkDocument = {
             kind: 'Field',
             name: { kind: 'Name', value: 'requestPasswordLink' },
             arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'site' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
-              },
               {
                 kind: 'Argument',
                 name: { kind: 'Name', value: 'input' },

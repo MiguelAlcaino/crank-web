@@ -17,7 +17,6 @@ import useVuelidate from '@vuelidate/core'
 import { email, helpers, required } from '@vuelidate/validators'
 import { computed, inject, reactive, ref } from 'vue'
 import DefaultButtonComponent from '@/components/DefaultButtonComponent.vue'
-import { appStore } from '@/stores/appStorage'
 
 import ModalComponent from '@/components/ModalComponent.vue'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
@@ -60,7 +59,7 @@ const submitForm = async () => {
 
 async function requestPasswordLink() {
   sendingEmail.value = true
-  const response = (await apiService.requestPasswordLink(appStore().site, formData.email)) as
+  const response = (await apiService.requestPasswordLink(formData.email)) as
     | ResetPasswordLinkSentSuccessfully
     | TooManyResetPasswordLinkRequestsError
     | null
