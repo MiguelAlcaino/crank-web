@@ -693,50 +693,6 @@ export class ApiService {
     }
   }
 
-  async bookUserIntoClass(
-    classId: string,
-    userId: string,
-    spotNumber?: number | null,
-    isPaymentRequired?: boolean | null,
-    isWaitlistBooking?: boolean | null
-  ): Promise<string> {
-    const input = {
-      classId: classId,
-      spotNumber: spotNumber,
-      userId: userId,
-      isPaymentRequired: isPaymentRequired,
-      isWaitlistBooking: isWaitlistBooking
-    } as BookUserIntoClassInput
-
-    if (spotNumber) input.spotNumber = spotNumber
-
-    if (isPaymentRequired) input.isPaymentRequired = isPaymentRequired
-
-    if (isWaitlistBooking) input.isWaitlistBooking = isWaitlistBooking
-
-    const BOOK_USER_INTO_CLASS_MUTATION = gql`
-      mutation bookUserIntoClass($input: BookUserIntoClassInput!) {
-        bookUserIntoClass(input: $input) {
-          __typename
-        }
-      }
-    `
-
-    try {
-      const result = await this.authApiClient.mutate({
-        mutation: BOOK_USER_INTO_CLASS_MUTATION,
-        variables: {
-          input: input
-        },
-        fetchPolicy: 'network-only'
-      })
-
-      return result.data.bookUserIntoClass.__typename
-    } catch (error) {
-      return 'UnknownError'
-    }
-  }
-
   async removeUserFromClass(enrollmentId: string, lateCancel?: boolean): Promise<string> {
     const input = { enrollmentId: enrollmentId, lateCancel: lateCancel } as CancelEnrollmentInput
 
@@ -870,15 +826,12 @@ export class ApiService {
     }
   }
 
-  async requestPasswordLink(
-    site: SiteEnum,
-    email: string
-  ): Promise<ResetPasswordLinkResultUnion | null> {
+  async requestPasswordLink(email: string): Promise<ResetPasswordLinkResultUnion | null> {
     const input = { email: email } as RequestPasswordLinkInput
 
     const muration = gql`
-      mutation requestPasswordLink($site: SiteEnum!, $input: RequestPasswordLinkInput) {
-        requestPasswordLink(site: $site, input: $input) {
+      mutation requestPasswordLink($input: RequestPasswordLinkInput) {
+        requestPasswordLink(input: $input) {
           ... on TooManyResetPasswordLinkRequestsError {
             availableAgainAt
           }
@@ -893,7 +846,6 @@ export class ApiService {
       const result = await this.authApiClient.mutate({
         mutation: muration,
         variables: {
-          site: site,
           input: input
         },
         fetchPolicy: 'network-only'
