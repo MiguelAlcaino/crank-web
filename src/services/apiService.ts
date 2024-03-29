@@ -1,7 +1,6 @@
 import { gql } from '@apollo/client'
 import type {
-  BookClassInput,
-  BookUserIntoClassInput,
+  BookClassInput,  
   CalendarClassesParams,
   CancelEnrollmentInput,
   Class,
@@ -39,7 +38,6 @@ import type {
 import { EnrollmentTypeEnum, type SiteSetting } from '@/gql/graphql'
 import { ApolloClient, ApolloError } from '@apollo/client/core'
 import { CustomCalendarClasses } from '@/model/CustomCalendarClasses'
-import dayjs from 'dayjs'
 
 export class ApiService {
   authApiClient: ApolloClient<any>
