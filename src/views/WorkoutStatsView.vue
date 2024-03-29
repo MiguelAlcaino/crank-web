@@ -125,7 +125,7 @@ tr:hover {
   background-color: #dadada !important;
 }
 
-p {
+p, td {
   font-family: 'Avenir', sans-serif;
 }
 </style>
