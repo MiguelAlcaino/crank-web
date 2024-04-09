@@ -38,6 +38,7 @@ import { Config } from '@/model/Config'
 import SimpleTypeahead from 'vue3-simple-typeahead'
 import { appStore } from './stores/appStorage'
 import { SiteEnum } from './gql/graphql'
+import { hackSquarespaceMenu } from '@/utils/hack-squarespace-menu'
 
 startApp()
 
@@ -126,6 +127,9 @@ async function startApp() {
   } else if (view == 'payments') {
     await router.push('/payments')
   }
+
+  // Hack the squarespace top menu
+  hackSquarespaceMenu()
 
   app.mount('#app')
 }
