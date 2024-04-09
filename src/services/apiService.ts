@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client'
 import type {
-  BookClassInput,  
+  BookClassInput,
   CalendarClassesParams,
   CancelEnrollmentInput,
   Class,
