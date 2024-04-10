@@ -17,6 +17,7 @@ interface Class {
   name: string
   start: Date
   startWithNoTimeZone: Date
+  showAsDisabled?: boolean | null
 }
 
 interface EnrollmentInfo {
@@ -76,7 +77,8 @@ const emits = defineEmits<{
           v-for="(enrollment, index) in enrollments"
           :key="index"
           :class="
-            enrollment.enrollmentInfo.enrollmentStatus === EnrollmentStatusEnum.LateCancelled
+            enrollment.enrollmentInfo.enrollmentStatus === EnrollmentStatusEnum.LateCancelled ||
+            enrollment.class.showAsDisabled === true
               ? 'lateCancelColor'
               : ''
           "
@@ -123,7 +125,8 @@ const emits = defineEmits<{
                     enrollmentType !== EnrollmentTypeEnum.Waitlist &&
                     dayjs(enrollment.class.start) > dayjs(siteDateTimeNow) &&
                     enrollment.enrollmentInfo?.spotNumber !== null &&
-                    enrollment.enrollmentInfo?.spotNumber !== undefined
+                    enrollment.enrollmentInfo?.spotNumber !== undefined &&
+                    enrollment.class.showAsDisabled !== true
                   "
                 >
                   CHANGE
@@ -143,7 +146,9 @@ const emits = defineEmits<{
             v-if="enrollmentType !== EnrollmentTypeEnum.Waitlist"
           >
             {{
-              enrollment.enrollmentInfo.enrollmentStatus === 'lateCancelled'
+              enrollment.class.showAsDisabled === true
+                ? 'CLASS CANCELLED'
+                : enrollment.enrollmentInfo.enrollmentStatus === 'lateCancelled'
                 ? 'LATE CANCELLED'
                 : enrollment.enrollmentInfo.enrollmentStatus.toUpperCase()
             }}
@@ -154,7 +159,8 @@ const emits = defineEmits<{
                 (enrollmentType === EnrollmentTypeEnum.Upcoming ||
                   enrollmentType === EnrollmentTypeEnum.Waitlist) &&
                 enrollment.enrollmentInfo.canBeTurnedIntoEnrollment !== true &&
-                enrollment.enrollmentInfo.enrollmentStatus !== EnrollmentStatusEnum.LateCancelled
+                enrollment.enrollmentInfo.enrollmentStatus !== EnrollmentStatusEnum.LateCancelled &&
+                enrollment.class.showAsDisabled !== true
               "
               :enrollment-status="enrollment.enrollmentInfo.enrollmentStatus"
               :enrollment-id="enrollment.enrollmentInfo.id"
@@ -166,7 +172,8 @@ const emits = defineEmits<{
               v-if="enrollment.enrollmentInfo.canBeTurnedIntoEnrollment === true"
               :waitlist-entry-id="enrollment.enrollmentInfo.id"
               @after-accept-reject="emits('afterCancelling')"
-            ></LateCancelResponse>
+            >
+            </LateCancelResponse>
           </td>
         </tr>
         <tr v-if="enrollments.length === 0 && !isLoading">
@@ -187,7 +194,9 @@ const emits = defineEmits<{
           </td>
         </tr>
         <tr v-if="isLoading">
-          <td colspan="7" class="text-center"><p>LOADING...</p></td>
+          <td colspan="7" class="text-center">
+            <p>LOADING...</p>
+          </td>
         </tr>
       </tbody>
     </table>
