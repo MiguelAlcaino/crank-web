@@ -223,6 +223,7 @@ export class ApiService {
             startWithNoTimeZone
             duration
             waitListAvailable
+            showAsDisabled
           }
         }
       }
