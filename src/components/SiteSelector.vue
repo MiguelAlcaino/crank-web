@@ -24,7 +24,7 @@ onMounted(() => {
   getAvailableSites()
 })
 
-  async function getAvailableSites() {
+async function getAvailableSites() {
   sites.value = await apiService.getCurrentUserSites()
 }
 
@@ -32,7 +32,6 @@ function onChangeSite() {
   appStore().setSite(selectedSite.value)
   emits('afterChangingSite')
 }
-
 </script>
 
 <template>
@@ -44,7 +43,7 @@ function onChangeSite() {
     required
   >
     <option v-for="(item, index) in sites" :key="index" :value="item">
-      {{ item === SiteEnum.AbuDhabi ? 'Abu Dhabi' :item === SiteEnum.Dubai ?  'Dubai': item }}
+      {{ item === SiteEnum.AbuDhabi ? 'Abu Dhabi' : item === SiteEnum.Dubai ? 'Dubai' : item }}
     </option>
   </select>
 </template>
