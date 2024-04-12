@@ -46,6 +46,7 @@ function onChangeSite() {
     id="selectSite"
     required
     :disabled="disabled"
+    v-if="sites.length > 1"
   >
     <option v-for="(item, index) in sites" :key="index" :value="item">
       {{ item === SiteEnum.AbuDhabi ? 'Abu Dhabi' : item === SiteEnum.Dubai ? 'Dubai' : item }}
