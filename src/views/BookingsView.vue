@@ -183,7 +183,10 @@ function setActive(menuItem: EnrollmentTypeEnum) {
 <template>
   <div class="row">
     <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-8">
-      <SiteSelector @afterChangingSite="afterChangingSite()"></SiteSelector>
+      <SiteSelector
+        @afterChangingSite="afterChangingSite()"
+        :disabled="upcomingEnrollmentsIsLoading"
+      ></SiteSelector>
     </div>
   </div>
   <hr />
