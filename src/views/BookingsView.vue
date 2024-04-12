@@ -15,6 +15,7 @@ import dayjs from 'dayjs'
 import BookingsTable from '@/components/BookingsTable.vue'
 import DefaultButtonComponent from '@/components/DefaultButtonComponent.vue'
 import ModalComponent from '@/components/ModalComponent.vue'
+import SiteSelector from '@/components/SiteSelector.vue'
 
 import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
@@ -55,6 +56,11 @@ onMounted(() => {
   getSiteDateTimeNow()
   getUserEnrollments(true)
 })
+
+function afterChangingSite() {
+  getSiteDateTimeNow()
+  getUserEnrollments(false)
+}
 
 async function getSiteDateTimeNow() {
   siteDateTimeNow.value = new Date()
@@ -175,6 +181,13 @@ function setActive(menuItem: EnrollmentTypeEnum) {
 </script>
 
 <template>
+  <div class="row">
+    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-8">
+      <SiteSelector @afterChangingSite="afterChangingSite()"></SiteSelector>
+    </div>
+  </div>
+  <hr />
+
   <div class="row form-inline">
     <div class="col-md-6">
       <h1>Bookings</h1>
