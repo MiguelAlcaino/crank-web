@@ -151,6 +151,7 @@ export type Class = {
   bookingWindow: BookingWindow
   description: Scalars['String']
   duration: Scalars['Int']
+  hasClassStats: Scalars['Boolean']
   id: Scalars['ID']
   instructorName: Scalars['String']
   isSubstitute: Scalars['Boolean']
@@ -187,6 +188,20 @@ export type ClassPositionInterface = {
   icon: PositionIconEnum
   x: Scalars['Int']
   y: Scalars['Int']
+}
+
+export type ClassSchedule = {
+  __typename: 'ClassSchedule'
+  capacity: Scalars['Int']
+  dayOfWeek: Scalars['String']
+  end: Scalars['DateTime']
+  endWithNoTimeZone: Scalars['DateTimeWithoutTimeZone']
+  id: Scalars['ID']
+  instructorName: Scalars['String']
+  roomLayout?: Maybe<RoomLayout>
+  start: Scalars['DateTime']
+  startWithNoTimeZone: Scalars['DateTimeWithoutTimeZone']
+  type: Scalars['String']
 }
 
 export type ClassStat = {
@@ -246,6 +261,15 @@ export type CurrentUserEnrollmentsParams = {
   startDate?: InputMaybe<Scalars['Date']>
 }
 
+export type DeleteCurrentUserAccountSuccess = {
+  __typename: 'DeleteCurrentUserAccountSuccess'
+  success: Scalars['Boolean']
+}
+
+export type DeleteCurrentUserAccountUnion =
+  | DeleteCurrentUserAccountSuccess
+  | UserPasswordDoesNotMatchError
+
 export type DeviceTokenInput = {
   deviceToken: Scalars['String']
 }
@@ -294,10 +318,12 @@ export type EditRoomLayoutInput = {
 
 export type EditUserInput = {
   siteUserInput?: InputMaybe<Array<SiteUserInput>>
-  userDataInput: UserInput
+  userDataInput?: InputMaybe<UserInput>
   /** This is not the same ID as the IdentifiableUser. This is the ID of the user not linked to any site */
   userId: Scalars['ID']
 }
+
+export type EditUserResultUnion = IdentifiableUser | OtherUserHasThisExternalIdError
 
 export type Enrollment = {
   __typename: 'Enrollment'
@@ -312,6 +338,7 @@ export type EnrollmentInfo = EnrollmentInfoInterface & {
   enrollmentStatus: EnrollmentStatusEnum
   id: Scalars['ID']
   identifiableSiteUser?: Maybe<IdentifiableSiteUser>
+  isBookedForFree: Scalars['Boolean']
   isCheckedIn: Scalars['Boolean']
   /** @deprecated Use spotNumber instead. */
   spotInfo?: Maybe<SpotInfo>
@@ -384,6 +411,7 @@ export type IdentifiableSiteUser = {
   __typename: 'IdentifiableSiteUser'
   id?: Maybe<Scalars['ID']>
   identifiableUser?: Maybe<IdentifiableUser>
+  siteUserInfo?: Maybe<SimpleSiteUser>
 }
 
 export type IdentifiableUser = {
@@ -417,6 +445,8 @@ export type Mutation = {
   createCurrentUserInSite?: Maybe<CreateCurrentUserInSiteUnion>
   /** Creates a new room layout */
   createRoomLayout: RoomLayout
+  /** It deletes the current user's account */
+  deleteCurrentUserAccount?: Maybe<DeleteCurrentUserAccountUnion>
   /** Removes a devices token */
   deleteDeviceTokenToCurrentUser?: Maybe<Scalars['Boolean']>
   /** Disables a spot in a class */
@@ -430,7 +460,7 @@ export type Mutation = {
   /** Edits a room layout */
   editRoomLayout: RoomLayout
   /** Edits a user */
-  editUser?: Maybe<IdentifiableUser>
+  editUser?: Maybe<EditUserResultUnion>
   /** Enabled a spot in a class */
   enableSpot?: Maybe<DisableEnableSpotResultUnion>
   /** Registers a new user and returns an IdentifiableUser type */
@@ -449,6 +479,12 @@ export type Mutation = {
   requestPasswordLink?: Maybe<ResetPasswordLinkResultUnion>
   /** Resets the current user's password */
   resetPasswordForCurrentUser?: Maybe<ResetPasswordForCurrentUserUnion>
+  /** Sends a single class stats to an email */
+  sendClassStatsToEmail?: Maybe<Scalars['Boolean']>
+  /** Sends the class stats to the users booked in a class */
+  sendClassStatsToUsers?: Maybe<Scalars['Boolean']>
+  /** Sets a room layout for a list of class schedules */
+  setRoomLayoutForClassSchedules: Array<ClassSchedule>
   /** Swaps a spot in a class */
   swapSpot?: Maybe<SwapSpotResultUnion>
   /** Sync all classes */
@@ -503,6 +539,11 @@ export type MutationCreateCurrentUserInSiteArgs = {
 export type MutationCreateRoomLayoutArgs = {
   input: RoomLayoutInput
   site: SiteEnum
+}
+
+export type MutationDeleteCurrentUserAccountArgs = {
+  site: SiteEnum
+  userPassword: Scalars['String']
 }
 
 export type MutationDeleteDeviceTokenToCurrentUserArgs = {
@@ -577,6 +618,18 @@ export type MutationResetPasswordForCurrentUserArgs = {
   input?: InputMaybe<ResetPasswordForCurrentUserInput>
 }
 
+export type MutationSendClassStatsToEmailArgs = {
+  input: SendClassStatsToEmailInput
+}
+
+export type MutationSendClassStatsToUsersArgs = {
+  classId: Scalars['ID']
+}
+
+export type MutationSetRoomLayoutForClassSchedulesArgs = {
+  input: SetRoomLayoutForClassSchedulesInput
+}
+
 export type MutationSwapSpotArgs = {
   input: EditEnrollmentInput
   site: SiteEnum
@@ -598,6 +651,12 @@ export type MutationUpdateCurrentUserArgs = {
 export type MutationUpdateCurrentUserPasswordArgs = {
   input: UpdateCurrentUserPasswordInput
   site: SiteEnum
+}
+
+export type OtherUserHasThisExternalIdError = Error & {
+  __typename: 'OtherUserHasThisExternalIdError'
+  code: Scalars['String']
+  siteUser: IdentifiableSiteUser
 }
 
 export type PasswordsDontMatchError = Error & {
@@ -637,10 +696,14 @@ export type Purchase = {
 
 export type Query = {
   __typename: 'Query'
+  /** Returns a list of all the available class types for a given site */
+  availableClassTypes: Array<Scalars['String']>
   /** Get next classes */
   calendarClasses: Array<Class>
   /** Get a single class information */
   classInfo?: Maybe<ClassInfo>
+  /** Returns a list of all the class schedules for a given site */
+  classSchedules: Array<ClassSchedule>
   /** Returns the list of all available countries */
   countries?: Maybe<Array<Maybe<Country>>>
   /** Returns a specific country by a given country code */
@@ -663,12 +726,22 @@ export type Query = {
   roomLayouts: Array<RoomLayout>
   /** Returns the matched users given the query provided */
   searchSiteUser?: Maybe<Array<Maybe<IdentifiableSiteUser>>>
+  /** Returns a single workout stat */
+  singleWorkoutStat?: Maybe<ClassStat>
   /** Settings of a site */
   siteSettings: SiteSetting
   /** Returns a user in a specific site */
   siteUser?: Maybe<IdentifiableSiteUser>
   /** Returns a user */
   user?: Maybe<IdentifiableUser>
+  /** Returns the ranking of a user in a specific class */
+  userRankingInClass?: Maybe<UserInClassRanking>
+  /** Returns a list of workhout stats */
+  userWorkoutStats: Array<Maybe<ClassStat>>
+}
+
+export type QueryAvailableClassTypesArgs = {
+  site?: InputMaybe<SiteEnum>
 }
 
 export type QueryCalendarClassesArgs = {
@@ -678,6 +751,10 @@ export type QueryCalendarClassesArgs = {
 
 export type QueryClassInfoArgs = {
   id: Scalars['ID']
+  site: SiteEnum
+}
+
+export type QueryClassSchedulesArgs = {
   site: SiteEnum
 }
 
@@ -722,6 +799,10 @@ export type QuerySearchSiteUserArgs = {
   site?: InputMaybe<SiteEnum>
 }
 
+export type QuerySingleWorkoutStatArgs = {
+  enrollmentId: Scalars['ID']
+}
+
 export type QuerySiteSettingsArgs = {
   site?: InputMaybe<SiteEnum>
 }
@@ -732,6 +813,16 @@ export type QuerySiteUserArgs = {
 
 export type QueryUserArgs = {
   id: Scalars['ID']
+}
+
+export type QueryUserRankingInClassArgs = {
+  classId: Scalars['ID']
+  userId: Scalars['ID']
+}
+
+export type QueryUserWorkoutStatsArgs = {
+  site: SiteEnum
+  userId: Scalars['ID']
 }
 
 export type RegisterUserInput = {
@@ -814,6 +905,7 @@ export type ResetPasswordSuccess = {
 
 export type RoomLayout = {
   __typename: 'RoomLayout'
+  capacity: Scalars['Int']
   columns: Scalars['Int']
   id: Scalars['ID']
   matrix?: Maybe<Array<ClassPositionInterface>>
@@ -831,6 +923,16 @@ export type RoomLayoutInput = {
 export type RoomLayoutsInput = {
   /** Amount of usable spots in the class */
   usersCapacity?: InputMaybe<Scalars['Int']>
+}
+
+export type SendClassStatsToEmailInput = {
+  email: Scalars['String']
+  enrollmentId: Scalars['ID']
+}
+
+export type SetRoomLayoutForClassSchedulesInput = {
+  classSchedulesIds: Array<Scalars['ID']>
+  roomLayoutId?: InputMaybe<Scalars['ID']>
 }
 
 export type SimpleSiteUser = {
@@ -851,7 +953,7 @@ export type SiteSetting = {
 }
 
 export type SiteUserInput = {
-  externalID: Scalars['ID']
+  externalUserId: Scalars['ID']
   site: SiteEnum
 }
 
@@ -956,7 +1058,7 @@ export type UserAlreadyExistsError = Error & {
 export type UserInClassRanking = {
   __typename: 'UserInClassRanking'
   genderRanking?: Maybe<GenderRanking>
-  totalRanking: UserRanking
+  totalRanking?: Maybe<UserRanking>
 }
 
 export type UserInRankingParams = {
@@ -981,6 +1083,11 @@ export type UserInput = {
   state?: InputMaybe<Scalars['String']>
   weight?: InputMaybe<Scalars['Float']>
   zipCode?: InputMaybe<Scalars['String']>
+}
+
+export type UserPasswordDoesNotMatchError = Error & {
+  __typename: 'UserPasswordDoesNotMatchError'
+  code: Scalars['String']
 }
 
 export type UserRanking = {
@@ -1151,6 +1258,7 @@ export type CurrentUserEnrollmentsQuery = {
       startWithNoTimeZone: any
       duration: number
       waitListAvailable: boolean
+      showAsDisabled: boolean
     }
   }>
 }
@@ -1436,28 +1544,6 @@ export type RemoveCurrentUserFromWaitlistMutation = {
     | null
 }
 
-export type BookUserIntoClassMutationVariables = Exact<{
-  input: BookUserIntoClassInput
-}>
-
-export type BookUserIntoClassMutation = {
-  __typename: 'Mutation'
-  bookUserIntoClass:
-    | { __typename: 'AddedToWaitlistSuccess' }
-    | { __typename: 'BookClassSuccess' }
-    | { __typename: 'BookedButInOtherSpotError' }
-    | { __typename: 'BookingOverlapsAnotherOneError' }
-    | { __typename: 'ClassIsFullError' }
-    | { __typename: 'ClientIsAlreadyBookedError' }
-    | { __typename: 'ClientIsAlreadyOnWaitlistError' }
-    | { __typename: 'ClientIsOutsideSchedulingWindowError' }
-    | { __typename: 'PaymentRequiredError' }
-    | { __typename: 'SpotAlreadyReservedError' }
-    | { __typename: 'SpotIsDisabledError' }
-    | { __typename: 'UnknownError' }
-    | { __typename: 'WaitlistFullError' }
-}
-
 export type RemoveUserFromClassMutationVariables = Exact<{
   input: CancelEnrollmentInput
 }>
@@ -1592,11 +1678,11 @@ export type CurrentUserRankingInClassQuery = {
   __typename: 'Query'
   currentUserRankingInClass?: {
     __typename: 'UserInClassRanking'
-    totalRanking: {
+    totalRanking?: {
       __typename: 'UserRanking'
       positionInRanking?: number | null
       totalMembersInRanking?: number | null
-    }
+    } | null
     genderRanking?: {
       __typename: 'GenderRanking'
       gender?: GenderEnum | null
@@ -2054,7 +2140,8 @@ export const CurrentUserEnrollmentsDocument = {
                       { kind: 'Field', name: { kind: 'Name', value: 'start' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'startWithNoTimeZone' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'duration' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'waitListAvailable' } }
+                      { kind: 'Field', name: { kind: 'Name', value: 'waitListAvailable' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'showAsDisabled' } }
                     ]
                   }
                 }
@@ -2943,46 +3030,6 @@ export const RemoveCurrentUserFromWaitlistDocument = {
   RemoveCurrentUserFromWaitlistMutation,
   RemoveCurrentUserFromWaitlistMutationVariables
 >
-export const BookUserIntoClassDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'bookUserIntoClass' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'BookUserIntoClassInput' } }
-          }
-        }
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'bookUserIntoClass' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'input' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
-              }
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [{ kind: 'Field', name: { kind: 'Name', value: '__typename' } }]
-            }
-          }
-        ]
-      }
-    }
-  ]
-} as unknown as DocumentNode<BookUserIntoClassMutation, BookUserIntoClassMutationVariables>
 export const RemoveUserFromClassDocument = {
   kind: 'Document',
   definitions: [
