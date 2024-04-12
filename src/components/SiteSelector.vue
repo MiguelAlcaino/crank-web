@@ -12,6 +12,10 @@ import { inject, onMounted, ref } from 'vue'
 
 const apiService = inject<ApiService>('gqlApiService')!
 
+defineProps<{
+  disabled?: boolean | undefined
+}>()
+
 const emits = defineEmits<{
   (e: 'afterChangingSite'): void
 }>()
@@ -41,6 +45,7 @@ function onChangeSite() {
     @change="onChangeSite()"
     id="selectSite"
     required
+    :disabled="disabled"
   >
     <option v-for="(item, index) in sites" :key="index" :value="item">
       {{ item === SiteEnum.AbuDhabi ? 'Abu Dhabi' : item === SiteEnum.Dubai ? 'Dubai' : item }}
