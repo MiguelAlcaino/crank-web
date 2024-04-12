@@ -18,7 +18,7 @@ const emits = defineEmits<{
 
 const sites = ref<SiteEnum[]>([])
 
-const selectedSite = ref(appStore().site)
+const selectedSite = ref<SiteEnum>(appStore().site)
 
 onMounted(() => {
   getAvailableSites()
