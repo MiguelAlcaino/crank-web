@@ -33,7 +33,8 @@ import type {
   AcceptLateCancelledSpotInClassInput,
   AcceptLateCancelledSpotInClassResultUnion,
   RejectLateCancelledSpotInClassInput,
-  RejectLateBookingResultUnion
+  RejectLateBookingResultUnion,
+  SimpleSiteUser
 } from '@/gql/graphql'
 import { EnrollmentTypeEnum, type SiteSetting } from '@/gql/graphql'
 import { ApolloClient, ApolloError } from '@apollo/client/core'
@@ -1020,7 +1021,9 @@ export class ApiService {
     const query = gql`
       query currentUserSites {
         currentUser {
-          existsInSites
+          siteUsers {
+            site
+          }
         }
       }
     `
@@ -1032,7 +1035,12 @@ export class ApiService {
 
     const currentUser = queryResult.data.currentUser as User
 
-    return currentUser.existsInSites as SiteEnum[]
+    const sites: SiteEnum[] = []
+    currentUser.siteUsers.forEach((siteUser: SimpleSiteUser) => {
+      sites.push(siteUser.site)
+    })
+
+    return sites
   }
 
   async getCurrentUserRankingInClass(
