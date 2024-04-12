@@ -27,8 +27,11 @@ import dayjs from 'dayjs'
 import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
 import router from '@/router'
+
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
+
 import ModalComponent from '@/components/ModalComponent.vue'
+import SiteSelector from '@/components/SiteSelector.vue'
 
 const apiService = inject<ApiService>('gqlApiService')!
 
@@ -55,6 +58,13 @@ async function getCurrentUserWorkoutStats() {
 </script>
 
 <template>
+    <div class="row">
+    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-8">
+      <SiteSelector @afterChangingSite="getCurrentUserWorkoutStats()"></SiteSelector>
+    </div>
+  </div>
+  <hr />
+
   <div class="row">
     <div class="col-12">
       <h1>WORKOUT STATS</h1>
