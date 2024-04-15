@@ -126,6 +126,14 @@ async function startApp() {
     await router.push('/reset-password?token=' + token)
   } else if (view == 'payments') {
     await router.push('/payments')
+  } else if (view == 'bookings') {
+    await router.push('/bookings')
+  } else if (view == 'purchases') {
+    await router.push('/purchases')
+  } else if (view == 'workout-stats') {
+    await router.push('/workout-stats')
+  } else if (view == 'logout') {
+    authService.logout()
   }
 
   // Hack the squarespace top menu
