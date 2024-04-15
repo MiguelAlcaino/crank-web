@@ -1,7 +1,10 @@
 export function hackSquarespaceMenu() {
   const authToken = localStorage.getItem('authToken')
 
-  const userIsLoggedIn = authToken && !isTokenExpired(authToken)
+  let userIsLoggedIn = false
+  if(authToken && !isTokenExpired(authToken))
+    userIsLoggedIn = true
+  
   console.log('userIsLoggedIn', userIsLoggedIn)
 
   const welcomeLinkInTopMenu = document.querySelector('a[href="/Welcome"]')
