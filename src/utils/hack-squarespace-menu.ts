@@ -1,10 +1,18 @@
 export function hackSquarespaceMenu() {
-  let welcomeLinkInTopMenu = document.querySelector('a[href="/Welcome"]')
-  if (null !== welcomeLinkInTopMenu) {
-    let containerOfWelcomeLink = welcomeLinkInTopMenu.parentElement
-    if (null !== containerOfWelcomeLink) {
-      let parentOfAllContainerLinks = containerOfWelcomeLink.parentElement
-      if (null !== parentOfAllContainerLinks) {
+  const authToken = localStorage.getItem('authToken')
+
+  const userIsLoggedIn = authToken && !isTokenExpired(authToken)
+  console.log('userIsLoggedIn', userIsLoggedIn)
+
+  const welcomeLinkInTopMenu = document.querySelector('a[href="/Welcome"]')
+
+  if (welcomeLinkInTopMenu) {
+    const containerOfWelcomeLink = welcomeLinkInTopMenu.parentElement
+
+    if (containerOfWelcomeLink) {
+      const parentOfAllContainerLinks = containerOfWelcomeLink.parentElement
+
+      if (parentOfAllContainerLinks) {
         /*
         This is the structure of each element in the top menu on the squarespace site on desktop view
         <span class="Header-nav-item Header-nav-item--folder">
@@ -21,23 +29,23 @@ export function hackSquarespaceMenu() {
           <span class="Mobile-overlay-nav-item--folder-label">Welcome</span>
         </button>
          */
-        if (null !== parentOfAllContainerLinks.children) {
+        if (parentOfAllContainerLinks.children) {
           // Add one more element to the top menu that contains other two links inside
-          let shopLinkContainer = document.createElement('span')
+          const shopLinkContainer = document.createElement('span')
           shopLinkContainer.className = 'Header-nav-item Header-nav-item--folder'
-          let shopLink = document.createElement('a')
+          const shopLink = document.createElement('a')
           shopLink.className = 'Header-nav-folder-title Header-nav-folder-title--active'
           shopLink.href = '/shop'
           shopLink.innerText = 'Shop +'
           shopLinkContainer.appendChild(shopLink)
-          let folder = document.createElement('span')
+          const folder = document.createElement('span')
           folder.className = 'Header-nav-folder'
-          let subShopLink1 = document.createElement('a')
+          const subShopLink1 = document.createElement('a')
           subShopLink1.className = 'Header-nav-folder-item'
           subShopLink1.href = '/shop1'
           subShopLink1.innerText = 'Shop 1'
           folder.appendChild(subShopLink1)
-          let subShopLink2 = document.createElement('a')
+          const subShopLink2 = document.createElement('a')
           subShopLink2.className = 'Header-nav-folder-item'
           subShopLink2.href = '/shop2'
           subShopLink2.innerText = 'Shop 2'
@@ -46,9 +54,9 @@ export function hackSquarespaceMenu() {
           parentOfAllContainerLinks.appendChild(shopLinkContainer)
 
           // Add one more element to the top menu that does not contain any links inside
-          let candiesLinkContainer = document.createElement('span')
+          const candiesLinkContainer = document.createElement('span')
           candiesLinkContainer.className = 'Header-nav-item'
-          let candiesLink = document.createElement('a')
+          const candiesLink = document.createElement('a')
           candiesLink.className = 'Header-nav-folder-title Header-nav-folder-title--active'
           candiesLink.href = '/candies'
           candiesLink.innerText = 'Candies'
@@ -58,4 +66,21 @@ export function hackSquarespaceMenu() {
       }
     }
   }
+}
+
+function isTokenExpired(token: string) {
+  const base64Url = token.split('.')[1]
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
+  const jsonPayload = decodeURIComponent(
+    atob(base64)
+      .split('')
+      .map(function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+      })
+      .join('')
+  )
+
+  const { exp } = JSON.parse(jsonPayload)
+  const expired = Date.now() >= exp * 1000
+  return expired
 }
