@@ -111,6 +111,20 @@ export function hackSquarespaceMenu() {
             myAccountLinkContainer.replaceWith(newMyAccountLinkContainer)
           }
 
+          // Logout link menu
+          if(userIsLoggedIn) {
+            const logoutLinkContainer = document.createElement('span')
+            logoutLinkContainer.className = 'Header-nav-item Header-nav-item--folder'
+
+            // Create logout link menu
+            const logoutLink = document.createElement('a')
+            logoutLink.className = 'Header-nav-folder-title Header-nav-folder-title--active'
+            logoutLink.href = logoutPath
+            logoutLink.innerText = 'Logout'
+            logoutLinkContainer.appendChild(logoutLink)
+            parentOfAllContainerLinks.appendChild(logoutLinkContainer)
+          }
+
           //Example of how to add a new link to the top menu
           // Add one more element to the top menu that contains other two links inside
           // const shopLinkContainer = document.createElement('span')
