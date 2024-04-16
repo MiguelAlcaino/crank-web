@@ -68,6 +68,15 @@ const router = createRouter({
       component: LoginView
     },
     {
+      path: '/logout',
+      name: 'logout',
+      redirect: '/login',
+      beforeEnter: (to, from, next) => {
+        authService.logout()
+        next()
+      }
+    },
+    {
       path: '/register',
       name: 'register',
       component: RegisterView
