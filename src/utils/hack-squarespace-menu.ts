@@ -76,28 +76,28 @@ export function hackSquarespaceMenu() {
               subMenuWorkoutStatsLink.className = 'Header-nav-folder-item'
               subMenuWorkoutStatsLink.href = workOutStatsPath
               subMenuWorkoutStatsLink.innerText = 'Workout Stats'
-              myAccountSubMenuSpan.appendChild(subMenuWorkoutStatsLink)      
+              myAccountSubMenuSpan.appendChild(subMenuWorkoutStatsLink)
 
               // create Bookings sub menu link
               const subMenuBookingsLink = document.createElement('a')
               subMenuBookingsLink.className = 'Header-nav-folder-item'
               subMenuBookingsLink.href = bookinsPath
               subMenuBookingsLink.innerText = 'Bookings'
-              myAccountSubMenuSpan.appendChild(subMenuBookingsLink)           
+              myAccountSubMenuSpan.appendChild(subMenuBookingsLink)
 
               // create Purchases sub menu link
               const subMenuPurchasesLink = document.createElement('a')
               subMenuPurchasesLink.className = 'Header-nav-folder-item'
               subMenuPurchasesLink.href = purchasesPath
               subMenuPurchasesLink.innerText = 'Purchases'
-              myAccountSubMenuSpan.appendChild(subMenuPurchasesLink)       
+              myAccountSubMenuSpan.appendChild(subMenuPurchasesLink)
 
               // create Profile Stats sub menu link
               const subMenuProfileLink = document.createElement('a')
               subMenuProfileLink.className = 'Header-nav-folder-item'
               subMenuProfileLink.href = profilePath
               subMenuProfileLink.innerText = 'Profile'
-              myAccountSubMenuSpan.appendChild(subMenuProfileLink)            
+              myAccountSubMenuSpan.appendChild(subMenuProfileLink)
             } else {
               // create New to CRANK sub menu link
               const subMenuNewToCrankLink = document.createElement('a')
@@ -105,14 +105,13 @@ export function hackSquarespaceMenu() {
               subMenuNewToCrankLink.href = regiterPath
               subMenuNewToCrankLink.innerText = 'New to CRANK'
               myAccountSubMenuSpan.appendChild(subMenuNewToCrankLink)
-          
             }
             newMyAccountLinkContainer.appendChild(myAccountSubMenuSpan)
             myAccountLinkContainer.replaceWith(newMyAccountLinkContainer)
           }
 
           // Logout link menu
-          if(userIsLoggedIn) {
+          if (userIsLoggedIn) {
             const logoutLinkContainer = document.createElement('span')
             logoutLinkContainer.className = 'Header-nav-item Header-nav-item--folder'
 
@@ -124,45 +123,6 @@ export function hackSquarespaceMenu() {
             logoutLinkContainer.appendChild(logoutLink)
             parentOfAllContainerLinks.appendChild(logoutLinkContainer)
           }
-
-          //Example of how to add a new link to the top menu
-          // Add one more element to the top menu that contains other two links inside
-          // const shopLinkContainer = document.createElement('span')
-          // shopLinkContainer.className = 'Header-nav-item Header-nav-item--folder'
-
-          // const shopLink = document.createElement('a')
-          // shopLink.className = 'Header-nav-folder-title Header-nav-folder-title--active'
-          // shopLink.href = '/shop'
-          // shopLink.innerText = 'Shop +'
-          // shopLinkContainer.appendChild(shopLink)
-
-          // const folder = document.createElement('span')
-          // folder.className = 'Header-nav-folder'
-
-          // const subShopLink1 = document.createElement('a')
-          // subShopLink1.className = 'Header-nav-folder-item'
-          // subShopLink1.href = '/shop1'
-          // subShopLink1.innerText = 'Shop 1'
-          // folder.appendChild(subShopLink1)
-
-          // const subShopLink2 = document.createElement('a')
-          // subShopLink2.className = 'Header-nav-folder-item'
-          // subShopLink2.href = '/shop2'
-          // subShopLink2.innerText = 'Shop 2'
-          // folder.appendChild(subShopLink2)
-          // shopLinkContainer.appendChild(folder)
-          // parentOfAllContainerLinks.appendChild(shopLinkContainer)
-
-          // // Add one more element to the top menu that does not contain any links inside
-          // const candiesLinkContainer = document.createElement('span')
-          // candiesLinkContainer.className = 'Header-nav-item'
-
-          // const candiesLink = document.createElement('a')
-          // candiesLink.className = 'Header-nav-folder-title Header-nav-folder-title--active'
-          // candiesLink.href = '/candies'
-          // candiesLink.innerText = 'Candies'
-          // candiesLinkContainer.appendChild(candiesLink)
-          // parentOfAllContainerLinks.appendChild(candiesLinkContainer)
         }
       }
     }

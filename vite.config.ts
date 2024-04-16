@@ -11,7 +11,8 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: fileURLToPath(new URL('./index.html', import.meta.url)),
-        paymentsView: fileURLToPath(new URL('./payments-view.html', import.meta.url)),
+        paymentsView: fileURLToPath(new URL('./payments-view.html', import.meta.url)),        
+        hackSquarespaceMenu : fileURLToPath(new URL('./src/utils/hack-squarespace-menu.ts', import.meta.url)),
       },
       output: {
 				entryFileNames: 'app-[name].js',
