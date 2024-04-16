@@ -4,8 +4,6 @@ export function hackSquarespaceMenu() {
   let userIsLoggedIn = false
   if (authToken && !isTokenExpired(authToken)) userIsLoggedIn = true
 
-  console.log('userIsLoggedIn', userIsLoggedIn)
-
   const loginPath = '/login'
   const regiterPath = '/register'
   const logoutPath = '/logout'
@@ -156,8 +154,6 @@ export function hackSquarespaceMenu() {
     }
   }
 }
-
-hackSquarespaceMenu()
 
 function isTokenExpired(token: string) {
   const base64Url = token.split('.')[1]
