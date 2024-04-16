@@ -17,6 +17,7 @@ import ModalComponent from '@/components/ModalComponent.vue'
 
 import { useRoute } from 'vue-router'
 import { ResetPasswordRequiredError } from '@/model/Exception'
+import { hackSquarespaceMenu } from '@/utils/hack-squarespace-menu'
 
 const displayLoginError = ref(false)
 const isSubmitting = ref(false)
@@ -56,6 +57,7 @@ async function login() {
 
     try {
       await authService.login(formData.email, formData.password, selectedSite.value)
+      hackSquarespaceMenu()
       let redirectTo = route.query.redirect ?? '/'
       if (redirectTo !== '/') {
         await router.push({ path: route.query.redirect as string })
