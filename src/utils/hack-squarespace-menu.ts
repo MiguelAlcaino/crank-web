@@ -76,28 +76,28 @@ export function hackSquarespaceMenu() {
               subMenuWorkoutStatsLink.className = 'Header-nav-folder-item'
               subMenuWorkoutStatsLink.href = workOutStatsPath
               subMenuWorkoutStatsLink.innerText = 'Workout Stats'
-              myAccountSubMenuSpan.appendChild(subMenuWorkoutStatsLink)      
+              myAccountSubMenuSpan.appendChild(subMenuWorkoutStatsLink)
 
               // create Bookings sub menu link
               const subMenuBookingsLink = document.createElement('a')
               subMenuBookingsLink.className = 'Header-nav-folder-item'
               subMenuBookingsLink.href = bookinsPath
               subMenuBookingsLink.innerText = 'Bookings'
-              myAccountSubMenuSpan.appendChild(subMenuBookingsLink)           
+              myAccountSubMenuSpan.appendChild(subMenuBookingsLink)
 
               // create Purchases sub menu link
               const subMenuPurchasesLink = document.createElement('a')
               subMenuPurchasesLink.className = 'Header-nav-folder-item'
               subMenuPurchasesLink.href = purchasesPath
               subMenuPurchasesLink.innerText = 'Purchases'
-              myAccountSubMenuSpan.appendChild(subMenuPurchasesLink)       
+              myAccountSubMenuSpan.appendChild(subMenuPurchasesLink)
 
               // create Profile Stats sub menu link
               const subMenuProfileLink = document.createElement('a')
               subMenuProfileLink.className = 'Header-nav-folder-item'
               subMenuProfileLink.href = profilePath
               subMenuProfileLink.innerText = 'Profile'
-              myAccountSubMenuSpan.appendChild(subMenuProfileLink)            
+              myAccountSubMenuSpan.appendChild(subMenuProfileLink)
             } else {
               // create New to CRANK sub menu link
               const subMenuNewToCrankLink = document.createElement('a')
@@ -105,14 +105,13 @@ export function hackSquarespaceMenu() {
               subMenuNewToCrankLink.href = regiterPath
               subMenuNewToCrankLink.innerText = 'New to CRANK'
               myAccountSubMenuSpan.appendChild(subMenuNewToCrankLink)
-          
             }
             newMyAccountLinkContainer.appendChild(myAccountSubMenuSpan)
             myAccountLinkContainer.replaceWith(newMyAccountLinkContainer)
           }
 
           // Logout link menu
-          if(userIsLoggedIn) {
+          if (userIsLoggedIn) {
             const logoutLinkContainer = document.createElement('span')
             logoutLinkContainer.className = 'Header-nav-item Header-nav-item--folder'
 
@@ -123,7 +122,7 @@ export function hackSquarespaceMenu() {
             logoutLink.innerText = 'Logout'
             logoutLinkContainer.appendChild(logoutLink)
             parentOfAllContainerLinks.appendChild(logoutLinkContainer)
-          }         
+          }
         }
       }
     }
@@ -146,6 +145,3 @@ function isTokenExpired(token: string) {
   const expired = Date.now() >= exp * 1000
   return expired
 }
-
-
-hackSquarespaceMenu()
