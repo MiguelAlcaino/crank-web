@@ -313,8 +313,8 @@ async function login() {
             style="cursor: pointer"
           >
             <span class="input-group-text" id="passwordEye" style="background-color: transparent">
-              <i v-if="passwordIsVisible" class="bi bi-eye-slash-fill"></i>
-              <i v-else class="bi bi-eye-fill"></i>
+              <i v-if="passwordIsVisible" class="bi bi-eye-fill"></i>
+              <i v-else class="bi bi-eye-slash-fill"></i>
             </span>
           </div>
         </div>
@@ -346,8 +346,8 @@ async function login() {
             style="cursor: pointer"
           >
             <span class="input-group-text" id="passwordEye" style="background-color: transparent">
-              <i v-if="confirmPasswordIsVisible" class="bi bi-eye-slash-fill"></i>
-              <i v-else class="bi bi-eye-fill"></i>
+              <i v-if="confirmPasswordIsVisible" class="bi bi-eye-fill"></i>
+              <i v-else class="bi bi-eye-slash-fill"></i>
             </span>
           </div>
         </div>
