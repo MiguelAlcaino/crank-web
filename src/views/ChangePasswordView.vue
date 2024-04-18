@@ -117,8 +117,8 @@ const submitForm = async () => {
                 id="currentPasswordEye"
                 style="background-color: transparent"
               >
-                <i v-if="currentPasswordIsVisible" class="bi bi-eye-slash-fill"></i>
-                <i v-else class="bi bi-eye-fill"></i>
+                <i v-if="currentPasswordIsVisible" class="bi bi-eye-fill"></i>
+                <i v-else class="bi bi-eye-slash-fill"></i>
               </span>
             </div>
             <small
@@ -156,8 +156,8 @@ const submitForm = async () => {
                 id="newPasswordEye"
                 style="background-color: transparent"
               >
-                <i v-if="newPasswordIsVisible" class="bi bi-eye-slash-fill"></i>
-                <i v-else class="bi bi-eye-fill"></i>
+                <i v-if="newPasswordIsVisible" class="bi bi-eye-fill"></i>
+                <i v-else class="bi bi-eye-slash-fill"></i>
               </span>
             </div>
           </div>
@@ -195,8 +195,8 @@ const submitForm = async () => {
                 id="confirmNewPasswordEye"
                 style="background-color: transparent"
               >
-                <i v-if="confirmNewPasswordIsVisible" class="bi bi-eye-slash-fill"></i>
-                <i v-else class="bi bi-eye-fill"></i>
+                <i v-if="confirmNewPasswordIsVisible" class="bi bi-eye-fill"></i>
+                <i v-else class="bi bi-eye-slash-fill"></i>
               </span>
             </div>
           </div>
