@@ -53,7 +53,7 @@ const formData = reactive({
   emergencyContactPhone: '',
   emergencyContactRelationship: '',
   leaderboardUsername: '',
-  hideMetrics: false
+  joinTheLeaderboard: false
 })
 
 const rules = computed(() => {
@@ -111,7 +111,7 @@ const rules = computed(() => {
     leaderboardUsername: {
       required: helpers.withMessage('Leaderboard Nickname is required', required)
     },
-    hideMetrics: {
+    joinTheLeaderboard: {
       required: helpers.withMessage('Field is required', required)
     }
   }
@@ -153,7 +153,7 @@ async function getMyself(): Promise<void> {
     formData.emergencyContactPhone = getFormattedPhoneNumber(user.emergencyContactPhone)
     formData.emergencyContactRelationship = user.emergencyContactRelationship!
     formData.leaderboardUsername = user.leaderboardUsername!
-    formData.hideMetrics = user.hideMetrics !== null ? user.hideMetrics! : false
+    formData.joinTheLeaderboard = user.hideMetrics !== null ? !(user.hideMetrics!) : false
   }
 }
 
@@ -175,7 +175,7 @@ const submitForm = async () => {
       birthdate: dayjs(formData.birthdate).format('YYYY-MM-DD'),
       city: formData.cityState,
       country: formData.country,
-      hideMetrics: formData.hideMetrics,
+      hideMetrics: !formData.joinTheLeaderboard,
       emergencyContactName: formData.emergencyContactName,
       emergencyContactPhone: formData.emergencyContactPhone,
       emergencyContactRelationship: formData.emergencyContactRelationship,
@@ -230,21 +230,21 @@ function onChangeCountry() {
     </div>
     <hr />
 
-    <!-- hideMetrics -->
+    <!-- joinTheLeaderboard -->
     <div class="form-row">
       <div class="col-md-12 mb-3">
         <div class="custom-control custom-switch">
           <input
             type="checkbox"
             class="custom-control-input"
-            v-model="formData.hideMetrics"
-            id="hideMetricsMyProfile"
+            v-model="formData.joinTheLeaderboard"
+            id="joinTheLeaderboardMyProfile"
           />
-          <label class="custom-control-label" for="hideMetricsMyProfile"
+          <label class="custom-control-label" for="joinTheLeaderboardMyProfile"
             >Join the Leaderboard?</label
           >
           <small
-            v-for="error in v$.hideMetrics.$errors"
+            v-for="error in v$.joinTheLeaderboard.$errors"
             :key="error.$uid"
             class="form-text"
             style="color: red"
