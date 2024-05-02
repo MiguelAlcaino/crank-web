@@ -45,7 +45,7 @@ const formData = reactive({
   birthdate: null as Date | null,
   weight: 0,
   country: '',
-  cityState: '',
+  cityState: null as string | null,
   address1: '',
   address2: '',
   phone: '',
@@ -145,7 +145,7 @@ async function getMyself(): Promise<void> {
     formData.birthdate = dayjs(user.birthdate).toDate()
     formData.weight = user.weight !== null ? user.weight! : 0
     formData.country = user.country.code
-    formData.cityState = user.state!.code
+    formData.cityState = user.state?.code ?? null
     formData.address1 = user.address1
     formData.address2 = user.address2!
     formData.phone = getFormattedPhoneNumber(user.phone)
