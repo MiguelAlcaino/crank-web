@@ -67,7 +67,7 @@ const documents = {
     types.RemoveUserFromWaitlistDocument,
   '\n      mutation editEnrollment($site: SiteEnum!, $input: EditEnrollmentInput!) {\n        editEnrollment(site: $site, input: $input) {\n          __typename\n          ... on Enrollment {\n            __typename\n          }\n          ... on SpotAlreadyReservedError {\n            code\n          }\n          ... on TryToSwitchToSameSpotError {\n            code\n          }\n          ... on ClientIsOutsideSchedulingWindowError {\n            code\n          }\n        }\n      }\n    ':
     types.EditEnrollmentDocument,
-  '\n      query currentUserSites {\n        currentUser {\n          existsInSites\n        }\n      }\n    ':
+  '\n      query currentUserSites {\n        currentUser {\n          siteUsers {\n            site\n          }\n        }\n      }\n    ':
     types.CurrentUserSitesDocument,
   '\n      query currentUserRankingInClass($site: SiteEnum!, $params: UserInRankingParams) {\n        currentUserRankingInClass(site: $site, params: $params) {\n          totalRanking {\n            positionInRanking\n            totalMembersInRanking\n          }\n          genderRanking {\n            gender\n            ranking {\n              positionInRanking\n              totalMembersInRanking\n            }\n          }\n        }\n      }\n    ':
     types.CurrentUserRankingInClassDocument,
@@ -257,8 +257,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: '\n      query currentUserSites {\n        currentUser {\n          existsInSites\n        }\n      }\n    '
-): (typeof documents)['\n      query currentUserSites {\n        currentUser {\n          existsInSites\n        }\n      }\n    ']
+  source: '\n      query currentUserSites {\n        currentUser {\n          siteUsers {\n            site\n          }\n        }\n      }\n    '
+): (typeof documents)['\n      query currentUserSites {\n        currentUser {\n          siteUsers {\n            site\n          }\n        }\n      }\n    ']
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
