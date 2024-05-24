@@ -1051,7 +1051,7 @@ export type User = {
   address2?: Maybe<Scalars['String']>
   birthdate?: Maybe<Scalars['Date']>
   city: Scalars['String']
-  country: Country
+  country?: Maybe<Country>
   doesExistInSite: Scalars['Boolean']
   email: Scalars['String']
   emergencyContactName: Scalars['String']
@@ -1185,12 +1185,12 @@ export type CurrentUserQuery = {
     hideMetrics?: boolean | null
     weight?: number | null
     leaderboardUsername?: string | null
-    country: {
+    country?: {
       __typename: 'Country'
       name: string
       code: string
       states?: Array<{ __typename: 'State'; name: string; code: string } | null> | null
-    }
+    } | null
     state?: { __typename: 'State'; name: string; code: string } | null
   } | null
 }
