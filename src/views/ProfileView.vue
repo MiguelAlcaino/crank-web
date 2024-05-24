@@ -44,7 +44,7 @@ const formData = reactive({
   gender: '',
   birthdate: null as Date | null,
   weight: 0,
-  country: '',
+  country: null as string | null,
   cityState: null as string | null,
   address1: '',
   address2: '',
