@@ -137,14 +137,16 @@ async function getMyself(): Promise<void> {
   if (user !== null) {
     userEmail.value = user.email
 
-    await getCountryStates(user.country.code)
+    if (user.country?.code) {
+      await getCountryStates(user.country.code)
+    }
 
     formData.firstName = user.firstName
     formData.lastName = user.lastName
     formData.gender = user.gender !== null ? user.gender!.toString() : GenderEnum.N.toString()
     formData.birthdate = dayjs(user.birthdate).toDate()
-    formData.weight = user.weight !== null ? user.weight! : 0
-    formData.country = user.country.code
+    formData.weight = user.weight !== null ? Math.round(user.weight!) : 0
+    formData.country = user.country?.code ?? null
     formData.cityState = user.state?.code ?? null
     formData.address1 = user.address1
     formData.address2 = user.address2!
