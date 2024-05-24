@@ -16,6 +16,7 @@ import BookingsTable from '@/components/BookingsTable.vue'
 import DefaultButtonComponent from '@/components/DefaultButtonComponent.vue'
 import ModalComponent from '@/components/ModalComponent.vue'
 import SiteSelector from '@/components/SiteSelector.vue'
+import PaginationComponent from '@/components/PaginationComponent.vue'
 
 import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
@@ -39,6 +40,11 @@ const isFilteredHistorical = ref<boolean>(false)
 const dateRangeFilterUpcoming = ref<[Date | null, Date | null] | undefined>()
 const dateRangeFilterWaitlist = ref<[Date | null, Date | null] | undefined>()
 const dateRangeFilterHistorical = ref<[Date | null, Date | null] | undefined>()
+
+const pageLimit = 20
+
+const currentPageHistorical = ref<number>(1)
+const totalHistorical = ref<number>(0)
 
 const errorModalData = ref<{
   message: string
@@ -154,7 +160,13 @@ async function getOldEnrollments() {
 
     oldEnrollmentsIsLoading.value = true
 
-    const _oldEnrollments = await apiService.getCurrentUserEnrollments(appStore().site, params)
+    const paginatedEnrollments = await apiService.currentUserEnrollmentsPaginated(
+      appStore().site,
+      params,
+      { page: currentPageHistorical.value, limit: pageLimit }
+    )
+    totalHistorical.value = paginatedEnrollments.total
+    const _oldEnrollments = paginatedEnrollments.enrollments
 
     oldEnrollments.value = _oldEnrollments
       .slice()
@@ -177,6 +189,11 @@ function isActive(menuItem: EnrollmentTypeEnum) {
 
 function setActive(menuItem: EnrollmentTypeEnum) {
   activeItem.value = menuItem
+}
+
+function pageChangedHistorical(page: number) {
+  currentPageHistorical.value = page
+  getOldEnrollments()
 }
 </script>
 
@@ -337,6 +354,12 @@ function setActive(menuItem: EnrollmentTypeEnum) {
         :is-filtered="isFilteredHistorical"
       >
       </BookingsTable>
+      <PaginationComponent
+        :limit="pageLimit"
+        :page="currentPageHistorical"
+        :total="totalHistorical"
+        @page-changed="pageChangedHistorical"
+      ></PaginationComponent>
     </div>
   </div>
 

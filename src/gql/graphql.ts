@@ -22,7 +22,13 @@ export type AcceptLateCancelledSpotInClassInput = {
   waitlistEntryId: Scalars['ID']
 }
 
-export type AcceptLateCancelledSpotInClassResultUnion = AcceptLateCancelledSpotInClassSuccess
+export type AcceptLateCancelledSpotInClassResultUnion =
+  | AcceptLateCancelledSpotInClassSuccess
+  | ClassIsFullError
+  | ClientIsAlreadyBookedError
+  | ClientIsOutsideSchedulingWindowError
+  | PaymentRequiredError
+  | UnknownError
 
 export type AcceptLateCancelledSpotInClassSuccess = {
   __typename: 'AcceptLateCancelledSpotInClassSuccess'
@@ -659,6 +665,21 @@ export type OtherUserHasThisExternalIdError = Error & {
   siteUser: IdentifiableSiteUser
 }
 
+export type PaginatedEnrollments = PaginatedResult & {
+  __typename: 'PaginatedEnrollments'
+  enrollments: Array<Enrollment>
+  total: Scalars['Int']
+}
+
+export type PaginatedResult = {
+  total: Scalars['Int']
+}
+
+export type PaginationInput = {
+  limit?: InputMaybe<Scalars['Int']>
+  page?: InputMaybe<Scalars['Int']>
+}
+
 export type PasswordsDontMatchError = Error & {
   __typename: 'PasswordsDontMatchError'
   code: Scalars['String']
@@ -710,8 +731,12 @@ export type Query = {
   country?: Maybe<Country>
   /** Returns the current user by the given Authentication header */
   currentUser?: Maybe<User>
-  /** List of classes where the user is already enrolled */
+  /**
+   * List of classes where the user is already enrolled
+   * @deprecated Use currentUserEnrollmentsPaginated instead
+   */
   currentUserEnrollments: Array<Enrollment>
+  currentUserEnrollmentsPaginated: PaginatedEnrollments
   /** List of purchases made by the current */
   currentUserPurchases?: Maybe<Array<Maybe<Purchase>>>
   /** Get current user's ranking on a specific class */
@@ -763,6 +788,12 @@ export type QueryCountryArgs = {
 }
 
 export type QueryCurrentUserEnrollmentsArgs = {
+  params?: InputMaybe<CurrentUserEnrollmentsParams>
+  site?: InputMaybe<SiteEnum>
+}
+
+export type QueryCurrentUserEnrollmentsPaginatedArgs = {
+  pagination?: InputMaybe<PaginationInput>
   params?: InputMaybe<CurrentUserEnrollmentsParams>
   site?: InputMaybe<SiteEnum>
 }
@@ -1666,7 +1697,10 @@ export type CurrentUserSitesQueryVariables = Exact<{ [key: string]: never }>
 
 export type CurrentUserSitesQuery = {
   __typename: 'Query'
-  currentUser?: { __typename: 'User'; existsInSites: Array<SiteEnum> } | null
+  currentUser?: {
+    __typename: 'User'
+    siteUsers: Array<{ __typename: 'SimpleSiteUser'; site: SiteEnum }>
+  } | null
 }
 
 export type CurrentUserRankingInClassQueryVariables = Exact<{
@@ -1702,10 +1736,14 @@ export type AcceptLateCancelledSpotInClassMutationVariables = Exact<{
 
 export type AcceptLateCancelledSpotInClassMutation = {
   __typename: 'Mutation'
-  acceptLateCancelledSpotInClass?: {
-    __typename: 'AcceptLateCancelledSpotInClassSuccess'
-    success: boolean
-  } | null
+  acceptLateCancelledSpotInClass?:
+    | { __typename: 'AcceptLateCancelledSpotInClassSuccess'; success: boolean }
+    | { __typename: 'ClassIsFullError' }
+    | { __typename: 'ClientIsAlreadyBookedError' }
+    | { __typename: 'ClientIsOutsideSchedulingWindowError' }
+    | { __typename: 'PaymentRequiredError' }
+    | { __typename: 'UnknownError' }
+    | null
 }
 
 export type RejectLateCancelledSpotInClassMutationVariables = Exact<{
@@ -3720,7 +3758,16 @@ export const CurrentUserSitesDocument = {
             name: { kind: 'Name', value: 'currentUser' },
             selectionSet: {
               kind: 'SelectionSet',
-              selections: [{ kind: 'Field', name: { kind: 'Name', value: 'existsInSites' } }]
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'siteUsers' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'site' } }]
+                  }
+                }
+              ]
             }
           }
         ]

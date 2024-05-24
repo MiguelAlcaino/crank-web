@@ -34,7 +34,9 @@ import type {
   AcceptLateCancelledSpotInClassResultUnion,
   RejectLateCancelledSpotInClassInput,
   RejectLateBookingResultUnion,
-  SimpleSiteUser
+  SimpleSiteUser,
+  PaginationInput,
+  PaginatedEnrollments
 } from '@/gql/graphql'
 import { EnrollmentTypeEnum, type SiteSetting } from '@/gql/graphql'
 import { ApolloClient, ApolloError } from '@apollo/client/core'
@@ -1146,5 +1148,60 @@ export class ApiService {
     })
 
     return result.data.rejectLateCancelledSpotInClass as RejectLateBookingResultUnion
+  }
+
+  async currentUserEnrollmentsPaginated(
+    site: SiteEnum,
+    params: CurrentUserEnrollmentsParams,
+    pagination: PaginationInput
+  ): Promise<PaginatedEnrollments> {
+    const query = gql`
+      query currentUserEnrollmentsPaginated(
+        $site: SiteEnum!
+        $params: CurrentUserEnrollmentsParams
+        $pagination: PaginationInput
+      ) {
+        currentUserEnrollmentsPaginated(site: $site, params: $params, pagination: $pagination) {
+          enrollments {
+            enrollmentInfo {
+              id
+              enrollmentStatus
+              enrollmentDateTime
+              enrollmentDateTimeWithNoTimeZone
+              ... on EnrollmentInfo {
+                spotNumber
+              }
+              ... on WaitlistEntry {
+                canBeTurnedIntoEnrollment
+              }
+            }
+            class {
+              id
+              name
+              description
+              instructorName
+              start
+              startWithNoTimeZone
+              duration
+              waitListAvailable
+              showAsDisabled
+            }
+          }
+          total
+        }
+      }
+    `
+
+    const queryResult = await this.authApiClient.query({
+      query: query,
+      variables: {
+        site: site,
+        params: params,
+        pagination: pagination
+      },
+      fetchPolicy: 'network-only'
+    })
+
+    return queryResult.data.currentUserEnrollmentsPaginated as PaginatedEnrollments
   }
 }
