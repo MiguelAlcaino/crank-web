@@ -153,7 +153,7 @@ async function getMyself(): Promise<void> {
     formData.emergencyContactPhone = getFormattedPhoneNumber(user.emergencyContactPhone)
     formData.emergencyContactRelationship = user.emergencyContactRelationship!
     formData.leaderboardUsername = user.leaderboardUsername!
-    formData.joinTheLeaderboard = user.hideMetrics !== null ? !(user.hideMetrics!) : false
+    formData.joinTheLeaderboard = user.hideMetrics !== null ? !user.hideMetrics! : false
   }
 }
 

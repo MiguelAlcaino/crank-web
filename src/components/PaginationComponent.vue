@@ -8,13 +8,12 @@ const props = defineProps<{
 }>()
 
 const emits = defineEmits<{
-  (e: 'updatePage', page: number): void
+  (e: 'pageChanged', page: number): void
 }>()
 
 watch(
   () => props.total || props.limit,
   () => {
-    console.log('total changed')
     totalPages.value = Math.ceil(props.total / props.limit)
   }
 )
@@ -38,14 +37,15 @@ function changePage(page: number) {
 
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page
-    emits('updatePage', page)
+    emits('pageChanged', page)
   }
 }
 </script>
 
 <template>
-  <nav aria-label="Page navigation example">
+  <nav aria-label="Page navigation example" v-if="total > 0">
     <ul class="pagination">
+      <!-- Previous -->
       <li class="page-item" :class="{ disabled: currentPage === 1 }">
         <a
           class="page-link"
@@ -56,10 +56,12 @@ function changePage(page: number) {
           <span aria-hidden="true">&laquo;</span>
         </a>
       </li>
-      <li class="page-item" v-if="currentPage > 3">
+      <!-- First -->
+      <li class="page-item" v-if="currentPage > 4">
         <a class="page-link" href="#" @click.prevent="changePage(1)">1</a>
       </li>
-      <li class="page-item" v-if="currentPage > 4">
+
+      <li class="page-item disabled" v-if="currentPage > 5">
         <a class="page-link" href="#">...</a>
       </li>
       <li
@@ -70,12 +72,15 @@ function changePage(page: number) {
       >
         <a class="page-link" href="#" @click.prevent="changePage(n)">{{ n }}</a>
       </li>
-      <li class="page-item" v-if="currentPage < totalPages - 3">
+      <li class="page-item disabled" v-if="currentPage < totalPages - 4">
         <a class="page-link" href="#">...</a>
       </li>
-      <li class="page-item" v-if="currentPage < totalPages - 2">
+
+      <!-- Last -->
+      <li class="page-item" v-if="currentPage < totalPages - 3">
         <a class="page-link" href="#" @click.prevent="changePage(totalPages)">{{ totalPages }}</a>
       </li>
+      <!-- Next -->
       <li class="page-item" :class="{ disabled: currentPage === totalPages }">
         <a
           class="page-link"
