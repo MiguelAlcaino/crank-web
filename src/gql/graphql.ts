@@ -374,7 +374,6 @@ export enum EnrollmentStatusEnum {
 }
 
 export enum EnrollmentTypeEnum {
-  All = 'all',
   Historical = 'historical',
   Upcoming = 'upcoming',
   Waitlist = 'waitlist'
@@ -1757,6 +1756,52 @@ export type RejectLateCancelledSpotInClassMutation = {
     | { __typename: 'PositionAlreadyTakenError'; code: string }
     | { __typename: 'RejectLateCancelledSpotInClassSuccess'; success: boolean }
     | null
+}
+
+export type CurrentUserEnrollmentsPaginatedQueryVariables = Exact<{
+  site: SiteEnum
+  params?: InputMaybe<CurrentUserEnrollmentsParams>
+  pagination?: InputMaybe<PaginationInput>
+}>
+
+export type CurrentUserEnrollmentsPaginatedQuery = {
+  __typename: 'Query'
+  currentUserEnrollmentsPaginated: {
+    __typename: 'PaginatedEnrollments'
+    total: number
+    enrollments: Array<{
+      __typename: 'Enrollment'
+      enrollmentInfo:
+        | {
+            __typename: 'EnrollmentInfo'
+            spotNumber?: number | null
+            id: string
+            enrollmentStatus: EnrollmentStatusEnum
+            enrollmentDateTime: any
+            enrollmentDateTimeWithNoTimeZone: any
+          }
+        | {
+            __typename: 'WaitlistEntry'
+            canBeTurnedIntoEnrollment: boolean
+            id: string
+            enrollmentStatus: EnrollmentStatusEnum
+            enrollmentDateTime: any
+            enrollmentDateTimeWithNoTimeZone: any
+          }
+      class: {
+        __typename: 'Class'
+        id: string
+        name: string
+        description: string
+        instructorName: string
+        start: any
+        startWithNoTimeZone: any
+        duration: number
+        waitListAvailable: boolean
+        showAsDisabled: boolean
+      }
+    }>
+  }
 }
 
 export const SiteSettingsDocument = {
@@ -4026,4 +4071,141 @@ export const RejectLateCancelledSpotInClassDocument = {
 } as unknown as DocumentNode<
   RejectLateCancelledSpotInClassMutation,
   RejectLateCancelledSpotInClassMutationVariables
+>
+export const CurrentUserEnrollmentsPaginatedDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'currentUserEnrollmentsPaginated' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'params' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'CurrentUserEnrollmentsParams' } }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'pagination' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'PaginationInput' } }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentUserEnrollmentsPaginated' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'params' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'params' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'pagination' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'pagination' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'enrollments' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'enrollmentInfo' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'enrollmentStatus' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'enrollmentDateTime' } },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'enrollmentDateTimeWithNoTimeZone' }
+                            },
+                            {
+                              kind: 'InlineFragment',
+                              typeCondition: {
+                                kind: 'NamedType',
+                                name: { kind: 'Name', value: 'EnrollmentInfo' }
+                              },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } }
+                                ]
+                              }
+                            },
+                            {
+                              kind: 'InlineFragment',
+                              typeCondition: {
+                                kind: 'NamedType',
+                                name: { kind: 'Name', value: 'WaitlistEntry' }
+                              },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'canBeTurnedIntoEnrollment' }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'class' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'instructorName' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'start' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'startWithNoTimeZone' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'duration' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'waitListAvailable' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'showAsDisabled' } }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'total' } }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  CurrentUserEnrollmentsPaginatedQuery,
+  CurrentUserEnrollmentsPaginatedQueryVariables
 >
