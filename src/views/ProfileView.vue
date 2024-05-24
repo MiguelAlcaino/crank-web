@@ -215,7 +215,7 @@ async function getCountryStates(countryCode: string) {
 }
 
 function onChangeCountry() {
-  getCountryStates(formData.country)
+  getCountryStates(formData.country!)
 }
 </script>
 
