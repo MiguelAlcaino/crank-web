@@ -2865,12 +2865,6 @@
         "interfaces": null,
         "enumValues": [
           {
-            "name": "all",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "historical",
             "description": null,
             "isDeprecated": false,
@@ -7534,13 +7528,9 @@
             "description": null,
             "args": [],
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "Country",
-                "ofType": null
-              }
+              "kind": "OBJECT",
+              "name": "Country",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null

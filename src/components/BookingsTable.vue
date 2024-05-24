@@ -1,6 +1,5 @@
 <script lang="ts">
 enum EnrollmentTypeEnum {
-  All = 'all',
   Historical = 'historical',
   Upcoming = 'upcoming',
   Waitlist = 'waitlist'
