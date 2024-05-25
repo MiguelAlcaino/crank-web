@@ -147,7 +147,8 @@ export class ApiService {
       query: query,
       variables: {
         site: site
-      }
+      },
+      fetchPolicy: 'network-only'
     })
 
     return queryResult.data.currentUserWorkoutStats as ClassStat[]
