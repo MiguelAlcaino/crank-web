@@ -32,38 +32,55 @@ import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 
 import ModalComponent from '@/components/ModalComponent.vue'
 import SiteSelector from '@/components/SiteSelector.vue'
+import PaginationComponent from '@/components/PaginationComponent.vue'
 
 const apiService = inject<ApiService>('gqlApiService')!
 
 const isLoading = ref<boolean>(false)
 const errorModalIsVisible = ref<boolean>(false)
 const classStats = ref<ClassStat[]>([])
+const pageLimit = 20
+const currentPage = ref<number>(1)
+const total = ref<number>(0)
 
 onMounted(() => {
-  getCurrentUserWorkoutStats()
+  getCurrentUserEnrollmentsPaginated()
 })
 
-async function getCurrentUserWorkoutStats() {
+async function getCurrentUserEnrollmentsPaginated() {
   classStats.value = []
 
   try {
     isLoading.value = true
-    classStats.value = (await apiService.getCurrentUserWorkoutStats(appStore().site)) as ClassStat[]
+    const paginatedClassStats = await apiService.currentUserWorkoutStatsPaginated(appStore().site, {
+      limit: pageLimit,
+      page: currentPage.value
+    })
+
+    total.value = paginatedClassStats.total
+    classStats.value = paginatedClassStats.classStats as ClassStat[]
   } catch (error) {
     errorModalIsVisible.value = true
   } finally {
     isLoading.value = false
   }
 }
+
+function pageChanged(page: number) {
+  currentPage.value = page
+  getCurrentUserEnrollmentsPaginated()
+}
+
+function afterChangingSite() {
+  currentPage.value = 1
+  getCurrentUserEnrollmentsPaginated()
+}
 </script>
 
 <template>
   <div class="row">
     <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-8">
-      <SiteSelector
-        @afterChangingSite="getCurrentUserWorkoutStats()"
-        :disabled="isLoading"
-      ></SiteSelector>
+      <SiteSelector @afterChangingSite="afterChangingSite()" :disabled="isLoading"></SiteSelector>
     </div>
   </div>
   <hr />
@@ -112,6 +129,12 @@ async function getCurrentUserWorkoutStats() {
             </tr>
           </tbody>
         </table>
+        <PaginationComponent
+          :limit="pageLimit"
+          :page="currentPage"
+          :total="total"
+          @page-changed="pageChanged"
+        ></PaginationComponent>
       </div>
     </div>
   </div>
