@@ -36,7 +36,8 @@ import type {
   RejectLateBookingResultUnion,
   SimpleSiteUser,
   PaginationInput,
-  PaginatedEnrollments
+  PaginatedEnrollments,
+  PaginatedClassStats
 } from '@/gql/graphql'
 import { EnrollmentTypeEnum, type SiteSetting } from '@/gql/graphql'
 import { ApolloClient, ApolloError } from '@apollo/client/core'
@@ -1204,5 +1205,45 @@ export class ApiService {
     })
 
     return queryResult.data.currentUserEnrollmentsPaginated as PaginatedEnrollments
+  }
+
+  async currentUserWorkoutStatsPaginated(
+    site: SiteEnum,
+    pagination: PaginationInput
+  ): Promise<PaginatedClassStats> {
+    const query = gql`
+      query currentUserWorkoutStatsPaginated($site: SiteEnum!, $pagination: PaginationInput) {
+        currentUserWorkoutStatsPaginated(site: $site, pagination: $pagination) {
+          classStats {
+            enrollment {
+              enrollmentInfo {
+                id
+                ... on EnrollmentInfo {
+                  spotNumber
+                }
+              }
+              class {
+                name
+                start
+                duration
+              }
+            }
+            totalEnergy
+          }
+          total
+        }
+      }
+    `
+
+    const queryResult = await this.authApiClient.query({
+      query: query,
+      variables: {
+        site: site,
+        pagination: pagination
+      },
+      fetchPolicy: 'network-only'
+    })
+
+    return queryResult.data.currentUserWorkoutStatsPaginated as PaginatedClassStats
   }
 }
