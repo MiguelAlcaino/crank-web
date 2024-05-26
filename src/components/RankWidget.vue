@@ -42,7 +42,12 @@ const isLoading = ref<boolean>(false)
 const ranking = ref<string>('')
 const overall = ref<string>('')
 
+const rankingIsVisible = ref<boolean>(false)
+const overallIsVisible = ref<boolean>(false)
+
 async function getCurrentUserRankingInClass(classId?: string) {
+  rankingIsVisible.value = false
+  overallIsVisible.value = false
   userInClassRanking.value = null
   ranking.value = 'N: '
   overall.value = 'Overall: '
@@ -63,15 +68,23 @@ async function getCurrentUserRankingInClass(classId?: string) {
   ranking.value +=
     userInClassRanking.value?.genderRanking?.ranking?.totalMembersInRanking?.toString() ?? ''
 
+  if (userInClassRanking.value?.genderRanking) {
+    rankingIsVisible.value = true
+  }
+
   overall.value = 'Overall: '
   overall.value += userInClassRanking.value?.totalRanking?.positionInRanking?.toString() ?? ''
   overall.value += '/'
   overall.value += userInClassRanking.value?.totalRanking?.totalMembersInRanking?.toString() ?? ''
+
+  if (userInClassRanking.value?.totalRanking) {
+    overallIsVisible.value = true
+  }
 }
 </script>
 
 <template>
-  <div class="row">
+  <div class="row" v-if="rankingIsVisible || overallIsVisible">
     <div class="col-12 text-center">
       <h4>RANK</h4>
     </div>
@@ -79,8 +92,8 @@ async function getCurrentUserRankingInClass(classId?: string) {
       <i class="bi bi-star-half" style="font-size: 4rem"></i>
     </div>
     <div class="col-6 text-left align-middle">
-      <p>{{ ranking }}</p>
-      <p>{{ overall }}</p>
+      <p v-if="rankingIsVisible">{{ ranking }}</p>
+      <p v-if="overallIsVisible">{{ overall }}</p>
     </div>
   </div>
 </template>
