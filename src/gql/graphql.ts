@@ -664,6 +664,12 @@ export type OtherUserHasThisExternalIdError = Error & {
   siteUser: IdentifiableSiteUser
 }
 
+export type PaginatedClassStats = PaginatedResult & {
+  __typename: 'PaginatedClassStats'
+  classStats: Array<ClassStat>
+  total: Scalars['Int']
+}
+
 export type PaginatedEnrollments = PaginatedResult & {
   __typename: 'PaginatedEnrollments'
   enrollments: Array<Enrollment>
@@ -739,11 +745,15 @@ export type Query = {
   /** List of purchases made by the current */
   currentUserPurchases?: Maybe<Array<Maybe<Purchase>>>
   /** Get current user's ranking on a specific class */
-  currentUserRankingInClass?: Maybe<UserInClassRanking>
+  currentUserRankingInClass: UserInClassRanking
   /** Get current user's workout stats for a specific enrollment */
   currentUserSingleWorkoutStat?: Maybe<ClassStat>
-  /** Get current user's workout stats */
+  /**
+   * Get current user's workout stats
+   * @deprecated Use currentUserWorkoutStatsPaginated instead
+   */
   currentUserWorkoutStats: Array<Maybe<ClassStat>>
+  currentUserWorkoutStatsPaginated: PaginatedClassStats
   /** Returns a specific room layout */
   roomLayout?: Maybe<RoomLayout>
   /** Returns a list of available RoomLayouts for a site */
@@ -811,6 +821,11 @@ export type QueryCurrentUserSingleWorkoutStatArgs = {
 }
 
 export type QueryCurrentUserWorkoutStatsArgs = {
+  site: SiteEnum
+}
+
+export type QueryCurrentUserWorkoutStatsPaginatedArgs = {
+  pagination?: InputMaybe<PaginationInput>
   site: SiteEnum
 }
 
@@ -1709,7 +1724,7 @@ export type CurrentUserRankingInClassQueryVariables = Exact<{
 
 export type CurrentUserRankingInClassQuery = {
   __typename: 'Query'
-  currentUserRankingInClass?: {
+  currentUserRankingInClass: {
     __typename: 'UserInClassRanking'
     totalRanking?: {
       __typename: 'UserRanking'
@@ -1725,7 +1740,7 @@ export type CurrentUserRankingInClassQuery = {
         totalMembersInRanking?: number | null
       } | null
     } | null
-  } | null
+  }
 }
 
 export type AcceptLateCancelledSpotInClassMutationVariables = Exact<{
