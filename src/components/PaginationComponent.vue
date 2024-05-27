@@ -1,5 +1,12 @@
+<script lang="ts">
+interface PagePosition {
+  pageNumber: number
+  pageLabel: string
+}
+</script>
+
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 const props = defineProps<{
   page: number
@@ -15,84 +22,107 @@ watch(
   () => props.total || props.limit,
   () => {
     totalPages.value = Math.ceil(props.total / props.limit)
+    generatePagePositions()
   }
 )
 
 onMounted(() => {
   totalPages.value = Math.ceil(props.total / props.limit)
+  generatePagePositions()
 })
 
 const totalPages = ref<number>(1)
 const currentPage = ref(props.page)
+const pages = ref<PagePosition[]>([])
 
-const pagesToShow = computed(() => {
-  // Generate an array of numbers from 1 to totalPages
-  const allPages = Array.from({ length: totalPages.value }, (_, i) => i + 1)
-  // Filter the array to get only the pages you want to display
-  return allPages.filter((n) => n > currentPage.value - 4 && n < currentPage.value + 4)
-})
+const pagesBeforeAfter = 4
 
 function changePage(page: number) {
   if (currentPage.value === page) return
 
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page
+    generatePagePositions()
     emits('pageChanged', page)
   }
+}
+
+function generatePagePositions() {
+  const pagesArray = []
+
+  const maxPagesToShow = pagesBeforeAfter * 2 + 1
+
+  if (maxPagesToShow >= totalPages.value) {
+    for (let i = 1; i <= totalPages.value; i++) {
+      pagesArray.push({ pageNumber: i, pageLabel: i.toString() })
+    }
+  } else {
+    var start = currentPage.value - pagesBeforeAfter
+
+    if (start < 1) start = 1
+    var end = start + maxPagesToShow - 1
+
+    if (end > totalPages.value) {
+      start = start - (end - totalPages.value)
+      if (start < 1) start = 1
+      end = totalPages.value
+    }
+
+    if (start > 1) pagesArray.push({ pageNumber: 1, pageLabel: '1' })
+
+    for (let i = start; i <= end; i++) {
+      pagesArray.push({ pageNumber: i, pageLabel: i.toString() })
+    }
+
+    if (end < totalPages.value)
+      pagesArray.push({ pageNumber: totalPages.value, pageLabel: totalPages.value.toString() })
+  }
+
+  pages.value = pagesArray
 }
 </script>
 
 <template>
-  <nav aria-label="Page navigation example" v-if="total > 0">
-    <ul class="pagination">
-      <!-- Previous -->
-      <li class="page-item" :class="{ disabled: currentPage === 1 }">
-        <a
-          class="page-link"
-          href="#"
-          @click.prevent="changePage(currentPage - 1)"
-          aria-label="Previous"
-        >
-          <span aria-hidden="true">&laquo;</span>
-        </a>
-      </li>
-      <!-- First -->
-      <li class="page-item" v-if="currentPage > 4">
-        <a class="page-link" href="#" @click.prevent="changePage(1)">1</a>
-      </li>
+  <div class="pagination-wrapper">
+    <nav aria-label="Page navigation example" v-if="pages.length > 0">
+      <ul class="pagination">
+        <!-- Previous -->
+        <li class="page-item" :class="{ disabled: currentPage === 1 }">
+          <a
+            class="page-link"
+            href="#"
+            @click.prevent="changePage(currentPage - 1)"
+            aria-label="Previous"
+          >
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
 
-      <li class="page-item disabled" v-if="currentPage > 5">
-        <a class="page-link" href="#">...</a>
-      </li>
-      <li
-        v-for="n in pagesToShow"
-        class="page-item"
-        :key="n"
-        :class="{ active: n === currentPage }"
-      >
-        <a class="page-link" href="#" @click.prevent="changePage(n)">{{ n }}</a>
-      </li>
-      <li class="page-item disabled" v-if="currentPage < totalPages - 4">
-        <a class="page-link" href="#">...</a>
-      </li>
-
-      <!-- Last -->
-      <li class="page-item" v-if="currentPage < totalPages - 3">
-        <a class="page-link" href="#" @click.prevent="changePage(totalPages)">{{ totalPages }}</a>
-      </li>
-      <!-- Next -->
-      <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-        <a
-          class="page-link"
-          href="#"
-          @click.prevent="changePage(currentPage + 1)"
-          aria-label="Next"
+        <li
+          v-for="(page, key) in pages"
+          class="page-item"
+          :key="key"
+          :class="{ active: page.pageNumber === currentPage }"
         >
-          <span aria-hidden="true">&raquo;</span>
-        </a>
-      </li>
-    </ul>
-  </nav>
+          <a class="page-link" href="#" @click.prevent="changePage(page.pageNumber)">{{
+            page.pageLabel
+          }}</a>
+        </li>
+
+        <!-- Next -->
+        <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+          <a
+            class="page-link"
+            href="#"
+            @click.prevent="changePage(currentPage + 1)"
+            aria-label="Next"
+          >
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
 </template>
 
 <style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
@@ -108,5 +138,15 @@ a {
   background-color: #000000 !important;
   border-color: #000000 !important;
   color: white !important;
+}
+
+.pagination-wrapper {
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.pagination {
+  display: flex;
+  flex-wrap: nowrap;
 }
 </style>
