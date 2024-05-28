@@ -15,32 +15,46 @@ import dayjs from 'dayjs'
 import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
 
+import { ERROR_UNKNOWN } from '@/utils/errorMessages'
+
 import SiteSelector from '@/components/SiteSelector.vue'
+import ModalComponent from '@/components/ModalComponent.vue'
+import PaginationComponent from '@/components/PaginationComponent.vue'
 
 const apiService = inject<ApiService>('gqlApiService')!
 
 const siteDateTimeNow = ref<Date>(new Date())
 const isLoading = ref<boolean>(false)
 const purchases = ref<Purchase[]>([])
+const pageLimit = 50
+const currentPage = ref<number>(1)
+const total = ref<number>(0)
+const errorModalIsVisible = ref<boolean>(false)
 
 onMounted(() => {
-  getCurrentUserPurchases()
+  currentUserPurchasesPaginated()
 })
 
-async function getCurrentUserPurchases() {
+async function currentUserPurchasesPaginated() {
   purchases.value = []
 
   isLoading.value = true
 
-  await getSiteDateTimeNow()
+  try {
+    await getSiteDateTimeNow()
 
-  purchases.value = (await apiService.getCurrentUserPurchases(appStore().site)) as Purchase[]
+    const paginatedPurchases = await apiService.currentUserPurchasesPaginated(appStore().site, {
+      limit: pageLimit,
+      page: currentPage.value
+    })
 
-  purchases.value = purchases.value
-    .slice()
-    .sort((a, b) => (a.paymentDateTime > b.paymentDateTime ? -1 : 1))
-
-  isLoading.value = false
+    total.value = paginatedPurchases.total
+    purchases.value = paginatedPurchases.purchases as Purchase[]
+  } catch (error) {
+    errorModalIsVisible.value = true
+  } finally {
+    isLoading.value = false
+  }
 }
 
 async function getSiteDateTimeNow() {
@@ -50,15 +64,22 @@ async function getSiteDateTimeNow() {
 
   if (siteSetting) siteDateTimeNow.value = new Date(siteSetting.siteDateTimeNow)
 }
+
+function pageChanged(page: number) {
+  currentPage.value = page
+  currentUserPurchasesPaginated()
+}
+
+function afterChangingSite() {
+  currentPage.value = 1
+  currentUserPurchasesPaginated()
+}
 </script>
 
 <template>
   <div class="row">
     <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-8">
-      <SiteSelector
-        @afterChangingSite="getCurrentUserPurchases()"
-        :disabled="isLoading"
-      ></SiteSelector>
+      <SiteSelector @afterChangingSite="afterChangingSite()" :disabled="isLoading"></SiteSelector>
     </div>
   </div>
   <hr />
@@ -132,9 +153,25 @@ async function getSiteDateTimeNow() {
             </tr>
           </tbody>
         </table>
+        <PaginationComponent
+          :limit="pageLimit"
+          :page="currentPage"
+          :total="total"
+          @page-changed="pageChanged"
+        ></PaginationComponent>
       </div>
     </div>
   </div>
+
+  <!-- Error Modal -->
+  <ModalComponent
+    v-if="errorModalIsVisible"
+    title="Error"
+    :message="ERROR_UNKNOWN"
+    :cancel-text="null"
+    @on-ok="errorModalIsVisible = false"
+  >
+  </ModalComponent>
 </template>
 
 <style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
