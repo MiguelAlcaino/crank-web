@@ -37,7 +37,8 @@ import type {
   SimpleSiteUser,
   PaginationInput,
   PaginatedEnrollments,
-  PaginatedClassStats
+  PaginatedClassStats,
+  PaginatedPurchases
 } from '@/gql/graphql'
 import { EnrollmentTypeEnum, type SiteSetting } from '@/gql/graphql'
 import { ApolloClient, ApolloError } from '@apollo/client/core'
@@ -1245,5 +1246,36 @@ export class ApiService {
     })
 
     return queryResult.data.currentUserWorkoutStatsPaginated as PaginatedClassStats
+  }
+
+  async currentUserPurchasesPaginated(
+    site: SiteEnum,
+    pagination: PaginationInput
+  ): Promise<PaginatedPurchases> {
+    const query = gql`
+      query currentUserPurchasesPaginated($site: SiteEnum!, $pagination: PaginationInput) {
+        currentUserPurchasesPaginated(site: $site, pagination: $pagination) {
+          purchases {
+            packageName
+            allowanceObtained
+            allowanceRemaining
+            paymentDateTime
+            activationDateTime
+            expirationDateTime
+          }
+          total
+        }
+      }
+    `
+
+    const queryResult = await this.authApiClient.query({
+      query: query,
+      variables: {
+        site: site,
+        pagination: pagination
+      }
+    })
+
+    return queryResult.data.currentUserPurchasesPaginated as PaginatedPurchases
   }
 }
