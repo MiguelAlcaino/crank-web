@@ -78,7 +78,9 @@ const documents = {
   '\n      query currentUserEnrollmentsPaginated(\n        $site: SiteEnum!\n        $params: CurrentUserEnrollmentsParams\n        $pagination: PaginationInput\n      ) {\n        currentUserEnrollmentsPaginated(site: $site, params: $params, pagination: $pagination) {\n          enrollments {\n            enrollmentInfo {\n              id\n              enrollmentStatus\n              enrollmentDateTime\n              enrollmentDateTimeWithNoTimeZone\n              ... on EnrollmentInfo {\n                spotNumber\n              }\n              ... on WaitlistEntry {\n                canBeTurnedIntoEnrollment\n              }\n            }\n            class {\n              id\n              name\n              description\n              instructorName\n              start\n              startWithNoTimeZone\n              duration\n              waitListAvailable\n              showAsDisabled\n            }\n          }\n          total\n        }\n      }\n    ':
     types.CurrentUserEnrollmentsPaginatedDocument,
   '\n      query currentUserWorkoutStatsPaginated($site: SiteEnum!, $pagination: PaginationInput) {\n        currentUserWorkoutStatsPaginated(site: $site, pagination: $pagination) {\n          classStats {\n            enrollment {\n              enrollmentInfo {\n                id\n                ... on EnrollmentInfo {\n                  spotNumber\n                }\n              }\n              class {\n                name\n                start\n                duration\n              }\n            }\n            totalEnergy\n          }\n          total\n        }\n      }\n    ':
-    types.CurrentUserWorkoutStatsPaginatedDocument
+    types.CurrentUserWorkoutStatsPaginatedDocument,
+  '\n      query currentUserPurchasesPaginated($site: SiteEnum!, $pagination: PaginationInput) {\n        currentUserPurchasesPaginated(site: $site, pagination: $pagination) {\n          purchases {\n            packageName\n            allowanceObtained\n            allowanceRemaining\n            paymentDateTime\n            activationDateTime\n            expirationDateTime            \n          }\n          total\n        }\n      }\n    ':
+    types.CurrentUserPurchasesPaginatedDocument
 }
 
 /**
@@ -293,6 +295,12 @@ export function graphql(
 export function graphql(
   source: '\n      query currentUserWorkoutStatsPaginated($site: SiteEnum!, $pagination: PaginationInput) {\n        currentUserWorkoutStatsPaginated(site: $site, pagination: $pagination) {\n          classStats {\n            enrollment {\n              enrollmentInfo {\n                id\n                ... on EnrollmentInfo {\n                  spotNumber\n                }\n              }\n              class {\n                name\n                start\n                duration\n              }\n            }\n            totalEnergy\n          }\n          total\n        }\n      }\n    '
 ): (typeof documents)['\n      query currentUserWorkoutStatsPaginated($site: SiteEnum!, $pagination: PaginationInput) {\n        currentUserWorkoutStatsPaginated(site: $site, pagination: $pagination) {\n          classStats {\n            enrollment {\n              enrollmentInfo {\n                id\n                ... on EnrollmentInfo {\n                  spotNumber\n                }\n              }\n              class {\n                name\n                start\n                duration\n              }\n            }\n            totalEnergy\n          }\n          total\n        }\n      }\n    ']
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n      query currentUserPurchasesPaginated($site: SiteEnum!, $pagination: PaginationInput) {\n        currentUserPurchasesPaginated(site: $site, pagination: $pagination) {\n          purchases {\n            packageName\n            allowanceObtained\n            allowanceRemaining\n            paymentDateTime\n            activationDateTime\n            expirationDateTime            \n          }\n          total\n        }\n      }\n    '
+): (typeof documents)['\n      query currentUserPurchasesPaginated($site: SiteEnum!, $pagination: PaginationInput) {\n        currentUserPurchasesPaginated(site: $site, pagination: $pagination) {\n          purchases {\n            packageName\n            allowanceObtained\n            allowanceRemaining\n            paymentDateTime\n            activationDateTime\n            expirationDateTime            \n          }\n          total\n        }\n      }\n    ']
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {}

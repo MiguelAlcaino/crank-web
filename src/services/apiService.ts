@@ -1262,6 +1262,7 @@ export class ApiService {
             paymentDateTime
             activationDateTime
             expirationDateTime
+            current
           }
           total
         }

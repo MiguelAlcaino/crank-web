@@ -6,6 +6,7 @@ interface Purchase {
   expirationDateTime: Date
   packageName: string
   paymentDateTime: Date
+  current: boolean
 }
 </script>
 
@@ -108,11 +109,7 @@ function afterChangingSite() {
             <tr
               v-for="(item, index) in purchases"
               :key="index"
-              :class="{
-                isDisabled:
-                  dayjs(new Date(item.expirationDateTime)).isBefore(siteDateTimeNow) ||
-                  item.allowanceRemaining === 0
-              }"
+              :class="{ notCurrent: item.current === false }"
             >
               <td class="align-middle">
                 <div class="row">
@@ -178,7 +175,7 @@ function afterChangingSite() {
 <style lang="css" scoped src="@/assets/main.css"></style>
 
 <style scoped>
-.isDisabled {
+.notCurrent {
   background-color: rgb(214, 214, 214);
 }
 
