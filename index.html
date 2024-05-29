@@ -7,8 +7,18 @@
     <title>Vite App</title>
   </head>
   <body>
-<!--    <div id="app-parameters" data-view="profile" data-site="abu_dhabi"></div>-->
     <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "crank": "./src/index.ts"
+        }
+      }
+    </script>
+    <script type="module">
+      import { startApp } from 'crank'
+      startApp();
+
+    </script>
   </body>
 </html>

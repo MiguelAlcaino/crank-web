@@ -1,5 +1,15 @@
 {
   "name": "crank-web",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/crank-web.js",
+  "module": "./dist/crank-web.js",
+  "exports": {
+    ".": "./dist/crank-web.js",
+    "./dist/style.css": "./dist/style.css"
+  },
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",

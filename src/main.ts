@@ -40,9 +40,7 @@ import { appStore } from './stores/appStorage'
 import { SiteEnum } from './gql/graphql'
 import { hackSquarespaceMenu } from '@/utils/hack-squarespace-menu'
 
-startApp()
-
-async function startApp() {
+export async function startApp() {
   const selection = <HTMLElement | null>document.querySelector('#app-parameters')
   const view = selection?.dataset.view as string
   const site = selection?.dataset.site as string
