@@ -5,8 +5,6 @@ import { createPinia } from 'pinia'
 
 import Popper from 'vue3-popper'
 
-import { useAuthenticationStore } from './stores/authToken'
-
 import router from './router'
 
 import BookingCalendarView from './views/BookingCalendarView.vue'
@@ -18,10 +16,12 @@ import PurchasesView from './views/PurchasesView.vue'
 import WorkoutStatsView from './views/WorkoutStatsView.vue'
 import ProfileView from './views/ProfileView.vue'
 
+const defaultGqlUrl = 'https://payments.crank-fit.com/api/graphql/'
+const defaultAppDiv = '#app'
+
 export const startBookingCalendarApp = async function (
-  gqlUrl: string,
-  token: string,
-  appDiv: string
+  gqlUrl: string = defaultGqlUrl,
+  appDiv: string = defaultAppDiv
 ) {
   const app = createApp({
     setup() {
@@ -34,12 +34,14 @@ export const startBookingCalendarApp = async function (
   })
 
   app.use(createPinia()).use(router).component('Popper', Popper)
-  useAuthenticationStore().setSession(token)
 
   app.mount(appDiv)
 }
 
-export const startBookingsApp = async function (gqlUrl: string, token: string, appDiv: string) {
+export const startBookingsApp = async function (
+  gqlUrl: string = defaultGqlUrl,
+  appDiv: string = defaultAppDiv
+) {
   const app = createApp({
     setup() {
       provide(
@@ -51,12 +53,14 @@ export const startBookingsApp = async function (gqlUrl: string, token: string, a
   })
 
   app.use(createPinia()).use(router)
-  useAuthenticationStore().setSession(token)
 
   app.mount(appDiv)
 }
 
-export const startClassApp = async function (gqlUrl: string, token: string, appDiv: string) {
+export const startClassApp = async function (
+  gqlUrl: string = defaultGqlUrl,
+  appDiv: string = defaultAppDiv
+) {
   const app = createApp({
     setup() {
       provide(
@@ -68,12 +72,14 @@ export const startClassApp = async function (gqlUrl: string, token: string, appD
   })
 
   app.use(createPinia()).use(router)
-  useAuthenticationStore().setSession(token)
 
   app.mount(appDiv)
 }
 
-export const startRegisterApp = async function (gqlUrl: string, token: string, appDiv: string) {
+export const startRegisterApp = async function (
+  gqlUrl: string = defaultGqlUrl,
+  appDiv: string = defaultAppDiv
+) {
   const app = createApp({
     setup() {
       provide(
@@ -85,12 +91,14 @@ export const startRegisterApp = async function (gqlUrl: string, token: string, a
   })
 
   app.use(createPinia()).use(router)
-  useAuthenticationStore().setSession(token)
 
   app.mount(appDiv)
 }
 
-export const startPurchasesApp = async function (gqlUrl: string, token: string, appDiv: string) {
+export const startPurchasesApp = async function (
+  gqlUrl: string = defaultGqlUrl,
+  appDiv: string = defaultAppDiv
+) {
   const app = createApp({
     setup() {
       provide(
@@ -102,12 +110,14 @@ export const startPurchasesApp = async function (gqlUrl: string, token: string, 
   })
 
   app.use(createPinia()).use(router)
-  useAuthenticationStore().setSession(token)
 
   app.mount(appDiv)
 }
 
-export const startChangeSpotApp = async function (gqlUrl: string, token: string, appDiv: string) {
+export const startChangeSpotApp = async function (
+  gqlUrl: string = defaultGqlUrl,
+  appDiv: string = defaultAppDiv
+) {
   const app = createApp({
     setup() {
       provide(
@@ -119,12 +129,14 @@ export const startChangeSpotApp = async function (gqlUrl: string, token: string,
   })
 
   app.use(createPinia()).use(router)
-  useAuthenticationStore().setSession(token)
 
   app.mount(appDiv)
 }
 
-export const startWorkoutStatsApp = async function (gqlUrl: string, token: string, appDiv: string) {
+export const startWorkoutStatsApp = async function (
+  gqlUrl: string = defaultGqlUrl,
+  appDiv: string = defaultAppDiv
+) {
   const app = createApp({
     setup() {
       provide(
@@ -136,12 +148,14 @@ export const startWorkoutStatsApp = async function (gqlUrl: string, token: strin
   })
 
   app.use(createPinia()).use(router)
-  useAuthenticationStore().setSession(token)
 
   app.mount(appDiv)
 }
 
-export const startProfileApp = async function (gqlUrl: string, token: string, appDiv: string) {
+export const startProfileApp = async function (
+  gqlUrl: string = defaultGqlUrl,
+  appDiv: string = defaultAppDiv
+) {
   const app = createApp({
     setup() {
       provide(
@@ -153,7 +167,6 @@ export const startProfileApp = async function (gqlUrl: string, token: string, ap
   })
 
   app.use(createPinia()).use(router)
-  useAuthenticationStore().setSession(token)
 
   app.mount(appDiv)
 }

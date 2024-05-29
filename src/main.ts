@@ -56,7 +56,7 @@ async function startApp() {
 
   app
     .use(createPinia())
-    .use(router) 
+    .use(router)
     .use(VueApexCharts)
     .component('Popper', Popper)
     .component('VueDatePicker', VueDatePicker)

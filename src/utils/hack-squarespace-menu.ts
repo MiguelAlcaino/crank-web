@@ -1,5 +1,5 @@
 export function hackSquarespaceMenu() {
-  console.log('basuritas');
+  console.log('basuritas')
   const authToken = localStorage.getItem('authToken')
 
   let userIsLoggedIn = false
