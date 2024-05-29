@@ -1,5 +1,5 @@
 import { hackSquarespaceMenu } from '@/utils/hack-squarespace-menu'
-import type {
+import {
   startBookingCalendarApp,
   startBookingsApp,
   startClassApp,
