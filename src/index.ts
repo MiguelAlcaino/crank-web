@@ -1,4 +1,4 @@
-import { hackSquarespaceMenu } from '@/utils/hack-squarespace-menu'
+import { hackSquarespaceMenu, setSquarespaceMenuUrls } from '@/utils/hack-squarespace-menu'
 import {
   startBookingCalendarApp,
   startBookingsApp,
@@ -19,5 +19,6 @@ export {
   startProfileApp,
   startPurchasesApp,
   startRegisterApp,
-  startWorkoutStatsApp
+  startWorkoutStatsApp,
+  setSquarespaceMenuUrls
 }
