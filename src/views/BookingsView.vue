@@ -44,6 +44,8 @@ const pageLimit = 20
 
 const currentPageHistorical = ref<number>(1)
 const totalHistorical = ref<number>(0)
+const currentPageWaitlist = ref<number>(1)
+const totalWaitlist = ref<number>(0)
 
 const errorModalData = ref<{
   message: string
@@ -76,9 +78,9 @@ async function getSiteDateTimeNow() {
 }
 
 async function getUserEnrollments(isOnMount: boolean = false) {
-  getOldEnrollments()
+  getOldEnrollmentsPaginated()
   await getUpcomingEnrollments()
-  await getWaitlistEnrollments()
+  await getWaitlistEnrollmentsPaginated()
 
   if (isOnMount && upcomingEnrollments.value.length === 0 && waitlistEnrollments.value.length > 0)
     setActive(EnrollmentTypeEnum.Waitlist)
@@ -112,7 +114,7 @@ async function getUpcomingEnrollments() {
   }
 }
 
-async function getWaitlistEnrollments() {
+async function getWaitlistEnrollmentsPaginated() {
   isFilteredWaitlist.value = false
   try {
     waitlistEnrollments.value = []
@@ -131,7 +133,14 @@ async function getWaitlistEnrollments() {
 
     waitlistEnrollmentsIsLoading.value = true
 
-    waitlistEnrollments.value = await apiService.getCurrentUserEnrollments(appStore().site, params)
+    const paginatedEnrollments = await apiService.currentUserEnrollmentsPaginated(
+      appStore().site,
+      params,
+      { page: currentPageWaitlist.value, limit: pageLimit }
+    )
+
+    totalWaitlist.value = paginatedEnrollments.total
+    waitlistEnrollments.value = paginatedEnrollments.enrollments
   } catch (error) {
     errorModalData.value.message = ERROR_UNKNOWN
     errorModalData.value.isVisible = true
@@ -140,7 +149,7 @@ async function getWaitlistEnrollments() {
   }
 }
 
-async function getOldEnrollments() {
+async function getOldEnrollmentsPaginated() {
   isFilteredHistorical.value = false
   try {
     oldEnrollments.value = []
@@ -164,12 +173,9 @@ async function getOldEnrollments() {
       params,
       { page: currentPageHistorical.value, limit: pageLimit }
     )
-    totalHistorical.value = paginatedEnrollments.total
-    const _oldEnrollments = paginatedEnrollments.enrollments
 
-    oldEnrollments.value = _oldEnrollments
-      .slice()
-      .sort((a, b) => (a.class.start > b.class.start ? -1 : 1))
+    totalHistorical.value = paginatedEnrollments.total
+    oldEnrollments.value = paginatedEnrollments.enrollments
   } catch (error) {
     errorModalData.value.message = ERROR_UNKNOWN
     errorModalData.value.isVisible = true
@@ -190,9 +196,14 @@ function setActive(menuItem: EnrollmentTypeEnum) {
   activeItem.value = menuItem
 }
 
+function pageChangedWaitlist(page: number) {
+  currentPageWaitlist.value = page
+  getWaitlistEnrollmentsPaginated()
+}
+
 function pageChangedHistorical(page: number) {
   currentPageHistorical.value = page
-  getOldEnrollments()
+  getOldEnrollmentsPaginated()
 }
 </script>
 
@@ -246,7 +257,7 @@ function pageChangedHistorical(page: number) {
     </div>
     <div v-if="activeItem === EnrollmentTypeEnum.Waitlist" class="col-1">
       <DefaultButtonComponent
-        @on-click="getWaitlistEnrollments()"
+        @on-click="getWaitlistEnrollmentsPaginated()"
         :is-loading="waitlistEnrollmentsIsLoading"
         text="Go"
         type="button"
@@ -267,7 +278,7 @@ function pageChangedHistorical(page: number) {
     </div>
     <div v-if="activeItem === EnrollmentTypeEnum.Historical" class="col-1">
       <DefaultButtonComponent
-        @on-click="getOldEnrollments()"
+        @on-click="getOldEnrollmentsPaginated()"
         :is-loading="oldEnrollmentsIsLoading"
         text="Go"
         type="button"
@@ -336,9 +347,15 @@ function pageChangedHistorical(page: number) {
         :siteDateTimeNow="siteDateTimeNow"
         @change-spot="goToChangeSpot"
         :is-filtered="isFilteredWaitlist"
-        @after-cancelling="getWaitlistEnrollments()"
+        @after-cancelling="getWaitlistEnrollmentsPaginated()"
       >
       </BookingsTable>
+      <PaginationComponent
+        :limit="pageLimit"
+        :page="currentPageWaitlist"
+        :total="totalWaitlist"
+        @page-changed="pageChangedWaitlist"
+      ></PaginationComponent>
     </div>
     <div
       class="tab-pane fade"
@@ -421,6 +438,7 @@ a:hover {
   background: var(--dp-danger-color) !important;
   color: var(--dp-primary-text-color) !important;
 }
+
 .dp__action_select {
   background: #000000 !important;
   color: var(--dp-primary-text-color) !important;
