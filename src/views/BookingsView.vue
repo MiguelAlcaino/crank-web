@@ -46,6 +46,8 @@ const currentPageHistorical = ref<number>(1)
 const totalHistorical = ref<number>(0)
 const currentPageWaitlist = ref<number>(1)
 const totalWaitlist = ref<number>(0)
+const currentPageUpcoming = ref<number>(1)
+const totalUpcoming = ref<number>(0)
 
 const errorModalData = ref<{
   message: string
@@ -79,14 +81,14 @@ async function getSiteDateTimeNow() {
 
 async function getUserEnrollments(isOnMount: boolean = false) {
   getOldEnrollmentsPaginated()
-  await getUpcomingEnrollments()
+  await getUpcomingEnrollmentsPaginated()
   await getWaitlistEnrollmentsPaginated()
 
   if (isOnMount && upcomingEnrollments.value.length === 0 && waitlistEnrollments.value.length > 0)
     setActive(EnrollmentTypeEnum.Waitlist)
 }
 
-async function getUpcomingEnrollments() {
+async function getUpcomingEnrollmentsPaginated() {
   isFilteredUpcoming.value = false
   try {
     upcomingEnrollments.value = []
@@ -105,7 +107,13 @@ async function getUpcomingEnrollments() {
 
     upcomingEnrollmentsIsLoading.value = true
 
-    upcomingEnrollments.value = await apiService.getCurrentUserEnrollments(appStore().site, params)
+    const paginatedEnrollments = await apiService.currentUserEnrollmentsPaginated(
+      appStore().site,
+      params,
+      { page: currentPageUpcoming.value, limit: pageLimit }
+    )
+    totalUpcoming.value = paginatedEnrollments.total
+    upcomingEnrollments.value = paginatedEnrollments.enrollments
   } catch (error) {
     errorModalData.value.message = ERROR_UNKNOWN
     errorModalData.value.isVisible = true
@@ -196,6 +204,11 @@ function setActive(menuItem: EnrollmentTypeEnum) {
   activeItem.value = menuItem
 }
 
+function pageChangedUpcoming(page: number) {
+  currentPageUpcoming.value = page
+  getUpcomingEnrollmentsPaginated()
+}
+
 function pageChangedWaitlist(page: number) {
   currentPageWaitlist.value = page
   getWaitlistEnrollmentsPaginated()
@@ -236,7 +249,7 @@ function pageChangedHistorical(page: number) {
     </div>
     <div v-if="activeItem === EnrollmentTypeEnum.Upcoming" class="col-1">
       <DefaultButtonComponent
-        @on-click="getUpcomingEnrollments()"
+        @on-click="getUpcomingEnrollmentsPaginated()"
         :is-loading="upcomingEnrollmentsIsLoading"
         text="Go"
         type="button"
@@ -331,9 +344,15 @@ function pageChangedHistorical(page: number) {
         :siteDateTimeNow="siteDateTimeNow"
         @change-spot="goToChangeSpot"
         :is-filtered="isFilteredUpcoming"
-        @after-cancelling="getUpcomingEnrollments()"
+        @after-cancelling="getUpcomingEnrollmentsPaginated()"
       >
       </BookingsTable>
+      <PaginationComponent
+        :limit="pageLimit"
+        :page="currentPageUpcoming"
+        :total="totalUpcoming"
+        @page-changed="pageChangedUpcoming"
+      ></PaginationComponent>
     </div>
     <div
       class="tab-pane fade"
