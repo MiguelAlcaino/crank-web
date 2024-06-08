@@ -143,7 +143,7 @@ export function hackSquarespaceMenu() {
             logoutLink.className = 'Header-nav-folder-title Header-nav-folder-title--active'
             logoutLink.href = "#"
             logoutLink.innerText = 'Logout'
-            logoutLink.onclick = () => logout(crankMenuUrls.homeUrl)
+            logoutLink.onclick = () => logout(crankMenuUrls?.homeUrl ?? '/')
             logoutLinkContainer.appendChild(logoutLink)
             parentOfAllContainerLinks.appendChild(logoutLinkContainer)
           }
