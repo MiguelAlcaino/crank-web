@@ -1,17 +1,41 @@
+interface MenuUrls {
+  regiterUrl: string
+  workOutStatsUrl: string
+  bookinsUrl: string
+  purchasesUrl: string
+  profileUrl: string
+}
+
+const menuLocalStorageKey = 'squarespaceMenuUrls'
+
 export function hackSquarespaceMenu() {
+  console.log('basuritas')
+
   const authToken = localStorage.getItem('authToken')
 
   let userIsLoggedIn = false
   if (authToken && !isTokenExpired(authToken)) userIsLoggedIn = true
 
-  const loginPath = '/login'
-  const regiterPath = '/register'
-  const logoutPath = '/logout'
+  let crankMenuUrls: MenuUrls | null = null
 
-  const workOutStatsPath = '/workout-stats'
-  const bookinsPath = '/bookings'
-  const purchasesPath = '/purchases'
-  const profilePath = '/profile'
+  const jsonCrankMenuUrls = localStorage.getItem(menuLocalStorageKey)
+
+  if (jsonCrankMenuUrls) {
+    crankMenuUrls = JSON.parse(jsonCrankMenuUrls) as MenuUrls
+  }
+
+  if (!crankMenuUrls) {
+    crankMenuUrls = {
+      regiterUrl: '/register',
+      workOutStatsUrl: '/workout-stats',
+      bookinsUrl: '/bookings',
+      purchasesUrl: '/purchases',
+      profileUrl: '/profile'
+    }
+  }
+
+  const loginPath = '/login'
+  const logoutPath = '/logout'
 
   const welcomeLinkInTopMenu = document.querySelector('a[href="/Welcome"]')
 
@@ -62,7 +86,7 @@ export function hackSquarespaceMenu() {
             // create the link element
             const myAccountLink = document.createElement('a')
             myAccountLink.className = 'Header-nav-folder-title Header-nav-folder-title--active'
-            myAccountLink.href = profilePath
+            myAccountLink.href = crankMenuUrls.profileUrl
             myAccountLink.innerText = 'My Account'
             newMyAccountLinkContainer.appendChild(myAccountLink)
 
@@ -74,35 +98,35 @@ export function hackSquarespaceMenu() {
               // create Workout Stats sub menu link
               const subMenuWorkoutStatsLink = document.createElement('a')
               subMenuWorkoutStatsLink.className = 'Header-nav-folder-item'
-              subMenuWorkoutStatsLink.href = workOutStatsPath
+              subMenuWorkoutStatsLink.href = crankMenuUrls.workOutStatsUrl
               subMenuWorkoutStatsLink.innerText = 'Workout Stats'
               myAccountSubMenuSpan.appendChild(subMenuWorkoutStatsLink)
 
               // create Bookings sub menu link
               const subMenuBookingsLink = document.createElement('a')
               subMenuBookingsLink.className = 'Header-nav-folder-item'
-              subMenuBookingsLink.href = bookinsPath
+              subMenuBookingsLink.href = crankMenuUrls.bookinsUrl
               subMenuBookingsLink.innerText = 'Bookings'
               myAccountSubMenuSpan.appendChild(subMenuBookingsLink)
 
               // create Purchases sub menu link
               const subMenuPurchasesLink = document.createElement('a')
               subMenuPurchasesLink.className = 'Header-nav-folder-item'
-              subMenuPurchasesLink.href = purchasesPath
+              subMenuPurchasesLink.href = crankMenuUrls.purchasesUrl
               subMenuPurchasesLink.innerText = 'Purchases'
               myAccountSubMenuSpan.appendChild(subMenuPurchasesLink)
 
               // create Profile Stats sub menu link
               const subMenuProfileLink = document.createElement('a')
               subMenuProfileLink.className = 'Header-nav-folder-item'
-              subMenuProfileLink.href = profilePath
+              subMenuProfileLink.href = crankMenuUrls.profileUrl
               subMenuProfileLink.innerText = 'Profile'
               myAccountSubMenuSpan.appendChild(subMenuProfileLink)
             } else {
               // create New to CRANK sub menu link
               const subMenuNewToCrankLink = document.createElement('a')
               subMenuNewToCrankLink.className = 'Header-nav-folder-item'
-              subMenuNewToCrankLink.href = regiterPath
+              subMenuNewToCrankLink.href = crankMenuUrls.regiterUrl
               subMenuNewToCrankLink.innerText = 'New to CRANK'
               myAccountSubMenuSpan.appendChild(subMenuNewToCrankLink)
             }
@@ -127,6 +151,24 @@ export function hackSquarespaceMenu() {
       }
     }
   }
+}
+
+export function setSquarespaceMenuUrls(
+  regiterUrl: string,
+  workOutStatsUrl: string,
+  bookinsUrl: string,
+  purchasesUrl: string,
+  profileUrl: string
+) {
+  const menuUrls: MenuUrls = {
+    regiterUrl,
+    workOutStatsUrl,
+    bookinsUrl,
+    purchasesUrl,
+    profileUrl
+  }
+
+  localStorage.setItem(menuLocalStorageKey, JSON.stringify(menuUrls))
 }
 
 function isTokenExpired(token: string) {

@@ -9,9 +9,6 @@ import Popper from 'vue3-popper'
 import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
 
-import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
-import ContextMenu from '@imengyu/vue3-context-menu'
-
 /* import the fontawesome core */
 import { library } from '@fortawesome/fontawesome-svg-core'
 
@@ -24,7 +21,6 @@ import { faLeftLong, faStepBackward, faStepForward } from '@fortawesome/free-sol
 /* add icons to the library */
 library.add(faStepBackward, faStepForward, faLeftLong)
 
-import 'vue3-simple-typeahead/dist/vue3-simple-typeahead.css'
 //import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 //import './assets/main.css'
@@ -35,7 +31,6 @@ import { newAnonymousClient, newAuthenticatedApolloClient } from '@/services/gra
 import { useAuthenticationStore } from '@/stores/authToken'
 import { Config } from '@/model/Config'
 
-import SimpleTypeahead from 'vue3-simple-typeahead'
 import { appStore } from './stores/appStorage'
 import { SiteEnum } from './gql/graphql'
 import { hackSquarespaceMenu } from '@/utils/hack-squarespace-menu'
@@ -62,8 +57,6 @@ async function startApp() {
   app
     .use(createPinia())
     .use(router)
-    .use(SimpleTypeahead)
-    .use(ContextMenu)
     .use(VueApexCharts)
     .component('Popper', Popper)
     .component('VueDatePicker', VueDatePicker)
