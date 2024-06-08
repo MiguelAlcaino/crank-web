@@ -3,7 +3,8 @@ interface MenuUrls {
   workOutStatsUrl: string
   bookinsUrl: string
   purchasesUrl: string
-  profileUrl: string
+  profileUrl: string,
+  homeUrl: string
 }
 
 const menuLocalStorageKey = 'squarespaceMenuUrls'
@@ -30,12 +31,10 @@ export function hackSquarespaceMenu() {
       workOutStatsUrl: '/workout-stats',
       bookinsUrl: '/bookings',
       purchasesUrl: '/purchases',
-      profileUrl: '/profile'
+      profileUrl: '/profile',
+      homeUrl: '/'
     }
   }
-
-  const loginPath = '/login'
-  const logoutPath = '/logout'
 
   const welcomeLinkInTopMenu = document.querySelector('a[href="/Welcome"]')
 
@@ -142,8 +141,9 @@ export function hackSquarespaceMenu() {
             // Create logout link menu
             const logoutLink = document.createElement('a')
             logoutLink.className = 'Header-nav-folder-title Header-nav-folder-title--active'
-            logoutLink.href = logoutPath
+            logoutLink.href = "#"
             logoutLink.innerText = 'Logout'
+            logoutLink.onclick = () => logout(crankMenuUrls?.homeUrl ?? '/')
             logoutLinkContainer.appendChild(logoutLink)
             parentOfAllContainerLinks.appendChild(logoutLinkContainer)
           }
@@ -158,14 +158,16 @@ export function setSquarespaceMenuUrls(
   workOutStatsUrl: string,
   bookinsUrl: string,
   purchasesUrl: string,
-  profileUrl: string
+  profileUrl: string,
+  homeUrl: string,
 ) {
   const menuUrls: MenuUrls = {
     regiterUrl,
     workOutStatsUrl,
     bookinsUrl,
     purchasesUrl,
-    profileUrl
+    profileUrl,
+    homeUrl
   }
 
   localStorage.setItem(menuLocalStorageKey, JSON.stringify(menuUrls))
@@ -186,4 +188,9 @@ function isTokenExpired(token: string) {
   const { exp } = JSON.parse(jsonPayload)
   const expired = Date.now() >= exp * 1000
   return expired
+}
+
+export function logout(homeUrl: string) {
+  localStorage.removeItem('authToken')
+  window.location.href = homeUrl
 }
