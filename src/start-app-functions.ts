@@ -7,6 +7,7 @@ import Popper from 'vue3-popper'
 
 import router from './router'
 
+import { appStore } from './stores/appStorage'
 import BookingCalendarView from './views/BookingCalendarView.vue'
 import ClassView from './views/ClassView.vue'
 import ChangeSpotView from './views/ChangeSpotView.vue'
@@ -15,11 +16,13 @@ import RegisterView from './views/RegisterView.vue'
 import PurchasesView from './views/PurchasesView.vue'
 import WorkoutStatsView from './views/WorkoutStatsView.vue'
 import ProfileView from './views/ProfileView.vue'
+import { SiteEnum } from './gql/graphql'
 
 const defaultGqlUrl = 'https://payments.crank-fit.com/api/graphql/'
 const defaultAppDiv = '#app'
 
 export const startBookingCalendarApp = async function (
+  site: string,
   gqlUrl: string = defaultGqlUrl,
   appDiv: string = defaultAppDiv
 ) {
@@ -33,7 +36,18 @@ export const startBookingCalendarApp = async function (
     render: () => h(BookingCalendarView)
   })
 
+  let siteEnum: SiteEnum
+
+  if (site === SiteEnum.Dubai.toString()) {
+    siteEnum = SiteEnum.Dubai
+  } else if (site === SiteEnum.AbuDhabi) {
+    siteEnum = SiteEnum.AbuDhabi
+  } else {
+    throw Error
+  }
+
   app.use(createPinia()).use(router).component('Popper', Popper)
+  appStore().setSite(siteEnum)
 
   app.mount(appDiv)
 }
