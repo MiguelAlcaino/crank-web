@@ -183,8 +183,7 @@ export const startPaymentsIframeApp = async function (
   appDiv: string = defaultAppDiv
 ) {
   const app = createApp({
-    setup() { 
-    },
+    setup() {},
     render: () => h(App)
   })
 
@@ -198,11 +197,8 @@ export const startPaymentsIframeApp = async function (
     throw Error
   }
 
-  app
-    .use(createPinia())
-    .use(router)
-    appStore().setSite(siteEnum)
-    await router.push('/payments')
+  app.use(createPinia()).use(router)
+  appStore().setSite(siteEnum)
+  await router.push('/payments')
   app.mount(appDiv)
 }
-
