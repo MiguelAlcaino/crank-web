@@ -178,7 +178,8 @@ export const startProfileApp = async function (
   app.mount(appDiv)
 }
 
-export const startPaymentsIframeApp = async function ( 
+export const startPaymentsIframeApp = async function (
+  site: string,
   appDiv: string = defaultAppDiv
 ) {
   const app = createApp({
@@ -187,9 +188,20 @@ export const startPaymentsIframeApp = async function (
     render: () => h(App)
   })
 
+  let siteEnum: SiteEnum
+
+  if (site === SiteEnum.Dubai.toString()) {
+    siteEnum = SiteEnum.Dubai
+  } else if (site === SiteEnum.AbuDhabi) {
+    siteEnum = SiteEnum.AbuDhabi
+  } else {
+    throw Error
+  }
+
   app
     .use(createPinia())
     .use(router)
+    appStore().setSite(siteEnum)
     await router.push('/payments')
   app.mount(appDiv)
 }
