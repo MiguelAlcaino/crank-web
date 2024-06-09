@@ -5,7 +5,8 @@ import {
   startProfileApp,
   startPurchasesApp,
   startRegisterApp,
-  startWorkoutStatsApp
+  startWorkoutStatsApp,
+  startPaymentsIframeApp
 } from './start-app-functions'
 
 export {
@@ -16,5 +17,6 @@ export {
   startPurchasesApp,
   startRegisterApp,
   startWorkoutStatsApp,
-  setSquarespaceMenuUrls
+  setSquarespaceMenuUrls,
+  startPaymentsIframeApp
 }

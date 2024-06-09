@@ -177,3 +177,20 @@ export const startProfileApp = async function (
   await router.push('/profile')
   app.mount(appDiv)
 }
+
+export const startPaymentsIframeApp = async function ( 
+  appDiv: string = defaultAppDiv
+) {
+  const app = createApp({
+    setup() { 
+    },
+    render: () => h(App)
+  })
+
+  app
+    .use(createPinia())
+    .use(router)
+    await router.push('/payments')
+  app.mount(appDiv)
+}
+
