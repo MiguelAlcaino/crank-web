@@ -47,6 +47,7 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
 
                 forward(operation).subscribe(subscriber)
               } catch (err) {
+                console.error('Error refreshing token', err)
                 observer.error(err)
               }
             })()

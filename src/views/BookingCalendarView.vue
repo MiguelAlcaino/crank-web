@@ -206,6 +206,7 @@ async function getCustomCalendarClasses(): Promise<void> {
       getPivot()
     }
   } catch (error) {
+    console.error('getCustomCalendarClasses error', error)
     errorModalIsVisible.value = true
   } finally {
     calendarIsLoading.value = false
