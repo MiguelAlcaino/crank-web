@@ -17,8 +17,9 @@ import PurchasesView from './views/PurchasesView.vue'
 import WorkoutStatsView from './views/WorkoutStatsView.vue'
 import ProfileView from './views/ProfileView.vue'
 import { SiteEnum } from './gql/graphql'
+import App from '@/App.vue'
 
-const defaultGqlUrl = 'https://payments.crank-fit.com/api/graphql/'
+const defaultGqlUrl = 'https://payments2.crank-fit.com/api/graphql/'
 const defaultAppDiv = '#app'
 
 export const startBookingCalendarApp = async function (
@@ -33,7 +34,7 @@ export const startBookingCalendarApp = async function (
         new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
       )
     },
-    render: () => h(BookingCalendarView)
+    render: () => h(App)
   })
 
   let siteEnum: SiteEnum
@@ -48,7 +49,7 @@ export const startBookingCalendarApp = async function (
 
   app.use(createPinia()).use(router).component('Popper', Popper)
   appStore().setSite(siteEnum)
-
+  await router.push('/calendar')
   app.mount(appDiv)
 }
 
