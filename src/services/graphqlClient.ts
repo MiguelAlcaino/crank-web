@@ -4,6 +4,7 @@ import { setContext } from '@apollo/client/link/context'
 import { useAuthenticationStore } from '@/stores/authToken'
 import { onError } from '@apollo/client/link/error'
 import { authService } from '@/services/authService'
+import { AxiosError } from 'axios'
 
 function newAnonymousClient(gqlUrl: string): ApolloClient<any> {
   const httpLink2 = createHttpLink({
@@ -47,6 +48,13 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
 
                 forward(operation).subscribe(subscriber)
               } catch (err) {
+                if (err instanceof AxiosError) {
+                  if (err.response?.status === 401) {
+                    console.error('Error 401 refreshing token', err)
+                    authService.logout()
+                  }
+                }              
+              
                 console.error('Error refreshing token', err)
                 observer.error(err)
               }
