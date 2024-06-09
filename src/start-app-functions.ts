@@ -3,20 +3,25 @@ import { newAnonymousClient, newAuthenticatedApolloClient } from './services/gra
 import { ApiService } from './services/apiService'
 import { createPinia } from 'pinia'
 
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { faLeftLong, faStepBackward, faStepForward } from '@fortawesome/free-solid-svg-icons'
+library.add(faStepBackward, faStepForward, faLeftLong)
+
+import VueDatePicker from '@vuepic/vue-datepicker'
+import '@vuepic/vue-datepicker/dist/main.css'
+
 import Popper from 'vue3-popper'
+
+import VueApexCharts from 'vue3-apexcharts'
+
+import 'bootstrap-icons/font/bootstrap-icons.css'
 
 import router from './router'
 
 import { appStore } from './stores/appStorage'
-import BookingCalendarView from './views/BookingCalendarView.vue'
-import ClassView from './views/ClassView.vue'
-import ChangeSpotView from './views/ChangeSpotView.vue'
-import BookingsView from './views/BookingsView.vue'
-import RegisterView from './views/RegisterView.vue'
-import PurchasesView from './views/PurchasesView.vue'
-import WorkoutStatsView from './views/WorkoutStatsView.vue'
-import ProfileView from './views/ProfileView.vue'
 import { SiteEnum } from './gql/graphql'
+
 import App from '@/App.vue'
 
 const defaultGqlUrl = 'https://payments2.crank-fit.com/api/graphql/'
@@ -35,7 +40,7 @@ export const startBookingCalendarApp = async function (
       )
     },
     render: () => h(App)
-  })
+  }).component('font-awesome-icon', FontAwesomeIcon)
 
   let siteEnum: SiteEnum
 
@@ -47,7 +52,11 @@ export const startBookingCalendarApp = async function (
     throw Error
   }
 
-  app.use(createPinia()).use(router).component('Popper', Popper)
+  app
+    .use(createPinia())
+    .use(router)
+    .component('Popper', Popper)
+    .component('VueDatePicker', VueDatePicker)
   appStore().setSite(siteEnum)
   await router.push('/calendar')
   app.mount(appDiv)
@@ -64,30 +73,15 @@ export const startBookingsApp = async function (
         new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
       )
     },
-    render: () => h(BookingsView)
-  })
+    render: () => h(App)
+  }).component('font-awesome-icon', FontAwesomeIcon)
 
-  app.use(createPinia()).use(router)
-
-  app.mount(appDiv)
-}
-
-export const startClassApp = async function (
-  gqlUrl: string = defaultGqlUrl,
-  appDiv: string = defaultAppDiv
-) {
-  const app = createApp({
-    setup() {
-      provide(
-        'gqlApiService',
-        new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
-      )
-    },
-    render: () => h(ClassView)
-  })
-
-  app.use(createPinia()).use(router)
-
+  app
+    .use(createPinia())
+    .use(router)
+    .component('Popper', Popper)
+    .component('VueDatePicker', VueDatePicker)
+  await router.push('/bookings')
   app.mount(appDiv)
 }
 
@@ -102,11 +96,15 @@ export const startRegisterApp = async function (
         new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
       )
     },
-    render: () => h(RegisterView)
-  })
+    render: () => h(App)
+  }).component('font-awesome-icon', FontAwesomeIcon)
 
-  app.use(createPinia()).use(router)
-
+  app
+    .use(createPinia())
+    .use(router)
+    .component('Popper', Popper)
+    .component('VueDatePicker', VueDatePicker)
+  await router.push('/register')
   app.mount(appDiv)
 }
 
@@ -121,30 +119,15 @@ export const startPurchasesApp = async function (
         new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
       )
     },
-    render: () => h(PurchasesView)
-  })
+    render: () => h(App)
+  }).component('font-awesome-icon', FontAwesomeIcon)
 
-  app.use(createPinia()).use(router)
-
-  app.mount(appDiv)
-}
-
-export const startChangeSpotApp = async function (
-  gqlUrl: string = defaultGqlUrl,
-  appDiv: string = defaultAppDiv
-) {
-  const app = createApp({
-    setup() {
-      provide(
-        'gqlApiService',
-        new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
-      )
-    },
-    render: () => h(ChangeSpotView)
-  })
-
-  app.use(createPinia()).use(router)
-
+  app
+    .use(createPinia())
+    .use(router)
+    .component('Popper', Popper)
+    .component('VueDatePicker', VueDatePicker)
+  await router.push('/purchases')
   app.mount(appDiv)
 }
 
@@ -159,11 +142,16 @@ export const startWorkoutStatsApp = async function (
         new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
       )
     },
-    render: () => h(WorkoutStatsView)
-  })
+    render: () => h(App)
+  }).component('font-awesome-icon', FontAwesomeIcon)
 
-  app.use(createPinia()).use(router)
-
+  app
+    .use(createPinia())
+    .use(router)
+    .component('Popper', Popper)
+    .component('VueDatePicker', VueDatePicker)
+    .use(VueApexCharts)
+  await router.push('/workout-stats')
   app.mount(appDiv)
 }
 
@@ -178,10 +166,14 @@ export const startProfileApp = async function (
         new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
       )
     },
-    render: () => h(ProfileView)
-  })
+    render: () => h(App)
+  }).component('font-awesome-icon', FontAwesomeIcon)
 
-  app.use(createPinia()).use(router)
-
+  app
+    .use(createPinia())
+    .use(router)
+    .component('Popper', Popper)
+    .component('VueDatePicker', VueDatePicker)
+  await router.push('/profile')
   app.mount(appDiv)
 }
