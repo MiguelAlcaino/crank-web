@@ -57,7 +57,7 @@ async function login() {
 
     try {
       await authService.login(formData.email, formData.password, selectedSite.value)
-      hackSquarespaceMenu()
+      hackSquarespaceMenu(true)
       let redirectTo = route.query.redirect ?? '/'
       if (redirectTo !== '/') {
         await router.push({ path: route.query.redirect as string })
@@ -183,7 +183,8 @@ async function login() {
                 type="submit"
                 :is-loading="isSubmitting"
                 text="Login"
-              ></DefaultButtonComponent>
+              >
+              </DefaultButtonComponent>
             </div>
           </div>
         </form>
@@ -221,6 +222,7 @@ async function login() {
 p {
   font-family: 'Avenir', sans-serif;
 }
+
 .page-login-v3 .panel .panel-body {
   padding: 50px 40px 40px;
 }
