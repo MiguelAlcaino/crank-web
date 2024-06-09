@@ -53,8 +53,8 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
                     console.error('Error 401 refreshing token', err)
                     authService.logout()
                   }
-                }              
-              
+                }
+
                 console.error('Error refreshing token', err)
                 observer.error(err)
               }

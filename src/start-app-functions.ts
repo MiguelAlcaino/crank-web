@@ -52,7 +52,11 @@ export const startBookingCalendarApp = async function (
     throw Error
   }
 
-  app.use(createPinia()).use(router).component('Popper', Popper).component('VueDatePicker', VueDatePicker)
+  app
+    .use(createPinia())
+    .use(router)
+    .component('Popper', Popper)
+    .component('VueDatePicker', VueDatePicker)
   appStore().setSite(siteEnum)
   await router.push('/calendar')
   app.mount(appDiv)
@@ -72,7 +76,11 @@ export const startBookingsApp = async function (
     render: () => h(App)
   }).component('font-awesome-icon', FontAwesomeIcon)
 
-  app.use(createPinia()).use(router).component('Popper', Popper).component('VueDatePicker', VueDatePicker)
+  app
+    .use(createPinia())
+    .use(router)
+    .component('Popper', Popper)
+    .component('VueDatePicker', VueDatePicker)
   await router.push('/bookings')
   app.mount(appDiv)
 }
@@ -91,7 +99,11 @@ export const startRegisterApp = async function (
     render: () => h(App)
   }).component('font-awesome-icon', FontAwesomeIcon)
 
-  app.use(createPinia()).use(router).component('Popper', Popper).component('VueDatePicker', VueDatePicker)
+  app
+    .use(createPinia())
+    .use(router)
+    .component('Popper', Popper)
+    .component('VueDatePicker', VueDatePicker)
   await router.push('/register')
   app.mount(appDiv)
 }
@@ -110,7 +122,11 @@ export const startPurchasesApp = async function (
     render: () => h(App)
   }).component('font-awesome-icon', FontAwesomeIcon)
 
-  app.use(createPinia()).use(router).component('Popper', Popper).component('VueDatePicker', VueDatePicker)
+  app
+    .use(createPinia())
+    .use(router)
+    .component('Popper', Popper)
+    .component('VueDatePicker', VueDatePicker)
   await router.push('/purchases')
   app.mount(appDiv)
 }
@@ -129,7 +145,12 @@ export const startWorkoutStatsApp = async function (
     render: () => h(App)
   }).component('font-awesome-icon', FontAwesomeIcon)
 
-  app.use(createPinia()).use(router).component('Popper', Popper).component('VueDatePicker', VueDatePicker).use(VueApexCharts)
+  app
+    .use(createPinia())
+    .use(router)
+    .component('Popper', Popper)
+    .component('VueDatePicker', VueDatePicker)
+    .use(VueApexCharts)
   await router.push('/workout-stats')
   app.mount(appDiv)
 }
@@ -148,7 +169,11 @@ export const startProfileApp = async function (
     render: () => h(App)
   }).component('font-awesome-icon', FontAwesomeIcon)
 
-  app.use(createPinia()).use(router).component('Popper', Popper).component('VueDatePicker', VueDatePicker)
+  app
+    .use(createPinia())
+    .use(router)
+    .component('Popper', Popper)
+    .component('VueDatePicker', VueDatePicker)
   await router.push('/profile')
   app.mount(appDiv)
 }

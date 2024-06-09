@@ -3,7 +3,7 @@ interface MenuUrls {
   workOutStatsUrl: string
   bookinsUrl: string
   purchasesUrl: string
-  profileUrl: string,
+  profileUrl: string
   homeUrl: string
 }
 
@@ -11,7 +11,7 @@ const menuLocalStorageKey = 'squarespaceMenuUrls'
 
 export function hackSquarespaceMenu(hackMenu: boolean = false) {
   if (!hackMenu) return
-  
+
   console.log('basuritas')
 
   const authToken = localStorage.getItem('authToken')
@@ -143,7 +143,7 @@ export function hackSquarespaceMenu(hackMenu: boolean = false) {
             // Create logout link menu
             const logoutLink = document.createElement('a')
             logoutLink.className = 'Header-nav-folder-title Header-nav-folder-title--active'
-            logoutLink.href = "#"
+            logoutLink.href = '#'
             logoutLink.innerText = 'Logout'
             logoutLink.onclick = () => logout(crankMenuUrls?.homeUrl ?? '/')
             logoutLinkContainer.appendChild(logoutLink)
@@ -161,7 +161,7 @@ export function setSquarespaceMenuUrls(
   bookinsUrl: string,
   purchasesUrl: string,
   profileUrl: string,
-  homeUrl: string,
+  homeUrl: string
 ) {
   const menuUrls: MenuUrls = {
     regiterUrl,
