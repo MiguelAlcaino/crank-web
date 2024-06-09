@@ -2,8 +2,6 @@ import { hackSquarespaceMenu, setSquarespaceMenuUrls } from '@/utils/hack-square
 import {
   startBookingCalendarApp,
   startBookingsApp,
-  startClassApp,
-  startChangeSpotApp,
   startProfileApp,
   startPurchasesApp,
   startRegisterApp,
@@ -14,8 +12,6 @@ export {
   hackSquarespaceMenu,
   startBookingCalendarApp,
   startBookingsApp,
-  startClassApp,
-  startChangeSpotApp,
   startProfileApp,
   startPurchasesApp,
   startRegisterApp,
