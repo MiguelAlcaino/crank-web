@@ -12,8 +12,6 @@ const menuLocalStorageKey = 'squarespaceMenuUrls'
 export function hackSquarespaceMenu(hackMenu: boolean = false) {
   if (!hackMenu) return
 
-  console.log('basuritas')
-
   const authToken = localStorage.getItem('authToken')
 
   let userIsLoggedIn = false
