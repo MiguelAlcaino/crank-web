@@ -1,7 +1,7 @@
 interface MenuUrls {
-  regiterUrl: string
+  registerUrl: string
   workOutStatsUrl: string
-  bookinsUrl: string
+  bookingsUrl: string
   purchasesUrl: string
   profileUrl: string
   homeUrl: string
@@ -27,9 +27,9 @@ export function hackSquarespaceMenu(hackMenu: boolean = false) {
 
   if (!crankMenuUrls) {
     crankMenuUrls = {
-      regiterUrl: '/register',
+      registerUrl: '/register',
       workOutStatsUrl: '/workout-stats',
-      bookinsUrl: '/bookings',
+      bookingsUrl: '/bookings',
       purchasesUrl: '/purchases',
       profileUrl: '/profile',
       homeUrl: '/'
@@ -104,7 +104,7 @@ export function hackSquarespaceMenu(hackMenu: boolean = false) {
               // create Bookings sub menu link
               const subMenuBookingsLink = document.createElement('a')
               subMenuBookingsLink.className = 'Header-nav-folder-item'
-              subMenuBookingsLink.href = crankMenuUrls.bookinsUrl
+              subMenuBookingsLink.href = crankMenuUrls.bookingsUrl
               subMenuBookingsLink.innerText = 'Bookings'
               myAccountSubMenuSpan.appendChild(subMenuBookingsLink)
 
@@ -125,7 +125,7 @@ export function hackSquarespaceMenu(hackMenu: boolean = false) {
               // create New to CRANK sub menu link
               const subMenuNewToCrankLink = document.createElement('a')
               subMenuNewToCrankLink.className = 'Header-nav-folder-item'
-              subMenuNewToCrankLink.href = crankMenuUrls.regiterUrl
+              subMenuNewToCrankLink.href = crankMenuUrls.registerUrl
               subMenuNewToCrankLink.innerText = 'New to CRANK'
               myAccountSubMenuSpan.appendChild(subMenuNewToCrankLink)
             }
@@ -154,17 +154,17 @@ export function hackSquarespaceMenu(hackMenu: boolean = false) {
 }
 
 export function setSquarespaceMenuUrls(
-  regiterUrl: string,
+  registerUrl: string,
   workOutStatsUrl: string,
-  bookinsUrl: string,
+  bookingsUrl: string,
   purchasesUrl: string,
   profileUrl: string,
   homeUrl: string
 ) {
   const menuUrls: MenuUrls = {
-    regiterUrl,
+    registerUrl,
     workOutStatsUrl,
-    bookinsUrl,
+    bookingsUrl,
     purchasesUrl,
     profileUrl,
     homeUrl
