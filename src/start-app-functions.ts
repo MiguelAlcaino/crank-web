@@ -23,8 +23,9 @@ import { appStore } from './stores/appStorage'
 import { SiteEnum } from './gql/graphql'
 
 import App from '@/App.vue'
+import { Config } from './model/Config'
 
-const defaultGqlUrl = 'https://payments2.crank-fit.com/api/graphql/'
+const defaultGqlUrl = Config.GRAPHQL_SERVICE_URL
 const defaultAppDiv = '#app'
 
 export const startBookingCalendarApp = async function (
