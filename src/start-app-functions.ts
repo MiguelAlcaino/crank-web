@@ -181,10 +181,16 @@ export const startProfileApp = async function (
 
 export const startPaymentsIframeApp = async function (
   site: string,
+  gqlUrl: string = defaultGqlUrl,
   appDiv: string = defaultAppDiv
 ) {
   const app = createApp({
-    setup() {},
+    setup() {
+      provide(
+        'gqlApiService',
+        new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
+      )
+    },
     render: () => h(App)
   })
 
