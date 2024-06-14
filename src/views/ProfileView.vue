@@ -726,10 +726,12 @@ input {
 
 li > span {
   font-family: 'Avenir', sans-serif;
+  color: black;
 }
 
 li > strong {
   font-family: 'Avenir', sans-serif;
+  color: black;
 }
 
 h5 {
