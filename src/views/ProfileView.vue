@@ -523,6 +523,7 @@ function onChangeCountry() {
             required: true
           }"
           :validCharactersOnly="true"
+          :autoDefaultCountry="false"
         ></vue-tel-input>
         <small
           v-for="error in v$.phone.$errors"
@@ -582,6 +583,7 @@ function onChangeCountry() {
             required: true
           }"
           :validCharactersOnly="true"
+          :autoDefaultCountry="false"
         ></vue-tel-input>
         <small
           v-for="error in v$.emergencyContactPhone.$errors"
