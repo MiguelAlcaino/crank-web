@@ -95,6 +95,7 @@ const emits = defineEmits<{
 p {
   font-family: 'Avenir', sans-serif;
 }
+
 .modal-mask {
   position: fixed;
   z-index: 9998;
@@ -110,5 +111,9 @@ p {
 .modal-wrapper {
   display: table-cell;
   vertical-align: middle;
+}
+
+p {
+  color: black;
 }
 </style>

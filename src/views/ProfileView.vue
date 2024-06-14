@@ -714,6 +714,7 @@ h3 {
   background: var(--dp-danger-color) !important;
   color: var(--dp-primary-text-color) !important;
 }
+
 .dp__action_select {
   background: #000000 !important;
   color: var(--dp-primary-text-color) !important;
@@ -726,7 +727,12 @@ input {
 li > span {
   font-family: 'Avenir', sans-serif;
 }
+
 li > strong {
   font-family: 'Avenir', sans-serif;
+}
+
+h5 {
+  color: black;
 }
 </style>
