@@ -833,10 +833,18 @@ a:hover {
   color: var(--dp-primary-text-color) !important;
 }
 
+
 li > span {
   font-family: 'Avenir', sans-serif;
+  color: black;
 }
+
 li > strong {
   font-family: 'Avenir', sans-serif;
+  color: black;
+}
+
+h5 {
+  color: black;
 }
 </style>
