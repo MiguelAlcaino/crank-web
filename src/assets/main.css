@@ -155,6 +155,7 @@ select {
 
 span {
   font-family: 'Avenir', sans-serif;
+  color: black;
 }
 
 label {
@@ -182,4 +183,8 @@ th {
 
 small {
   font-family: 'Avenir', sans-serif;
+}
+
+strong {
+  color: black;
 }
