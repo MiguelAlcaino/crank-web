@@ -27,7 +27,7 @@ import { Config } from './model/Config'
 
 const defaultGqlUrl = Config.GRAPHQL_SERVICE_URL
 const defaultAppDiv = '#app'
-
+//test commit
 export const startBookingCalendarApp = async function (
   site: string,
   gqlUrl: string = defaultGqlUrl,
