@@ -722,6 +722,7 @@ h3 {
 
 input {
   font-family: 'Avenir', sans-serif;
+  color: #495057;
 }
 
 li > span {

@@ -833,6 +833,10 @@ a:hover {
   color: var(--dp-primary-text-color) !important;
 }
 
+input {
+  font-family: 'Avenir', sans-serif;
+  color: #495057;
+}
 
 li > span {
   font-family: 'Avenir', sans-serif;
