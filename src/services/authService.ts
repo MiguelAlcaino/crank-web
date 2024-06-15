@@ -40,7 +40,7 @@ export const authService = {
         this.startRefreshTokenTimer()
       }
     } catch (error) {
-      console.error(error)
+      console.log(error)
       if (error instanceof AxiosError) {
         if (error.response?.status === 470) {
           throw new ResetPasswordRequiredError()
