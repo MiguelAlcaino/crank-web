@@ -86,6 +86,8 @@ export const startBookingCalendarApp = async function (
           } else {
             authService.logout()
           }
+        } else {
+          appStore().setSite(siteEnum)
         }
       } else {
         appStore().setSite(siteEnum)
@@ -268,6 +270,8 @@ export const startPaymentsIframeApp = async function (
           } else {
             authService.logout()
           }
+        } else {
+          appStore().setSite(siteEnum)
         }
       } else {
         appStore().setSite(siteEnum)
