@@ -87,6 +87,8 @@ export const startBookingCalendarApp = async function (
             authService.logout()
           }
         }
+      } else {
+        appStore().setSite(siteEnum)
       }
     }
   } catch (error) {
@@ -267,6 +269,8 @@ export const startPaymentsIframeApp = async function (
             authService.logout()
           }
         }
+      } else {
+        appStore().setSite(siteEnum)
       }
     }
   } catch (error) {
