@@ -24,6 +24,7 @@ import { SiteEnum } from './gql/graphql'
 
 import App from '@/App.vue'
 import { Config } from './model/Config'
+import { authService } from './services/authService'
 
 const defaultGqlUrl = Config.GRAPHQL_SERVICE_URL
 const defaultAppDiv = '#app'
@@ -58,7 +59,40 @@ export const startBookingCalendarApp = async function (
     .use(router)
     .component('Popper', Popper)
     .component('VueDatePicker', VueDatePicker)
-  appStore().setSite(siteEnum)
+
+  try {
+    if (!authService.isLoggedId()) {
+      appStore().setSite(siteEnum)
+    } else {
+      if (appStore().site !== siteEnum) {
+        const apiService = new ApiService(
+          newAuthenticatedApolloClient(Config.GRAPHQL_SERVICE_URL),
+          newAnonymousClient(Config.GRAPHQL_SERVICE_URL)
+        )
+
+        const currentUserExistsOnSite = (await apiService.currentUserDoesExistInSite(
+          site
+        )) as boolean
+
+        if (!currentUserExistsOnSite) {
+          const response = await apiService.createCurrentUserInSite(appStore().site, site)
+
+          if (
+            response !== null &&
+            (response.__typename === 'CreateCurrentUserInSiteSuccess' ||
+              response.__typename === 'UserAlreadyExistsError')
+          ) {
+            appStore().setSite(siteEnum)
+          } else {
+            authService.logout()
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.error('ERROR:', error)
+  }
+
   await router.push('/calendar')
   app.mount(appDiv)
 }
@@ -205,7 +239,40 @@ export const startPaymentsIframeApp = async function (
   }
 
   app.use(createPinia()).use(router)
-  appStore().setSite(siteEnum)
+
+  try {
+    if (!authService.isLoggedId()) {
+      appStore().setSite(siteEnum)
+    } else {
+      if (appStore().site !== siteEnum) {
+        const apiService = new ApiService(
+          newAuthenticatedApolloClient(Config.GRAPHQL_SERVICE_URL),
+          newAnonymousClient(Config.GRAPHQL_SERVICE_URL)
+        )
+
+        const currentUserExistsOnSite = (await apiService.currentUserDoesExistInSite(
+          site
+        )) as boolean
+
+        if (!currentUserExistsOnSite) {
+          const response = await apiService.createCurrentUserInSite(appStore().site, site)
+
+          if (
+            response !== null &&
+            (response.__typename === 'CreateCurrentUserInSiteSuccess' ||
+              response.__typename === 'UserAlreadyExistsError')
+          ) {
+            appStore().setSite(siteEnum)
+          } else {
+            authService.logout()
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.error('ERROR:', error)
+  }
+
   await router.push('/payments')
   app.mount(appDiv)
 }
