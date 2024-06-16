@@ -209,3 +209,26 @@ export const startPaymentsIframeApp = async function (
   await router.push('/payments')
   app.mount(appDiv)
 }
+
+export const startResetPasswordApp = async function (
+  gqlUrl: string = defaultGqlUrl,
+  appDiv: string = defaultAppDiv
+) {
+  const app = createApp({
+    setup() {
+      provide(
+        'gqlApiService',
+        new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
+      )
+    },
+    render: () => h(App)
+  }).component('font-awesome-icon', FontAwesomeIcon)
+
+  app
+    .use(createPinia())
+    .use(router)
+    .component('Popper', Popper)
+    .component('VueDatePicker', VueDatePicker)
+  await router.push('/reset-password')
+  app.mount(appDiv)
+}
