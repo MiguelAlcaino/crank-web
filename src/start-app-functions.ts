@@ -234,6 +234,6 @@ export const startResetPasswordApp = async function (
   const urlParams = new URLSearchParams(queryString)
   const token = urlParams.get('token')
 
-  await router.push('/reset-password??token=' + token)
+  await router.push('/reset-password?token=' + token)
   app.mount(appDiv)
 }
