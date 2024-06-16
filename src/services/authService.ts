@@ -42,7 +42,7 @@ export const authService = {
     } catch (error) {
       console.log(error)
       if (error instanceof AxiosError) {
-        if (error.response?.status === 470) {
+        if (error.response?.data?.code === 470) {
           throw new ResetPasswordRequiredError()
         }
       }
