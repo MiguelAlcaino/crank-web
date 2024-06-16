@@ -229,6 +229,11 @@ export const startResetPasswordApp = async function (
     .use(router)
     .component('Popper', Popper)
     .component('VueDatePicker', VueDatePicker)
-  await router.push('/reset-password')
+
+  const queryString = window.location.search
+  const urlParams = new URLSearchParams(queryString)
+  const token = urlParams.get('token')
+
+  await router.push('/reset-password??token=' + token)
   app.mount(appDiv)
 }
