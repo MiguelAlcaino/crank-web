@@ -151,6 +151,59 @@ export function hackSquarespaceMenu(hackMenu: boolean = false) {
       }
     }
   }
+
+  hackMobileMenu(userIsLoggedIn, crankMenuUrls)
+}
+
+function hackMobileMenu(userIsLoggedIn: boolean, crankMenuUrls: MenuUrls) {
+  const myAccountDiv = document.querySelectorAll('[data-controller-folder="my-account1"]')[0]
+
+  const mobileClassName = 'Mobile-overlay-folder-item'
+
+  if (myAccountDiv) {
+    const myAccountAnchor = myAccountDiv.getElementsByTagName('a')[0]
+
+    if (myAccountAnchor) {
+      myAccountAnchor.remove()
+    }
+
+    if (userIsLoggedIn) {
+      // create Workout Stats sub menu link
+      const subMenuWorkoutStatsLink = document.createElement('a')
+      subMenuWorkoutStatsLink.className = mobileClassName
+      subMenuWorkoutStatsLink.href = crankMenuUrls.workOutStatsUrl
+      subMenuWorkoutStatsLink.innerText = 'Workout Stats'
+      myAccountDiv.appendChild(subMenuWorkoutStatsLink)
+
+      // create Bookings sub menu link
+      const subMenuBookingsLink = document.createElement('a')
+      subMenuBookingsLink.className = mobileClassName
+      subMenuBookingsLink.href = crankMenuUrls.bookingsUrl
+      subMenuBookingsLink.innerText = 'Bookings'
+      myAccountDiv.appendChild(subMenuBookingsLink)
+
+      // create Purchases sub menu link
+      const subMenuPurchasesLink = document.createElement('a')
+      subMenuPurchasesLink.className = mobileClassName
+      subMenuPurchasesLink.href = crankMenuUrls.purchasesUrl
+      subMenuPurchasesLink.innerText = 'Purchases'
+      myAccountDiv.appendChild(subMenuPurchasesLink)
+
+      // create Profile Stats sub menu link
+      const subMenuProfileLink = document.createElement('a')
+      subMenuProfileLink.className = mobileClassName
+      subMenuProfileLink.href = crankMenuUrls.profileUrl
+      subMenuProfileLink.innerText = 'Profile'
+      myAccountDiv.appendChild(subMenuProfileLink)
+    } else {
+      // create New to CRANK sub menu link
+      const subMenuNewToCrankLink = document.createElement('a')
+      subMenuNewToCrankLink.className = mobileClassName
+      subMenuNewToCrankLink.href = crankMenuUrls.registerUrl
+      subMenuNewToCrankLink.innerText = 'New to CRANK'
+      myAccountDiv.appendChild(subMenuNewToCrankLink)
+    }
+  }
 }
 
 export function setSquarespaceMenuUrls(
