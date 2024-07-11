@@ -21,7 +21,6 @@ import { hackSquarespaceMenu } from '@/utils/hack-squarespace-menu'
 
 const displayLoginError = ref(false)
 const isSubmitting = ref(false)
-const selectedSite = ref('dubai')
 const passwordIsVisible = ref(false)
 const modalResetPasswordRequiredIsVisible = ref(false)
 
@@ -56,7 +55,7 @@ async function login() {
     displayLoginError.value = false
 
     try {
-      await authService.login(formData.email, formData.password, selectedSite.value)
+      await authService.login(formData.email, formData.password, formData.location)
       hackSquarespaceMenu(true)
       let redirectTo = route.query.redirect ?? '/'
       if (redirectTo !== '/') {
