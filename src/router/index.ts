@@ -16,6 +16,7 @@ import WorkoutSummaryView from '../views/WorkoutSummaryView.vue'
 import { authService } from '@/services/authService'
 import MenuLayout from '@/layouts/MenuLayout.vue'
 import PaymentsIframeView from '@/views/PaymentsIframeView.vue'
+import LoginRedirectView from '@/modules/login-redirect/views/LoginRedirectView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -110,6 +111,11 @@ const router = createRouter({
       path: '/payments',
       name: 'payments',
       component: PaymentsIframeView
+    },
+    {
+      path: '/login-redirect',
+      name: 'login_redirect',
+      component: LoginRedirectView
     }
   ]
 })
