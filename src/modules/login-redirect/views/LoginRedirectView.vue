@@ -45,12 +45,18 @@ async function checkLoginSiteAndRedirect(site: string, destination: string) {
     }
 
     if (authService.isLoggedId()) {
-      const currentUserExistsOnSite = await apiService.currentUserDoesExistInSite(site)
+      let currentUserExistsOnSite = false
+
+      if (appStore().site === siteEnum) {
+        currentUserExistsOnSite = true
+      } else {
+        currentUserExistsOnSite = await apiService.currentUserDoesExistInSite(site)
+      }
 
       if (currentUserExistsOnSite) {
         const token = useAuthenticationStore().token
 
-        var url = `${destination}&bearer=${token}`
+        const url = `${destination}&bearer=${token}`
         window.location.replace(url)
       } else {
         const response = await apiService.createCurrentUserInSite(appStore().site, site)
@@ -61,6 +67,10 @@ async function checkLoginSiteAndRedirect(site: string, destination: string) {
             response.__typename === 'UserAlreadyExistsError')
         ) {
           appStore().setSite(siteEnum)
+
+          const token = useAuthenticationStore().token
+          const url = `${destination}&bearer=${token}`
+          window.location.replace(url)
         } else {
           authService.logout()
         }
