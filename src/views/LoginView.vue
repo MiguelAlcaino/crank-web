@@ -6,7 +6,7 @@ enum SiteEnum {
 </script>
 
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { onMounted, computed, reactive, ref } from 'vue'
 import router from '@/router'
 import { authService } from '@/services/authService'
 import { helpers, required, email } from '@vuelidate/validators'
@@ -18,6 +18,7 @@ import ModalComponent from '@/components/ModalComponent.vue'
 import { useRoute } from 'vue-router'
 import { ResetPasswordRequiredError } from '@/model/Exception'
 import { hackSquarespaceMenu } from '@/utils/hack-squarespace-menu'
+import { useAuthenticationStore } from '@/stores/authToken'
 
 const displayLoginError = ref(false)
 const isSubmitting = ref(false)
@@ -28,6 +29,16 @@ const formData = reactive({
   location: SiteEnum.Dubai,
   email: '',
   password: ''
+})
+
+onMounted(() => {
+  let site = (route.query.site ?? null) as string
+
+  if (site === SiteEnum.AbuDhabi) {
+    formData.location = SiteEnum.AbuDhabi
+  } else {
+    formData.location = SiteEnum.Dubai
+  }
 })
 
 const rules = computed(() => {
@@ -47,6 +58,7 @@ const rules = computed(() => {
 
 const v$ = useVuelidate(rules, formData)
 const route = useRoute()
+
 async function login() {
   const isValid = await v$.value.$validate()
 
@@ -56,10 +68,22 @@ async function login() {
 
     try {
       await authService.login(formData.email, formData.password, formData.location)
+
       hackSquarespaceMenu(true)
-      let redirectTo = route.query.redirect ?? '/'
-      if (redirectTo !== '/') {
-        await router.push({ path: route.query.redirect as string })
+
+      let redirectTo = route.query.redirect as string | undefined
+      let addAuth = route.query.addAuth as string | undefined
+
+      if (redirectTo) {
+        if (isValidHttpUrl(redirectTo)) {
+          if (addAuth === '1') {
+            const token = useAuthenticationStore().token
+            redirectTo = `${redirectTo}&bearer=${token}`
+          }
+          window.location.replace(redirectTo)
+        } else {
+          await router.push({ path: redirectTo })
+        }
       } else {
         await router.push({ name: 'calendar' })
       }
@@ -72,6 +96,18 @@ async function login() {
     }
     isSubmitting.value = false
   }
+}
+
+function isValidHttpUrl(value: string) {
+  let url
+
+  try {
+    url = new URL(value)
+  } catch (_) {
+    return false
+  }
+
+  return url.protocol === 'http:' || url.protocol === 'https:'
 }
 </script>
 

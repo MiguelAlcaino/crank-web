@@ -46,7 +46,7 @@ async function checkLoginSiteAndRedirect(site: string, destination: string) {
     if (currentUserExistsOnSite) {
       const token = useAuthenticationStore().token
 
-      var url = `${destination}?site=${site}&bearer=${token}`
+      var url = `${destination}&bearer=${token}`
       window.location.replace(url)
     } else {
       const response = await apiService.createCurrentUserInSite(appStore().site, site)
