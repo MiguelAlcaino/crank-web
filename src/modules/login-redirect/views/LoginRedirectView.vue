@@ -55,7 +55,7 @@ async function checkLoginSiteAndRedirect(site: string, destination: string) {
 
       if (currentUserExistsOnSite) {
         appStore().setSite(siteEnum)
-        
+
         const token = useAuthenticationStore().token
 
         const url = `${destination}&bearer=${token}`
@@ -82,8 +82,6 @@ async function checkLoginSiteAndRedirect(site: string, destination: string) {
     }
   } catch (error) {
     window.location.replace(defaultUrl)
-  } finally {
-    isLoading.value = false
   }
 }
 </script>

@@ -93,8 +93,9 @@ async function login() {
       } else {
         displayLoginError.value = true
       }
+
+      isSubmitting.value = false
     }
-    isSubmitting.value = false
   }
 }
 
