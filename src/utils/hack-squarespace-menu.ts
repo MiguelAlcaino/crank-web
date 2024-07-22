@@ -161,10 +161,15 @@ function hackMobileMenu(userIsLoggedIn: boolean, crankMenuUrls: MenuUrls) {
   const mobileClassName = 'Mobile-overlay-folder-item'
 
   if (myAccountDiv) {
-    const myAccountAnchor = myAccountDiv.getElementsByTagName('a')[0]
+    const newToCrankAnchor = myAccountDiv.getElementsByTagName('a')[0]
+    const myProfileAnchor = myAccountDiv.getElementsByTagName('a')[1]
 
-    if (myAccountAnchor) {
-      myAccountAnchor.remove()
+    if (newToCrankAnchor) {
+      newToCrankAnchor.remove()
+    }
+
+    if(myProfileAnchor) {
+      myProfileAnchor.remove()
     }
 
     if (userIsLoggedIn) {
@@ -195,6 +200,14 @@ function hackMobileMenu(userIsLoggedIn: boolean, crankMenuUrls: MenuUrls) {
       subMenuProfileLink.href = crankMenuUrls.profileUrl
       subMenuProfileLink.innerText = 'Profile'
       myAccountDiv.appendChild(subMenuProfileLink)
+
+      //Logout link
+      const logoutLink = document.createElement('a')
+      logoutLink.className = mobileClassName
+      logoutLink.href = '#'
+      logoutLink.innerText = 'Logout'
+      logoutLink.onclick = () => logout(crankMenuUrls?.homeUrl ?? '/')
+      myAccountDiv.appendChild(logoutLink)
     } else {
       // create New to CRANK sub menu link
       const subMenuNewToCrankLink = document.createElement('a')
