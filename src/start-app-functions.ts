@@ -312,3 +312,32 @@ export const startResetPasswordApp = async function (
   await router.push('/reset-password?token=' + token)
   app.mount(appDiv)
 }
+
+export const startLoginRedirectApp = async function (
+  gqlUrl: string = defaultGqlUrl,
+  appDiv: string = defaultAppDiv
+) {
+  const app = createApp({
+    setup() {
+      provide(
+        'gqlApiService',
+        new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
+      )
+    },
+    render: () => h(App)
+  }).component('font-awesome-icon', FontAwesomeIcon)
+
+  app
+    .use(createPinia())
+    .use(router)
+    .component('Popper', Popper)
+    .component('VueDatePicker', VueDatePicker)
+
+  const queryString = window.location.search
+  const urlParams = new URLSearchParams(queryString)
+  const site = urlParams.get('site')
+  const destination = urlParams.get('destination')
+
+  await router.push({ name: 'login_redirect', query: { destination: destination, site: site } })
+  app.mount(appDiv)
+}

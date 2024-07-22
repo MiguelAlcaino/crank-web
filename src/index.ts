@@ -7,7 +7,8 @@ import {
   startRegisterApp,
   startWorkoutStatsApp,
   startPaymentsIframeApp,
-  startResetPasswordApp
+  startResetPasswordApp,
+  startLoginRedirectApp
 } from './start-app-functions'
 
 export {
@@ -20,5 +21,6 @@ export {
   startWorkoutStatsApp,
   setSquarespaceMenuUrls,
   startPaymentsIframeApp,
-  startResetPasswordApp
+  startResetPasswordApp,
+  startLoginRedirectApp
 }

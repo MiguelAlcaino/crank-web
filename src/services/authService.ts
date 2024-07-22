@@ -17,7 +17,7 @@ export const authService = {
   isLoggedId(): boolean {
     const store = useAuthenticationStore()
 
-    if(store.token !== null && this.isTokenExpired(store.token)){
+    if (store.token !== null && this.isTokenExpired(store.token)) {
       useAuthenticationStore().deleteSession()
     }
 
@@ -123,7 +123,7 @@ export const authService = {
         })
         .join('')
     )
-  
+
     const { exp } = JSON.parse(jsonPayload)
     const expired = Date.now() >= exp * 1000
     return expired
