@@ -338,6 +338,6 @@ export const startLoginRedirectApp = async function (
   const site = urlParams.get('site')
   const destination = urlParams.get('destination')
 
-  await router.push('/login-redirect?destination=' + destination + '&site=' + site)
+  await router.push({ name: 'login_redirect', query: { destination: destination, site: site } })
   app.mount(appDiv)
 }

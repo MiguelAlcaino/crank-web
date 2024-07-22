@@ -9,7 +9,7 @@ import { appStore } from '@/stores/appStorage'
 import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
 import router from '@/router'
 
-import { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/apiService'
 import { SiteEnum } from '../interfaces/site.enum'
 const apiService = inject<ApiService>('gqlApiService')!
 
@@ -26,43 +26,52 @@ onMounted(() => {
 })
 
 async function checkLoginSiteAndRedirect(site: string, destination: string) {
-  if (!destination || !site) {
-    window.location.replace(defaultUrl)
-  }
+  isLoading.value = true
 
-  let siteEnum: SiteEnum
-
-  if (site === SiteEnum.Dubai.toString()) {
-    siteEnum = SiteEnum.Dubai
-  } else if (site === SiteEnum.AbuDhabi) {
-    siteEnum = SiteEnum.AbuDhabi
-  } else {
-    throw Error
-  }
-
-  if (authService.isLoggedId()) {
-    const currentUserExistsOnSite = await apiService.currentUserDoesExistInSite(site)
-
-    if (currentUserExistsOnSite) {
-      const token = useAuthenticationStore().token
-
-      var url = `${destination}&bearer=${token}`
-      window.location.replace(url)
-    } else {
-      const response = await apiService.createCurrentUserInSite(appStore().site, site)
-
-      if (
-        response !== null &&
-        (response.__typename === 'CreateCurrentUserInSiteSuccess' ||
-          response.__typename === 'UserAlreadyExistsError')
-      ) {
-        appStore().setSite(siteEnum)
-      } else {
-        authService.logout()
-      }
+  try {
+    if (!destination || !site) {
+      window.location.replace(defaultUrl)
+      return
     }
-  } else {
-    await router.push({ name: 'login', query: { redirect: destination, site: site, addAuth: 1 } })
+
+    let siteEnum: SiteEnum
+
+    if (site === SiteEnum.Dubai.toString()) {
+      siteEnum = SiteEnum.Dubai
+    } else if (site === SiteEnum.AbuDhabi) {
+      siteEnum = SiteEnum.AbuDhabi
+    } else {
+      throw Error
+    }
+
+    if (authService.isLoggedId()) {
+      const currentUserExistsOnSite = await apiService.currentUserDoesExistInSite(site)
+
+      if (currentUserExistsOnSite) {
+        const token = useAuthenticationStore().token
+
+        var url = `${destination}&bearer=${token}`
+        window.location.replace(url)
+      } else {
+        const response = await apiService.createCurrentUserInSite(appStore().site, site)
+
+        if (
+          response !== null &&
+          (response.__typename === 'CreateCurrentUserInSiteSuccess' ||
+            response.__typename === 'UserAlreadyExistsError')
+        ) {
+          appStore().setSite(siteEnum)
+        } else {
+          authService.logout()
+        }
+      }
+    } else {
+      await router.push({ name: 'login', query: { redirect: destination, site: site, addAuth: 1 } })
+    }
+  } catch (error) {
+    window.location.replace(defaultUrl)
+  } finally {
+    isLoading.value = false
   }
 }
 </script>
@@ -75,3 +84,8 @@ async function checkLoginSiteAndRedirect(site: string, destination: string) {
     ></CrankCircularProgressIndicator>
   </div>
 </template>
+
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>
+
+<style scoped></style>
