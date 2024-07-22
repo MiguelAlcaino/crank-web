@@ -14,7 +14,7 @@ import { SiteEnum } from '../interfaces/site.enum'
 const apiService = inject<ApiService>('gqlApiService')!
 
 const isLoading = ref<boolean>(false)
-const defaultUrl = '/' //'https://www.crank-fit.com/'
+const defaultUrl = 'https://www.crank-fit.com/'
 
 onMounted(() => {
   const route = useRoute()
