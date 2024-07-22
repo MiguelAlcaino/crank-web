@@ -127,14 +127,7 @@ export function hackSquarespaceMenu(hackMenu: boolean = false) {
               subMenuNewToCrankLink.className = 'Header-nav-folder-item'
               subMenuNewToCrankLink.href = crankMenuUrls.registerUrl
               subMenuNewToCrankLink.innerText = 'New to CRANK'
-              myAccountSubMenuSpan.appendChild(subMenuNewToCrankLink)
-
-              // create Profile sub menu link
-              const subMenuProfileLink = document.createElement('a')
-              subMenuProfileLink.className = 'Header-nav-folder-item'
-              subMenuProfileLink.href = crankMenuUrls.profileUrl
-              subMenuProfileLink.innerText = 'My Profile'
-              myAccountSubMenuSpan.appendChild(subMenuProfileLink)
+              myAccountSubMenuSpan.appendChild(subMenuNewToCrankLink)  
             }
             newMyAccountLinkContainer.appendChild(myAccountSubMenuSpan)
             myAccountLinkContainer.replaceWith(newMyAccountLinkContainer)
@@ -209,6 +202,13 @@ function hackMobileMenu(userIsLoggedIn: boolean, crankMenuUrls: MenuUrls) {
       subMenuNewToCrankLink.href = crankMenuUrls.registerUrl
       subMenuNewToCrankLink.innerText = 'New to CRANK'
       myAccountDiv.appendChild(subMenuNewToCrankLink)
+
+      // create Profile Stats sub menu link
+      const subMenuProfileLink = document.createElement('a')
+      subMenuProfileLink.className = mobileClassName
+      subMenuProfileLink.href = crankMenuUrls.profileUrl
+      subMenuProfileLink.innerText = 'My Profile'
+      myAccountDiv.appendChild(subMenuProfileLink)
     }
   }
 }
