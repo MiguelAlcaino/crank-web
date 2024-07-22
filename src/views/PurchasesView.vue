@@ -142,7 +142,7 @@ function afterChangingSite() {
             </tr>
             <tr v-if="purchases?.length === 0 && !isLoading">
               <td colspan="7" style="text-align: center" class="text-center">
-                <p>NO DATA AVAILABLE IN TABLE</p>
+                <p>YOU HAVE NO RECORDS OF PURCHASES</p>
               </td>
             </tr>
             <tr v-if="isLoading" class="text-center align-middle">
