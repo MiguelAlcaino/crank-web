@@ -82,7 +82,11 @@ async function login() {
           }
           window.location.replace(redirectTo)
         } else {
-          await router.push({ path: redirectTo })
+          if (redirectTo !== '/') {
+            await router.push({ path: redirectTo })
+          } else {
+            await router.push({ name: 'calendar' })
+          }
         }
       } else {
         await router.push({ name: 'calendar' })
