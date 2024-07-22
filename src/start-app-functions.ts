@@ -335,8 +335,9 @@ export const startLoginRedirectApp = async function (
 
   const queryString = window.location.search
   const urlParams = new URLSearchParams(queryString)
+  const site = urlParams.get('site')
   const destination = urlParams.get('destination')
 
-  await router.push('/login-redirect?destination=' + destination)
+  await router.push('/login-redirect?destination=' + destination + '&site=' + site)
   app.mount(appDiv)
 }
