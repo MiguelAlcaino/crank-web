@@ -1,3 +1,10 @@
+<script lang="ts">
+enum SiteEnum {
+  AbuDhabi = 'abu_dhabi',
+  Dubai = 'dubai'
+}
+</script>
+
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
 import router from '@/router'
@@ -5,15 +12,17 @@ import { authService } from '@/services/authService'
 import { helpers, required, email } from '@vuelidate/validators'
 import useVuelidate from '@vuelidate/core'
 
-import { SiteEnum } from '@/gql/graphql'
+import DefaultButtonComponent from '@/components/DefaultButtonComponent.vue'
+import ModalComponent from '@/components/ModalComponent.vue'
 
-import DefaultButtonComponent from '../components/DefaultButtonComponent.vue'
-import dayjs from 'dayjs'
-import { appStore } from '@/stores/appStorage'
+import { useRoute } from 'vue-router'
+import { ResetPasswordRequiredError } from '@/model/Exception'
+import { hackSquarespaceMenu } from '@/utils/hack-squarespace-menu'
 
 const displayLoginError = ref(false)
 const isSubmitting = ref(false)
-const selectedSite = ref('dubai')
+const passwordIsVisible = ref(false)
+const modalResetPasswordRequiredIsVisible = ref(false)
 
 const formData = reactive({
   location: SiteEnum.Dubai,
@@ -37,7 +46,7 @@ const rules = computed(() => {
 })
 
 const v$ = useVuelidate(rules, formData)
-
+const route = useRoute()
 async function login() {
   const isValid = await v$.value.$validate()
 
@@ -45,22 +54,24 @@ async function login() {
     isSubmitting.value = true
     displayLoginError.value = false
 
-    setCalendarDates()
-
     try {
-      await authService.login(formData.email, formData.password, selectedSite.value)
-
-      await router.push({ name: 'calendar' })
+      await authService.login(formData.email, formData.password, formData.location)
+      hackSquarespaceMenu(true)
+      let redirectTo = route.query.redirect ?? '/'
+      if (redirectTo !== '/') {
+        await router.push({ path: route.query.redirect as string })
+      } else {
+        await router.push({ name: 'calendar' })
+      }
     } catch (error) {
-      displayLoginError.value = true
+      if (error instanceof ResetPasswordRequiredError) {
+        modalResetPasswordRequiredIsVisible.value = true
+      } else {
+        displayLoginError.value = true
+      }
     }
     isSubmitting.value = false
   }
-}
-
-function setCalendarDates() {
-  const now = dayjs()
-  appStore().setCalendarDates(now.startOf('week').toDate(), now.endOf('week').toDate())
 }
 </script>
 
@@ -115,23 +126,39 @@ function setCalendarDates() {
             <!-- password -->
             <div class="col-md-12 mb-3">
               <label for="passwordRegistration" class="input-label">Password *</label>
-              <input
-                id="passwordRegistration"
-                class="form-control"
-                v-model="formData.password"
-                type="password"
-                placeholder="Password"
-                maxlength="100"
-                required
-              />
-              <small
-                v-for="error in v$.password.$errors"
-                :key="error.$uid"
-                class="form-text"
-                style="color: red"
-              >
-                {{ error.$message }}
-              </small>
+              <div class="input-group">
+                <input
+                  id="passwordRegistration"
+                  class="form-control"
+                  v-model="formData.password"
+                  :type="passwordIsVisible ? 'text' : 'password'"
+                  placeholder="Password"
+                  maxlength="100"
+                  required
+                />
+                <div
+                  class="input-group-prepend"
+                  @click="passwordIsVisible = !passwordIsVisible"
+                  style="cursor: pointer"
+                >
+                  <span
+                    class="input-group-text"
+                    id="passwordEye"
+                    style="background-color: transparent"
+                  >
+                    <i v-if="passwordIsVisible" class="bi bi-eye-fill"></i>
+                    <i v-else class="bi bi-eye-slash-fill"></i>
+                  </span>
+                </div>
+                <small
+                  v-for="error in v$.password.$errors"
+                  :key="error.$uid"
+                  class="form-text"
+                  style="color: red"
+                >
+                  {{ error.$message }}
+                </small>
+              </div>
             </div>
           </div>
 
@@ -155,7 +182,8 @@ function setCalendarDates() {
                 type="submit"
                 :is-loading="isSubmitting"
                 text="Login"
-              ></DefaultButtonComponent>
+              >
+              </DefaultButtonComponent>
             </div>
           </div>
         </form>
@@ -174,9 +202,26 @@ function setCalendarDates() {
       </div>
     </div>
   </div>
+
+  <ModalComponent
+    v-if="modalResetPasswordRequiredIsVisible"
+    title="Reset password is required"
+    message="YOU NEED TO RESET YOUR PASSWORD AS IT HAS EXPIRED. GO TO FORGOT PASSWORD TO CREATE A NEW ONE."
+    ok-text="OK"
+    :cancel-text="null"
+    :closable="false"
+    @on-ok="router.push({ name: 'forgot_password' })"
+  ></ModalComponent>
 </template>
 
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>
+
 <style scoped>
+p {
+  font-family: 'Avenir', sans-serif;
+}
+
 .page-login-v3 .panel .panel-body {
   padding: 50px 40px 40px;
 }

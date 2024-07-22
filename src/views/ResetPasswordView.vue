@@ -27,6 +27,7 @@ import { SUCCESS_RESET_PASSWORD } from '@/utils/successMessages'
 import router from '@/router'
 import { useRoute } from 'vue-router'
 import { authService } from '@/services/authService'
+import { appStore } from '@/stores/appStorage'
 
 const route = useRoute()
 
@@ -43,6 +44,9 @@ const errorValidateTokenModalIsVisible = ref<boolean>(false)
 const successModalIsVisible = ref<boolean>(false)
 const errorMessage = ref<string>('')
 const errorModalVisible = ref<boolean>(false)
+
+const passwordIsVisible = ref<boolean>(false)
+const confirmPasswordIsVisible = ref<boolean>(false)
 
 const checkPass = helpers.regex(/^(?=.*[a-zA-Z])(?=.*\d).+$/)
 
@@ -108,7 +112,7 @@ async function validateResetPasswordToken(resetPasswordToken: string) {
   validatingToken.value = false
 
   if (response === 'success') {
-    // do nothing
+    setCurrentUserSiteInStore()
   } else if (response === 'expired_reset_password_token') {
     errorMessage.value = ERROR_EXPIRED_RESET_PASSWORD_TOKEN
     errorValidateTokenModalIsVisible.value = true
@@ -118,6 +122,14 @@ async function validateResetPasswordToken(resetPasswordToken: string) {
   } else {
     errorMessage.value = ERROR_UNKNOWN
     errorValidateTokenModalIsVisible.value = true
+  }
+}
+
+async function setCurrentUserSiteInStore() {
+  const userSites = await apiService.getCurrentUserSites()
+
+  if (userSites && userSites.length > 0) {
+    appStore().setSite(userSites[0])
   }
 }
 </script>
@@ -135,15 +147,31 @@ async function validateResetPasswordToken(resetPasswordToken: string) {
           <div class="form-row">
             <div class="col-md-12 mb-3">
               <label for="passwordRegistration" class="input-label">Password *</label>
-              <input
-                id="passwordRegistration"
-                class="form-control"
-                v-model="formData.password"
-                type="password"
-                placeholder="Password"
-                maxlength="50"
-                required
-              />
+              <div class="input-group">
+                <input
+                  id="passwordRegistration"
+                  class="form-control"
+                  v-model="formData.password"
+                  :type="passwordIsVisible ? 'text' : 'password'"
+                  placeholder="Password"
+                  maxlength="50"
+                  required
+                />
+                <div
+                  class="input-group-prepend"
+                  @click="passwordIsVisible = !passwordIsVisible"
+                  style="cursor: pointer"
+                >
+                  <span
+                    class="input-group-text"
+                    id="passwordEye"
+                    style="background-color: transparent"
+                  >
+                    <i v-if="passwordIsVisible" class="bi bi-eye-fill"></i>
+                    <i v-else class="bi bi-eye-slash-fill"></i>
+                  </span>
+                </div>
+              </div>
               <small
                 v-for="error in v$.password.$errors"
                 :key="error.$uid"
@@ -160,15 +188,31 @@ async function validateResetPasswordToken(resetPasswordToken: string) {
               <label for="confirmPasswordRegistration" class="input-label"
                 >Confirm Password *</label
               >
-              <input
-                id="confirmPasswordRegistration"
-                class="form-control"
-                v-model="formData.confirmPassword"
-                type="password"
-                placeholder="Confirm Password"
-                maxlength="50"
-                required
-              />
+              <div class="input-group">
+                <input
+                  id="confirmPasswordRegistration"
+                  class="form-control"
+                  v-model="formData.confirmPassword"
+                  :type="confirmPasswordIsVisible ? 'text' : 'password'"
+                  placeholder="Confirm Password"
+                  maxlength="50"
+                  required
+                />
+                <div
+                  class="input-group-prepend"
+                  @click="confirmPasswordIsVisible = !confirmPasswordIsVisible"
+                  style="cursor: pointer"
+                >
+                  <span
+                    class="input-group-text"
+                    id="confirmPasswordEye"
+                    style="background-color: transparent"
+                  >
+                    <i v-if="confirmPasswordIsVisible" class="bi bi-eye-fill"></i>
+                    <i v-else class="bi bi-eye-slash-fill"></i>
+                  </span>
+                </div>
+              </div>
               <small
                 v-for="error in v$.confirmPassword.$errors"
                 :key="error.$uid"
@@ -185,7 +229,7 @@ async function validateResetPasswordToken(resetPasswordToken: string) {
             <div class="col-md-12 mb-3">
               <DefaultButtonComponent
                 type="submit"
-                text="Reset Password"
+                text="RESET"
                 :is-loading="sendingEmail"
                 :block="true"
               >
@@ -199,7 +243,7 @@ async function validateResetPasswordToken(resetPasswordToken: string) {
 
   <!-- Success Modal -->
   <ModalComponent
-    title="RESET PASSWORD"
+    title="SUCCESS"
     :message="SUCCESS_RESET_PASSWORD"
     :closable="false"
     @on-ok="router.replace({ name: 'calendar' })"
@@ -230,6 +274,9 @@ async function validateResetPasswordToken(resetPasswordToken: string) {
   >
   </ModalComponent>
 </template>
+
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>
 
 <style scoped>
 .page-login-v3 .panel .panel-body {

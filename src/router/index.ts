@@ -12,13 +12,51 @@ import ForgotPasswordView from '../views/ForgotPasswordView.vue'
 import ChangeSpotView from '../views/ChangeSpotView.vue'
 import ResetPasswordView from '../views/ResetPasswordView.vue'
 import WorkoutStatsView from '../views/WorkoutStatsView.vue'
-
+import WorkoutSummaryView from '../views/WorkoutSummaryView.vue'
 import { authService } from '@/services/authService'
-import AdminClass from '@/views/admin/AdminClass.vue'
+import MenuLayout from '@/layouts/MenuLayout.vue'
+import PaymentsIframeView from '@/views/PaymentsIframeView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
+    {
+      path: '/',
+      name: 'user',
+      component: MenuLayout,
+      children: [
+        {
+          path: '/profile',
+          name: 'profile',
+          component: ProfileView
+        },
+        {
+          path: '/bookings',
+          name: 'bookings',
+          component: BookingsView
+        },
+        {
+          path: '/purchases',
+          name: 'purchases',
+          component: PurchasesView
+        },
+        {
+          path: '/workout-stats',
+          name: 'workout_stats',
+          component: WorkoutStatsView
+        },
+        {
+          path: '/workout-summary/:id',
+          name: 'workout_summary',
+          component: WorkoutSummaryView
+        },
+        {
+          path: '/change-password',
+          name: 'change_password',
+          component: ChangePasswordView
+        }
+      ]
+    },
     {
       path: '/',
       name: 'home',
@@ -30,14 +68,18 @@ const router = createRouter({
       component: LoginView
     },
     {
+      path: '/logout',
+      name: 'logout',
+      redirect: '/login',
+      beforeEnter: (to, from, next) => {
+        authService.logout()
+        next()
+      }
+    },
+    {
       path: '/register',
       name: 'register',
       component: RegisterView
-    },
-    {
-      path: '/profile',
-      name: 'profile',
-      component: ProfileView
     },
     {
       path: '/calendar',
@@ -48,26 +90,6 @@ const router = createRouter({
       path: '/class/:id',
       name: 'class',
       component: ClassView
-    },
-    {
-      path: '/bookings',
-      name: 'bookings',
-      component: BookingsView
-    },
-    {
-      path: '/admin/class/:id',
-      name: 'admin_class',
-      component: AdminClass
-    },
-    {
-      path: '/purchases',
-      name: 'purchases',
-      component: PurchasesView
-    },
-    {
-      path: '/change-password',
-      name: 'change_password',
-      component: ChangePasswordView
     },
     {
       path: '/forgot-password',
@@ -85,27 +107,19 @@ const router = createRouter({
       component: ChangeSpotView
     },
     {
-      path: '/workout-stats',
-      name: 'workout_stats',
-      component: WorkoutStatsView
-    },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue')
+      path: '/payments',
+      name: 'payments',
+      component: PaymentsIframeView
     }
   ]
 })
 
 router.beforeEach(async (to, from, next) => {
-  const publicPages = ['/login', '/register', '/forgot-password', '/reset-password']
+  const publicPages = ['/login', '/register', '/forgot-password', '/reset-password', '/calendar']
   const authRequired = !publicPages.includes(to.path)
 
   if (authRequired && !authService.isLoggedId()) {
-    next('/login')
+    next({ name: 'login', query: { redirect: to.path } })
   } else {
     next()
   }

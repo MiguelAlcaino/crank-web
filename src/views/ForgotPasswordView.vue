@@ -17,7 +17,6 @@ import useVuelidate from '@vuelidate/core'
 import { email, helpers, required } from '@vuelidate/validators'
 import { computed, inject, reactive, ref } from 'vue'
 import DefaultButtonComponent from '@/components/DefaultButtonComponent.vue'
-import { appStore } from '@/stores/appStorage'
 
 import ModalComponent from '@/components/ModalComponent.vue'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
@@ -60,7 +59,7 @@ const submitForm = async () => {
 
 async function requestPasswordLink() {
   sendingEmail.value = true
-  const response = (await apiService.requestPasswordLink(appStore().site, formData.email)) as
+  const response = (await apiService.requestPasswordLink(formData.email)) as
     | ResetPasswordLinkSentSuccessfully
     | TooManyResetPasswordLinkRequestsError
     | null
@@ -95,8 +94,7 @@ async function requestPasswordLink() {
           </div>
         </div>
         <p class="mt-3">
-          PLEASE ENTER THE EMAIL ADDRESS YOU USED TO CREATE AN ACCOUNT WITH US. IF YOUR ACCOUNT IS
-          VALID, YOU WILL RECEIVE AN EMAIL WITH A PASSWORD RESET LINK.
+          Please enter your CRANK account email address and we will send you a reset link.
         </p>
         <form @submit.prevent="submitForm" autocomplete="off">
           <div class="form-row">
@@ -128,7 +126,7 @@ async function requestPasswordLink() {
             <div class="col-md-12 mb-3">
               <DefaultButtonComponent
                 type="submit"
-                text="OK"
+                text="SEND"
                 :is-loading="sendingEmail"
                 :block="true"
               >
@@ -162,6 +160,9 @@ async function requestPasswordLink() {
   >
   </ModalComponent>
 </template>
+
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>
 
 <style scoped>
 .page-login-v3 .panel .panel-body {

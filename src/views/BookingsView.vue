@@ -1,82 +1,75 @@
+<script lang="ts">
+enum EnrollmentTypeEnum {
+  Historical = 'historical',
+  Upcoming = 'upcoming',
+  Waitlist = 'waitlist'
+}
+</script>
+
 <script setup lang="ts">
 import { inject, onMounted, ref } from 'vue'
-import {
-  type CancelEnrollmentInput,
-  type CurrentUserEnrollmentsParams,
-  type Enrollment,
-  EnrollmentTypeEnum,
-  type RemoveCurrentUserFromWaitlistInput
-} from '@/gql/graphql'
+import type { CurrentUserEnrollmentsParams, Enrollment } from '@/gql/graphql'
 import dayjs from 'dayjs'
 
 import BookingsTable from '@/components/BookingsTable.vue'
 import DefaultButtonComponent from '@/components/DefaultButtonComponent.vue'
 import ModalComponent from '@/components/ModalComponent.vue'
+import SiteSelector from '@/components/SiteSelector.vue'
+import PaginationComponent from '@/components/PaginationComponent.vue'
 
 import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
-import { ERROR_LATE_CANCELLATION_REQUIRED, ERROR_UNKNOWN } from '@/utils/errorMessages'
+import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 import router from '@/router'
 
-const isLoading = ref<boolean>(false)
-const userErollments = ref<Enrollment[]>([])
+const upcomingEnrollments = ref<Enrollment[]>([])
+const waitlistEnrollments = ref<Enrollment[]>([])
+const oldEnrollments = ref<Enrollment[]>([])
+
+const upcomingEnrollmentsIsLoading = ref<boolean>(false)
+const waitlistEnrollmentsIsLoading = ref<boolean>(false)
+const oldEnrollmentsIsLoading = ref<boolean>(false)
+
 const siteDateTimeNow = ref<Date>(new Date())
-const isCancellingCurrentUserEnrollment = ref<boolean>(false)
 
-const filterEnrollmentType = ref<EnrollmentTypeEnum>(EnrollmentTypeEnum.Upcoming)
+const isFilteredUpcoming = ref<boolean>(false)
+const isFilteredWaitlist = ref<boolean>(false)
+const isFilteredHistorical = ref<boolean>(false)
 
-const modalConfirmRemoveFromWaitlistisVisible = ref<boolean>(false)
-const waitlistEntryIdToRemove = ref<string | null>(null)
+const dateRangeFilterUpcoming = ref<[Date | null, Date | null] | undefined>()
+const dateRangeFilterWaitlist = ref<[Date | null, Date | null] | undefined>()
+const dateRangeFilterHistorical = ref<[Date | null, Date | null] | undefined>()
 
-const enrollmentIdToRemove = ref<string | null>(null)
-const enrollmentIsLateCancel = ref<boolean>(false)
+const pageLimit = 20
 
-const dateRangeFilter = ref<[Date | null, Date | null] | undefined>()
-
-const successModalData = ref<{
-  title: string
-  message: string
-  isLoading: boolean
-  isVisible: boolean
-}>({
-  title: '',
-  message: '',
-  isLoading: false,
-  isVisible: false
-})
+const currentPageHistorical = ref<number>(1)
+const totalHistorical = ref<number>(0)
+const currentPageWaitlist = ref<number>(1)
+const totalWaitlist = ref<number>(0)
+const currentPageUpcoming = ref<number>(1)
+const totalUpcoming = ref<number>(0)
 
 const errorModalData = ref<{
-  title: string
   message: string
-  isLoading: boolean
   isVisible: boolean
 }>({
-  title: '',
   message: '',
-  isLoading: false,
   isVisible: false
 })
 
-const confirmModalData = ref<{
-  title: string
-  message: string
-  textConfirmButton: string
-  isLoading: boolean
-  isVisible: boolean
-}>({
-  title: '',
-  message: '',
-  textConfirmButton: '',
-  isLoading: false,
-  isVisible: false
-})
+const activeItem = ref<EnrollmentTypeEnum>(EnrollmentTypeEnum.Upcoming)
 
 const apiService = inject<ApiService>('gqlApiService')!
 
 onMounted(() => {
   getSiteDateTimeNow()
-  getUserErollments()
+  getUserEnrollments(true)
 })
+
+function afterChangingSite() {
+  getSiteDateTimeNow()
+  getUserEnrollments(false)
+}
 
 async function getSiteDateTimeNow() {
   siteDateTimeNow.value = new Date()
@@ -86,221 +79,329 @@ async function getSiteDateTimeNow() {
   if (siteSetting) siteDateTimeNow.value = new Date(siteSetting.siteDateTimeNow)
 }
 
-async function getUserErollments() {
-  userErollments.value = []
+async function getUserEnrollments(isOnMount: boolean = false) {
+  getOldEnrollmentsPaginated()
+  await getUpcomingEnrollmentsPaginated()
+  await getWaitlistEnrollmentsPaginated()
 
-  isLoading.value = true
-
-  const params = { enrollmentType: filterEnrollmentType.value } as CurrentUserEnrollmentsParams
-
-  if (dateRangeFilter.value) {
-    if (dateRangeFilter.value[0])
-      params.startDate = dayjs(dateRangeFilter.value[0]).format('YYYY-MM-DD')
-
-    if (dateRangeFilter.value[1])
-      params.endDate = dayjs(dateRangeFilter.value[1]).format('YYYY-MM-DD')
-  }
-
-  userErollments.value = await apiService.getCurrentUserEnrollments(appStore().site, params)
-
-  isLoading.value = false
+  if (isOnMount && upcomingEnrollments.value.length === 0 && waitlistEnrollments.value.length > 0)
+    setActive(EnrollmentTypeEnum.Waitlist)
 }
 
-async function cancelCurrentUserEnrollment(
-  enrollmentId: string,
-  lateCancel: boolean
-): Promise<void> {
-  isCancellingCurrentUserEnrollment.value = true
+async function getUpcomingEnrollmentsPaginated() {
+  isFilteredUpcoming.value = false
+  try {
+    upcomingEnrollments.value = []
 
-  const input = { enrollmentId: enrollmentId, lateCancel: lateCancel } as CancelEnrollmentInput
+    const params = { enrollmentType: EnrollmentTypeEnum.Upcoming } as CurrentUserEnrollmentsParams
 
-  const response = await apiService.cancelCurrentUserEnrollment(appStore().site, input)
+    if (dateRangeFilterUpcoming.value) {
+      if (dateRangeFilterUpcoming.value[0])
+        params.startDate = dayjs(dateRangeFilterUpcoming.value[0]).format('YYYY-MM-DD')
 
-  isCancellingCurrentUserEnrollment.value = false
+      if (dateRangeFilterUpcoming.value[1])
+        params.endDate = dayjs(dateRangeFilterUpcoming.value[1]).format('YYYY-MM-DD')
 
-  confirmModalData.value.isVisible = false
-
-  switch (response) {
-    case 'CancelUserEnrollmentSuccess': {
-      successModalData.value.title = 'SUCCESS'
-      successModalData.value.message = 'YOUR BOOKING HAS BEEN CANCELLED'
-      successModalData.value.isVisible = true
-      break
+      isFilteredUpcoming.value = true
     }
-    case 'LateCancellationRequiredError': {
-      enrollmentIdToRemove.value = enrollmentId
-      enrollmentIsLateCancel.value = true
 
-      confirmModalData.value.title = 'CANCEL BOOKING'
-      confirmModalData.value.message = ERROR_LATE_CANCELLATION_REQUIRED
-      confirmModalData.value.textConfirmButton = 'CONFIRM'
-      confirmModalData.value.isVisible = true
-      break
-    }
-    default: {
-      errorModalData.value.message = ERROR_UNKNOWN
-      errorModalData.value.isVisible = true
-      break
-    }
+    upcomingEnrollmentsIsLoading.value = true
+
+    const paginatedEnrollments = await apiService.currentUserEnrollmentsPaginated(
+      appStore().site,
+      params,
+      { page: currentPageUpcoming.value, limit: pageLimit }
+    )
+    totalUpcoming.value = paginatedEnrollments.total
+    upcomingEnrollments.value = paginatedEnrollments.enrollments
+  } catch (error) {
+    errorModalData.value.message = ERROR_UNKNOWN
+    errorModalData.value.isVisible = true
+  } finally {
+    upcomingEnrollmentsIsLoading.value = false
   }
 }
 
-async function removeCurrentUserFromWaitlist(waitlistEntryId: string): Promise<void> {
-  const input = { waitlistEntryId: waitlistEntryId } as RemoveCurrentUserFromWaitlistInput
+async function getWaitlistEnrollmentsPaginated() {
+  isFilteredWaitlist.value = false
+  try {
+    waitlistEnrollments.value = []
 
-  isCancellingCurrentUserEnrollment.value = true
+    const params = { enrollmentType: EnrollmentTypeEnum.Waitlist } as CurrentUserEnrollmentsParams
 
-  const response = await apiService.removeCurrentUserFromWaitlist(appStore().site, input)
+    if (dateRangeFilterWaitlist.value) {
+      if (dateRangeFilterWaitlist.value[0])
+        params.startDate = dayjs(dateRangeFilterWaitlist.value[0]).format('YYYY-MM-DD')
 
-  isCancellingCurrentUserEnrollment.value = false
+      if (dateRangeFilterWaitlist.value[1])
+        params.endDate = dayjs(dateRangeFilterWaitlist.value[1]).format('YYYY-MM-DD')
 
-  modalConfirmRemoveFromWaitlistisVisible.value = false
-
-  switch (response['__typename']) {
-    case 'RemoveFromWaitlistResult': {
-      successModalData.value.title = 'SUCCESS'
-      successModalData.value.message = 'HAS BEEN SUCCESSFULLY REMOVED FROM WAITLIST'
-      successModalData.value.isVisible = true
-      break
+      isFilteredWaitlist.value = true
     }
-    case 'WaitlistEntryNotFoundError': {
-      errorModalData.value.message = ERROR_UNKNOWN
-      errorModalData.value.isVisible = true
-      break
-    }
-    default: {
-      errorModalData.value.message = ERROR_UNKNOWN
-      errorModalData.value.isVisible = true
-      break
-    }
+
+    waitlistEnrollmentsIsLoading.value = true
+
+    const paginatedEnrollments = await apiService.currentUserEnrollmentsPaginated(
+      appStore().site,
+      params,
+      { page: currentPageWaitlist.value, limit: pageLimit }
+    )
+
+    totalWaitlist.value = paginatedEnrollments.total
+    waitlistEnrollments.value = paginatedEnrollments.enrollments
+  } catch (error) {
+    errorModalData.value.message = ERROR_UNKNOWN
+    errorModalData.value.isVisible = true
+  } finally {
+    waitlistEnrollmentsIsLoading.value = false
   }
 }
 
-function clickRemoveFromWaitlist(waitlistEntryId: string): void {
-  waitlistEntryIdToRemove.value = waitlistEntryId
-  modalConfirmRemoveFromWaitlistisVisible.value = true
-}
+async function getOldEnrollmentsPaginated() {
+  isFilteredHistorical.value = false
+  try {
+    oldEnrollments.value = []
 
-function clickCancelEnrollment(enrollmentId: string, lateCancel: boolean): void {
-  enrollmentIdToRemove.value = enrollmentId
-  enrollmentIsLateCancel.value = lateCancel
+    const params = { enrollmentType: EnrollmentTypeEnum.Historical } as CurrentUserEnrollmentsParams
 
-  confirmModalData.value.title = 'CANCEL BOOKING'
-  confirmModalData.value.message = 'ARE YOU SURE YOU WANT TO CANCEL YOUR BOOKING?'
-  confirmModalData.value.textConfirmButton = 'OK'
+    if (dateRangeFilterHistorical.value) {
+      if (dateRangeFilterHistorical.value[0])
+        params.startDate = dayjs(dateRangeFilterHistorical.value[0]).format('YYYY-MM-DD')
 
-  if (lateCancel) {
-    confirmModalData.value.message += ' YOU WILL STILL BE CHARGED A CREDIT FOR THIS CLASS'
+      if (dateRangeFilterHistorical.value[1])
+        params.endDate = dayjs(dateRangeFilterHistorical.value[1]).format('YYYY-MM-DD')
+
+      isFilteredHistorical.value = true
+    }
+
+    oldEnrollmentsIsLoading.value = true
+
+    const paginatedEnrollments = await apiService.currentUserEnrollmentsPaginated(
+      appStore().site,
+      params,
+      { page: currentPageHistorical.value, limit: pageLimit }
+    )
+
+    totalHistorical.value = paginatedEnrollments.total
+    oldEnrollments.value = paginatedEnrollments.enrollments
+  } catch (error) {
+    errorModalData.value.message = ERROR_UNKNOWN
+    errorModalData.value.isVisible = true
+  } finally {
+    oldEnrollmentsIsLoading.value = false
   }
-
-  confirmModalData.value.isLoading = false
-  confirmModalData.value.isVisible = true
-}
-
-async function acceptSuccessModal() {
-  await getUserErollments()
-  successModalData.value.isVisible = false
 }
 
 function goToChangeSpot(classId: string) {
   router.push('/change-spot/' + classId)
 }
+
+function isActive(menuItem: EnrollmentTypeEnum) {
+  return activeItem.value === menuItem
+}
+
+function setActive(menuItem: EnrollmentTypeEnum) {
+  activeItem.value = menuItem
+}
+
+function pageChangedUpcoming(page: number) {
+  currentPageUpcoming.value = page
+  getUpcomingEnrollmentsPaginated()
+}
+
+function pageChangedWaitlist(page: number) {
+  currentPageWaitlist.value = page
+  getWaitlistEnrollmentsPaginated()
+}
+
+function pageChangedHistorical(page: number) {
+  currentPageHistorical.value = page
+  getOldEnrollmentsPaginated()
+}
 </script>
 
 <template>
-  <div class="card border-0">
-    <div class="card-header border-0" style="background-color: white">
-      <div class="row form-inline">
-        <div class="col-md-6">
-          <h1 class="page-title">Bookings</h1>
-        </div>
-        <div class="col-md-5 col-sm-6 text-right justify-content-end">
-          <VueDatePicker
-            v-model="dateRangeFilter"
-            range
-            :enable-time-picker="false"
-            placeholder="Date Range"
-          />
-        </div>
-        <div class="col-1">
-          <DefaultButtonComponent
-            @on-click="getUserErollments()"
-            :is-loading="isLoading"
-            text="Go"
-            type="button"
-            class="input-group-append"
-          ></DefaultButtonComponent>
-        </div>
-      </div>
-    </div>
-    <div class="card-body">
-      <select
-        class="custom-select"
-        v-model="filterEnrollmentType"
-        @change="getUserErollments()"
-        :disabled="isLoading"
-      >
-        <option :value="EnrollmentTypeEnum.Upcoming">UPCOMING</option>
-        <option :value="EnrollmentTypeEnum.Waitlist">WAITLIST</option>
-        <option :value="EnrollmentTypeEnum.Historical">OLD</option>
-      </select>
-      <br />
-      <br />
-
-      <BookingsTable
-        :enrollments="userErollments"
-        :isLoading="isLoading"
-        :enrollmentType="filterEnrollmentType"
-        :siteDateTimeNow="siteDateTimeNow"
-        @clickCancelEnrollment="clickCancelEnrollment"
-        @clickRemoveFromWaitlist="clickRemoveFromWaitlist"
-        @change-spot="goToChangeSpot"
-      >
-      </BookingsTable>
+  <div class="row">
+    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-8">
+      <SiteSelector
+        @afterChangingSite="afterChangingSite()"
+        :disabled="upcomingEnrollmentsIsLoading"
+      ></SiteSelector>
     </div>
   </div>
+  <hr />
 
-  <!-- CONFIRM REMOVE FROM WAITLIST modal -->
-  <ModalComponent
-    title="Remove from waitlist"
-    message="Are you sure you want to be removed from the waitlist?"
-    cancel-text="CANCEL"
-    ok-text="OK"
-    :ok-loading="isCancellingCurrentUserEnrollment"
-    :closable="true"
-    v-if="modalConfirmRemoveFromWaitlistisVisible"
-    @on-cancel="modalConfirmRemoveFromWaitlistisVisible = false"
-    @on-ok="removeCurrentUserFromWaitlist(waitlistEntryIdToRemove!)"
-  ></ModalComponent>
+  <div class="row form-inline">
+    <div class="col-md-6">
+      <h1>Bookings</h1>
+    </div>
+    <div
+      v-if="activeItem === EnrollmentTypeEnum.Upcoming"
+      class="col-md-5 col-sm-6 text-right justify-content-end"
+    >
+      <VueDatePicker
+        v-model="dateRangeFilterUpcoming"
+        range
+        :enable-time-picker="false"
+        placeholder="Date Range"
+        :min-date="new Date()"
+      />
+    </div>
+    <div v-if="activeItem === EnrollmentTypeEnum.Upcoming" class="col-1">
+      <DefaultButtonComponent
+        @on-click="getUpcomingEnrollmentsPaginated()"
+        :is-loading="upcomingEnrollmentsIsLoading"
+        text="Go"
+        type="button"
+        class="input-group-append"
+      ></DefaultButtonComponent>
+    </div>
+    <div
+      v-if="activeItem === EnrollmentTypeEnum.Waitlist"
+      class="col-md-5 col-sm-6 text-right justify-content-end"
+    >
+      <VueDatePicker
+        v-model="dateRangeFilterWaitlist"
+        range
+        :enable-time-picker="false"
+        placeholder="Date Range"
+        :min-date="new Date()"
+      />
+    </div>
+    <div v-if="activeItem === EnrollmentTypeEnum.Waitlist" class="col-1">
+      <DefaultButtonComponent
+        @on-click="getWaitlistEnrollmentsPaginated()"
+        :is-loading="waitlistEnrollmentsIsLoading"
+        text="Go"
+        type="button"
+        class="input-group-append"
+      ></DefaultButtonComponent>
+    </div>
+    <div
+      v-if="activeItem === EnrollmentTypeEnum.Historical"
+      class="col-md-5 col-sm-6 text-right justify-content-end"
+    >
+      <VueDatePicker
+        v-model="dateRangeFilterHistorical"
+        range
+        :enable-time-picker="false"
+        placeholder="Date Range"
+        :max-date="new Date()"
+      />
+    </div>
+    <div v-if="activeItem === EnrollmentTypeEnum.Historical" class="col-1">
+      <DefaultButtonComponent
+        @on-click="getOldEnrollmentsPaginated()"
+        :is-loading="oldEnrollmentsIsLoading"
+        text="Go"
+        type="button"
+        class="input-group-append"
+      ></DefaultButtonComponent>
+    </div>
+  </div>
+  <br />
+  <br />
 
-  <!-- CONFIRM CANCEL BOOKING modal -->
-  <ModalComponent
-    :title="confirmModalData.title"
-    :message="confirmModalData.message"
-    cancel-text="CANCEL"
-    :ok-text="confirmModalData.textConfirmButton"
-    :ok-loading="isCancellingCurrentUserEnrollment"
-    :closable="true"
-    v-if="confirmModalData.isVisible"
-    @on-cancel="confirmModalData.isVisible = false"
-    @on-ok="cancelCurrentUserEnrollment(enrollmentIdToRemove!, enrollmentIsLateCancel)"
-  ></ModalComponent>
-
-  <!-- SUCCESS modal -->
-  <ModalComponent
-    :title="successModalData.title"
-    :message="successModalData.message"
-    :closable="false"
-    @on-ok="acceptSuccessModal"
-    :cancel-text="null"
-    v-if="successModalData.isVisible"
-  >
-  </ModalComponent>
+  <ul class="nav nav-tabs nav-justified">
+    <li class="nav-item">
+      <a
+        class="nav-link"
+        @click.prevent="setActive(EnrollmentTypeEnum.Upcoming)"
+        :class="{ active: isActive(EnrollmentTypeEnum.Upcoming) }"
+        href="#upcoming"
+        >UPCOMING</a
+      >
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link"
+        @click.prevent="setActive(EnrollmentTypeEnum.Waitlist)"
+        :class="{ active: isActive(EnrollmentTypeEnum.Waitlist) }"
+        href="#waitlist"
+        >WAITLIST</a
+      >
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link"
+        @click.prevent="setActive(EnrollmentTypeEnum.Historical)"
+        :class="{ active: isActive(EnrollmentTypeEnum.Historical) }"
+        href="#old"
+        >OLD</a
+      >
+    </li>
+  </ul>
+  <div class="tab-content py-3" id="myTabContent">
+    <div
+      class="tab-pane fade"
+      :class="{ 'active show': isActive(EnrollmentTypeEnum.Upcoming) }"
+      id="upcoming"
+    >
+      <BookingsTable
+        :enrollments="upcomingEnrollments"
+        :isLoading="upcomingEnrollmentsIsLoading"
+        :enrollmentType="EnrollmentTypeEnum.Upcoming"
+        :siteDateTimeNow="siteDateTimeNow"
+        @change-spot="goToChangeSpot"
+        :is-filtered="isFilteredUpcoming"
+        @after-cancelling="getUpcomingEnrollmentsPaginated()"
+      >
+      </BookingsTable>
+      <PaginationComponent
+        :limit="pageLimit"
+        :page="currentPageUpcoming"
+        :total="totalUpcoming"
+        @page-changed="pageChangedUpcoming"
+      ></PaginationComponent>
+    </div>
+    <div
+      class="tab-pane fade"
+      :class="{ 'active show': isActive(EnrollmentTypeEnum.Waitlist) }"
+      id="waitlist"
+    >
+      <BookingsTable
+        :enrollments="waitlistEnrollments"
+        :isLoading="waitlistEnrollmentsIsLoading"
+        :enrollmentType="EnrollmentTypeEnum.Waitlist"
+        :siteDateTimeNow="siteDateTimeNow"
+        @change-spot="goToChangeSpot"
+        :is-filtered="isFilteredWaitlist"
+        @after-cancelling="getWaitlistEnrollmentsPaginated()"
+      >
+      </BookingsTable>
+      <PaginationComponent
+        :limit="pageLimit"
+        :page="currentPageWaitlist"
+        :total="totalWaitlist"
+        @page-changed="pageChangedWaitlist"
+      ></PaginationComponent>
+    </div>
+    <div
+      class="tab-pane fade"
+      :class="{ 'active show': isActive(EnrollmentTypeEnum.Historical) }"
+      id="old"
+    >
+      <BookingsTable
+        :enrollments="oldEnrollments"
+        :isLoading="oldEnrollmentsIsLoading"
+        :enrollmentType="EnrollmentTypeEnum.Historical"
+        :siteDateTimeNow="siteDateTimeNow"
+        :is-filtered="isFilteredHistorical"
+      >
+      </BookingsTable>
+      <PaginationComponent
+        :limit="pageLimit"
+        :page="currentPageHistorical"
+        :total="totalHistorical"
+        @page-changed="pageChangedHistorical"
+      ></PaginationComponent>
+    </div>
+  </div>
 
   <!-- ERROR modal -->
   <ModalComponent
     :ok-loading="false"
-    title="Error"
+    title="ERROR"
     :message="errorModalData.message"
     :closable="false"
     :cancel-text="null"
@@ -310,4 +411,55 @@ function goToChangeSpot(classId: string) {
   </ModalComponent>
 </template>
 
-<style scoped></style>
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>
+
+<style scoped>
+a {
+  color: #000000;
+  font-family: 'Avenir', sans-serif;
+}
+
+a:hover {
+  color: #757575;
+  text-decoration: none;
+  background-color: #eee;
+}
+</style>
+
+<style lang="css">
+/* Datepicker Theming */
+.dp__theme_light {
+  --dp-background-color: #ffffff !important;
+  --dp-text-color: #212121 !important;
+  --dp-hover-color: #f3f3f3 !important;
+  --dp-hover-text-color: #212121 !important;
+  --dp-hover-icon-color: #959595 !important;
+  --dp-primary-color: #ff7f61 !important;
+  --dp-primary-text-color: #f8f5f5 !important;
+  --dp-secondary-color: #c0c4cc !important;
+  --dp-border-color: #ddd !important;
+  --dp-menu-border-color: #ddd !important;
+  --dp-border-color-hover: #aaaeb7 !important;
+  --dp-disabled-color: #f6f6f6 !important;
+  --dp-scroll-bar-background: #f3f3f3 !important;
+  --dp-scroll-bar-color: #959595 !important;
+  --dp-success-color: #000000 !important;
+  --dp-success-color-disabled: #a3d9b1 !important;
+  --dp-icon-color: #959595 !important;
+  --dp-danger-color: #ff6f60 !important;
+  --dp-highlight-color: rgba(255, 127, 97, 0.1) !important;
+}
+
+.dp__range_end,
+.dp__range_start,
+.dp__active_date {
+  background: var(--dp-danger-color) !important;
+  color: var(--dp-primary-text-color) !important;
+}
+
+.dp__action_select {
+  background: #000000 !important;
+  color: var(--dp-primary-text-color) !important;
+}
+</style>

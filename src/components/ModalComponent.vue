@@ -20,7 +20,7 @@ withDefaults(defineProps<Props>(), {
   cancelLoading: false,
   cancelDisabled: false,
   okDisabled: false,
-  closable: true
+  closable: false
 })
 
 const emits = defineEmits<{
@@ -88,7 +88,13 @@ const emits = defineEmits<{
   </transition>
 </template>
 
-<style>
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>
+
+<style lang="css" scoped>
+p {
+  font-family: 'Avenir', sans-serif;
+}
 .modal-mask {
   position: fixed;
   z-index: 9998;

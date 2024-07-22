@@ -1,26 +1,25 @@
 import { gql } from '@apollo/client'
 import type {
   BookClassInput,
-  BookUserIntoClassInput,
   CalendarClassesParams,
   CancelEnrollmentInput,
   Class,
   ClassInfo,
   ClassStat,
   Country,
+  CreateCurrentUserInSiteUnion,
   CurrentUserEnrollmentsParams,
-  DisableEnableSpotInput,
-  DisableEnableSpotResult,
-  DisableEnableSpotResultUnion,
   EditClassInput,
   EditClassResultUnion,
   EditEnrollmentInput,
+  EditEnrollmentResultUnion,
   Enrollment,
   EnrollmentInfo,
-  IdentifiableUser,
   Purchase,
   RegisterUserInput,
   RemoveCurrentUserFromWaitlistInput,
+  RemoveUserFromWaitlistInput,
+  RemoveUserFromWaitlistUnion,
   RequestPasswordLinkInput,
   ResetPasswordForCurrentUserInput,
   ResetPasswordForCurrentUserUnion,
@@ -28,12 +27,22 @@ import type {
   SiteEnum,
   UpdateCurrentUserPasswordInput,
   User,
-  UserInput
+  UserInClassRanking,
+  UserInRankingParams,
+  UserInput,
+  AcceptLateCancelledSpotInClassInput,
+  AcceptLateCancelledSpotInClassResultUnion,
+  RejectLateCancelledSpotInClassInput,
+  RejectLateBookingResultUnion,
+  SimpleSiteUser,
+  PaginationInput,
+  PaginatedEnrollments,
+  PaginatedClassStats,
+  PaginatedPurchases
 } from '@/gql/graphql'
 import { EnrollmentTypeEnum, type SiteSetting } from '@/gql/graphql'
 import { ApolloClient, ApolloError } from '@apollo/client/core'
 import { CustomCalendarClasses } from '@/model/CustomCalendarClasses'
-import dayjs from 'dayjs'
 
 export class ApiService {
   authApiClient: ApolloClient<any>
@@ -49,6 +58,7 @@ export class ApiService {
       query siteSettings($site: SiteEnum!) {
         siteSettings(site: $site) {
           siteDateTimeNow
+          siteTimezone
         }
       }
     `
@@ -113,14 +123,58 @@ export class ApiService {
     }
   }
 
-  async getCurrentUserWorkoutStats(site: SiteEnum): Promise<ClassStat[] | null> {
-    const CURRENT_USER_WORKOUT_STATS_QUERY = gql`
+  async getCurrentUserWorkoutStats(site: SiteEnum): Promise<ClassStat[]> {
+    const query = gql`
       query currentUserWorkoutStats($site: SiteEnum!) {
         currentUserWorkoutStats(site: $site) {
-          classId
-          className
-          startDateTime
-          spotNumber
+          enrollment {
+            enrollmentInfo {
+              id
+              ... on EnrollmentInfo {
+                spotNumber
+              }
+            }
+            class {
+              name
+              start
+              duration
+            }
+          }
+          totalEnergy
+        }
+      }
+    `
+
+    const queryResult = await this.authApiClient.query({
+      query: query,
+      variables: {
+        site: site
+      },
+      fetchPolicy: 'network-only'
+    })
+
+    return queryResult.data.currentUserWorkoutStats as ClassStat[]
+  }
+
+  async currentUserSingleWorkoutStat(enrollmentId: string): Promise<ClassStat> {
+    const query = gql`
+      query currentUserSingleWorkoutStat($enrollmentId: ID!) {
+        currentUserSingleWorkoutStat(enrollmentId: $enrollmentId) {
+          enrollment {
+            enrollmentInfo {
+              id
+              ... on EnrollmentInfo {
+                spotNumber
+              }
+            }
+            class {
+              id
+              name
+              start
+              duration
+              instructorName
+            }
+          }
           averagePower
           highPower
           averageRpm
@@ -128,7 +182,6 @@ export class ApiService {
           totalEnergy
           calories
           distance
-          duration
           adjustedChartPoints(amountOfPoints: 62) {
             time
             rpm
@@ -137,18 +190,15 @@ export class ApiService {
         }
       }
     `
-    try {
-      const queryResult = await this.authApiClient.query({
-        query: CURRENT_USER_WORKOUT_STATS_QUERY,
-        variables: {
-          site: site
-        }
-      })
 
-      return queryResult.data.currentUserWorkoutStats as ClassStat[]
-    } catch (error) {
-      return null
-    }
+    const queryResult = await this.authApiClient.query({
+      query: query,
+      variables: {
+        enrollmentId: enrollmentId
+      }
+    })
+
+    return queryResult.data.currentUserSingleWorkoutStat as ClassStat
   }
 
   async getCurrentUserEnrollments(
@@ -162,9 +212,12 @@ export class ApiService {
             id
             enrollmentStatus
             enrollmentDateTime
-            spotInfo {
+            enrollmentDateTimeWithNoTimeZone
+            ... on EnrollmentInfo {
               spotNumber
-              isBooked
+            }
+            ... on WaitlistEntry {
+              canBeTurnedIntoEnrollment
             }
           }
           class {
@@ -176,24 +229,22 @@ export class ApiService {
             startWithNoTimeZone
             duration
             waitListAvailable
+            showAsDisabled
           }
         }
       }
     `
-    try {
-      const queryResult = await this.authApiClient.query({
-        query: CURRENT_USER_ENROLLMENTS_QUERY,
-        variables: {
-          site: site,
-          params: params
-        },
-        fetchPolicy: 'network-only'
-      })
 
-      return queryResult.data.currentUserEnrollments as Enrollment[]
-    } catch (error) {
-      return []
-    }
+    const queryResult = await this.authApiClient.query({
+      query: CURRENT_USER_ENROLLMENTS_QUERY,
+      variables: {
+        site: site,
+        params: params
+      },
+      fetchPolicy: 'network-only'
+    })
+
+    return queryResult.data.currentUserEnrollments as Enrollment[]
   }
 
   async getCurrentUserEnrollmentInClass(classId: string): Promise<EnrollmentInfo | null> {
@@ -204,9 +255,8 @@ export class ApiService {
             id
             enrollmentStatus
             enrollmentDateTime
-            spotInfo {
+            ... on EnrollmentInfo {
               spotNumber
-              isBooked
             }
           }
         }
@@ -216,7 +266,7 @@ export class ApiService {
       const queryResult = await this.authApiClient.query({
         query: CURRENT_USER_ENROLLMENT_IN_CLASS_QUERY,
         variables: { classId: classId },
-        fetchPolicy: 'network-only'
+        fetchPolicy: 'no-cache'
       })
 
       if (queryResult.data.currentUser.enrollmentInClass) {
@@ -303,7 +353,7 @@ export class ApiService {
     }
   }
 
-  async getCalendarClasses(site: SiteEnum, startDate: Date, endDate: Date): Promise<Class[]> {
+  async getCalendarClasses(site: SiteEnum, startDate: string, endDate: string): Promise<Class[]> {
     const CALENDAR_CLASSES_QUERY = gql`
       query calendarClasses($site: SiteEnum!, $params: CalendarClassesParams) {
         calendarClasses(site: $site, params: $params) {
@@ -311,41 +361,41 @@ export class ApiService {
           name
           description
           instructorName
+          isSubstitute
           start
           startWithNoTimeZone
           duration
           waitListAvailable
+          bookingWindow {
+            startDateTime
+            endDateTime
+          }
+          showAsDisabled
         }
       }
     `
-    try {
-      const stgStartDate = dayjs(startDate).format('YYYY-MM-DD')
-      const stgEndDate = dayjs(endDate).format('YYYY-MM-DD')
 
-      const params: CalendarClassesParams = {
-        startDate: stgStartDate,
-        endDate: stgEndDate
-      }
-
-      const queryResult = await this.authApiClient.query({
-        query: CALENDAR_CLASSES_QUERY,
-        variables: {
-          site: site,
-          params: params
-        }
-      })
-
-      return queryResult.data.calendarClasses as Class[]
-    } catch (error) {
-      return []
+    const params: CalendarClassesParams = {
+      startDate: startDate,
+      endDate: endDate
     }
+
+    const queryResult = await this.anonymousApiClient.query({
+      query: CALENDAR_CLASSES_QUERY,
+      variables: {
+        site: site,
+        params: params
+      }
+    })
+
+    return queryResult.data.calendarClasses as Class[]
   }
 
   async getCustomCalendarClasses(
     site: SiteEnum,
-    startDate: Date,
-    endDate: Date
-  ): Promise<CustomCalendarClasses | null> {
+    startDate: string,
+    endDate: string
+  ): Promise<CustomCalendarClasses> {
     const CUSTOM_CALENDAR_CLASSES_QUERY = gql`
       query customCalendarClasses(
         $site: SiteEnum!
@@ -355,6 +405,7 @@ export class ApiService {
       ) {
         siteSettings(site: $site) {
           siteDateTimeNow
+          siteTimezone
         }
         calendarClasses(site: $site, params: $params) {
           id
@@ -366,6 +417,11 @@ export class ApiService {
           duration
           waitListAvailable
           isSubstitute
+          bookingWindow {
+            startDateTime
+            endDateTime
+          }
+          showAsDisabled
         }
         enrollmentsWaitlist: currentUserEnrollments(
           site: $site
@@ -412,52 +468,45 @@ export class ApiService {
       }
     `
 
-    const stgStartDate = dayjs(startDate).format('YYYY-MM-DD')
-    const stgEndDate = dayjs(endDate).format('YYYY-MM-DD')
-
     const params: CalendarClassesParams = {
-      startDate: stgStartDate,
-      endDate: stgEndDate
+      startDate: startDate,
+      endDate: endDate
     }
 
     const enrollmentsWaitlistParams: CurrentUserEnrollmentsParams = {
       enrollmentType: EnrollmentTypeEnum.Waitlist,
-      startDate: stgStartDate,
-      endDate: stgEndDate
+      startDate: startDate,
+      endDate: endDate
     }
 
     const enrollmentsUpcomingParams: CurrentUserEnrollmentsParams = {
       enrollmentType: EnrollmentTypeEnum.Upcoming,
-      startDate: stgStartDate,
-      endDate: stgEndDate
+      startDate: startDate,
+      endDate: endDate
     }
 
-    try {
-      const queryResult = await this.authApiClient.query({
-        query: CUSTOM_CALENDAR_CLASSES_QUERY,
-        fetchPolicy: 'network-only',
-        variables: {
-          site: site,
-          params: params,
-          enrollmentsWaitlistParams: enrollmentsWaitlistParams,
-          enrollmentsUpcomingParams: enrollmentsUpcomingParams
-        }
-      })
+    const queryResult = await this.authApiClient.query({
+      query: CUSTOM_CALENDAR_CLASSES_QUERY,
+      fetchPolicy: 'network-only',
+      variables: {
+        site: site,
+        params: params,
+        enrollmentsWaitlistParams: enrollmentsWaitlistParams,
+        enrollmentsUpcomingParams: enrollmentsUpcomingParams
+      }
+    })
 
-      const siteSettings = queryResult.data.siteSettings as SiteSetting
-      const calendarClasses = queryResult.data.calendarClasses as Class[]
-      const enrollmentsWaitlist = queryResult.data.enrollmentsWaitlist as Enrollment[]
-      const enrollmentsUpcoming = queryResult.data.enrollmentsUpcoming as Enrollment[]
+    const siteSettings = queryResult.data.siteSettings as SiteSetting
+    const calendarClasses = queryResult.data.calendarClasses as Class[]
+    const enrollmentsWaitlist = queryResult.data.enrollmentsWaitlist as Enrollment[]
+    const enrollmentsUpcoming = queryResult.data.enrollmentsUpcoming as Enrollment[]
 
-      return new CustomCalendarClasses(
-        siteSettings,
-        calendarClasses,
-        enrollmentsWaitlist,
-        enrollmentsUpcoming
-      )
-    } catch (error) {
-      return null
-    }
+    return new CustomCalendarClasses(
+      siteSettings,
+      calendarClasses,
+      enrollmentsWaitlist,
+      enrollmentsUpcoming
+    )
   }
 
   async getClassInfo(site: SiteEnum, id: string): Promise<ClassInfo | null> {
@@ -474,6 +523,7 @@ export class ApiService {
             duration
             waitListAvailable
           }
+          usedSpots
           roomLayout {
             id
             name
@@ -483,29 +533,8 @@ export class ApiService {
               y
               icon
               ... on BookableSpot {
-                enabled
-                spotInfo {
-                  spotNumber
-                  isBooked
-                }
+                spotNumber
               }
-            }
-          }
-          enrollments {
-            id
-            enrollmentStatus
-            enrollmentDateTime
-            user {
-              __typename
-              firstName
-              lastName
-              email
-              leaderboardUsername
-            }
-            spotInfo {
-              __typename
-              isBooked
-              spotNumber
             }
           }
         }
@@ -669,177 +698,6 @@ export class ApiService {
     }
   }
 
-  async disableSpot(classId: string, spotNumber?: number): Promise<string> {
-    const input = { classId: classId, spotNumber: spotNumber } as DisableEnableSpotInput
-
-    const DISABLE_SPOT_MUTATION = gql`
-      mutation disableSpot($input: DisableEnableSpotInput) {
-        disableSpot(input: $input) {
-          __typename
-          ... on DisableEnableSpotResult {
-            __typename
-            result
-          }
-          ... on SpotNotFoundError {
-            __typename
-            code
-          }
-        }
-      }
-    `
-
-    try {
-      const result = await this.authApiClient.mutate({
-        mutation: DISABLE_SPOT_MUTATION,
-        variables: {
-          input: input
-        },
-        fetchPolicy: 'network-only'
-      })
-
-      const disableEnableSpotResultUnion = result.data.disableSpot as DisableEnableSpotResultUnion
-
-      if (disableEnableSpotResultUnion.__typename === 'DisableEnableSpotResult') {
-        const disableEnableSpotResult = disableEnableSpotResultUnion as DisableEnableSpotResult
-
-        if (disableEnableSpotResult.result === true) {
-          return 'Success'
-        } else {
-          return 'Error'
-        }
-      } else if (disableEnableSpotResultUnion.__typename === 'SpotNotFoundError') {
-        return 'SpotNotFoundError'
-      } else {
-        return 'UnknownError'
-      }
-    } catch (error) {
-      return 'UnknownError'
-    }
-  }
-
-  async enableSpot(classId: string, spotNumber?: number): Promise<string> {
-    const input = { classId: classId, spotNumber: spotNumber } as DisableEnableSpotInput
-
-    const ENABLE_SPOT_MUTATION = gql`
-      mutation enableSpot($input: DisableEnableSpotInput) {
-        enableSpot(input: $input) {
-          __typename
-          ... on DisableEnableSpotResult {
-            __typename
-            result
-          }
-          ... on SpotNotFoundError {
-            __typename
-            code
-          }
-        }
-      }
-    `
-
-    try {
-      const result = await this.authApiClient.mutate({
-        mutation: ENABLE_SPOT_MUTATION,
-        variables: {
-          input: input
-        },
-        fetchPolicy: 'network-only'
-      })
-
-      const disableEnableSpotResultUnion = result.data.enableSpot as DisableEnableSpotResultUnion
-
-      if (disableEnableSpotResultUnion.__typename === 'DisableEnableSpotResult') {
-        const disableEnableSpotResult = disableEnableSpotResultUnion as DisableEnableSpotResult
-
-        if (disableEnableSpotResult.result === true) {
-          return 'Success'
-        } else {
-          return 'Error'
-        }
-      } else if (disableEnableSpotResultUnion.__typename === 'SpotNotFoundError') {
-        return 'SpotNotFoundError'
-      } else {
-        return 'UnknownError'
-      }
-    } catch (error) {
-      return 'UnknownError'
-    }
-  }
-
-  async searchUser(site: SiteEnum, query: string): Promise<IdentifiableUser[] | []> {
-    if (query.length < 3) return []
-
-    const SEARCH_USER_QUERY = gql`
-      query searchUser($site: SiteEnum!, $query: String) {
-        searchUser(site: $site, query: $query) {
-          id
-          user {
-            firstName
-            lastName
-            email
-          }
-        }
-      }
-    `
-    try {
-      const queryResult = await this.authApiClient.query({
-        query: SEARCH_USER_QUERY,
-        variables: {
-          site: site,
-          query: query
-        },
-        fetchPolicy: 'network-only'
-      })
-
-      return queryResult.data.searchUser as IdentifiableUser[]
-    } catch (error) {
-      return []
-    }
-  }
-
-  async bookUserIntoClass(
-    classId: string,
-    userId: string,
-    spotNumber?: number | null,
-    isPaymentRequired?: boolean | null,
-    isWaitlistBooking?: boolean | null
-  ): Promise<string> {
-    const input = {
-      classId: classId,
-      spotNumber: spotNumber,
-      userId: userId,
-      isPaymentRequired: isPaymentRequired,
-      isWaitlistBooking: isWaitlistBooking
-    } as BookUserIntoClassInput
-
-    if (spotNumber) input.spotNumber = spotNumber
-
-    if (isPaymentRequired) input.isPaymentRequired = isPaymentRequired
-
-    if (isWaitlistBooking) input.isPaymentRequired = isWaitlistBooking
-
-    const BOOK_USER_INTO_CLASS_MUTATION = gql`
-      mutation bookUserIntoClass($input: BookUserIntoClassInput!) {
-        bookUserIntoClass(input: $input) {
-          __typename
-        }
-      }
-    `
-
-    try {
-      const result = await this.authApiClient.mutate({
-        mutation: BOOK_USER_INTO_CLASS_MUTATION,
-        variables: {
-          input: input
-        },
-        fetchPolicy: 'network-only'
-      })
-
-      return result.data.bookUserIntoClass.__typename
-    } catch (error) {
-      return 'UnknownError'
-    }
-  }
-
   async removeUserFromClass(enrollmentId: string, lateCancel?: boolean): Promise<string> {
     const input = { enrollmentId: enrollmentId, lateCancel: lateCancel } as CancelEnrollmentInput
 
@@ -973,15 +831,12 @@ export class ApiService {
     }
   }
 
-  async requestPasswordLink(
-    site: SiteEnum,
-    email: string
-  ): Promise<ResetPasswordLinkResultUnion | null> {
+  async requestPasswordLink(email: string): Promise<ResetPasswordLinkResultUnion | null> {
     const input = { email: email } as RequestPasswordLinkInput
 
     const muration = gql`
-      mutation requestPasswordLink($site: SiteEnum!, $input: RequestPasswordLinkInput) {
-        requestPasswordLink(site: $site, input: $input) {
+      mutation requestPasswordLink($input: RequestPasswordLinkInput) {
+        requestPasswordLink(input: $input) {
           ... on TooManyResetPasswordLinkRequestsError {
             availableAgainAt
           }
@@ -996,7 +851,6 @@ export class ApiService {
       const result = await this.authApiClient.mutate({
         mutation: muration,
         variables: {
-          site: site,
           input: input
         },
         fetchPolicy: 'network-only'
@@ -1046,5 +900,383 @@ export class ApiService {
     } catch (error) {
       return null
     }
+  }
+
+  async currentUserDoesExistInSite(site: string): Promise<boolean> {
+    const query = gql`
+      query currentUserDoesExistInSite($site: SiteEnum!) {
+        currentUser {
+          doesExistInSite(site: $site)
+        }
+      }
+    `
+    try {
+      const queryResult = await this.authApiClient.query({
+        query: query,
+        variables: {
+          site: site
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      return queryResult.data.currentUser.doesExistInSite as boolean
+    } catch (error) {
+      return false
+    }
+  }
+
+  async createCurrentUserInSite(
+    fromSite: string,
+    toSite: string
+  ): Promise<CreateCurrentUserInSiteUnion | null> {
+    const muration = gql`
+      mutation createCurrentUserInSite($fromSite: SiteEnum!, $toSite: SiteEnum!) {
+        createCurrentUserInSite(fromSite: $fromSite, toSite: $toSite) {
+          ... on CreateCurrentUserInSiteSuccess {
+            __typename
+            result
+          }
+          ... on UserAlreadyExistsError {
+            __typename
+            code
+          }
+        }
+      }
+    `
+
+    try {
+      const result = await this.authApiClient.mutate({
+        mutation: muration,
+        variables: {
+          fromSite: fromSite,
+          toSite: toSite
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      return result.data.createCurrentUserInSite as CreateCurrentUserInSiteUnion
+    } catch (error) {
+      return null
+    }
+  }
+
+  async removeUserFromWaitlist(waitlistEntryId: string): Promise<RemoveUserFromWaitlistUnion> {
+    const input = { waitlistEntryId: waitlistEntryId } as RemoveUserFromWaitlistInput
+
+    const muration = gql`
+      mutation removeUserFromWaitlist($input: RemoveUserFromWaitlistInput!) {
+        removeUserFromWaitlist(input: $input) {
+          ... on RemoveFromWaitlistResult {
+            success
+          }
+          ... on WaitlistEntryNotFoundError {
+            code
+          }
+        }
+      }
+    `
+
+    const result = await this.authApiClient.mutate({
+      mutation: muration,
+      variables: {
+        input: input
+      },
+      fetchPolicy: 'no-cache'
+    })
+
+    return result.data.removeUserFromWaitlist as RemoveUserFromWaitlistUnion
+  }
+
+  async editEnrollment(
+    site: SiteEnum,
+    input: EditEnrollmentInput
+  ): Promise<EditEnrollmentResultUnion> {
+    const mutation = gql`
+      mutation editEnrollment($site: SiteEnum!, $input: EditEnrollmentInput!) {
+        editEnrollment(site: $site, input: $input) {
+          __typename
+          ... on Enrollment {
+            __typename
+          }
+          ... on SpotAlreadyReservedError {
+            code
+          }
+          ... on TryToSwitchToSameSpotError {
+            code
+          }
+          ... on ClientIsOutsideSchedulingWindowError {
+            code
+          }
+        }
+      }
+    `
+    const result = await this.authApiClient.mutate({
+      mutation: mutation,
+      variables: {
+        site: site,
+        input: input
+      },
+      fetchPolicy: 'no-cache'
+    })
+
+    return result.data.editEnrollment as EditEnrollmentResultUnion
+  }
+
+  async getCurrentUserSites(): Promise<SiteEnum[]> {
+    const query = gql`
+      query currentUserSites {
+        currentUser {
+          siteUsers {
+            site
+          }
+        }
+      }
+    `
+
+    const queryResult = await this.authApiClient.query({
+      query: query,
+      fetchPolicy: 'no-cache'
+    })
+
+    const currentUser = queryResult.data.currentUser as User
+
+    const sites: SiteEnum[] = []
+    currentUser.siteUsers.forEach((siteUser: SimpleSiteUser) => {
+      sites.push(siteUser.site)
+    })
+
+    return sites
+  }
+
+  async getCurrentUserRankingInClass(
+    site: SiteEnum,
+    params: UserInRankingParams
+  ): Promise<UserInClassRanking> {
+    const query = gql`
+      query currentUserRankingInClass($site: SiteEnum!, $params: UserInRankingParams) {
+        currentUserRankingInClass(site: $site, params: $params) {
+          totalRanking {
+            positionInRanking
+            totalMembersInRanking
+          }
+          genderRanking {
+            gender
+            ranking {
+              positionInRanking
+              totalMembersInRanking
+            }
+          }
+        }
+      }
+    `
+
+    const queryResult = await this.authApiClient.query({
+      query: query,
+      variables: {
+        site: site,
+        params: params,
+        query: query
+      },
+      fetchPolicy: 'no-cache'
+    })
+
+    return queryResult.data.currentUserRankingInClass as UserInClassRanking
+  }
+
+  async acceptLateCancelledSpotInClass(
+    site: SiteEnum,
+    waitlistEntryId: string
+  ): Promise<AcceptLateCancelledSpotInClassResultUnion> {
+    const input = { waitlistEntryId: waitlistEntryId } as AcceptLateCancelledSpotInClassInput
+
+    const mutation = gql`
+      mutation acceptLateCancelledSpotInClass(
+        $site: SiteEnum!
+        $input: AcceptLateCancelledSpotInClassInput!
+      ) {
+        acceptLateCancelledSpotInClass(site: $site, input: $input) {
+          __typename
+          ... on AcceptLateCancelledSpotInClassSuccess {
+            success
+          }
+        }
+      }
+    `
+
+    const result = await this.authApiClient.mutate({
+      mutation: mutation,
+      variables: {
+        site: site,
+        input: input
+      },
+      fetchPolicy: 'network-only'
+    })
+
+    return result.data.acceptLateCancelledSpotInClass as AcceptLateCancelledSpotInClassResultUnion
+  }
+
+  async rejectLateCancelledSpotInClass(
+    site: SiteEnum,
+    waitlistEntryId: string
+  ): Promise<RejectLateBookingResultUnion> {
+    const input = { waitlistEntryId: waitlistEntryId } as RejectLateCancelledSpotInClassInput
+
+    const mutation = gql`
+      mutation rejectLateCancelledSpotInClass(
+        $site: SiteEnum!
+        $input: RejectLateCancelledSpotInClassInput!
+      ) {
+        rejectLateCancelledSpotInClass(site: $site, input: $input) {
+          __typename
+          ... on Error {
+            code
+          }
+          ... on PositionAlreadyTakenError {
+            code
+          }
+          ... on RejectLateCancelledSpotInClassSuccess {
+            success
+          }
+        }
+      }
+    `
+
+    const result = await this.authApiClient.mutate({
+      mutation: mutation,
+      variables: {
+        site: site,
+        input: input
+      },
+      fetchPolicy: 'network-only'
+    })
+
+    return result.data.rejectLateCancelledSpotInClass as RejectLateBookingResultUnion
+  }
+
+  async currentUserEnrollmentsPaginated(
+    site: SiteEnum,
+    params: CurrentUserEnrollmentsParams,
+    pagination: PaginationInput
+  ): Promise<PaginatedEnrollments> {
+    const query = gql`
+      query currentUserEnrollmentsPaginated(
+        $site: SiteEnum!
+        $params: CurrentUserEnrollmentsParams
+        $pagination: PaginationInput
+      ) {
+        currentUserEnrollmentsPaginated(site: $site, params: $params, pagination: $pagination) {
+          enrollments {
+            enrollmentInfo {
+              id
+              enrollmentStatus
+              enrollmentDateTime
+              enrollmentDateTimeWithNoTimeZone
+              ... on EnrollmentInfo {
+                spotNumber
+              }
+              ... on WaitlistEntry {
+                canBeTurnedIntoEnrollment
+              }
+            }
+            class {
+              id
+              name
+              description
+              instructorName
+              start
+              startWithNoTimeZone
+              duration
+              waitListAvailable
+              showAsDisabled
+            }
+          }
+          total
+        }
+      }
+    `
+
+    const queryResult = await this.authApiClient.query({
+      query: query,
+      variables: {
+        site: site,
+        params: params,
+        pagination: pagination
+      },
+      fetchPolicy: 'network-only'
+    })
+
+    return queryResult.data.currentUserEnrollmentsPaginated as PaginatedEnrollments
+  }
+
+  async currentUserWorkoutStatsPaginated(
+    site: SiteEnum,
+    pagination: PaginationInput
+  ): Promise<PaginatedClassStats> {
+    const query = gql`
+      query currentUserWorkoutStatsPaginated($site: SiteEnum!, $pagination: PaginationInput) {
+        currentUserWorkoutStatsPaginated(site: $site, pagination: $pagination) {
+          classStats {
+            enrollment {
+              enrollmentInfo {
+                id
+                ... on EnrollmentInfo {
+                  spotNumber
+                }
+              }
+              class {
+                name
+                start
+                duration
+              }
+            }
+            totalEnergy
+          }
+          total
+        }
+      }
+    `
+
+    const queryResult = await this.authApiClient.query({
+      query: query,
+      variables: {
+        site: site,
+        pagination: pagination
+      },
+      fetchPolicy: 'network-only'
+    })
+
+    return queryResult.data.currentUserWorkoutStatsPaginated as PaginatedClassStats
+  }
+
+  async currentUserPurchasesPaginated(
+    site: SiteEnum,
+    pagination: PaginationInput
+  ): Promise<PaginatedPurchases> {
+    const query = gql`
+      query currentUserPurchasesPaginated($site: SiteEnum!, $pagination: PaginationInput) {
+        currentUserPurchasesPaginated(site: $site, pagination: $pagination) {
+          purchases {
+            packageName
+            allowanceObtained
+            allowanceRemaining
+            paymentDateTime
+            activationDateTime
+            expirationDateTime
+            current
+          }
+          total
+        }
+      }
+    `
+
+    const queryResult = await this.authApiClient.query({
+      query: query,
+      variables: {
+        site: site,
+        pagination: pagination
+      }
+    })
+
+    return queryResult.data.currentUserPurchasesPaginated as PaginatedPurchases
   }
 }

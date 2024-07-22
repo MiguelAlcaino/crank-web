@@ -4,12 +4,18 @@ import { useRoute } from 'vue-router'
 
 import dayjs from 'dayjs'
 
-import type { ClassInfo, EnrollmentInfo } from '@/gql/graphql'
+import {
+  PositionIconEnum,
+  type ClassInfo,
+  type EnrollmentInfo,
+  type BookableSpot
+} from '@/gql/graphql'
 
 import ModalComponent from '@/components/ModalComponent.vue'
 
 import SpotMatrix from '@/components/SpotMatrix.vue'
 import YouAreAlreadyEnrolled from '@/components/YouAreAlreadyEnrolled.vue'
+import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
 
 import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
@@ -38,6 +44,7 @@ const classInfo = ref<ClassInfo | null>(null)
 
 const enrollmentEnabled = ref<boolean>(true)
 const enrollmentInfo = ref<EnrollmentInfo | null>(null)
+const thereAreSpotsAvailable = ref<boolean>(false)
 
 interface SpotClickedEvent {
   spotNumber: number | null
@@ -71,14 +78,39 @@ async function getClassInfo() {
 
   classInfo.value = _classInfo
 
+  checkAvailableSpots(_classInfo)
+
   isLoading.value = false
+}
+
+function checkAvailableSpots(classInfo: ClassInfo | null) {
+  thereAreSpotsAvailable.value = false
+
+  if (classInfo?.roomLayout?.matrix) {
+    const matrix = classInfo?.roomLayout?.matrix
+
+    for (let i = 0; i < matrix.length; i++) {
+      if (matrix[i].icon === PositionIconEnum.Spot) {
+        let bookableSpot = matrix[i] as BookableSpot
+
+        let isBooked = classInfo?.usedSpots?.find((x) => x === bookableSpot.spotNumber)
+          ? true
+          : false
+
+        if (!isBooked) {
+          thereAreSpotsAvailable.value = true
+          break
+        }
+      }
+    }
+  }
 }
 
 function confirmChangeSpot(event: SpotClickedEvent): void {
   newSpotNumber.value = event.spotNumber
 
   changingSpot.value = false
-  changeSpotMessage.value = 'WOULD YOU LIKE TO BOOK SPOT ' + newSpotNumber.value + '?'
+  changeSpotMessage.value = 'WOULD YOU LIKE TO MOVE TO SPOT ' + newSpotNumber.value + '?'
 
   changeSpotModalIsVisible.value = true
 }
@@ -158,10 +190,21 @@ async function editCurrentUserEnrollment() {
       </div>
     </div>
 
+    <div class="row" v-if="!thereAreSpotsAvailable && classInfo !== null">
+      <div class="col-12 text-center">
+        <p class="spots-not-available">No other spots are available</p>
+      </div>
+    </div>
+
     <hr />
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-12" style="text-align: center">
+          <CrankCircularProgressIndicator
+            text="Loading..."
+            v-if="isLoading"
+          ></CrankCircularProgressIndicator>
+
           <SpotMatrix
             v-if="
               classInfo !== null &&
@@ -170,6 +213,8 @@ async function editCurrentUserEnrollment() {
             "
             :matrix="classInfo.roomLayout?.matrix"
             @click-spot="confirmChangeSpot"
+            :spot-number-booked-by-current-user="enrollmentInfo?.spotNumber"
+            :used-spots="classInfo.usedSpots"
           ></SpotMatrix>
         </div>
       </div>
@@ -211,4 +256,12 @@ async function editCurrentUserEnrollment() {
   ></ModalComponent>
 </template>
 
-<style scoped></style>
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>
+
+<style scoped>
+p.spots-not-available {
+  font-family: 'BigJohn', sans-serif;
+  font-size: smaller;
+}
+</style>

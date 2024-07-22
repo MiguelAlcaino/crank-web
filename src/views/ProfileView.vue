@@ -14,7 +14,7 @@ interface State {
 <script setup lang="ts">
 import { onMounted, reactive, ref, computed, inject } from 'vue'
 import useVuelidate from '@vuelidate/core'
-import { required, maxLength, helpers, minValue } from '@vuelidate/validators'
+import { required, maxLength, helpers, minValue, minLength } from '@vuelidate/validators'
 import { GenderEnum, type UserInput } from '@/gql/graphql'
 import type { ApiService } from '@/services/apiService'
 
@@ -22,14 +22,21 @@ import ModalComponent from '@/components/ModalComponent.vue'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 import dayjs from 'dayjs'
 
+import { VueTelInput } from 'vue-tel-input'
+import 'vue-tel-input/vue-tel-input.css'
+import { getFormattedPhoneNumber } from '@/utils/utility-functions'
+import { SUCCESS_UPDATE_PROFILE } from '@/utils/successMessages'
+
 const isSaving = ref(false)
 const successModalIsVisible = ref(false)
 const errorModalIsVisible = ref(false)
+const weightInputMessageIsVisible = ref(false)
 
 const countries = ref([] as Country[])
 const countryStates = ref([] as State[])
 
 const currentDate = ref(new Date())
+const userEmail = ref<string>('')
 
 const formData = reactive({
   firstName: '',
@@ -37,8 +44,8 @@ const formData = reactive({
   gender: '',
   birthdate: null as Date | null,
   weight: 0,
-  country: '',
-  cityState: '',
+  country: null as string | null,
+  cityState: null as string | null,
   address1: '',
   address2: '',
   phone: '',
@@ -46,7 +53,7 @@ const formData = reactive({
   emergencyContactPhone: '',
   emergencyContactRelationship: '',
   leaderboardUsername: '',
-  hideMetrics: false
+  joinTheLeaderboard: false
 })
 
 const rules = computed(() => {
@@ -79,9 +86,18 @@ const rules = computed(() => {
     address2: { maxLength: maxLength(255) },
     phone: {
       required: helpers.withMessage(
-        'Valid mobile number is required to receive the sms and redeem the trial package',
+        'Valid mobile number is required to redeem the trial package through an SMS validation code',
         required
-      )
+      ),
+      validateUAEphone: helpers.withMessage(
+        'A UAE phone number must start with +9715',
+        validateUAEphone
+      ),
+      minLength: helpers.withMessage(
+        'Valid mobile number is required to redeem the trial package through an SMS validation code',
+        minLength(7)
+      ),
+      lengthUAEphone: helpers.withMessage('Invalid Mobile Number', lengthUAEphone)
     },
     emergencyContactName: {
       required: helpers.withMessage('Emergency Contact Name is required', required)
@@ -95,11 +111,17 @@ const rules = computed(() => {
     leaderboardUsername: {
       required: helpers.withMessage('Leaderboard Nickname is required', required)
     },
-    hideMetrics: {
+    joinTheLeaderboard: {
       required: helpers.withMessage('Field is required', required)
     }
   }
 })
+
+const validateUAEphone = (phone: string) =>
+  phone.startsWith('+971') ? getFormattedPhoneNumber(phone).startsWith('+9715') : true
+
+const lengthUAEphone = (phone: string) =>
+  phone.startsWith('+971') ? getFormattedPhoneNumber(phone).length === 13 : true
 
 const v$ = useVuelidate(rules, formData)
 const apiService = inject<ApiService>('gqlApiService')!
@@ -113,23 +135,27 @@ async function getMyself(): Promise<void> {
   const user = await apiService.getMyself()
 
   if (user !== null) {
-    await getCountryStates(user.country.code)
+    userEmail.value = user.email
+
+    if (user.country?.code) {
+      await getCountryStates(user.country.code)
+    }
 
     formData.firstName = user.firstName
     formData.lastName = user.lastName
     formData.gender = user.gender !== null ? user.gender!.toString() : GenderEnum.N.toString()
     formData.birthdate = dayjs(user.birthdate).toDate()
-    formData.weight = user.weight !== null ? user.weight! : 0
-    formData.country = user.country.code
-    formData.cityState = user.state!.code
+    formData.weight = user.weight !== null ? +user.weight!.toFixed(2) : 0
+    formData.country = user.country?.code ?? null
+    formData.cityState = user.state?.code ?? null
     formData.address1 = user.address1
     formData.address2 = user.address2!
-    formData.phone = user.phone
+    formData.phone = getFormattedPhoneNumber(user.phone)
     formData.emergencyContactName = user.emergencyContactName
-    formData.emergencyContactPhone = user.emergencyContactPhone
+    formData.emergencyContactPhone = getFormattedPhoneNumber(user.emergencyContactPhone)
     formData.emergencyContactRelationship = user.emergencyContactRelationship!
     formData.leaderboardUsername = user.leaderboardUsername!
-    formData.hideMetrics = user.hideMetrics !== null ? user.hideMetrics! : false
+    formData.joinTheLeaderboard = user.hideMetrics !== null ? !user.hideMetrics! : false
   }
 }
 
@@ -142,13 +168,16 @@ const submitForm = async () => {
     if (formData.gender === 'M') gender = GenderEnum.M
     else if (formData.gender === 'F') gender = GenderEnum.F
 
+    formData.emergencyContactPhone = getFormattedPhoneNumber(formData.emergencyContactPhone)
+    formData.phone = getFormattedPhoneNumber(formData.phone)
+
     const input: UserInput = {
       address1: formData.address1 == '' ? '-' : formData.address1,
       address2: formData.address2,
       birthdate: dayjs(formData.birthdate).format('YYYY-MM-DD'),
       city: formData.cityState,
       country: formData.country,
-      hideMetrics: formData.hideMetrics,
+      hideMetrics: !formData.joinTheLeaderboard,
       emergencyContactName: formData.emergencyContactName,
       emergencyContactPhone: formData.emergencyContactPhone,
       emergencyContactRelationship: formData.emergencyContactRelationship,
@@ -172,7 +201,6 @@ const submitForm = async () => {
       errorModalIsVisible.value = true
     }
   } else {
-    console.log(formData)
     console.error('error form')
   }
 }
@@ -187,13 +215,15 @@ async function getCountryStates(countryCode: string) {
 }
 
 function onChangeCountry() {
-  getCountryStates(formData.country)
+  getCountryStates(formData.country!)
 }
 </script>
 
 <template>
   <h1>My Profile</h1>
-
+  <br />
+  <h5>{{ userEmail }}</h5>
+  <hr />
   <form @submit.prevent="submitForm" autocomplete="off">
     <div class="field">
       <RouterLink class="btn btn-primary" :to="{ name: 'change_password' }"
@@ -202,21 +232,21 @@ function onChangeCountry() {
     </div>
     <hr />
 
-    <!-- hideMetrics -->
+    <!-- joinTheLeaderboard -->
     <div class="form-row">
       <div class="col-md-12 mb-3">
-        <div class="form-check">
+        <div class="custom-control custom-switch">
           <input
-            class="form-check-input"
             type="checkbox"
-            v-model="formData.hideMetrics"
-            id="hideMetricsMyProfile"
+            class="custom-control-input"
+            v-model="formData.joinTheLeaderboard"
+            id="joinTheLeaderboardMyProfile"
           />
-          <label class="form-check-label" for="hideMetricsMyProfile"
-            >Display my info on all performance leaderboards</label
+          <label class="custom-control-label" for="joinTheLeaderboardMyProfile"
+            >Join the Leaderboard?</label
           >
           <small
-            v-for="error in v$.hideMetrics.$errors"
+            v-for="error in v$.joinTheLeaderboard.$errors"
             :key="error.$uid"
             class="form-text"
             style="color: red"
@@ -351,14 +381,26 @@ function onChangeCountry() {
     <div class="form-row">
       <div class="col-md-6 mb-3">
         <label for="weightMyProfile" class="input-label">Weight *</label>
-        <input
-          id="weightMyProfile"
-          class="form-control"
-          v-model="formData.weight"
-          type="number"
-          placeholder="Weight"
-          required
-        />
+        <div class="input-group">
+          <input
+            id="weightMyProfile"
+            class="form-control"
+            v-model="formData.weight"
+            type="number"
+            placeholder="Weight"
+            required
+            step="0.01"
+            @focus="weightInputMessageIsVisible = true"
+            @blur="weightInputMessageIsVisible = false"
+          />
+          <div class="input-group-append">
+            <span class="input-group-text" id="input-group-append-kg">kg</span>
+          </div>
+        </div>
+        <small v-if="weightInputMessageIsVisible" class="form-text" style="color: #737373">
+          Enter your weight to improve the accuracy of your class stats
+        </small>
+
         <small
           v-for="error in v$.weight.$errors"
           :key="error.$uid"
@@ -463,15 +505,26 @@ function onChangeCountry() {
       <!--phone-->
       <div class="col-md-6 mb-3">
         <label for="mobileNumberMyProfile" class="input-label">Mobile Number *</label>
-        <input
-          id="mobileNumberMyProfile"
-          class="form-control"
+        <vue-tel-input
           v-model="formData.phone"
-          type="text"
+          mode="international"
+          id="mobileNumberMyProfile"
           placeholder="Mobile Number"
-          maxlength="20"
           required
-        />
+          :dropdownOptions="{
+            showSearchBox: true,
+            showFlags: true,
+            showDialCodeInList: true,
+            showDialCodeInSelection: false
+          }"
+          :inputOptions="{
+            id: 'mobileNumberMyProfile',
+            showDialCode: true,
+            required: true
+          }"
+          :validCharactersOnly="true"
+          :autoDefaultCountry="false"
+        ></vue-tel-input>
         <small
           v-for="error in v$.phone.$errors"
           :key="error.$uid"
@@ -512,15 +565,26 @@ function onChangeCountry() {
         <label for="emergencyContactPhoneMyProfile" class="input-label"
           >Emergency Contact Number *</label
         >
-        <input
-          id="emergencyContactPhoneMyProfile"
-          class="form-control"
+        <vue-tel-input
           v-model="formData.emergencyContactPhone"
-          type="text"
+          mode="international"
+          id="emergencyContactPhoneMyProfile"
           placeholder="Emergency Contact Number"
-          maxlength="100"
           required
-        />
+          :dropdownOptions="{
+            showSearchBox: true,
+            showFlags: true,
+            showDialCodeInList: true,
+            showDialCodeInSelection: false
+          }"
+          :inputOptions="{
+            id: 'emergencyContactPhoneMyProfile',
+            showDialCode: true,
+            required: true
+          }"
+          :validCharactersOnly="true"
+          :autoDefaultCountry="false"
+        ></vue-tel-input>
         <small
           v-for="error in v$.emergencyContactPhone.$errors"
           :key="error.$uid"
@@ -558,9 +622,10 @@ function onChangeCountry() {
 
     <!--submit button-->
     <div class="form-row justify-content-md-center">
-      <div class="col-md-2 mb-3">
+      <div class="col-md-3 mb-3">
         <button class="btn btn-primary" type="submit" :disabled="isSaving">
-          Save Profile <span class="spinner-border spinner-border-sm" v-if="isSaving"></span>
+          Save Profile
+          <span class="spinner-border spinner-border-sm" v-if="isSaving"></span>
         </button>
       </div>
     </div>
@@ -569,7 +634,7 @@ function onChangeCountry() {
   <!-- Success Modal -->
   <ModalComponent
     title="Profile update"
-    :message="'Your profile was successfully updated'"
+    :message="SUCCESS_UPDATE_PROFILE"
     :closable="false"
     @on-ok="successModalIsVisible = false"
     v-if="successModalIsVisible"
@@ -587,3 +652,83 @@ function onChangeCountry() {
   >
   </ModalComponent>
 </template>
+
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>
+
+<style lang="css" scoped>
+.custom-control-input:focus ~ .custom-control-label::before {
+  border-color: #ff6f60 !important;
+  box-shadow: 0 0 0 0.2rem rgba(255, 47, 69, 0.25) !important;
+}
+
+.custom-control-input:checked ~ .custom-control-label::before {
+  border-color: #ff6f60 !important;
+  background-color: #ff6f60 !important;
+}
+
+.custom-control-input:active ~ .custom-control-label::before {
+  background-color: #ff6f60 !important;
+  border-color: #ff6f60 !important;
+}
+
+.custom-control-input:focus:not(:checked) ~ .custom-control-label::before {
+  border-color: #ff6f60 !important;
+}
+
+.custom-control-input-green:not(:disabled):active ~ .custom-control-label::before {
+  background-color: #ff6f60 !important;
+  border-color: #ff6f60 !important;
+}
+
+h3 {
+  color: #737373;
+}
+</style>
+
+<style lang="css">
+/* Datepicker Theming */
+.dp__theme_light {
+  --dp-background-color: #ffffff !important;
+  --dp-text-color: #212121 !important;
+  --dp-hover-color: #f3f3f3 !important;
+  --dp-hover-text-color: #212121 !important;
+  --dp-hover-icon-color: #959595 !important;
+  --dp-primary-color: #ff7f61 !important;
+  --dp-primary-text-color: #f8f5f5 !important;
+  --dp-secondary-color: #c0c4cc !important;
+  --dp-border-color: #ddd !important;
+  --dp-menu-border-color: #ddd !important;
+  --dp-border-color-hover: #aaaeb7 !important;
+  --dp-disabled-color: #f6f6f6 !important;
+  --dp-scroll-bar-background: #f3f3f3 !important;
+  --dp-scroll-bar-color: #959595 !important;
+  --dp-success-color: #000000 !important;
+  --dp-success-color-disabled: #a3d9b1 !important;
+  --dp-icon-color: #959595 !important;
+  --dp-danger-color: #ff6f60 !important;
+  --dp-highlight-color: rgba(255, 127, 97, 0.1) !important;
+}
+
+.dp__range_end,
+.dp__range_start,
+.dp__active_date {
+  background: var(--dp-danger-color) !important;
+  color: var(--dp-primary-text-color) !important;
+}
+.dp__action_select {
+  background: #000000 !important;
+  color: var(--dp-primary-text-color) !important;
+}
+
+input {
+  font-family: 'Avenir', sans-serif;
+}
+
+li > span {
+  font-family: 'Avenir', sans-serif;
+}
+li > strong {
+  font-family: 'Avenir', sans-serif;
+}
+</style>

@@ -4,41 +4,96 @@ interface ColumnName {
   dateNumber: string
   isCurrentDate: boolean
 }
+
+enum EnrollmentStatusEnum {
+  Active = 'active'
+}
+
+interface DayOfTheWeek {
+  selected: boolean
+  disabled: boolean
+  day: Date
+  classes: Class[]
+}
+
+interface Class {
+  id: string
+  name: string
+  description: string
+  instructorName: string
+  isSubstitute: boolean
+  duration: number
+  waitListAvailable: boolean
+  startWithNoTimeZone: Date
+  start: Date
+  bookingWindow: BookingWindow
+  showAsDisabled: boolean
+}
+
+interface BookingWindow {
+  startDateTime: Date
+  endDateTime: Date
+}
+
+interface WeekCalendar {
+  MON?: Class
+  TUE?: Class
+  WED?: Class
+  THU?: Class
+  FRI?: Class
+  SAT?: Class
+  SUN?: Class
+}
 </script>
 
 <script setup lang="ts">
 import { inject, onMounted, ref } from 'vue'
-import { EnrollmentStatusEnum, type Class } from '@/gql/graphql'
-import { DayOfTheWeek } from '@/model/DayOfTheWeek'
-import { WeekCalendar } from '@/model/WeekCalendar'
 import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
 
 import CalendarCard from '@/components/CalendarCard.vue'
+import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
 import IconCalendarCard from '@/components/icons/IconCalendarCard.vue'
+import ModalComponent from '@/components/ModalComponent.vue'
 import { appStore } from '@/stores/appStorage'
 import type { ApiService } from '@/services/apiService'
+import { authService } from '@/services/authService'
+import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 
 const columnsNames = ref<ColumnName[]>([])
 const calendarDays = ref<WeekCalendar[]>([])
 const siteDateTimeNow = ref<Date>(new Date())
+const siteTimezone = ref<string>('Asia/Dubai')
 const calendarIsLoading = ref<boolean>(false)
 const hasPreviousWeek = ref<boolean>(false)
 const daysOfTheWeek = ref<DayOfTheWeek[]>([])
 const apiService = inject<ApiService>('gqlApiService')!
-
+const errorModalIsVisible = ref<boolean>(false)
 const enrollmentClassIds = ref<string[]>([])
 
 dayjs.Ls.en.weekStart = 1
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 onMounted(() => {
   getClassesOfTheWeek()
 })
 
-function goToNextWeek(): void {
-  const date = dayjs(appStore().calendarStartDate)
+function getClassesOfTheWeek() {
+  if (authService.isLoggedId()) {
+    getCustomCalendarClasses()
+  } else {
+    getCalendarClasses()
+  }
+}
 
-  const firstDayOfNextWeek = date.add(1, 'weeks').startOf('week').toDate()
-  const lastDayOfNextWeek = date.add(1, 'weeks').endOf('week').toDate()
+function goToNextWeek(): void {
+  const date = dayjs(appStore().calendarStartDate).tz(siteTimezone.value)
+
+  const firstDayOfNextWeek = date.add(1, 'weeks').startOf('week').format('YYYY-MM-DD')
+  const lastDayOfNextWeek = date.add(1, 'weeks').endOf('week').format('YYYY-MM-DD')
 
   appStore().setCalendarDates(firstDayOfNextWeek, lastDayOfNextWeek)
 
@@ -46,10 +101,10 @@ function goToNextWeek(): void {
 }
 
 function goToPrevWeek(): void {
-  const date = dayjs(appStore().calendarStartDate)
+  const date = dayjs(appStore().calendarStartDate).tz(siteTimezone.value)
 
-  const firstDayOfPrevWeek = date.subtract(1, 'weeks').startOf('week').toDate()
-  const lastDayOfPrevWeek = date.subtract(1, 'weeks').endOf('week').toDate()
+  const firstDayOfPrevWeek = date.subtract(1, 'weeks').startOf('week').format('YYYY-MM-DD')
+  const lastDayOfPrevWeek = date.subtract(1, 'weeks').endOf('week').format('YYYY-MM-DD')
 
   const actualDate = new Date()
 
@@ -60,69 +115,185 @@ function goToPrevWeek(): void {
   getClassesOfTheWeek()
 }
 
-async function getClassesOfTheWeek(): Promise<void> {
-  calendarIsLoading.value = true
+async function getCustomCalendarClasses(): Promise<void> {
   hasPreviousWeek.value = false
   daysOfTheWeek.value = []
   enrollmentClassIds.value = []
 
-  const firstDayWeek = appStore().calendarStartDate
-  const lastDayWeek = appStore().calendarEndDate
+  const calendarStartDate =
+    appStore().calendarStartDate != null && dayjs(appStore().calendarStartDate).isValid()
+      ? (appStore().calendarStartDate as string)
+      : dayjs().startOf('week').format('YYYY-MM-DD')
 
-  let customCalendarClasses = await apiService.getCustomCalendarClasses(
-    appStore().site,
-    firstDayWeek,
-    lastDayWeek
-  )
+  const calendarEndDate =
+    appStore().calendarEndDate != null && dayjs(appStore().calendarEndDate).isValid()
+      ? (appStore().calendarEndDate as string)
+      : dayjs().endOf('week').format('YYYY-MM-DD')
 
-  if (customCalendarClasses != null) {
-    siteDateTimeNow.value = customCalendarClasses.siteSettings.siteDateTimeNow
+  appStore().setCalendarDates(calendarStartDate, calendarEndDate)
 
-    for (let index = 0; index < customCalendarClasses.enrollmentsUpcoming.length; index++) {
-      const enrollment = customCalendarClasses.enrollmentsUpcoming[index]
-      if (
-        enrollment?.class &&
-        enrollment.enrollmentInfo?.enrollmentStatus === EnrollmentStatusEnum.Active
-      ) {
-        enrollmentClassIds.value.push(enrollment?.class.id)
+  try {
+    calendarIsLoading.value = true
+
+    let customCalendarClasses = await apiService.getCustomCalendarClasses(
+      appStore().site,
+      calendarStartDate,
+      calendarEndDate
+    )
+
+    if (customCalendarClasses?.siteSettings?.siteTimezone) {
+      siteTimezone.value = customCalendarClasses.siteSettings.siteTimezone
+    }
+
+    if (customCalendarClasses?.siteSettings?.siteDateTimeNow) {
+      siteDateTimeNow.value = customCalendarClasses.siteSettings.siteDateTimeNow
+    }
+
+    if (customCalendarClasses != null) {
+      for (let index = 0; index < customCalendarClasses.enrollmentsUpcoming.length; index++) {
+        const enrollment = customCalendarClasses.enrollmentsUpcoming[index]
+        if (
+          enrollment?.class &&
+          enrollment.enrollmentInfo?.enrollmentStatus === EnrollmentStatusEnum.Active
+        ) {
+          enrollmentClassIds.value.push(enrollment?.class.id)
+        }
       }
+
+      columnsNames.value = []
+
+      let dates: Date[] = []
+
+      let day = dayjs(calendarStartDate).tz(siteTimezone.value)
+
+      for (let i = 0; i < 7; i++) {
+        dates.push(day.toDate())
+
+        columnsNames.value.push({
+          dayName: day.format('ddd').toUpperCase(),
+          dateNumber: day.format('DD.MM').toUpperCase(),
+          isCurrentDate: day.isSame(Date(), 'day')
+        })
+
+        day = day.add(1, 'day')
+      }
+
+      const _currentDate = customCalendarClasses.siteSettings.siteDateTimeNow as Date
+
+      for (let i = 0; i < dates.length; i++) {
+        let date = dayjs(dates[i]).tz(siteTimezone.value)
+
+        const disabled: boolean = date.isBefore(_currentDate, 'day')
+        const selected: boolean = date.isSame(_currentDate, 'day')
+
+        const calendarClasses: Class[] = customCalendarClasses.calendarClasses.filter(
+          (x) =>
+            dayjs(x.start).tz(siteTimezone.value).isSame(date, 'day') &&
+            (x.showAsDisabled == false ||
+              (x.showAsDisabled === true && enrollmentClassIds.value.includes(x.id)))
+        )
+
+        daysOfTheWeek.value.push({
+          selected: selected,
+          disabled: disabled,
+          day: date.toDate(),
+          classes: calendarClasses
+        })
+
+        if (date.isSame(_currentDate, 'day')) hasPreviousWeek.value = false
+      }
+
+      getPivot()
+    }
+  } catch (error) {
+    console.error('getCustomCalendarClasses error', error)
+    errorModalIsVisible.value = true
+  } finally {
+    calendarIsLoading.value = false
+  }
+}
+
+async function getCalendarClasses(): Promise<void> {
+  hasPreviousWeek.value = false
+  daysOfTheWeek.value = []
+  enrollmentClassIds.value = []
+
+  const calendarStartDate =
+    appStore().calendarStartDate != null && dayjs(appStore().calendarStartDate).isValid()
+      ? (appStore().calendarStartDate as string)
+      : dayjs().startOf('week').format('YYYY-MM-DD')
+
+  const calendarEndDate =
+    appStore().calendarEndDate != null && dayjs(appStore().calendarEndDate).isValid()
+      ? (appStore().calendarEndDate as string)
+      : dayjs().endOf('week').format('YYYY-MM-DD')
+
+  appStore().setCalendarDates(calendarStartDate, calendarEndDate)
+
+  calendarIsLoading.value = true
+
+  try {
+    const calendarClasses = await apiService.getCalendarClasses(
+      appStore().site,
+      calendarStartDate,
+      calendarEndDate
+    )
+
+    const siteSettings = await apiService.getSiteSettings(appStore().site)
+
+    if (siteSettings?.siteTimezone) {
+      siteTimezone.value = siteSettings.siteTimezone
     }
 
-    columnsNames.value = []
-
-    let dates: Date[] = []
-    let day = dayjs(firstDayWeek)
-    for (let i = 0; i < 7; i++) {
-      dates.push(day.toDate())
-
-      columnsNames.value.push({
-        dayName: day.format('ddd').toUpperCase(),
-        dateNumber: day.format('DD.MM').toUpperCase(),
-        isCurrentDate: day.isSame(Date(), 'day')
-      })
-
-      day = day.add(1, 'day')
+    if (siteSettings?.siteDateTimeNow) {
+      siteDateTimeNow.value = siteSettings.siteDateTimeNow
     }
 
-    const _actualDate = new Date()
+    if (calendarClasses != null) {
+      columnsNames.value = []
 
-    for (let i = 0; i < dates.length; i++) {
-      let date = dayjs(dates[i])
+      let dates: Date[] = []
+      let day = dayjs(calendarStartDate).tz(siteTimezone.value)
 
-      const disabled: boolean = date.isBefore(_actualDate, 'day')
-      const selected: boolean = date.isSame(_actualDate, 'day')
+      for (let i = 0; i < 7; i++) {
+        dates.push(day.toDate())
 
-      const calendarClasses: Class[] = customCalendarClasses.calendarClasses.filter((x) =>
-        dayjs(new Date(x.start)).isSame(date, 'day')
-      )
+        columnsNames.value.push({
+          dayName: day.format('ddd').toUpperCase(),
+          dateNumber: day.format('DD.MM').toUpperCase(),
+          isCurrentDate: day.isSame(Date(), 'day')
+        })
 
-      daysOfTheWeek.value.push(new DayOfTheWeek(selected, disabled, date.toDate(), calendarClasses))
+        day = day.add(1, 'day')
+      }
 
-      if (date.isSame(_actualDate, 'day')) hasPreviousWeek.value = false
+      const _actualDate = siteSettings?.siteDateTimeNow as Date
+
+      for (let i = 0; i < dates.length; i++) {
+        let date = dayjs(dates[i]).tz(siteTimezone.value)
+
+        const disabled: boolean = date.isBefore(_actualDate, 'day')
+        const selected: boolean = date.isSame(_actualDate, 'day')
+
+        const calendarClassesTemp: Class[] = calendarClasses.filter((x) =>
+          dayjs(x.start).tz(siteTimezone.value).isSame(date, 'day')
+        )
+
+        daysOfTheWeek.value.push({
+          selected: selected,
+          disabled: disabled,
+          day: date.toDate(),
+          classes: calendarClassesTemp
+        })
+
+        if (date.isSame(_actualDate, 'day')) hasPreviousWeek.value = false
+      }
+
+      getPivot()
     }
-
-    getPivot()
-
+  } catch (error) {
+    errorModalIsVisible.value = true
+  } finally {
     calendarIsLoading.value = false
   }
 }
@@ -139,7 +310,7 @@ function getPivot() {
   }
 
   for (let i = 0; i < maxClasses; i++) {
-    let rowCalendar: WeekCalendar = new WeekCalendar()
+    let rowCalendar: WeekCalendar = {}
     for (let day = 0; day < 7; day++) {
       if (day === 0) {
         if (
@@ -190,6 +361,30 @@ function getPivot() {
     calendarDays.value.push(rowCalendar)
   }
 }
+
+function calendarCardIsDisabled(dataClass?: Class): boolean {
+  if (dataClass == null) {
+    return true
+  } else if (dataClass.showAsDisabled === true) {
+    return true
+  } else if (dayjs(dataClass?.startWithNoTimeZone).isBefore(siteDateTimeNow.value)) {
+    return true
+  } else if (
+    dataClass?.bookingWindow?.startDateTime != null &&
+    dayjs(dataClass?.bookingWindow?.startDateTime).isAfter(siteDateTimeNow.value)
+  ) {
+    return true
+  } else if (
+    dataClass?.bookingWindow?.endDateTime != null &&
+    dayjs(dataClass?.bookingWindow?.endDateTime).isBefore(siteDateTimeNow.value)
+  ) {
+    return true
+  } else {
+    if (dayjs(dataClass?.start).isAfter(dayjs(siteDateTimeNow.value).add(10, 'day'))) return true
+  }
+
+  return false
+}
 </script>
 
 <template>
@@ -206,14 +401,14 @@ function getPivot() {
       </button>
     </div>
   </div>
+
   <!-- calendar -->
   <div class="row">
-    <div class="col-12">
-      <div class="d-flex justify-content-center" v-if="calendarIsLoading">
-        <div class="spinner-border" role="status"></div>
-        &nbsp;&nbsp;Loading...
-      </div>
-      <div v-else>
+    <div class="col-12" style="text-align: center" v-if="calendarIsLoading">
+      <CrankCircularProgressIndicator text="Loading..."></CrankCircularProgressIndicator>
+    </div>
+    <div v-else class="col-12">
+      <div class="table-responsive">
         <table class="table table-borderless CalendarWeekTable">
           <thead>
             <tr>
@@ -230,68 +425,68 @@ function getPivot() {
           </thead>
           <tbody>
             <tr v-for="(colRow, key) in calendarDays" :key="key">
-              <td style="border-left: 0px !important">
+              <td style="border-left: 0px !important; min-width: 110px">
                 <CalendarCard
                   :classInfo="colRow.MON"
                   :isEnrolled="
                     colRow.MON != null && enrollmentClassIds.indexOf(colRow.MON?.id) !== -1
                   "
-                  :disabled="dayjs(colRow.MON?.startWithNoTimeZone).isBefore(siteDateTimeNow)"
+                  :disabled="calendarCardIsDisabled(colRow.MON)"
                 ></CalendarCard>
               </td>
-              <td>
+              <td style="min-width: 110px">
                 <CalendarCard
                   :classInfo="colRow.TUE"
                   :isEnrolled="
                     colRow.TUE != null && enrollmentClassIds.indexOf(colRow.TUE?.id) !== -1
                   "
-                  :disabled="dayjs(colRow.TUE?.startWithNoTimeZone).isBefore(siteDateTimeNow)"
+                  :disabled="calendarCardIsDisabled(colRow.TUE)"
                 ></CalendarCard>
               </td>
-              <td>
+              <td style="min-width: 110px">
                 <CalendarCard
                   :classInfo="colRow.WED"
                   :isEnrolled="
                     colRow.WED != null && enrollmentClassIds.indexOf(colRow.WED?.id) !== -1
                   "
-                  :disabled="dayjs(colRow.WED?.startWithNoTimeZone).isBefore(siteDateTimeNow)"
+                  :disabled="calendarCardIsDisabled(colRow.WED)"
                 ></CalendarCard>
               </td>
-              <td>
+              <td style="min-width: 110px">
                 <CalendarCard
                   :classInfo="colRow.THU"
                   :isEnrolled="
                     colRow.THU != null && enrollmentClassIds.indexOf(colRow.THU?.id) !== -1
                   "
-                  :disabled="dayjs(colRow.THU?.startWithNoTimeZone).isBefore(siteDateTimeNow)"
+                  :disabled="calendarCardIsDisabled(colRow.THU)"
                   >></CalendarCard
                 >
               </td>
-              <td>
+              <td style="min-width: 110px">
                 <CalendarCard
                   :classInfo="colRow.FRI"
                   :isEnrolled="
                     colRow.FRI != null && enrollmentClassIds.indexOf(colRow.FRI?.id) !== -1
                   "
-                  :disabled="dayjs(colRow.FRI?.startWithNoTimeZone).isBefore(siteDateTimeNow)"
+                  :disabled="calendarCardIsDisabled(colRow.FRI)"
                 ></CalendarCard>
               </td>
-              <td>
+              <td style="min-width: 110px">
                 <CalendarCard
                   :classInfo="colRow.SAT"
                   :isEnrolled="
                     colRow.SAT != null && enrollmentClassIds.indexOf(colRow.SAT?.id) !== -1
                   "
-                  :disabled="dayjs(colRow.SAT?.startWithNoTimeZone).isBefore(siteDateTimeNow)"
+                  :disabled="calendarCardIsDisabled(colRow.SAT)"
                 ></CalendarCard>
               </td>
-              <td>
+              <td style="min-width: 110px">
                 <CalendarCard
                   :classInfo="colRow.SUN"
                   :isEnrolled="
                     colRow.SUN != null && enrollmentClassIds.indexOf(colRow.SUN?.id) !== -1
                   "
-                  :disabled="dayjs(colRow.SUN?.startWithNoTimeZone).isBefore(siteDateTimeNow)"
+                  :disabled="calendarCardIsDisabled(colRow.SUN)"
                 ></CalendarCard>
               </td>
             </tr>
@@ -303,12 +498,27 @@ function getPivot() {
   <!-- icons -->
   <div class="row gy-5 mt-5">
     <div class="offset-3"></div>
-    <div class="col-md-2"><IconCalendarCard letter="E"></IconCalendarCard>Enrolled</div>
-    <div class="col-md-2"><IconCalendarCard letter="W"></IconCalendarCard>Waitlist</div>
-    <div class="col-md-2"><IconCalendarCard letter="S"></IconCalendarCard>Substitute</div>
+    <div class="col-md-2 avenir-font"><IconCalendarCard letter="E"></IconCalendarCard>Enrolled</div>
+    <div class="col-md-2 avenir-font"><IconCalendarCard letter="W"></IconCalendarCard>Waitlist</div>
+    <div class="col-md-2 avenir-font">
+      <IconCalendarCard letter="S"></IconCalendarCard>Substitute
+    </div>
     <div class="offset-3"></div>
   </div>
+
+  <!-- Error Modal -->
+  <ModalComponent
+    v-if="errorModalIsVisible"
+    title="Error"
+    :message="ERROR_UNKNOWN"
+    :cancel-text="null"
+    @on-ok="errorModalIsVisible = false"
+  >
+  </ModalComponent>
 </template>
+
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>
 
 <style>
 .CalendarWeekTable > tbody > tr > td > div {
@@ -349,5 +559,9 @@ thead {
   display: table-header-group;
   vertical-align: middle;
   border-color: inherit;
+}
+
+.avenir-font {
+  font-family: 'Avenir', sans-serif;
 }
 </style>

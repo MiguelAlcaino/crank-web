@@ -77,25 +77,36 @@ html {
 
 /* Datepicker Theming */
 .dp__theme_light {
-  --dp-background-color: #ffffff;
-  --dp-text-color: #212121;
-  --dp-hover-color: #f3f3f3;
-  --dp-hover-text-color: #212121;
-  --dp-hover-icon-color: #959595;
-  --dp-primary-color: #000000;
-  --dp-primary-text-color: #f8f5f5;
-  --dp-secondary-color: #c0c4cc;
-  --dp-border-color: #ddd;
-  --dp-menu-border-color: #ddd;
-  --dp-border-color-hover: #aaaeb7;
-  --dp-disabled-color: #f6f6f6;
-  --dp-scroll-bar-background: #f3f3f3;
-  --dp-scroll-bar-color: #959595;
-  --dp-success-color: #000000;
-  --dp-success-color-disabled: #a3d9b1;
-  --dp-icon-color: #959595;
-  --dp-danger-color: #ff6f60;
-  --dp-highlight-color: rgba(25, 118, 210, 0.1);
+  --dp-background-color: #ffffff !important;
+  --dp-text-color: #212121 !important;
+  --dp-hover-color: #f3f3f3 !important;
+  --dp-hover-text-color: #212121 !important;
+  --dp-hover-icon-color: #959595 !important;
+  --dp-primary-color: #ff7f61 !important;
+  --dp-primary-text-color: #f8f5f5 !important;
+  --dp-secondary-color: #c0c4cc !important;
+  --dp-border-color: #ddd !important;
+  --dp-menu-border-color: #ddd !important;
+  --dp-border-color-hover: #aaaeb7 !important;
+  --dp-disabled-color: #f6f6f6 !important;
+  --dp-scroll-bar-background: #f3f3f3 !important;
+  --dp-scroll-bar-color: #959595 !important;
+  --dp-success-color: #000000 !important;
+  --dp-success-color-disabled: #a3d9b1 !important;
+  --dp-icon-color: #959595 !important;
+  --dp-danger-color: #ff6f60 !important;
+  --dp-highlight-color: rgba(255, 127, 97, 0.1) !important;
+}
+
+.dp__range_end,
+.dp__range_start,
+.dp__active_date {
+  background: var(--dp-danger-color) !important;
+  color: var(--dp-primary-text-color) !important;
+}
+.dp__action_select {
+  background: #000000 !important;
+  color: var(--dp-primary-text-color) !important;
 }
 
 @font-face {
@@ -118,14 +129,15 @@ html {
 
 h1,
 h2,
+h3,
 h4,
-h5 {
+h5,
+h6 {
   font-family: 'BigJohn', sans-serif;
 }
 
-h3 {
-  font-family: 'BigJohn', sans-serif;
-  color: #737373;
+p {
+  font-family: 'Avenir', sans-serif;
 }
 
 .input-label {
@@ -137,12 +149,20 @@ input {
   font-family: 'Avenir', sans-serif;
 }
 
-button {
-  font-family: 'BigJohn', sans-serif;
+select {
+  font-family: 'Avenir', sans-serif;
 }
 
-a {
-  color: #000000;
+span {
+  font-family: 'Avenir', sans-serif;
+}
+
+label {
+  font-family: 'Avenir', sans-serif;
+}
+
+button {
+  font-family: 'BigJohn', sans-serif;
 }
 
 .btn.btn-primary {
@@ -151,4 +171,15 @@ a {
 
 th {
   font-family: 'BigJohn', sans-serif;
+}
+
+.form-control:focus,
+.custom-select:focus {
+  border-color: #737373;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(115, 115, 115, 0.6);
+  outline: 0 none;
+}
+
+small {
+  font-family: 'Avenir', sans-serif;
 }

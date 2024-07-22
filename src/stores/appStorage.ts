@@ -1,33 +1,35 @@
 import { defineStore } from 'pinia'
 import dayjs from 'dayjs'
 import { SiteEnum } from '@/gql/graphql'
+dayjs.Ls.en.weekStart = 1
 
 export const appStore = defineStore({
   id: 'appStore',
   state: () => ({
     calendarStartDate:
-      localStorage.getItem('calendarStartDate') !== null
-        ? dayjs(localStorage.getItem('calendarStartDate')).toDate()
-        : dayjs(Date()).startOf('week').toDate(),
+      sessionStorage.getItem('calendarStartDate') !== null
+        ? sessionStorage.getItem('calendarStartDate')
+        : null,
     calendarEndDate:
-      localStorage.getItem('calendarEndDate') !== null
-        ? dayjs(localStorage.getItem('calendarEndDate')).toDate()
-        : dayjs(Date()).endOf('week').toDate(),
+      sessionStorage.getItem('calendarEndDate') !== null
+        ? sessionStorage.getItem('calendarEndDate')
+        : null,
     site:
       localStorage.getItem('site') != null
         ? (localStorage.getItem('site') as SiteEnum)
         : SiteEnum.Dubai
   }),
   actions: {
-    setCalendarDates(calendarStartDate: Date, calendarEndDate: Date) {
-      localStorage.setItem('calendarStartDate', dayjs(calendarStartDate).toISOString())
+    setCalendarDates(calendarStartDate: string, calendarEndDate: string) {
+      sessionStorage.setItem('calendarStartDate', calendarStartDate)
       this.calendarStartDate = calendarStartDate
 
-      localStorage.setItem('calendarEndDate', dayjs(calendarEndDate).toISOString())
+      sessionStorage.setItem('calendarEndDate', calendarEndDate)
       this.calendarEndDate = calendarEndDate
     },
     setSite(site: SiteEnum) {
       localStorage.setItem('site', site)
+      this.site = site
     }
   }
 })

@@ -12,12 +12,15 @@ import ReserveSpotButton from '@/components/ReserveSpotButton.vue'
 import SpotMatrix from '@/components/SpotMatrix.vue'
 import WaitlistButton from '@/components/WaitlistButton.vue'
 import YouAreAlreadyEnrolled from '@/components/YouAreAlreadyEnrolled.vue'
+import CancelEnrollment from '@/components/CancelEnrollment.vue'
+import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
 
 import router from '@/router'
 import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
 import {
-  ERROR_CLASSS_IS_FULL,
+  ERROR_BOOKING_OVERLAPS_ANOTHER_ONE,
+  ERROR_CLASS_IS_FULL,
   ERROR_CLIENT_IS_ALREADY_BOOKED,
   ERROR_CLIENT_IS_ALREADY__ON_WAITLIST,
   ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW,
@@ -35,28 +38,45 @@ const spotNumber = ref<number | null>(null)
 const isWaitlistBooking = ref<boolean | null>(null)
 
 const isLoading = ref<boolean>(false)
-const showSuccessModal = ref<boolean>(false)
-const showErrorModal = ref<boolean>(false)
-const showModal = ref<boolean>(false)
 const classInfo = ref<ClassInfo | null>(null)
 
 const enrollmentEnabled = ref<boolean>(true)
 const enrollmentInfo = ref<EnrollmentInfo | null>(null)
 
-const confirmModalData = ref<{ title: string; message: string; isLoading: boolean }>({
+const siteDateTimeNow = ref<Date>(new Date())
+
+const confirmModalData = ref<{
+  title: string
+  message: string
+  isLoading: boolean
+  isVisible: boolean
+}>({
   title: '',
   message: '',
-  isLoading: false
+  isLoading: false,
+  isVisible: false
 })
-const errorModalData = ref<{ title: string; message: string; isLoading: boolean }>({
+const errorModalData = ref<{
+  title: string
+  message: string
+  isLoading: boolean
+  isVisible: boolean
+}>({
   title: '',
   message: '',
-  isLoading: false
+  isLoading: false,
+  isVisible: false
 })
-const successModalData = ref<{ title: string; message: string; isLoading: boolean }>({
+const successModalData = ref<{
+  title: string
+  message: string
+  isLoading: boolean
+  isVisible: boolean
+}>({
   title: '',
   message: '',
-  isLoading: false
+  isLoading: false,
+  isVisible: false
 })
 
 const paymentErrorModal = ref<boolean>(false)
@@ -85,6 +105,9 @@ async function getClassInfo() {
 
   const classId = route.params.id as string
   const _classInfo = await apiService.getClassInfo(appStore().site, classId)
+  const siteSettings = await apiService.getSiteSettings(appStore().site)
+
+  if (siteSettings) siteDateTimeNow.value = new Date(siteSettings.siteDateTimeNow)
 
   if (_classInfo) {
     enrollmentInfo.value = await apiService.getCurrentUserEnrollmentInClass(classId)
@@ -108,7 +131,7 @@ function confirmBookSpot(event: SpotClickedEvent): void {
   confirmModalData.value.title = 'BOOK YOUR SPOT'
   confirmModalData.value.message = 'WOULD YOU LIKE TO BOOK SPOT ' + event.spotNumber + '?'
 
-  showModal.value = true
+  confirmModalData.value.isVisible = true
 }
 
 function clickBookWaitList(): void {
@@ -116,10 +139,10 @@ function clickBookWaitList(): void {
   isWaitlistBooking.value = true
 
   confirmModalData.value.isLoading = false
-  confirmModalData.value.title = 'ENROLL ON THE WAITLIST'
+  confirmModalData.value.title = 'WAITLIST'
   confirmModalData.value.message = 'WOULD YOU LIKE TO ENROLL ON THE WAITLIST?'
 
-  showModal.value = true
+  confirmModalData.value.isVisible = true
 }
 
 function confirmBookClass(): void {
@@ -130,19 +153,16 @@ function confirmBookClass(): void {
   confirmModalData.value.title = 'BOOK THIS CLASS'
   confirmModalData.value.message = 'WOULD YOU LIKE TO BOOK THIS CLASS?'
 
-  showModal.value = true
+  confirmModalData.value.isVisible = true
 }
 
 function acceptSuccessModal() {
-  showSuccessModal.value = false
+  successModalData.value.isVisible = false
   router.replace({ name: 'calendar' })
 }
 
 function goToThePackagesScreen() {
-  const paymentRedirectUrl = (import.meta.env.VITE_PAYMENT_REDIRECT_URL ?? null) as string | null
-  if (paymentRedirectUrl) {
-    window.location.href = paymentRedirectUrl
-  }
+  router.push({ name: 'payments' })
 }
 
 async function bookClass(classId: string, spotNumber: number | null, isWaitlistBooking: boolean) {
@@ -155,58 +175,62 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
   })
 
   confirmModalData.value.isLoading = false
-  showModal.value = false
+  confirmModalData.value.isVisible = false
 
   if (response === 'BookClassSuccess') {
     successModalData.value.title = 'SUCCESS'
     successModalData.value.message = SUCCESS_BOOK_CLASS
-    showSuccessModal.value = true
+    successModalData.value.isVisible = true
   } else if (response === 'AddedToWaitlistSuccess') {
     successModalData.value.title = 'SUCCESS'
     successModalData.value.message = SUCCESS_ADDED_TO_WAITLIST
-    showSuccessModal.value = true
+    successModalData.value.isVisible = true
   } else {
     if (response === 'PaymentRequiredError') {
       paymentErrorModal.value = true
     } else if (response === 'ClientIsAlreadyBookedError') {
       errorModalData.value.message = ERROR_CLIENT_IS_ALREADY_BOOKED
-      showErrorModal.value = true
+      errorModalData.value.isVisible = true
+      await getClassInfo()
       enrollmentEnabled.value = false
-      getClassInfo()
+    } else if (response === 'BookingOverlapsAnotherOneError') {
+      errorModalData.value.message = ERROR_BOOKING_OVERLAPS_ANOTHER_ONE
+      errorModalData.value.isVisible = true
+      await getClassInfo()
+      enrollmentEnabled.value = false
     } else if (response === 'ClientIsAlreadyOnWaitlistError') {
       errorModalData.value.message = ERROR_CLIENT_IS_ALREADY__ON_WAITLIST
-      showErrorModal.value = true
+      errorModalData.value.isVisible = true
       enrollmentEnabled.value = false
       getClassInfo()
     } else if (response === 'WaitlistFullError') {
       errorModalData.value.message = ERROR_WAITLIST_FULL_ERROR
-      showErrorModal.value = true
+      errorModalData.value.isVisible = true
       enrollmentEnabled.value = false
       getClassInfo()
     } else if (response === 'ClientIsOutsideSchedulingWindowError') {
       errorModalData.value.message = ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW
-      showErrorModal.value = true
+      errorModalData.value.isVisible = true
       enrollmentEnabled.value = false
     } else if (response === 'SpotAlreadyReservedError') {
       errorModalData.value.message = ERROR_SPOT_ALREADY_RESERVED
-      showErrorModal.value = true
+      errorModalData.value.isVisible = true
       getClassInfo()
     } else if (response === 'BookedButInOtherSpotError') {
-      //TODO: BookedButInOtherSpotError action
-      errorModalData.value.message = 'BOOKED BUT IN OTHER SPOT ERROR.'
-      showErrorModal.value = true
+      errorModalData.value.message = ERROR_BOOKING_OVERLAPS_ANOTHER_ONE
+      errorModalData.value.isVisible = true
       getClassInfo()
     } else if (response === 'ClassIsFullError') {
-      errorModalData.value.message = ERROR_CLASSS_IS_FULL
-      showErrorModal.value = true
+      errorModalData.value.message = ERROR_CLASS_IS_FULL
+      errorModalData.value.isVisible = true
       enrollmentEnabled.value = false
       getClassInfo()
     } else if (response === 'UnknownError') {
       errorModalData.value.message = ERROR_UNKNOWN
-      showErrorModal.value = true
+      errorModalData.value.isVisible = true
     } else {
       errorModalData.value.message = ERROR_UNKNOWN
-      showErrorModal.value = true
+      errorModalData.value.isVisible = true
     }
   }
 }
@@ -220,9 +244,9 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
     <div class="col-md-6 col-sm-4">
       <div class="text-right">
         <div class="form-group form-material">
-          <button type="button" class="btn btn-link" @click="$router.go(-1)">
+          <a class="nav-link" @click="$router.push('/calendar')" href="#">
             <font-awesome-icon icon="fa-solid fa-left-long" />&nbsp;Back to Calendar
-          </button>
+          </a>
         </div>
       </div>
     </div>
@@ -258,6 +282,11 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-12" style="text-align: center">
+          <CrankCircularProgressIndicator
+            text="Loading..."
+            v-if="isLoading"
+          ></CrankCircularProgressIndicator>
+
           <WaitlistButton
             v-if="
               classInfo !== null &&
@@ -271,19 +300,22 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
           <SpotMatrix
             v-if="
               classInfo !== null &&
-              classInfo.roomLayout?.matrix !== null &&
+              classInfo?.roomLayout?.matrix !== null &&
               (!classInfo.class.waitListAvailable || enrollmentInfo !== null) &&
-              enrollmentInfo?.enrollmentStatus !== 'waitlisted'
+              enrollmentInfo?.enrollmentStatus !== EnrollmentStatusEnum.Waitlisted
             "
             :matrix="classInfo.roomLayout?.matrix"
             @click-spot="confirmBookSpot"
-            :spot-number-booked-by-current-user="enrollmentInfo?.spotInfo?.spotNumber"
+            :spot-number-booked-by-current-user="enrollmentInfo?.spotNumber"
+            :used-spots="classInfo.usedSpots"
           ></SpotMatrix>
           <ReserveSpotButton
             v-if="
               classInfo !== null &&
               classInfo.roomLayout === null &&
-              !classInfo.class.waitListAvailable
+              !classInfo.class.waitListAvailable &&
+              enrollmentInfo?.enrollmentStatus !== EnrollmentStatusEnum.Waitlisted &&
+              enrollmentInfo?.enrollmentStatus !== EnrollmentStatusEnum.Active
             "
             @click-book-class="confirmBookClass"
             :enrollmentEnabled="enrollmentEnabled"
@@ -291,15 +323,33 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
           </ReserveSpotButton>
         </div>
       </div>
+
+      <div class="row justify-content-center">
+        <div class="col-4">
+          <CancelEnrollment
+            v-if="
+              enrollmentInfo?.enrollmentStatus &&
+              (enrollmentInfo.enrollmentStatus === EnrollmentStatusEnum.Waitlisted ||
+                enrollmentInfo.enrollmentStatus === EnrollmentStatusEnum.Active)
+            "
+            :enrollment-status="enrollmentInfo?.enrollmentStatus"
+            :enrollment-id="enrollmentInfo.id"
+            @after-cancelling="acceptSuccessModal()"
+            :site-date-time-now="siteDateTimeNow"
+            :start="new Date(classInfo!.class.start)"
+          ></CancelEnrollment>
+        </div>
+      </div>
     </div>
   </div>
 
+  <!-- Confirm Modal -->
   <ModalComponent
-    v-if="showModal"
+    v-if="confirmModalData.isVisible"
     :title="confirmModalData.title"
     :message="confirmModalData.message"
     :ok-loading="confirmModalData.isLoading"
-    @on-cancel="showModal = false"
+    @on-cancel="confirmModalData.isVisible = false"
     @on-ok="bookClass(classId, spotNumber, isWaitlistBooking!)"
     :closable="false"
   >
@@ -312,7 +362,7 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
     :closable="false"
     @on-ok="acceptSuccessModal"
     :cancel-text="null"
-    v-if="showSuccessModal"
+    v-if="successModalData.isVisible"
   >
   </ModalComponent>
 
@@ -322,8 +372,8 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
     :message="errorModalData.message"
     title="ERROR"
     :closable="false"
-    v-if="showErrorModal"
-    @on-ok="showErrorModal = false"
+    v-if="errorModalData.isVisible"
+    @on-ok="errorModalData.isVisible = false"
   ></ModalComponent>
 
   <!-- Error Payment Modal -->
@@ -338,4 +388,43 @@ async function bookClass(classId: string, spotNumber: number | null, isWaitlistB
   </ModalComponent>
 </template>
 
-<style scoped></style>
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>
+
+<style scoped>
+a:link {
+  color: #000000;
+  background-color: transparent;
+  text-decoration: none;
+  font-family: 'BigJohn', sans-serif;
+}
+
+a:visited {
+  color: #000000;
+  background-color: transparent;
+  text-decoration: none;
+  font-family: 'BigJohn', sans-serif;
+}
+
+a:hover {
+  color: #ff7f61;
+  background-color: transparent;
+  text-decoration: none;
+  font-family: 'BigJohn', sans-serif;
+}
+
+a:active {
+  color: #000000;
+  background-color: transparent;
+  text-decoration: none;
+  font-family: 'BigJohn', sans-serif;
+}
+
+b {
+  font-family: 'BigJohn', sans-serif;
+}
+
+p {
+  font-family: 'Avenir', sans-serif;
+}
+</style>

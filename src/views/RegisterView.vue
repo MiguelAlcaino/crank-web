@@ -25,6 +25,10 @@ import ModalComponent from '@/components/ModalComponent.vue'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 import dayjs from 'dayjs'
 
+import { VueTelInput } from 'vue-tel-input'
+import 'vue-tel-input/vue-tel-input.css'
+import { getFormattedPhoneNumber } from '@/utils/utility-functions'
+
 const isSaving = ref(false)
 const isLoggingIn = ref(false)
 const successModalIsVisible = ref(false)
@@ -34,6 +38,9 @@ const errorMessage = ref('')
 const countries = ref([] as Country[])
 const countryStates = ref([] as State[])
 const currentDate = ref(new Date())
+
+const passwordIsVisible = ref(false)
+const confirmPasswordIsVisible = ref(false)
 
 const formData = reactive({
   location: SiteEnum.Dubai,
@@ -106,9 +113,18 @@ const rules = computed(() => {
     address2: { maxLength: maxLength(255) },
     phone: {
       required: helpers.withMessage(
-        'Valid mobile number is required to receive the sms and redeem the trial package',
+        'Valid mobile number is required to redeem the trial package through an SMS validation code',
         required
-      )
+      ),
+      validateUAEphone: helpers.withMessage(
+        'A UAE phone number must start with +9715',
+        validateUAEphone
+      ),
+      minLength: helpers.withMessage(
+        'Valid mobile number is required to redeem the trial package through an SMS validation code',
+        minLength(7)
+      ),
+      lengthUAEphone: helpers.withMessage('Invalid Mobile Number', lengthUAEphone)
     },
     emergencyContactName: {
       required: helpers.withMessage('Emergency Contact Name is required', required)
@@ -127,6 +143,12 @@ const rules = computed(() => {
     }
   }
 })
+
+const validateUAEphone = (phone: string) =>
+  phone.startsWith('+971') ? getFormattedPhoneNumber(phone).startsWith('+9715') : true
+
+const lengthUAEphone = (phone: string) =>
+  phone.startsWith('+971') ? getFormattedPhoneNumber(phone).length === 13 : true
 
 const v$ = useVuelidate(rules, formData)
 const apiService = inject<ApiService>('gqlApiService')!
@@ -153,14 +175,14 @@ const submitForm = async () => {
       country: formData.country,
       email: formData.email,
       emergencyContactName: formData.emergencyContactName,
-      emergencyContactPhone: formData.emergencyContactPhone,
+      emergencyContactPhone: getFormattedPhoneNumber(formData.emergencyContactPhone),
       emergencyContactRelationship: formData.emergencyContactRelationship,
       firstName: formData.firstName,
       gender: gender,
       lastName: formData.lastName,
       leaderboardUsername: formData.leaderboardUsername,
       password: formData.password,
-      phone: formData.phone,
+      phone: getFormattedPhoneNumber(formData.phone),
       state: formData.cityState,
       weight: null,
       zipCode: '0000'
@@ -275,15 +297,27 @@ async function login() {
       <!-- password -->
       <div class="col-md-6 mb-3">
         <label for="passwordRegistration" class="input-label">Password *</label>
-        <input
-          id="passwordRegistration"
-          class="form-control"
-          v-model="formData.password"
-          type="password"
-          placeholder="Password"
-          maxlength="50"
-          required
-        />
+        <div class="input-group">
+          <input
+            id="passwordRegistration"
+            class="form-control"
+            v-model="formData.password"
+            :type="passwordIsVisible ? 'text' : 'password'"
+            placeholder="Password"
+            maxlength="50"
+            required
+          />
+          <div
+            class="input-group-prepend"
+            @click="passwordIsVisible = !passwordIsVisible"
+            style="cursor: pointer"
+          >
+            <span class="input-group-text" id="passwordEye" style="background-color: transparent">
+              <i v-if="passwordIsVisible" class="bi bi-eye-fill"></i>
+              <i v-else class="bi bi-eye-slash-fill"></i>
+            </span>
+          </div>
+        </div>
         <small
           v-for="error in v$.password.$errors"
           :key="error.$uid"
@@ -296,15 +330,27 @@ async function login() {
       <!-- confirm Password -->
       <div class="col-md-6 mb-3">
         <label for="confirmPasswordRegistration" class="input-label">Confirm Password *</label>
-        <input
-          id="confirmPasswordRegistration"
-          class="form-control"
-          v-model="formData.confirmPassword"
-          type="password"
-          placeholder="Confirm Password"
-          maxlength="50"
-          required
-        />
+        <div class="input-group">
+          <input
+            id="confirmPasswordRegistration"
+            class="form-control"
+            v-model="formData.confirmPassword"
+            :type="confirmPasswordIsVisible ? 'text' : 'password'"
+            placeholder="Confirm Password"
+            maxlength="50"
+            required
+          />
+          <div
+            class="input-group-prepend"
+            @click="confirmPasswordIsVisible = !confirmPasswordIsVisible"
+            style="cursor: pointer"
+          >
+            <span class="input-group-text" id="passwordEye" style="background-color: transparent">
+              <i v-if="confirmPasswordIsVisible" class="bi bi-eye-fill"></i>
+              <i v-else class="bi bi-eye-slash-fill"></i>
+            </span>
+          </div>
+        </div>
         <small
           v-for="error in v$.confirmPassword.$errors"
           :key="error.$uid"
@@ -535,15 +581,28 @@ async function login() {
       <!--phone-->
       <div class="col-md-6 mb-3">
         <label for="mobileNumberRegistration" class="input-label">Mobile Number *</label>
-        <input
-          id="mobileNumberRegistration"
-          class="form-control"
+        <vue-tel-input
           v-model="formData.phone"
-          type="text"
+          mode="international"
+          id="mobileNumberRegistration"
           placeholder="Mobile Number"
-          maxlength="20"
           required
-        />
+          defaultCountry="AE"
+          :dropdownOptions="{
+            showSearchBox: true,
+            showFlags: true,
+            showDialCodeInList: true,
+            showDialCodeInSelection: false
+          }"
+          :inputOptions="{
+            id: 'mobileNumberRegistration',
+            showDialCode: true,
+            required: true
+          }"
+          :validCharactersOnly="true"
+          :autoDefaultCountry="false"
+        ></vue-tel-input>
+
         <small
           v-for="error in v$.phone.$errors"
           :key="error.$uid"
@@ -584,15 +643,27 @@ async function login() {
         <label for="emergencyContactPhoneRegistration" class="input-label"
           >Emergency Contact Number *</label
         >
-        <input
-          id="emergencyContactPhoneRegistration"
-          class="form-control"
+        <vue-tel-input
           v-model="formData.emergencyContactPhone"
-          type="text"
+          mode="international"
+          id="emergencyContactPhoneRegistration"
           placeholder="Emergency Contact Number"
-          maxlength="100"
           required
-        />
+          defaultCountry="AE"
+          :dropdownOptions="{
+            showSearchBox: true,
+            showFlags: true,
+            showDialCodeInList: true,
+            showDialCodeInSelection: false
+          }"
+          :inputOptions="{
+            id: 'emergencyContactPhoneRegistration',
+            showDialCode: true,
+            required: true
+          }"
+          :validCharactersOnly="true"
+          :autoDefaultCountry="false"
+        ></vue-tel-input>
         <small
           v-for="error in v$.emergencyContactPhone.$errors"
           :key="error.$uid"
@@ -634,20 +705,20 @@ async function login() {
     <div class="form-row">
       <div class="col-md-12 mb-3">
         <div class="form-check">
-          <input
-            class="form-check-input"
-            type="checkbox"
-            v-model="formData.acceptTermsAndConditions"
-            id="acceptTermsAndConditionsRegistration"
-          />
-          <label class="form-check-label" for="acceptTermsAndConditionsRegistration">
-            I understand and accept the
-            <b
-              ><a href="https://www.crank-fit.com/terms-conditions" target="_blank"
-                >Terms & Conditions</a
-              ></b
-            >
-          </label>
+          <div class="custom-control custom-checkbox">
+            <input
+              type="checkbox"
+              class="custom-control-input"
+              id="acceptTermsAndConditionsCheck"
+              v-model="formData.acceptTermsAndConditions"
+            />
+            <label class="custom-control-label" for="acceptTermsAndConditionsCheck">
+              I understand and accept the
+              <a href="https://www.crank-fit.com/terms-conditions" target="_blank">
+                Terms & Conditions
+              </a>
+            </label>
+          </div>
           <small
             v-for="error in v$.acceptTermsAndConditions.$errors"
             :key="error.$uid"
@@ -692,3 +763,82 @@ async function login() {
   >
   </ModalComponent>
 </template>
+
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>
+
+<style scoped>
+h3 {
+  color: #737373;
+}
+
+a {
+  color: #000000;
+  font-weight: bold;
+  text-decoration: underline;
+}
+a:hover {
+  color: #000000;
+  font-weight: bold;
+}
+
+.custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
+  background-color: #ff7f61 !important;
+  border-color: #ff7f61 !important;
+}
+.custom-checkbox .custom-control-input:checked:focus ~ .custom-control-label::before {
+  box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem #ff7f61;
+  border-color: #ff7f61 !important;
+}
+.custom-checkbox .custom-control-input:focus ~ .custom-control-label::before {
+  box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(0, 0, 0, 0.25);
+  border-color: #ff7f61 !important;
+}
+.custom-checkbox .custom-control-input:active ~ .custom-control-label::before {
+  background-color: #ffc6b9;
+  border-color: #ff7f61 !important;
+}
+</style>
+
+<style lang="css">
+/* Datepicker Theming */
+.dp__theme_light {
+  --dp-background-color: #ffffff !important;
+  --dp-text-color: #212121 !important;
+  --dp-hover-color: #f3f3f3 !important;
+  --dp-hover-text-color: #212121 !important;
+  --dp-hover-icon-color: #959595 !important;
+  --dp-primary-color: #ff7f61 !important;
+  --dp-primary-text-color: #f8f5f5 !important;
+  --dp-secondary-color: #c0c4cc !important;
+  --dp-border-color: #ddd !important;
+  --dp-menu-border-color: #ddd !important;
+  --dp-border-color-hover: #aaaeb7 !important;
+  --dp-disabled-color: #f6f6f6 !important;
+  --dp-scroll-bar-background: #f3f3f3 !important;
+  --dp-scroll-bar-color: #959595 !important;
+  --dp-success-color: #000000 !important;
+  --dp-success-color-disabled: #a3d9b1 !important;
+  --dp-icon-color: #959595 !important;
+  --dp-danger-color: #ff6f60 !important;
+  --dp-highlight-color: rgba(255, 127, 97, 0.1) !important;
+}
+
+.dp__range_end,
+.dp__range_start,
+.dp__active_date {
+  background: var(--dp-danger-color) !important;
+  color: var(--dp-primary-text-color) !important;
+}
+.dp__action_select {
+  background: #000000 !important;
+  color: var(--dp-primary-text-color) !important;
+}
+
+li > span {
+  font-family: 'Avenir', sans-serif;
+}
+li > strong {
+  font-family: 'Avenir', sans-serif;
+}
+</style>
