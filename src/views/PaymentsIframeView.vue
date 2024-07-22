@@ -19,7 +19,11 @@ onMounted(() => {
   <div class="container-fluid h-100">
     <div class="row justify-content-center vh-100">
       <div class="col-12">
-        <iframe v-if="iframeLink" :src="iframeLink" sandbox="allow-same-origin allow-top-navigation allow-forms allow-scripts"></iframe>
+        <iframe
+          v-if="iframeLink"
+          :src="iframeLink"
+          sandbox="allow-same-origin allow-top-navigation allow-forms allow-scripts"
+        ></iframe>
       </div>
     </div>
   </div>
