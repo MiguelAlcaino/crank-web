@@ -341,3 +341,60 @@ export const startLoginRedirectApp = async function (
   await router.push({ name: 'login_redirect', query: { destination: destination, site: site } })
   app.mount(appDiv)
 }
+
+export const startVueApp = async function (
+  path:
+    | '/calendar'
+    | '/bookings'
+    | '/register'
+    | '/purchases'
+    | '/workout-stats'
+    | '/profile'
+    | '/payments'
+    | '/reset-password'
+    | '/login-redirect'
+    | '',
+  site: string = SiteEnum.Dubai.toString(),
+  gqlUrl: string = defaultGqlUrl,
+  appDiv: string = defaultAppDiv
+) {
+  if (path === '/calendar') {
+    startBookingCalendarApp(site, gqlUrl, appDiv)
+  } else if (path === '/bookings') {
+    startBookingsApp(gqlUrl, appDiv)
+  } else if (path === '/register') {
+    startRegisterApp(gqlUrl, appDiv)
+  } else if (path === '/purchases') {
+    startPurchasesApp(gqlUrl, appDiv)
+  } else if (path === '/workout-stats') {
+    startWorkoutStatsApp(gqlUrl, appDiv)
+  } else if (path === '/profile') {
+    startProfileApp(gqlUrl, appDiv)
+  } else if (path === '/payments') {
+    startPaymentsIframeApp(site, gqlUrl, appDiv)
+  } else if (path === '/reset-password') {
+    startResetPasswordApp(gqlUrl, appDiv)
+  } else if (path === '/login-redirect') {
+    startLoginRedirectApp(gqlUrl, appDiv)
+  } else {
+    const app = createApp({
+      setup() {
+        provide(
+          'gqlApiService',
+          new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
+        )
+      },
+      render: () => h(App)
+    }).component('font-awesome-icon', FontAwesomeIcon)
+
+    app
+      .use(createPinia())
+      .use(router)
+      .component('Popper', Popper)
+      .component('VueDatePicker', VueDatePicker)
+
+    await router.push({ path: path })
+
+    app.mount(appDiv)
+  }
+}
