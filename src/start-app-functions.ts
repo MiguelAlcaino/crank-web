@@ -398,3 +398,76 @@ export const startVueApp = async function (
     app.mount(appDiv)
   }
 }
+
+// TODO: put site parameter in the url
+export const startVueAppWithoutPath = async function (
+  site: string = SiteEnum.Dubai.toString(),
+  gqlUrl: string = defaultGqlUrl,
+  appDiv: string = defaultAppDiv
+) {
+  const app = createApp({
+    setup() {
+      provide(
+        'gqlApiService',
+        new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
+      )
+    },
+    render: () => h(App)
+  }).component('font-awesome-icon', FontAwesomeIcon)
+
+  let siteEnum: SiteEnum
+
+  if (site === SiteEnum.Dubai.toString()) {
+    siteEnum = SiteEnum.Dubai
+  } else if (site === SiteEnum.AbuDhabi) {
+    siteEnum = SiteEnum.AbuDhabi
+  } else {
+    throw Error
+  }
+
+  app
+    .use(createPinia())
+    .use(router)
+    .component('Popper', Popper)
+    .component('VueDatePicker', VueDatePicker)
+
+  try {
+    if (!authService.isLoggedId()) {
+      appStore().setSite(siteEnum)
+    } else {
+      if (appStore().site !== siteEnum) {
+        const apiService = new ApiService(
+          newAuthenticatedApolloClient(Config.GRAPHQL_SERVICE_URL),
+          newAnonymousClient(Config.GRAPHQL_SERVICE_URL)
+        )
+
+        const currentUserExistsOnSite = (await apiService.currentUserDoesExistInSite(
+          site
+        )) as boolean
+
+        if (!currentUserExistsOnSite) {
+          const response = await apiService.createCurrentUserInSite(appStore().site, site)
+
+          if (
+            response !== null &&
+            (response.__typename === 'CreateCurrentUserInSiteSuccess' ||
+              response.__typename === 'UserAlreadyExistsError')
+          ) {
+            appStore().setSite(siteEnum)
+          } else {
+            authService.logout()
+          }
+        } else {
+          appStore().setSite(siteEnum)
+        }
+      } else {
+        appStore().setSite(siteEnum)
+      }
+    }
+  } catch (error) {
+    console.error('ERROR:', error)
+  }
+
+  app.mount(appDiv)
+}
+
