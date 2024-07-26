@@ -3,7 +3,6 @@ import { useAuthenticationStore } from '@/stores/authToken'
 import { IncorrectCredentialsLoginError, ResetPasswordRequiredError } from '@/model/Exception'
 import router from '@/router'
 import jwt_decode from 'jwt-decode'
-import { Config } from '@/model/Config'
 import type { SiteEnum } from '@/gql/graphql'
 import { appStore } from '@/stores/appStorage'
 import type { Role } from '@/utils/userRoles'
@@ -14,6 +13,9 @@ interface JwtTokenPayload {
 }
 
 export const authService = {
+  getRestServerUrl(): string {
+    return import.meta.env.VITE_CRANK_REST_SERVER_URL + '/api'
+  },
   isLoggedId(): boolean {
     const store = useAuthenticationStore()
 
@@ -24,14 +26,12 @@ export const authService = {
     return store.token !== null
   },
   async login(email: string, password: string, site: string): Promise<void> {
+    console.log(import.meta.env.MODE)
     try {
-      const response = await axios.post(
-        Config.AUTH_SERVICE_HOST + '/api/login_check?site=' + site,
-        {
-          username: email,
-          password: password
-        }
-      )
+      const response = await axios.post(this.getRestServerUrl() + '/login_check?site=' + site, {
+        username: email,
+        password: password
+      })
 
       const token = response.data.token
       if (token) {
@@ -69,7 +69,7 @@ export const authService = {
     )
   },
   async refreshToken(): Promise<void> {
-    const response = await axios.post(Config.AUTH_SERVICE_HOST + '/api/token/refresh')
+    const response = await axios.post(this.getRestServerUrl() + '/token/refresh')
     useAuthenticationStore().setSession(response.data.token)
   },
   async logout(): Promise<void> {
@@ -79,7 +79,7 @@ export const authService = {
   async validateResetPasswordToken(resetPasswordToken: string): Promise<string> {
     try {
       const response = await axios.get(
-        Config.AUTH_SERVICE_HOST + '/api/reset-password/validate-token/' + resetPasswordToken
+        this.getRestServerUrl() + '/reset-password/validate-token/' + resetPasswordToken
       )
 
       useAuthenticationStore().setSession(response.data.token)

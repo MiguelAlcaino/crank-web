@@ -23,10 +23,9 @@ import { appStore } from './stores/appStorage'
 import { SiteEnum } from './gql/graphql'
 
 import App from '@/App.vue'
-import { Config } from './model/Config'
 import { authService } from './services/authService'
 
-const defaultGqlUrl = Config.GRAPHQL_SERVICE_URL
+const defaultGqlUrl = import.meta.env.VITE_CRANK_GRAPHQL_SERVER_URL
 const defaultAppDiv = '#app'
 //test commit
 export const startBookingCalendarApp = async function (
@@ -34,11 +33,12 @@ export const startBookingCalendarApp = async function (
   gqlUrl: string = defaultGqlUrl,
   appDiv: string = defaultAppDiv
 ) {
+  const apiService = new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
   const app = createApp({
     setup() {
       provide(
         'gqlApiService',
-        new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
+        apiService
       )
     },
     render: () => h(App)
@@ -65,11 +65,6 @@ export const startBookingCalendarApp = async function (
       appStore().setSite(siteEnum)
     } else {
       if (appStore().site !== siteEnum) {
-        const apiService = new ApiService(
-          newAuthenticatedApolloClient(Config.GRAPHQL_SERVICE_URL),
-          newAnonymousClient(Config.GRAPHQL_SERVICE_URL)
-        )
-
         const currentUserExistsOnSite = (await apiService.currentUserDoesExistInSite(
           site
         )) as boolean
@@ -222,11 +217,12 @@ export const startPaymentsIframeApp = async function (
   gqlUrl: string = defaultGqlUrl,
   appDiv: string = defaultAppDiv
 ) {
+  const apiService = new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl));
   const app = createApp({
     setup() {
       provide(
         'gqlApiService',
-        new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
+        apiService
       )
     },
     render: () => h(App)
@@ -249,11 +245,6 @@ export const startPaymentsIframeApp = async function (
       appStore().setSite(siteEnum)
     } else {
       if (appStore().site !== siteEnum) {
-        const apiService = new ApiService(
-          newAuthenticatedApolloClient(Config.GRAPHQL_SERVICE_URL),
-          newAnonymousClient(Config.GRAPHQL_SERVICE_URL)
-        )
-
         const currentUserExistsOnSite = (await apiService.currentUserDoesExistInSite(
           site
         )) as boolean
@@ -342,74 +333,18 @@ export const startLoginRedirectApp = async function (
   app.mount(appDiv)
 }
 
-export const startVueApp = async function (
-  path:
-    | '/calendar'
-    | '/bookings'
-    | '/register'
-    | '/purchases'
-    | '/workout-stats'
-    | '/profile'
-    | '/payments'
-    | '/reset-password'
-    | '/login-redirect'
-    | '',
-  site: string = SiteEnum.Dubai.toString(),
-  gqlUrl: string = defaultGqlUrl,
-  appDiv: string = defaultAppDiv
-) {
-  if (path === '/calendar') {
-    startBookingCalendarApp(site, gqlUrl, appDiv)
-  } else if (path === '/bookings') {
-    startBookingsApp(gqlUrl, appDiv)
-  } else if (path === '/register') {
-    startRegisterApp(gqlUrl, appDiv)
-  } else if (path === '/purchases') {
-    startPurchasesApp(gqlUrl, appDiv)
-  } else if (path === '/workout-stats') {
-    startWorkoutStatsApp(gqlUrl, appDiv)
-  } else if (path === '/profile') {
-    startProfileApp(gqlUrl, appDiv)
-  } else if (path === '/payments') {
-    startPaymentsIframeApp(site, gqlUrl, appDiv)
-  } else if (path === '/reset-password') {
-    startResetPasswordApp(gqlUrl, appDiv)
-  } else if (path === '/login-redirect') {
-    startLoginRedirectApp(gqlUrl, appDiv)
-  } else {
-    const app = createApp({
-      setup() {
-        provide(
-          'gqlApiService',
-          new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
-        )
-      },
-      render: () => h(App)
-    }).component('font-awesome-icon', FontAwesomeIcon)
-
-    app
-      .use(createPinia())
-      .use(router)
-      .component('Popper', Popper)
-      .component('VueDatePicker', VueDatePicker)
-
-    await router.push({ path: path })
-
-    app.mount(appDiv)
-  }
-}
-
 // TODO: put site parameter in the url
 export const startVueAppWithoutPath = async function (
   site: string = SiteEnum.Dubai.toString(),
   gqlUrl: string = defaultGqlUrl,
   appDiv: string = defaultAppDiv
 ) {
+  const apiService = new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
   const app = createApp({
     setup() {
       provide(
         'gqlApiService',
-        new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
+        apiService
       )
     },
     render: () => h(App)
@@ -436,11 +371,6 @@ export const startVueAppWithoutPath = async function (
       appStore().setSite(siteEnum)
     } else {
       if (appStore().site !== siteEnum) {
-        const apiService = new ApiService(
-          newAuthenticatedApolloClient(Config.GRAPHQL_SERVICE_URL),
-          newAnonymousClient(Config.GRAPHQL_SERVICE_URL)
-        )
-
         const currentUserExistsOnSite = (await apiService.currentUserDoesExistInSite(
           site
         )) as boolean

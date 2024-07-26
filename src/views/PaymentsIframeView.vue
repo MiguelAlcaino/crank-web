@@ -2,7 +2,7 @@
 import { appStore } from '@/stores/appStorage'
 import { useAuthenticationStore } from '@/stores/authToken'
 import { onMounted, ref } from 'vue'
-const paymenttUrl = (import.meta.env.VITE_PAYMENT_URL ?? '') as string | null
+const paymenttUrl = (import.meta.env.VITE_CRANK_PAYMENTS_URL ?? '') as string | null
 
 const iframeLink = ref<string | null>(null)
 
