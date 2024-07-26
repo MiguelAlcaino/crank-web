@@ -1,9 +1,10 @@
 import type { CodegenConfig } from "@graphql-codegen/cli";
-import {Config} from "./src/model/Config";
+import { loadEnv } from "vite";
 
+const env = loadEnv('development', process.cwd(), '')
 const config: CodegenConfig = {
   overwrite: true,
-  schema: Config.GRAPHQL_SERVICE_URL,
+  schema: env.VITE_CRANK_GRAPHQL_SERVER_URL,
   documents: ["src/**/*.vue", "src/**/*.ts"],
   generates: {
     "./src/gql/": {
