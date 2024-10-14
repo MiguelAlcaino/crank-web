@@ -1,6 +1,6 @@
 /* eslint-disable */
 import * as types from './graphql'
-import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core'
+import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core'
 
 /**
  * Map of all GraphQL operations in the project.
@@ -79,7 +79,7 @@ const documents = {
     types.CurrentUserEnrollmentsPaginatedDocument,
   '\n      query currentUserWorkoutStatsPaginated($site: SiteEnum!, $pagination: PaginationInput) {\n        currentUserWorkoutStatsPaginated(site: $site, pagination: $pagination) {\n          classStats {\n            enrollment {\n              enrollmentInfo {\n                id\n                ... on EnrollmentInfo {\n                  spotNumber\n                }\n              }\n              class {\n                name\n                start\n                duration\n              }\n            }\n            totalEnergy\n          }\n          total\n        }\n      }\n    ':
     types.CurrentUserWorkoutStatsPaginatedDocument,
-  '\n      query currentUserPurchasesPaginated($site: SiteEnum!, $pagination: PaginationInput) {\n        currentUserPurchasesPaginated(site: $site, pagination: $pagination) {\n          purchases {\n            packageName\n            allowanceObtained\n            allowanceRemaining\n            paymentDateTime\n            activationDateTime\n            expirationDateTime            \n          }\n          total\n        }\n      }\n    ':
+  '\n      query currentUserPurchasesPaginated($site: SiteEnum!, $pagination: PaginationInput) {\n        currentUserPurchasesPaginated(site: $site, pagination: $pagination) {\n          purchases {\n            packageName\n            allowanceObtained\n            allowanceRemaining\n            paymentDateTime\n            activationDateTime\n            expirationDateTime\n            current\n          }\n          total\n        }\n      }\n    ':
     types.CurrentUserPurchasesPaginatedDocument
 }
 
@@ -299,8 +299,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: '\n      query currentUserPurchasesPaginated($site: SiteEnum!, $pagination: PaginationInput) {\n        currentUserPurchasesPaginated(site: $site, pagination: $pagination) {\n          purchases {\n            packageName\n            allowanceObtained\n            allowanceRemaining\n            paymentDateTime\n            activationDateTime\n            expirationDateTime            \n          }\n          total\n        }\n      }\n    '
-): (typeof documents)['\n      query currentUserPurchasesPaginated($site: SiteEnum!, $pagination: PaginationInput) {\n        currentUserPurchasesPaginated(site: $site, pagination: $pagination) {\n          purchases {\n            packageName\n            allowanceObtained\n            allowanceRemaining\n            paymentDateTime\n            activationDateTime\n            expirationDateTime            \n          }\n          total\n        }\n      }\n    ']
+  source: '\n      query currentUserPurchasesPaginated($site: SiteEnum!, $pagination: PaginationInput) {\n        currentUserPurchasesPaginated(site: $site, pagination: $pagination) {\n          purchases {\n            packageName\n            allowanceObtained\n            allowanceRemaining\n            paymentDateTime\n            activationDateTime\n            expirationDateTime\n            current\n          }\n          total\n        }\n      }\n    '
+): (typeof documents)['\n      query currentUserPurchasesPaginated($site: SiteEnum!, $pagination: PaginationInput) {\n        currentUserPurchasesPaginated(site: $site, pagination: $pagination) {\n          purchases {\n            packageName\n            allowanceObtained\n            allowanceRemaining\n            paymentDateTime\n            activationDateTime\n            expirationDateTime\n            current\n          }\n          total\n        }\n      }\n    ']
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {}

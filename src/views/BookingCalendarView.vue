@@ -280,8 +280,9 @@ async function getCalendarClasses(autoScroll: boolean = false): Promise<void> {
         const disabled: boolean = date.isBefore(_actualDate, 'day')
         const selected: boolean = date.isSame(_actualDate, 'day')
 
-        const calendarClassesTemp: Class[] = calendarClasses.filter((x) =>
-          dayjs(x.start).tz(siteTimezone.value).isSame(date, 'day') && x.showAsDisabled == false 
+        const calendarClassesTemp: Class[] = calendarClasses.filter(
+          (x) =>
+            dayjs(x.start).tz(siteTimezone.value).isSame(date, 'day') && x.showAsDisabled == false
         )
 
         daysOfTheWeek.value.push({

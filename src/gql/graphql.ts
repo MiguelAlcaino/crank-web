@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core'
+import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core'
 export type Maybe<T> = T | null
 export type InputMaybe<T> = Maybe<T>
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] }
@@ -39,6 +39,26 @@ export type AddedToWaitlistSuccess = {
   __typename: 'AddedToWaitlistSuccess'
   status: Scalars['Boolean']
 }
+
+export type AdminUser = {
+  __typename: 'AdminUser'
+  email: Scalars['String']
+  id: Scalars['ID']
+  linkedInstructors?: Maybe<Array<Instructor>>
+  linkedSites?: Maybe<Array<Site>>
+  roles?: Maybe<Array<Scalars['String']>>
+  username: Scalars['String']
+}
+
+export type AdminUserDataInput = {
+  email?: InputMaybe<Scalars['String']>
+  linkedInstructorIds?: InputMaybe<Array<Scalars['ID']>>
+  linkedSiteCodes?: InputMaybe<Array<SiteEnum>>
+  role: Scalars['String']
+  username?: InputMaybe<Scalars['String']>
+}
+
+export type AdminUserResultUnion = AdminUser | EmailAlreadyUsedError | UsernameAlreadyUsedError
 
 export type BookClassInput = {
   classId: Scalars['ID']
@@ -161,6 +181,7 @@ export type Class = {
   id: Scalars['ID']
   instructorName: Scalars['String']
   isSubstitute: Scalars['Boolean']
+  isSynchronizing: Scalars['Boolean']
   maxCapacity: Scalars['Int']
   name: Scalars['String']
   showAsDisabled: Scalars['Boolean']
@@ -177,6 +198,7 @@ export type ClassInfo = {
   class: Class
   enrollments: Array<EnrollmentInfoInterface>
   onHoldSpots: Scalars['Int']
+  orphanedClassStatsSpots: Array<Scalars['Int']>
   roomLayout?: Maybe<RoomLayout>
   usedSpots?: Maybe<Array<Scalars['Int']>>
 }
@@ -331,6 +353,11 @@ export type EditUserInput = {
 
 export type EditUserResultUnion = IdentifiableUser | OtherUserHasThisExternalIdError
 
+export type EmailAlreadyUsedError = Error & {
+  __typename: 'EmailAlreadyUsedError'
+  code: Scalars['String']
+}
+
 export type Enrollment = {
   __typename: 'Enrollment'
   class: Class
@@ -342,10 +369,17 @@ export type EnrollmentInfo = EnrollmentInfoInterface & {
   enrollmentDateTime: Scalars['DateTime']
   enrollmentDateTimeWithNoTimeZone: Scalars['DateTimeWithoutTimeZone']
   enrollmentStatus: EnrollmentStatusEnum
+  /**
+   * Whether this enrollment has stats or not. If null, it means that the class that the enrollment belongs to
+   * has not received stats yet. If the result is false, it means that the class has received stats but the enrollment
+   * has not.
+   */
+  hasStats?: Maybe<Scalars['Boolean']>
   id: Scalars['ID']
   identifiableSiteUser?: Maybe<IdentifiableSiteUser>
   isBookedForFree: Scalars['Boolean']
   isCheckedIn: Scalars['Boolean']
+  isFirstTimeInThisTypeOfClass: Scalars['Boolean']
   /** @deprecated Use spotNumber instead. */
   spotInfo?: Maybe<SpotInfo>
   spotNumber?: Maybe<Scalars['Int']>
@@ -398,6 +432,17 @@ export type GenderRanking = {
   ranking?: Maybe<UserRanking>
 }
 
+export type GiftCard = {
+  __typename: 'GiftCard'
+  description: Scalars['String']
+  grandTotal: Scalars['Float']
+  id: Scalars['ID']
+  purchaseUrl: Scalars['String']
+  salePrice: Scalars['Float']
+  site: Site
+  terms: Scalars['String']
+}
+
 export type IconPosition = ClassPositionInterface & {
   __typename: 'IconPosition'
   icon: PositionIconEnum
@@ -425,8 +470,31 @@ export type IdentifiableUser = {
   user?: Maybe<User>
 }
 
+export type Instructor = {
+  __typename: 'Instructor'
+  id: Scalars['ID']
+  name: Scalars['String']
+  site: Site
+}
+
+export type IsSmsValidationCodeValidUnion =
+  | MobilePhoneAlreadyVerifiedError
+  | RequestSmsValidationNeededError
+  | SmsCodeValidatedSuccessfully
+  | SmsValidationCodeError
+
 export type LateCancellationRequiredError = Error & {
   __typename: 'LateCancellationRequiredError'
+  code: Scalars['String']
+}
+
+export type MobilePhoneAlreadyVerifiedError = Error & {
+  __typename: 'MobilePhoneAlreadyVerifiedError'
+  code: Scalars['String']
+}
+
+export type MobilePhoneNotValidError = Error & {
+  __typename: 'MobilePhoneNotValidError'
   code: Scalars['String']
 }
 
@@ -434,6 +502,8 @@ export type Mutation = {
   __typename: 'Mutation'
   /** Accepts a late-cancelled spot in a class */
   acceptLateCancelledSpotInClass?: Maybe<AcceptLateCancelledSpotInClassResultUnion>
+  /** Creates a new admin user */
+  addAdminUser: AdminUserResultUnion
   /** Adds a new device token to be used for device notifications */
   addDeviceTokenToCurrentUser?: Maybe<Scalars['Boolean']>
   /** Books the current user in a class */
@@ -474,6 +544,8 @@ export type Mutation = {
   registerUser?: Maybe<User>
   /** Rejects a late-cancelled spot in a class */
   rejectLateCancelledSpotInClass?: Maybe<RejectLateBookingResultUnion>
+  /** Deletes an admin user */
+  removeAdminUser: Scalars['Boolean']
   /** Removes the current user's waitlist entry from a class */
   removeCurrentUserFromWaitlist?: Maybe<RemoveCurrentUserFromWaitlistUnion>
   /** Removes a user from a class */
@@ -482,6 +554,10 @@ export type Mutation = {
   removeUserFromWaitlist: RemoveUserFromWaitlistUnion
   /** Request a reset password link */
   requestPasswordLink?: Maybe<ResetPasswordLinkResultUnion>
+  /** Requests an SMS validation code */
+  requestSMSValidation?: Maybe<SmsValidationUnion>
+  /** Resets the password of an admin user and sends an email with the new password */
+  resetAdminUserPassword: Scalars['Boolean']
   /** Resets the current user's password */
   resetPasswordForCurrentUser?: Maybe<ResetPasswordForCurrentUserUnion>
   /** Sends a single class stats to an email */
@@ -493,18 +569,31 @@ export type Mutation = {
   /** Swaps a spot in a class */
   swapSpot?: Maybe<SwapSpotResultUnion>
   /** Sync all classes */
-  syncAllClasses: Array<Class>
+  syncAllClasses: Scalars['Boolean']
+  /** Sync all gift cards from Mindbody with the local database */
+  syncAllGiftCards: Scalars['Boolean']
   /** Sync one class */
   syncClass: ClassInfo
+  /** Sync a class with PIQ */
+  syncClassWithPIQ: ClassInfo
+  /** Updates an admin user */
+  updateAdminUser: AdminUserResultUnion
   /** Updates the current user */
   updateCurrentUser?: Maybe<User>
   /** Updates a user's password in all the sites */
   updateCurrentUserPassword?: Maybe<Scalars['Boolean']>
+  /** Updates a gift card */
+  updateGiftCard: GiftCard
+  updateUserPassword?: Maybe<Scalars['Boolean']>
 }
 
 export type MutationAcceptLateCancelledSpotInClassArgs = {
   input: AcceptLateCancelledSpotInClassInput
   site?: InputMaybe<SiteEnum>
+}
+
+export type MutationAddAdminUserArgs = {
+  input: AdminUserDataInput
 }
 
 export type MutationAddDeviceTokenToCurrentUserArgs = {
@@ -602,6 +691,10 @@ export type MutationRejectLateCancelledSpotInClassArgs = {
   site?: InputMaybe<SiteEnum>
 }
 
+export type MutationRemoveAdminUserArgs = {
+  id: Scalars['ID']
+}
+
 export type MutationRemoveCurrentUserFromWaitlistArgs = {
   input: RemoveCurrentUserFromWaitlistInput
   site: SiteEnum
@@ -617,6 +710,14 @@ export type MutationRemoveUserFromWaitlistArgs = {
 
 export type MutationRequestPasswordLinkArgs = {
   input?: InputMaybe<RequestPasswordLinkInput>
+}
+
+export type MutationRequestSmsValidationArgs = {
+  input: RequestSmsValidationInput
+}
+
+export type MutationResetAdminUserPasswordArgs = {
+  id: Scalars['ID']
 }
 
 export type MutationResetPasswordForCurrentUserArgs = {
@@ -649,6 +750,15 @@ export type MutationSyncClassArgs = {
   site: SiteEnum
 }
 
+export type MutationSyncClassWithPiqArgs = {
+  classId: Scalars['ID']
+  site: SiteEnum
+}
+
+export type MutationUpdateAdminUserArgs = {
+  input: UpdateAdminUserInput
+}
+
 export type MutationUpdateCurrentUserArgs = {
   input: UserInput
 }
@@ -656,6 +766,14 @@ export type MutationUpdateCurrentUserArgs = {
 export type MutationUpdateCurrentUserPasswordArgs = {
   input: UpdateCurrentUserPasswordInput
   site: SiteEnum
+}
+
+export type MutationUpdateGiftCardArgs = {
+  input: UpdateGiftCardInput
+}
+
+export type MutationUpdateUserPasswordArgs = {
+  input: UpdateUserPasswordInput
 }
 
 export type OtherUserHasThisExternalIdError = Error & {
@@ -730,8 +848,16 @@ export type Purchase = {
 
 export type Query = {
   __typename: 'Query'
+  /** Returns a single admin user */
+  adminUser?: Maybe<AdminUser>
+  /** Lists all the admin users */
+  adminUsers: Array<AdminUser>
   /** Returns a list of all the available class types for a given site */
   availableClassTypes: Array<Scalars['String']>
+  /** Returns a list of all the available instructors */
+  availableInstructors: Array<Instructor>
+  /** Returns a list of all the available sites */
+  availableSites?: Maybe<Array<Site>>
   /** Get next classes */
   calendarClasses: Array<Class>
   /** Get a single class information */
@@ -763,6 +889,10 @@ export type Query = {
    */
   currentUserWorkoutStats: Array<Maybe<ClassStat>>
   currentUserWorkoutStatsPaginated: PaginatedClassStats
+  /** Returns the list of all the available gift cards */
+  giftCards: Array<GiftCard>
+  /** Verifies whether an sms validation code is valid */
+  isSMSValidationCodeValid?: Maybe<IsSmsValidationCodeValidUnion>
   /** Returns a specific room layout */
   roomLayout?: Maybe<RoomLayout>
   /** Returns a list of available RoomLayouts for a site */
@@ -782,6 +912,10 @@ export type Query = {
   /** Returns a list of workhout stats */
   userWorkoutStats: Array<Maybe<ClassStat>>
   userWorkoutStatsPaginated: PaginatedClassStats
+}
+
+export type QueryAdminUserArgs = {
+  id: Scalars['ID']
 }
 
 export type QueryAvailableClassTypesArgs = {
@@ -842,6 +976,10 @@ export type QueryCurrentUserWorkoutStatsArgs = {
 export type QueryCurrentUserWorkoutStatsPaginatedArgs = {
   pagination?: InputMaybe<PaginationInput>
   site: SiteEnum
+}
+
+export type QueryIsSmsValidationCodeValidArgs = {
+  smsCode: Scalars['String']
 }
 
 export type QueryRoomLayoutArgs = {
@@ -948,6 +1086,16 @@ export type RequestPasswordLinkInput = {
   email: Scalars['String']
 }
 
+export type RequestSmsValidationInput = {
+  countryCode: Scalars['String']
+  mobilePhone: Scalars['String']
+}
+
+export type RequestSmsValidationNeededError = Error & {
+  __typename: 'RequestSMSValidationNeededError'
+  code: Scalars['String']
+}
+
 export type ResetPasswordForCurrentUserInput = {
   password: Scalars['String']
   repeatedPassword: Scalars['String']
@@ -991,6 +1139,21 @@ export type RoomLayoutsInput = {
   usersCapacity?: InputMaybe<Scalars['Int']>
 }
 
+export type SmsCodeValidatedSuccessfully = {
+  __typename: 'SMSCodeValidatedSuccessfully'
+  success: Scalars['Boolean']
+}
+
+export type SmsValidationCodeError = Error & {
+  __typename: 'SMSValidationCodeError'
+  code: Scalars['String']
+}
+
+export type SmsValidationUnion =
+  | MobilePhoneAlreadyVerifiedError
+  | MobilePhoneNotValidError
+  | SuccessfulRequestSmsValidation
+
 export type SendClassStatsToEmailInput = {
   email: Scalars['String']
   enrollmentId: Scalars['ID']
@@ -1007,6 +1170,12 @@ export type SimpleSiteUser = {
   site: SiteEnum
 }
 
+export type Site = {
+  __typename: 'Site'
+  code: SiteEnum
+  name: Scalars['String']
+}
+
 export enum SiteEnum {
   AbuDhabi = 'abu_dhabi',
   Dubai = 'dubai'
@@ -1014,6 +1183,7 @@ export enum SiteEnum {
 
 export type SiteSetting = {
   __typename: 'SiteSetting'
+  isSynchronizingClasses: Scalars['Boolean']
   siteDateTimeNow?: Maybe<Scalars['DateTime']>
   siteTimezone?: Maybe<Scalars['String']>
 }
@@ -1052,6 +1222,11 @@ export type State = {
   name: Scalars['String']
 }
 
+export type SuccessfulRequestSmsValidation = {
+  __typename: 'SuccessfulRequestSMSValidation'
+  success: Scalars['Boolean']
+}
+
 export type SwapSpotResultUnion = SwapSpotSuccess | TryToSwitchToSameSpotError
 
 export type SwapSpotSuccess = {
@@ -1076,9 +1251,24 @@ export type UnknownError = Error & {
   code: Scalars['String']
 }
 
+export type UpdateAdminUserInput = {
+  adminUserId: Scalars['ID']
+  userDataInput: AdminUserDataInput
+}
+
 export type UpdateCurrentUserPasswordInput = {
   currentPassword: Scalars['String']
   newPassword: Scalars['String']
+}
+
+export type UpdateGiftCardInput = {
+  grandTotal?: InputMaybe<Scalars['Float']>
+  id: Scalars['ID']
+}
+
+export type UpdateUserPasswordInput = {
+  newPassword: Scalars['String']
+  userId: Scalars['ID']
 }
 
 export type User = {
@@ -1160,6 +1350,11 @@ export type UserRanking = {
   __typename: 'UserRanking'
   positionInRanking?: Maybe<Scalars['Int']>
   totalMembersInRanking?: Maybe<Scalars['Int']>
+}
+
+export type UsernameAlreadyUsedError = Error & {
+  __typename: 'UsernameAlreadyUsedError'
+  code: Scalars['String']
 }
 
 export type ValidateResetPasswordTokenInput = {
@@ -1882,6 +2077,7 @@ export type CurrentUserPurchasesPaginatedQuery = {
       paymentDateTime: any
       activationDateTime: any
       expirationDateTime: any
+      current: boolean
     }>
   }
 }
@@ -4457,7 +4653,8 @@ export const CurrentUserPurchasesPaginatedDocument = {
                       { kind: 'Field', name: { kind: 'Name', value: 'allowanceRemaining' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'paymentDateTime' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'activationDateTime' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'expirationDateTime' } }
+                      { kind: 'Field', name: { kind: 'Name', value: 'expirationDateTime' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'current' } }
                     ]
                   }
                 },
