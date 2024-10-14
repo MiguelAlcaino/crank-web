@@ -1,21 +1,21 @@
-import type { CodegenConfig } from "@graphql-codegen/cli";
-import { loadEnv } from "vite";
+import type { CodegenConfig } from '@graphql-codegen/cli'
+import { loadEnv } from 'vite'
 
 const env = loadEnv('development', process.cwd(), '')
 const config: CodegenConfig = {
   overwrite: true,
   schema: env.VITE_CRANK_GRAPHQL_SERVER_URL,
-  documents: ["src/**/*.vue", "src/**/*.ts"],
+  documents: ['src/**/*.vue', 'src/**/*.ts'],
   generates: {
-    "./src/gql/": {
-      preset: "client",
+    './src/gql/': {
+      preset: 'client',
       plugins: [],
-      config: { nonOptionalTypename: true },
+      config: { nonOptionalTypename: true, useTypeImports: true }
     },
-    "./graphql.schema.json": {
-      plugins: ["introspection"],
-    },
-  },
-};
+    './graphql.schema.json': {
+      plugins: ['introspection']
+    }
+  }
+}
 
-export default config;
+export default config
