@@ -1279,4 +1279,44 @@ export class ApiService {
 
     return queryResult.data.currentUserPurchasesPaginated as PaginatedPurchases
   }
+
+  async currentUserPhoneNumber(): Promise<string> {
+    try {
+      const query = gql`
+        query currentUserPhoneNumber {
+          currentUser {
+            phone
+          }
+        }
+      `
+
+      const queryResult = await this.authApiClient.query({
+        query: query,
+        fetchPolicy: 'no-cache'
+      })
+
+      const user = queryResult.data.currentUser as User
+      return user.phone
+    } catch (error) {
+      return ''
+    }
+  }
+
+  async requestSMSValidation(countryCode: string, mobilePhone: string): Promise<string> {
+    // TODO: Implement this method
+    try {
+      return ''
+    } catch (error) {
+      return ''
+    }
+  }
+
+  async isSMSValidationCodeValid(smsCode: string): Promise<string> {
+    // TODO: Implement this method
+    try {
+      return ''
+    } catch (error) {
+      return ''
+    }
+  }
 }
