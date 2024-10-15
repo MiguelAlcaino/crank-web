@@ -38,11 +38,14 @@ import type {
   PaginationInput,
   PaginatedEnrollments,
   PaginatedClassStats,
-  PaginatedPurchases
+  PaginatedPurchases,
+  SmsValidationUnion
 } from '@/gql/graphql'
 import { EnrollmentTypeEnum, type SiteSetting } from '@/gql/graphql'
 import { ApolloClient, ApolloError } from '@apollo/client/core'
 import { CustomCalendarClasses } from '@/model/CustomCalendarClasses'
+import type { SmsValidationResponse } from '@/modules/buy_packages/interfaces/sms-validation-response.interface'
+import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 
 export class ApiService {
   authApiClient: ApolloClient<any>
@@ -1302,13 +1305,66 @@ export class ApiService {
     }
   }
 
-  async requestSMSValidation(countryCode: string, mobilePhone: string): Promise<string> {
-    // TODO: Implement this method
+  async requestSMSValidation(
+    countryCode: string,
+    mobilePhone: string
+  ): Promise<SmsValidationResponse> {
+    const muration = gql`
+      mutation requestSMSValidation($input: RequestSMSValidationInput!) {
+        requestSMSValidation(input: $input) {
+          ... on MobilePhoneAlreadyVerifiedError {
+            code
+          }
+          ... on SuccessfulRequestSMSValidation {
+            success
+          }
+          ... on MobilePhoneNotValidError {
+            code
+          }
+        }
+      }
+    `
+    const response = { success: false } as SmsValidationResponse
+
     try {
-      return ''
+      const result = await this.authApiClient.mutate({
+        mutation: muration,
+        variables: {
+          input: {
+            countryCode: countryCode,
+            mobilePhone: mobilePhone
+          }
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      const smsValidation = result.data.requestSMSValidation as SmsValidationUnion
+
+      response.errorCode = smsValidation.__typename
+      response.success = response.errorCode === 'SuccessfulRequestSMSValidation'
+
+      switch (response.errorCode) {
+        case 'SuccessfulRequestSMSValidation':
+          response.message = 'SMS sent successfully.'
+          break
+        case 'MobilePhoneNotValidError':
+          response.message = 'Invalid phone number.'
+          break
+        case 'MobilePhoneAlreadyVerifiedError':
+          response.message = 'This mobile phone number has been already verified.'
+          break
+        default:
+          response.message = ERROR_UNKNOWN
+          break
+      }
     } catch (error) {
-      return ''
+      console.error(error)
+      response.success = false
+      response.errorCode = 'UnknownError'
+      response.message = ERROR_UNKNOWN
     }
+
+    return response
   }
 
   async isSMSValidationCodeValid(smsCode: string): Promise<string> {
