@@ -44,8 +44,7 @@ import type {
 import { EnrollmentTypeEnum, type SiteSetting } from '@/gql/graphql'
 import { ApolloClient, ApolloError } from '@apollo/client/core'
 import { CustomCalendarClasses } from '@/model/CustomCalendarClasses'
-import type { SmsValidationResponse } from '@/modules/buy_packages/interfaces/sms-validation-response.interface'
-import { ERROR_UNKNOWN } from '@/utils/errorMessages'
+import { SmsValidationResponse } from '@/modules/buy_packages/models/sms-validation-response'
 
 export class ApiService {
   authApiClient: ApolloClient<any>
@@ -1324,7 +1323,6 @@ export class ApiService {
         }
       }
     `
-    const response = { success: false } as SmsValidationResponse
 
     try {
       const result = await this.authApiClient.mutate({
@@ -1340,31 +1338,13 @@ export class ApiService {
 
       const smsValidation = result.data.requestSMSValidation as SmsValidationUnion
 
-      response.errorCode = smsValidation.__typename
-      response.success = response.errorCode === 'SuccessfulRequestSMSValidation'
+      const response = new SmsValidationResponse(smsValidation.__typename)
 
-      switch (response.errorCode) {
-        case 'SuccessfulRequestSMSValidation':
-          response.message = 'SMS sent successfully.'
-          break
-        case 'MobilePhoneNotValidError':
-          response.message = 'Invalid phone number.'
-          break
-        case 'MobilePhoneAlreadyVerifiedError':
-          response.message = 'This mobile phone number has been already verified.'
-          break
-        default:
-          response.message = ERROR_UNKNOWN
-          break
-      }
+      return response
     } catch (error) {
-      console.error(error)
-      response.success = false
-      response.errorCode = 'UnknownError'
-      response.message = ERROR_UNKNOWN
+      const response = new SmsValidationResponse('UnknownError')
+      return response
     }
-
-    return response
   }
 
   async isSMSValidationCodeValid(smsCode: string): Promise<string> {
