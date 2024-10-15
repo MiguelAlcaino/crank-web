@@ -21,8 +21,12 @@ const isLoading = ref(false)
 const isSubmitting = ref(false)
 const phoneNumber = ref<PhoneObject>({})
 const successModalIsVisible = ref(false)
+const successModalMessage = ref('')
 const errorModalIsVisible = ref(false)
 const errorModalMessage = ref('')
+
+const smsCodeModalIsVisible = ref(false)
+const isSubmittingSmsCode = ref(false)
 
 const formData = reactive({
   phone: ''
@@ -49,6 +53,20 @@ const lengthUAEphone = (phone: string) =>
 
 const v$ = useVuelidate(rules, formData)
 
+const smsCodeFormData = reactive({
+  smsCode: ''
+})
+
+const smsCodeFormRules = computed(() => {
+  return {
+    smsCode: {
+      required: helpers.withMessage('Code is required', required)
+    }
+  }
+})
+
+const smsCodeV$ = useVuelidate(smsCodeFormRules, smsCodeFormData)
+
 const submitForm = async () => {
   const isValid = await v$.value.$validate()
 
@@ -61,10 +79,8 @@ const submitForm = async () => {
 
       const response = await apiService.requestSMSValidation(countryCode, mobilePhone)
 
-      console.log(response)
-
       if (response.success) {
-        successModalIsVisible.value = true
+        smsCodeModalIsVisible.value = true
       } else {
         errorModalMessage.value = response.message
         errorModalIsVisible.value = true
@@ -96,9 +112,38 @@ async function currentUserPhoneNumber() {
 function onValidate(phoneObject: PhoneObject) {
   phoneNumber.value = phoneObject
 }
+
+const submitSmsCodeForm = async () => {
+  const isValid = await smsCodeV$.value.$validate()
+
+  if (isValid) {
+    isSubmittingSmsCode.value = true
+
+    try {
+      const response = await apiService.isSMSValidationCodeValid(smsCodeFormData.smsCode)
+
+      if (response.success) {
+        successModalMessage.value = response.message
+        successModalIsVisible.value = true
+        smsCodeModalIsVisible.value = false
+      } else {
+        errorModalMessage.value = response.message
+        errorModalIsVisible.value = true
+      }
+    } catch (error) {
+      errorModalMessage.value = ERROR_UNKNOWN
+      errorModalIsVisible.value = true
+    } finally {
+      isSubmittingSmsCode.value = false
+    }
+  }
+}
+
+function acceptSuccessModal() {}
 </script>
 
 <template>
+  <!-- Phone number Form -->
   <div class="d-flex justify-content-center w-100">
     <div class="w-100" style="max-width: 1000px">
       <h1>Phone Number Verification</h1>
@@ -171,6 +216,73 @@ function onValidate(phoneObject: PhoneObject) {
     </div>
   </div>
 
+  <!-- SMS Code Modal -->
+  <transition name="modal" v-if="smsCodeModalIsVisible">
+    <div class="modal-mask">
+      <div class="modal-wrapper">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header border-0">
+              <h5 class="modal-title">Validation Code</h5>
+            </div>
+            <div class="modal-body">
+              <p>Please enter the validation code that you received by SMS</p>
+              <form @submit.prevent="submitForm" autocomplete="off">
+                <div class="form-row">
+                  <!--sms code-->
+                  <div class="col-md-12 mb-3">
+                    <label for="smsCode" class="input-label">SMS Code *</label>
+                    <input
+                      id="smsCode"
+                      class="form-control"
+                      v-model="smsCodeFormData.smsCode"
+                      type="text"
+                      placeholder="SMS Code"
+                      maxlength="20"
+                      required
+                    />
+                    <small
+                      v-for="error in smsCodeV$.smsCode.$errors"
+                      :key="error.$uid"
+                      class="form-text"
+                      style="color: red"
+                    >
+                      {{ error.$message }}
+                    </small>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer border-0">
+              <button
+                type="button"
+                class="btn btn-default"
+                @click="smsCodeModalIsVisible = false"
+                :disabled="isSubmittingSmsCode"
+              >
+                Cancel
+              </button>
+              <button
+                class="btn btn-primary"
+                type="button"
+                :disabled="isSubmittingSmsCode"
+                @click="submitSmsCodeForm"
+              >
+                Validate Code
+                <span
+                  class="spinner-border spinner-border-sm"
+                  role="status"
+                  aria-hidden="true"
+                  v-if="isSubmittingSmsCode"
+                ></span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </transition>
+
   <!-- ERROR modal -->
   <ModalComponent
     :ok-loading="false"
@@ -180,6 +292,18 @@ function onValidate(phoneObject: PhoneObject) {
     :cancel-text="null"
     v-if="errorModalIsVisible"
     @on-ok="errorModalIsVisible = false"
+  >
+  </ModalComponent>
+
+  <!-- SUCCESS modal -->
+  <ModalComponent
+    title="SUCCESS"
+    :message="successModalMessage"
+    :closable="false"
+    @on-ok="acceptSuccessModal()"
+    :cancel-text="null"
+    v-if="successModalIsVisible"
+    ok-text="Complete Purchase"
   >
   </ModalComponent>
 </template>
