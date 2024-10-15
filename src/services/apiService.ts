@@ -39,12 +39,14 @@ import type {
   PaginatedEnrollments,
   PaginatedClassStats,
   PaginatedPurchases,
-  SmsValidationUnion
+  SmsValidationUnion,
+  IsSmsValidationCodeValidUnion
 } from '@/gql/graphql'
 import { EnrollmentTypeEnum, type SiteSetting } from '@/gql/graphql'
 import { ApolloClient, ApolloError } from '@apollo/client/core'
 import { CustomCalendarClasses } from '@/model/CustomCalendarClasses'
 import { SmsValidationResponse } from '@/modules/buy_packages/models/sms-validation-response'
+import { IsSmsValidationCodeValidResponse } from '@/modules/buy_packages/models/is-sms-validation-code-valid-response'
 
 export class ApiService {
   authApiClient: ApolloClient<any>
@@ -1338,21 +1340,45 @@ export class ApiService {
 
       const smsValidation = result.data.requestSMSValidation as SmsValidationUnion
 
-      const response = new SmsValidationResponse(smsValidation.__typename)
-
-      return response
+      return new SmsValidationResponse(smsValidation.__typename)
     } catch (error) {
-      const response = new SmsValidationResponse('UnknownError')
-      return response
+      return new SmsValidationResponse('UnknownError')
     }
   }
 
-  async isSMSValidationCodeValid(smsCode: string): Promise<string> {
-    // TODO: Implement this method
+  async isSMSValidationCodeValid(smsCode: string): Promise<IsSmsValidationCodeValidResponse> {
     try {
-      return ''
+      const query = gql`
+        query isSMSValidationCodeValid($smsCode: String!) {
+          isSMSValidationCodeValid(smsCode: $smsCode) {
+            ... on SMSCodeValidatedSuccessfully {
+              success
+            }
+            ... on RequestSMSValidationNeededError {
+              code
+            }
+            ... on SMSValidationCodeError {
+              code
+            }
+            ... on MobilePhoneAlreadyVerifiedError {
+              code
+            }
+          }
+        }
+      `
+
+      const queryResult = await this.authApiClient.query({
+        query: query,
+        fetchPolicy: 'no-cache',
+        variables: {
+          smsCode: smsCode
+        }
+      })
+
+      const response = queryResult.data.isSMSValidationCodeValid as IsSmsValidationCodeValidUnion
+      return new IsSmsValidationCodeValidResponse(response.__typename)
     } catch (error) {
-      return ''
+      return new IsSmsValidationCodeValidResponse('UnknownError')
     }
   }
 }

@@ -1,9 +1,19 @@
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 
 export class SmsValidationResponse {
-  errorCode: string
+  errorCode:
+    | 'MobilePhoneAlreadyVerifiedError'
+    | 'MobilePhoneNotValidError'
+    | 'SuccessfulRequestSMSValidation'
+    | 'UnknownError'
 
-  constructor(typeName: string) {
+  constructor(
+    typeName:
+      | 'MobilePhoneAlreadyVerifiedError'
+      | 'MobilePhoneNotValidError'
+      | 'SuccessfulRequestSMSValidation'
+      | 'UnknownError'
+  ) {
     this.errorCode = typeName
   }
 
