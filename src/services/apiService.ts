@@ -38,11 +38,15 @@ import type {
   PaginationInput,
   PaginatedEnrollments,
   PaginatedClassStats,
-  PaginatedPurchases
+  PaginatedPurchases,
+  SmsValidationUnion,
+  IsSmsValidationCodeValidUnion
 } from '@/gql/graphql'
 import { EnrollmentTypeEnum, type SiteSetting } from '@/gql/graphql'
 import { ApolloClient, ApolloError } from '@apollo/client/core'
 import { CustomCalendarClasses } from '@/model/CustomCalendarClasses'
+import { SmsValidationResponse } from '@/modules/buy_packages/models/sms-validation-response'
+import { IsSmsValidationCodeValidResponse } from '@/modules/buy_packages/models/is-sms-validation-code-valid-response'
 
 export class ApiService {
   authApiClient: ApolloClient<any>
@@ -1278,5 +1282,103 @@ export class ApiService {
     })
 
     return queryResult.data.currentUserPurchasesPaginated as PaginatedPurchases
+  }
+
+  async currentUserPhoneNumber(): Promise<string> {
+    try {
+      const query = gql`
+        query currentUserPhoneNumber {
+          currentUser {
+            phone
+          }
+        }
+      `
+
+      const queryResult = await this.authApiClient.query({
+        query: query,
+        fetchPolicy: 'no-cache'
+      })
+
+      const user = queryResult.data.currentUser as User
+      return user.phone
+    } catch (error) {
+      return ''
+    }
+  }
+
+  async requestSMSValidation(
+    countryCode: string,
+    mobilePhone: string
+  ): Promise<SmsValidationResponse> {
+    const muration = gql`
+      mutation requestSMSValidation($input: RequestSMSValidationInput!) {
+        requestSMSValidation(input: $input) {
+          ... on MobilePhoneAlreadyVerifiedError {
+            code
+          }
+          ... on SuccessfulRequestSMSValidation {
+            success
+          }
+          ... on MobilePhoneNotValidError {
+            code
+          }
+        }
+      }
+    `
+
+    try {
+      const result = await this.authApiClient.mutate({
+        mutation: muration,
+        variables: {
+          input: {
+            countryCode: countryCode,
+            mobilePhone: mobilePhone
+          }
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      const smsValidation = result.data.requestSMSValidation as SmsValidationUnion
+
+      return new SmsValidationResponse(smsValidation.__typename)
+    } catch (error) {
+      return new SmsValidationResponse('UnknownError')
+    }
+  }
+
+  async isSMSValidationCodeValid(smsCode: string): Promise<IsSmsValidationCodeValidResponse> {
+    try {
+      const query = gql`
+        query isSMSValidationCodeValid($smsCode: String!) {
+          isSMSValidationCodeValid(smsCode: $smsCode) {
+            ... on SMSCodeValidatedSuccessfully {
+              success
+            }
+            ... on RequestSMSValidationNeededError {
+              code
+            }
+            ... on SMSValidationCodeError {
+              code
+            }
+            ... on MobilePhoneAlreadyVerifiedError {
+              code
+            }
+          }
+        }
+      `
+
+      const queryResult = await this.authApiClient.query({
+        query: query,
+        fetchPolicy: 'no-cache',
+        variables: {
+          smsCode: smsCode
+        }
+      })
+
+      const response = queryResult.data.isSMSValidationCodeValid as IsSmsValidationCodeValidUnion
+      return new IsSmsValidationCodeValidResponse(response.__typename)
+    } catch (error) {
+      return new IsSmsValidationCodeValidResponse('UnknownError')
+    }
   }
 }

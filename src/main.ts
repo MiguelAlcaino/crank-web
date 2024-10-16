@@ -47,10 +47,7 @@ async function startApp() {
 
   const app = createApp({
     setup() {
-      provide(
-        'gqlApiService',
-        apiService
-      )
+      provide('gqlApiService', apiService)
     },
     render: () => h(App)
   }).component('font-awesome-icon', FontAwesomeIcon)
