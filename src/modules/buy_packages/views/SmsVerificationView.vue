@@ -4,12 +4,12 @@ import { computed, inject, onMounted, reactive, ref } from 'vue'
 import useVuelidate from '@vuelidate/core'
 import { helpers, required } from '@vuelidate/validators'
 import { getFormattedPhoneNumber } from '@/utils/utility-functions'
-import { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/apiService'
 import { VueTelInput } from 'vue-tel-input'
 
 import DefaultButtonComponent from '@/components/DefaultButtonComponent.vue'
 import ModalComponent from '@/components/ModalComponent.vue'
-import { PhoneObject } from '../interfaces/phone-object.interface'
+import type { PhoneObject } from '../interfaces/phone-object.interface'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 
 const apiService = inject<ApiService>('gqlApiService')!
@@ -139,7 +139,7 @@ const submitSmsCodeForm = async () => {
   }
 }
 
-function acceptSuccessModal() {}
+function acceptSuccessModal() { }
 </script>
 
 <template>
@@ -155,35 +155,19 @@ function acceptSuccessModal() {}
           <!--phone-->
           <div class="col-md-4 mb-3">
             <label for="mobileNumberMyProfile" class="input-label">Mobile Number *</label>
-            <vue-tel-input
-              v-model="formData.phone"
-              mode="international"
-              id="mobileNumberMyProfile"
-              :disabled="isLoading || isSubmitting"
-              placeholder="Mobile Number"
-              required
-              defaultCountry="AE"
+            <vue-tel-input v-model="formData.phone" mode="international" id="mobileNumberMyProfile"
+              :disabled="isLoading || isSubmitting" placeholder="Mobile Number" required defaultCountry="AE"
               :dropdownOptions="{
                 showSearchBox: true,
                 showFlags: true,
                 showDialCodeInList: true,
                 showDialCodeInSelection: false
-              }"
-              :inputOptions="{
+              }" :inputOptions="{
                 id: 'mobileNumberMyProfile',
                 showDialCode: true,
                 required: true
-              }"
-              :validCharactersOnly="true"
-              :autoDefaultCountry="false"
-              @validate="onValidate"
-            ></vue-tel-input>
-            <small
-              v-for="error in v$.phone.$errors"
-              :key="error.$uid"
-              class="form-text"
-              style="color: red"
-            >
+              }" :validCharactersOnly="true" :autoDefaultCountry="false" @validate="onValidate"></vue-tel-input>
+            <small v-for="error in v$.phone.$errors" :key="error.$uid" class="form-text" style="color: red">
               {{ error.$message }}
             </small>
             <small v-if="phoneNumber.valid === false" class="form-text" style="color: red">
@@ -203,13 +187,8 @@ function acceptSuccessModal() {}
         <!--submit button-->
         <div class="form-row">
           <div class="col-md-6 mb-3">
-            <DefaultButtonComponent
-              :text="'Send Code'"
-              type="button"
-              @on-click="submitForm"
-              :disabled="isLoading"
-              :isLoading="isSubmitting"
-            ></DefaultButtonComponent>
+            <DefaultButtonComponent :text="'Send Code'" type="button" @on-click="submitForm" :disabled="isLoading"
+              :isLoading="isSubmitting"></DefaultButtonComponent>
           </div>
         </div>
       </form>
@@ -232,21 +211,10 @@ function acceptSuccessModal() {}
                   <!--sms code-->
                   <div class="col-md-12 mb-3">
                     <label for="smsCode" class="input-label">SMS Code *</label>
-                    <input
-                      id="smsCode"
-                      class="form-control"
-                      v-model="smsCodeFormData.smsCode"
-                      type="text"
-                      placeholder="SMS Code"
-                      maxlength="20"
-                      required
-                    />
-                    <small
-                      v-for="error in smsCodeV$.smsCode.$errors"
-                      :key="error.$uid"
-                      class="form-text"
-                      style="color: red"
-                    >
+                    <input id="smsCode" class="form-control" v-model="smsCodeFormData.smsCode" type="text"
+                      placeholder="SMS Code" maxlength="20" required />
+                    <small v-for="error in smsCodeV$.smsCode.$errors" :key="error.$uid" class="form-text"
+                      style="color: red">
                       {{ error.$message }}
                     </small>
                   </div>
@@ -254,27 +222,14 @@ function acceptSuccessModal() {}
               </form>
             </div>
             <div class="modal-footer border-0">
-              <button
-                type="button"
-                class="btn btn-default"
-                @click="smsCodeModalIsVisible = false"
-                :disabled="isSubmittingSmsCode"
-              >
+              <button type="button" class="btn btn-default" @click="smsCodeModalIsVisible = false"
+                :disabled="isSubmittingSmsCode">
                 Cancel
               </button>
-              <button
-                class="btn btn-primary"
-                type="button"
-                :disabled="isSubmittingSmsCode"
-                @click="submitSmsCodeForm"
-              >
+              <button class="btn btn-primary" type="button" :disabled="isSubmittingSmsCode" @click="submitSmsCodeForm">
                 Validate Code
-                <span
-                  class="spinner-border spinner-border-sm"
-                  role="status"
-                  aria-hidden="true"
-                  v-if="isSubmittingSmsCode"
-                ></span>
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                  v-if="isSubmittingSmsCode"></span>
               </button>
             </div>
           </div>
@@ -284,27 +239,13 @@ function acceptSuccessModal() {}
   </transition>
 
   <!-- ERROR modal -->
-  <ModalComponent
-    :ok-loading="false"
-    title="ERROR"
-    :message="errorModalMessage"
-    :closable="false"
-    :cancel-text="null"
-    v-if="errorModalIsVisible"
-    @on-ok="errorModalIsVisible = false"
-  >
+  <ModalComponent :ok-loading="false" title="ERROR" :message="errorModalMessage" :closable="false" :cancel-text="null"
+    v-if="errorModalIsVisible" @on-ok="errorModalIsVisible = false">
   </ModalComponent>
 
   <!-- SUCCESS modal -->
-  <ModalComponent
-    title="SUCCESS"
-    :message="successModalMessage"
-    :closable="false"
-    @on-ok="acceptSuccessModal()"
-    :cancel-text="null"
-    v-if="successModalIsVisible"
-    ok-text="Complete Purchase"
-  >
+  <ModalComponent title="SUCCESS" :message="successModalMessage" :closable="false" @on-ok="acceptSuccessModal()"
+    :cancel-text="null" v-if="successModalIsVisible" ok-text="Complete Purchase">
   </ModalComponent>
 </template>
 
