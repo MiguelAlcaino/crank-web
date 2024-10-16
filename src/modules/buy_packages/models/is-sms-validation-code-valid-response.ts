@@ -24,9 +24,9 @@ export class IsSmsValidationCodeValidResponse {
       case 'SMSCodeValidatedSuccessfully':
         return 'Thank you. Your mobile number has been verified and updated successfully and you can proceed with your purchase now.'
       case 'SMSValidationCodeError':
-        return 'Invalid code.'
+        return 'The code provided is invalid. Please try again.'
       case 'MobilePhoneAlreadyVerifiedError':
-        return 'Mobile phone number is already validated.'
+        return 'Your mobile number is already verified. Please proceed with your purchase.'
       case 'RequestSMSValidationNeededError':
         return 'SMS Validation is required.'
       default:

@@ -22,9 +22,9 @@ export class SmsValidationResponse {
       case 'SuccessfulRequestSMSValidation':
         return 'SMS sent successfully.'
       case 'MobilePhoneNotValidError':
-        return 'Invalid phone number.'
+        return 'The submitted mobile number is invalid. Please try again with a valid mobile number.'
       case 'MobilePhoneAlreadyVerifiedError':
-        return 'This mobile phone number has been already verified.'
+        return 'Your mobile number is already verified. Please proceed with your purchase.'
       default:
         return ERROR_UNKNOWN
     }
