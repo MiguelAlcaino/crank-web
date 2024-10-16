@@ -7,7 +7,7 @@ export class IsSmsValidationCodeValidResponse {
     | 'SMSCodeValidatedSuccessfully'
     | 'SMSValidationCodeError'
     | 'UnknownError'
-    
+
   constructor(
     typeName:
       | 'MobilePhoneAlreadyVerifiedError'
