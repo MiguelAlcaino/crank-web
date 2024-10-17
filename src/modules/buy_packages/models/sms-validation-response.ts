@@ -1,7 +1,7 @@
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 
 export class SmsValidationResponse {
-  errorCode:
+  code:
     | 'MobilePhoneAlreadyVerifiedError'
     | 'MobilePhoneNotValidError'
     | 'SuccessfulRequestSMSValidation'
@@ -14,11 +14,11 @@ export class SmsValidationResponse {
       | 'SuccessfulRequestSMSValidation'
       | 'UnknownError'
   ) {
-    this.errorCode = typeName
+    this.code = typeName
   }
 
   get message(): string {
-    switch (this.errorCode) {
+    switch (this.code) {
       case 'SuccessfulRequestSMSValidation':
         return 'SMS sent successfully.'
       case 'MobilePhoneNotValidError':
@@ -31,6 +31,6 @@ export class SmsValidationResponse {
   }
 
   get success(): boolean {
-    return this.errorCode === 'SuccessfulRequestSMSValidation'
+    return this.code === 'SuccessfulRequestSMSValidation'
   }
 }
