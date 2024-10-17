@@ -28,7 +28,7 @@ export class IsSmsValidationCodeValidResponse {
       case 'MobilePhoneAlreadyVerifiedError':
         return 'Your mobile number is already verified. Please proceed with your purchase.'
       case 'RequestSMSValidationNeededError':
-        return 'SMS Validation is required.'
+        return 'Your phone number is not verified yet, please verify it.'
       default:
         return ERROR_UNKNOWN
     }
