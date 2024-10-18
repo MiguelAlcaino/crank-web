@@ -153,6 +153,8 @@ function acceptSuccessModal() {
     const token = useAuthenticationStore().token
     const url = `${destination.value}&bearer=${token}`
     window.location.replace(url)
+  }else{
+    window.location.replace('https://www.crank-fit.com/payments')
   }
 }
 </script>
