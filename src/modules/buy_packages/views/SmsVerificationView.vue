@@ -154,7 +154,9 @@ function acceptSuccessModal() {
     const url = `${destination.value}&bearer=${token}`
     window.location.replace(url)
   }else{
-    window.location.replace('https://www.crank-fit.com/payments')
+    const packagesUrl = (import.meta.env.VITE_CRANK_PACKAGES_URL ?? null) as string | null
+    if(packagesUrl)
+      window.location.replace(packagesUrl)
   }
 }
 </script>
