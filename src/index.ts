@@ -9,7 +9,8 @@ import {
   startPaymentsIframeApp,
   startResetPasswordApp,
   startLoginRedirectApp,
-  startVueAppWithoutPath
+  startVueAppWithoutPath,
+  startSmsVerificationApp
 } from './start-app-functions'
 
 export {
@@ -24,5 +25,6 @@ export {
   startPaymentsIframeApp,
   startResetPasswordApp,
   startLoginRedirectApp,
-  startVueAppWithoutPath
+  startVueAppWithoutPath,
+  startSmsVerificationApp
 }

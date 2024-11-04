@@ -159,8 +159,13 @@ function acceptSuccessModal() {
   } else {
     let packagesUrl = (import.meta.env.VITE_CRANK_PACKAGES_URL ?? null) as string | null
 
-    if (packagesUrl) { 
-      packagesUrl + '/autologin?packages=1&site=' + appStore().site + '&bearer=' + token + '&from-mobile-app=1'
+    if (packagesUrl) {
+      packagesUrl +
+        '/autologin?packages=1&site=' +
+        appStore().site +
+        '&bearer=' +
+        token +
+        '&from-mobile-app=1'
       window.location.replace(packagesUrl)
     }
   }

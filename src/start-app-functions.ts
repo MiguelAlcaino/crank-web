@@ -400,3 +400,26 @@ export const startVueAppWithoutPath = async function (
 
   app.mount(appDiv)
 }
+
+export const startSmsVerificationApp = async function (
+  gqlUrl: string = defaultGqlUrl,
+  appDiv: string = defaultAppDiv
+) {
+  const app = createApp({
+    setup() {
+      provide(
+        'gqlApiService',
+        new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
+      )
+    },
+    render: () => h(App)
+  }).component('font-awesome-icon', FontAwesomeIcon)
+
+  app
+    .use(createPinia())
+    .use(router)
+    .component('Popper', Popper)
+    .component('VueDatePicker', VueDatePicker)
+  await router.push('/sms-verification')
+  app.mount(appDiv)
+}
