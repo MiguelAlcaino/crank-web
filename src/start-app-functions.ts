@@ -420,6 +420,11 @@ export const startSmsVerificationApp = async function (
     .use(router)
     .component('Popper', Popper)
     .component('VueDatePicker', VueDatePicker)
-  await router.push('/sms-verification')
+
+    const queryString = window.location.search
+    const urlParams = new URLSearchParams(queryString)
+    const destination = urlParams.get('destination')
+
+    await router.push({ name: 'sms_verification', query: { destination: destination } })
   app.mount(appDiv)
 }
