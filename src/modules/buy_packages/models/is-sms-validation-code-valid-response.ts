@@ -1,7 +1,7 @@
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 
 export class IsSmsValidationCodeValidResponse {
-  errorCode:
+  code:
     | 'MobilePhoneAlreadyVerifiedError'
     | 'RequestSMSValidationNeededError'
     | 'SMSCodeValidatedSuccessfully'
@@ -16,25 +16,25 @@ export class IsSmsValidationCodeValidResponse {
       | 'SMSValidationCodeError'
       | 'UnknownError'
   ) {
-    this.errorCode = typeName
+    this.code = typeName
   }
 
   get message(): string {
-    switch (this.errorCode) {
+    switch (this.code) {
       case 'SMSCodeValidatedSuccessfully':
         return 'Thank you. Your mobile number has been verified and updated successfully and you can proceed with your purchase now.'
       case 'SMSValidationCodeError':
-        return 'Invalid code.'
+        return 'The code provided is invalid. Please try again.'
       case 'MobilePhoneAlreadyVerifiedError':
-        return 'Mobile phone number is already validated.'
+        return 'Your mobile number is already verified. Please proceed with your purchase.'
       case 'RequestSMSValidationNeededError':
-        return 'SMS Validation is required.'
+        return 'Your phone number is not verified yet, please verify it.'
       default:
         return ERROR_UNKNOWN
     }
   }
 
   get success(): boolean {
-    return this.errorCode === 'SMSCodeValidatedSuccessfully'
+    return this.code === 'SMSCodeValidatedSuccessfully'
   }
 }
