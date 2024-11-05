@@ -238,7 +238,7 @@ export const startPaymentsIframeApp = async function (
     throw Error
   }
 
-  app.use(createPinia()).use(router)
+  app.use(createPinia()).use(router).component('VueDatePicker', VueDatePicker)
 
   try {
     if (!authService.isLoggedId()) {
@@ -421,10 +421,10 @@ export const startSmsVerificationApp = async function (
     .component('Popper', Popper)
     .component('VueDatePicker', VueDatePicker)
 
-    const queryString = window.location.search
-    const urlParams = new URLSearchParams(queryString)
-    const destination = urlParams.get('destination')
+  const queryString = window.location.search
+  const urlParams = new URLSearchParams(queryString)
+  const destination = urlParams.get('destination')
 
-    await router.push({ name: 'sms_verification', query: { destination: destination } })
+  await router.push({ name: 'sms_verification', query: { destination: destination } })
   app.mount(appDiv)
 }
