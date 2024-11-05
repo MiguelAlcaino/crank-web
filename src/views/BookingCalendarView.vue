@@ -47,7 +47,7 @@ interface WeekCalendar {
 </script>
 
 <script setup lang="ts">
-import { inject, onMounted, ref } from 'vue'
+import { inject, nextTick, onMounted, ref } from 'vue'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
@@ -78,14 +78,14 @@ dayjs.extend(utc)
 dayjs.extend(timezone)
 
 onMounted(() => {
-  getClassesOfTheWeek()
+  getClassesOfTheWeek(true)
 })
 
-function getClassesOfTheWeek() {
+function getClassesOfTheWeek(autoScroll: boolean = false) {
   if (authService.isLoggedId()) {
-    getCustomCalendarClasses()
+    getCustomCalendarClasses(autoScroll)
   } else {
-    getCalendarClasses()
+    getCalendarClasses(autoScroll)
   }
 }
 
@@ -115,7 +115,7 @@ function goToPrevWeek(): void {
   getClassesOfTheWeek()
 }
 
-async function getCustomCalendarClasses(): Promise<void> {
+async function getCustomCalendarClasses(autoScroll: boolean = false): Promise<void> {
   hasPreviousWeek.value = false
   daysOfTheWeek.value = []
   enrollmentClassIds.value = []
@@ -204,16 +204,21 @@ async function getCustomCalendarClasses(): Promise<void> {
       }
 
       getPivot()
+
+      if (autoScroll) {
+        nextTick(() => {
+          scrollToToday()
+        })
+      }
     }
   } catch (error) {
-    console.error('getCustomCalendarClasses error', error)
     errorModalIsVisible.value = true
   } finally {
     calendarIsLoading.value = false
   }
 }
 
-async function getCalendarClasses(): Promise<void> {
+async function getCalendarClasses(autoScroll: boolean = false): Promise<void> {
   hasPreviousWeek.value = false
   daysOfTheWeek.value = []
   enrollmentClassIds.value = []
@@ -275,8 +280,9 @@ async function getCalendarClasses(): Promise<void> {
         const disabled: boolean = date.isBefore(_actualDate, 'day')
         const selected: boolean = date.isSame(_actualDate, 'day')
 
-        const calendarClassesTemp: Class[] = calendarClasses.filter((x) =>
-          dayjs(x.start).tz(siteTimezone.value).isSame(date, 'day')
+        const calendarClassesTemp: Class[] = calendarClasses.filter(
+          (x) =>
+            dayjs(x.start).tz(siteTimezone.value).isSame(date, 'day') && x.showAsDisabled == false
         )
 
         daysOfTheWeek.value.push({
@@ -290,6 +296,12 @@ async function getCalendarClasses(): Promise<void> {
       }
 
       getPivot()
+
+      if (autoScroll) {
+        nextTick(() => {
+          scrollToToday()
+        })
+      }
     }
   } catch (error) {
     errorModalIsVisible.value = true
@@ -385,6 +397,43 @@ function calendarCardIsDisabled(dataClass?: Class): boolean {
 
   return false
 }
+
+const scrollToToday = () => {
+  nextTick(() => {
+    const todayElement = document.querySelector('.today') as HTMLElement
+    const container = document.querySelector('.table-responsive') as HTMLElement
+
+    if (todayElement && container) {
+      const containerRect = container.getBoundingClientRect()
+      const todayRect = todayElement.getBoundingClientRect()
+      const offset = todayRect.left - containerRect.left
+
+      smoothScroll(
+        container,
+        container.scrollLeft,
+        container.scrollLeft + offset - containerRect.left
+      )
+    }
+  })
+}
+
+function smoothScroll(element: HTMLElement, start: number, end: number, duration = 500) {
+  const startTime = performance.now()
+
+  function scroll() {
+    const currentTime = performance.now()
+    const timeElapsed = currentTime - startTime
+    const progress = Math.min(timeElapsed / duration, 1)
+
+    element.scrollLeft = start + (end - start) * progress
+
+    if (progress < 1) {
+      requestAnimationFrame(scroll)
+    }
+  }
+
+  requestAnimationFrame(scroll)
+}
 </script>
 
 <template>
@@ -417,6 +466,7 @@ function calendarCardIsDisabled(dataClass?: Class): boolean {
                 v-for="(colName, key) in columnsNames"
                 :key="key"
                 :class="colName.isCurrentDate ? 'today' : ''"
+                :ref="colName.isCurrentDate ? 'today' : ''"
               >
                 {{ colName.dayName }}<br />
                 {{ colName.dateNumber }}

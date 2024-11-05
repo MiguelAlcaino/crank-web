@@ -29,7 +29,6 @@ import { authService } from '@/services/authService'
 import { ApiService } from '@/services/apiService'
 import { newAnonymousClient, newAuthenticatedApolloClient } from '@/services/graphqlClient'
 import { useAuthenticationStore } from '@/stores/authToken'
-import { Config } from '@/model/Config'
 
 import { appStore } from './stores/appStorage'
 import { SiteEnum } from './gql/graphql'
@@ -41,15 +40,14 @@ async function startApp() {
   const selection = <HTMLElement | null>document.querySelector('#app-parameters')
   const view = selection?.dataset.view as string
   const site = selection?.dataset.site as string
+  const apiService = new ApiService(
+    newAuthenticatedApolloClient(import.meta.env.VITE_CRANK_GRAPHQL_SERVER_URL),
+    newAnonymousClient(import.meta.env.VITE_CRANK_GRAPHQL_SERVER_URL)
+  )
+
   const app = createApp({
     setup() {
-      provide(
-        'gqlApiService',
-        new ApiService(
-          newAuthenticatedApolloClient(Config.GRAPHQL_SERVICE_URL),
-          newAnonymousClient(Config.GRAPHQL_SERVICE_URL)
-        )
-      )
+      provide('gqlApiService', apiService)
     },
     render: () => h(App)
   }).component('font-awesome-icon', FontAwesomeIcon)
@@ -82,11 +80,6 @@ async function startApp() {
     if (!authService.isLoggedId()) {
       appStore().setSite(siteEnum)
     } else {
-      const apiService = new ApiService(
-        newAuthenticatedApolloClient(Config.GRAPHQL_SERVICE_URL),
-        newAnonymousClient(Config.GRAPHQL_SERVICE_URL)
-      )
-
       if (appStore().site !== siteEnum) {
         const currentUserExistsOnSite = (await apiService.currentUserDoesExistInSite(
           site

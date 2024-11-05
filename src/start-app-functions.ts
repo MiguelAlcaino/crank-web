@@ -23,10 +23,9 @@ import { appStore } from './stores/appStorage'
 import { SiteEnum } from './gql/graphql'
 
 import App from '@/App.vue'
-import { Config } from './model/Config'
 import { authService } from './services/authService'
 
-const defaultGqlUrl = Config.GRAPHQL_SERVICE_URL
+const defaultGqlUrl = import.meta.env.VITE_CRANK_GRAPHQL_SERVER_URL
 const defaultAppDiv = '#app'
 //test commit
 export const startBookingCalendarApp = async function (
@@ -34,12 +33,13 @@ export const startBookingCalendarApp = async function (
   gqlUrl: string = defaultGqlUrl,
   appDiv: string = defaultAppDiv
 ) {
+  const apiService = new ApiService(
+    newAuthenticatedApolloClient(gqlUrl),
+    newAnonymousClient(gqlUrl)
+  )
   const app = createApp({
     setup() {
-      provide(
-        'gqlApiService',
-        new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
-      )
+      provide('gqlApiService', apiService)
     },
     render: () => h(App)
   }).component('font-awesome-icon', FontAwesomeIcon)
@@ -65,11 +65,6 @@ export const startBookingCalendarApp = async function (
       appStore().setSite(siteEnum)
     } else {
       if (appStore().site !== siteEnum) {
-        const apiService = new ApiService(
-          newAuthenticatedApolloClient(Config.GRAPHQL_SERVICE_URL),
-          newAnonymousClient(Config.GRAPHQL_SERVICE_URL)
-        )
-
         const currentUserExistsOnSite = (await apiService.currentUserDoesExistInSite(
           site
         )) as boolean
@@ -222,12 +217,13 @@ export const startPaymentsIframeApp = async function (
   gqlUrl: string = defaultGqlUrl,
   appDiv: string = defaultAppDiv
 ) {
+  const apiService = new ApiService(
+    newAuthenticatedApolloClient(gqlUrl),
+    newAnonymousClient(gqlUrl)
+  )
   const app = createApp({
     setup() {
-      provide(
-        'gqlApiService',
-        new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
-      )
+      provide('gqlApiService', apiService)
     },
     render: () => h(App)
   })
@@ -249,11 +245,6 @@ export const startPaymentsIframeApp = async function (
       appStore().setSite(siteEnum)
     } else {
       if (appStore().site !== siteEnum) {
-        const apiService = new ApiService(
-          newAuthenticatedApolloClient(Config.GRAPHQL_SERVICE_URL),
-          newAnonymousClient(Config.GRAPHQL_SERVICE_URL)
-        )
-
         const currentUserExistsOnSite = (await apiService.currentUserDoesExistInSite(
           site
         )) as boolean
@@ -339,5 +330,101 @@ export const startLoginRedirectApp = async function (
   const destination = urlParams.get('destination')
 
   await router.push({ name: 'login_redirect', query: { destination: destination, site: site } })
+  app.mount(appDiv)
+}
+
+// TODO: put site parameter in the url
+export const startVueAppWithoutPath = async function (
+  site: string = SiteEnum.Dubai.toString(),
+  gqlUrl: string = defaultGqlUrl,
+  appDiv: string = defaultAppDiv
+) {
+  const apiService = new ApiService(
+    newAuthenticatedApolloClient(gqlUrl),
+    newAnonymousClient(gqlUrl)
+  )
+  const app = createApp({
+    setup() {
+      provide('gqlApiService', apiService)
+    },
+    render: () => h(App)
+  }).component('font-awesome-icon', FontAwesomeIcon)
+
+  let siteEnum: SiteEnum
+
+  if (site === SiteEnum.Dubai.toString()) {
+    siteEnum = SiteEnum.Dubai
+  } else if (site === SiteEnum.AbuDhabi) {
+    siteEnum = SiteEnum.AbuDhabi
+  } else {
+    throw Error
+  }
+
+  app
+    .use(createPinia())
+    .use(router)
+    .component('Popper', Popper)
+    .component('VueDatePicker', VueDatePicker)
+
+  try {
+    if (!authService.isLoggedId()) {
+      appStore().setSite(siteEnum)
+    } else {
+      if (appStore().site !== siteEnum) {
+        const currentUserExistsOnSite = (await apiService.currentUserDoesExistInSite(
+          site
+        )) as boolean
+
+        if (!currentUserExistsOnSite) {
+          const response = await apiService.createCurrentUserInSite(appStore().site, site)
+
+          if (
+            response !== null &&
+            (response.__typename === 'CreateCurrentUserInSiteSuccess' ||
+              response.__typename === 'UserAlreadyExistsError')
+          ) {
+            appStore().setSite(siteEnum)
+          } else {
+            authService.logout()
+          }
+        } else {
+          appStore().setSite(siteEnum)
+        }
+      } else {
+        appStore().setSite(siteEnum)
+      }
+    }
+  } catch (error) {
+    console.error('ERROR:', error)
+  }
+
+  app.mount(appDiv)
+}
+
+export const startSmsVerificationApp = async function (
+  gqlUrl: string = defaultGqlUrl,
+  appDiv: string = defaultAppDiv
+) {
+  const app = createApp({
+    setup() {
+      provide(
+        'gqlApiService',
+        new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
+      )
+    },
+    render: () => h(App)
+  }).component('font-awesome-icon', FontAwesomeIcon)
+
+  app
+    .use(createPinia())
+    .use(router)
+    .component('Popper', Popper)
+    .component('VueDatePicker', VueDatePicker)
+
+    const queryString = window.location.search
+    const urlParams = new URLSearchParams(queryString)
+    const destination = urlParams.get('destination')
+
+    await router.push({ name: 'sms_verification', query: { destination: destination } })
   app.mount(appDiv)
 }
