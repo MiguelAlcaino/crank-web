@@ -2,7 +2,7 @@
 import { appStore } from '@/stores/appStorage'
 import { useAuthenticationStore } from '@/stores/authToken'
 import { onMounted, ref } from 'vue'
-const paymenttUrl = (import.meta.env.VITE_CRANK_PAYMENTS_URL ?? '') as string | null
+const paymentsUrl = (import.meta.env.VITE_CRANK_PAYMENTS_URL ?? '') as string | null
 
 const iframeLink = ref<string | null>(null)
 
@@ -11,7 +11,7 @@ onMounted(() => {
   const token = useAuthenticationStore().token
 
   iframeLink.value =
-    paymenttUrl + '/autologin?packages=1&site=' + site + '&bearer=' + token + '&from-mobile-app=1'
+  paymentsUrl + '/autologin?packages=1&site=' + site + '&bearer=' + token + '&from-mobile-app=1'
 })
 </script>
 
