@@ -12,8 +12,6 @@ import ModalComponent from '@/components/ModalComponent.vue'
 import type { PhoneObject } from '../interfaces/phone-object.interface'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 import { useRoute } from 'vue-router'
-import { useAuthenticationStore } from '@/stores/authToken'
-import { appStore } from '@/stores/appStorage'
 import router from '@/router'
 
 const apiService = inject<ApiService>('gqlApiService')!
