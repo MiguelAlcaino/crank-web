@@ -12,8 +12,7 @@ import ModalComponent from '@/components/ModalComponent.vue'
 import type { PhoneObject } from '../interfaces/phone-object.interface'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 import { useRoute } from 'vue-router'
-import { useAuthenticationStore } from '@/stores/authToken'
-import { appStore } from '@/stores/appStorage'
+import router from '@/router'
 
 const apiService = inject<ApiService>('gqlApiService')!
 
@@ -148,26 +147,13 @@ const submitSmsCodeForm = async () => {
   }
 }
 
-function acceptSuccessModal() {
+async function acceptSuccessModal() {
   successModalIsVisible.value = false
 
-  const token = useAuthenticationStore().token
-
   if (destination.value) {
-    const url = `${destination.value}&bearer=${token}`
-    window.location.replace(url)
+    await router.push({ name: 'payments', query: { destination: destination.value } })
   } else {
-    let packagesUrl = (import.meta.env.VITE_CRANK_PACKAGES_URL ?? null) as string | null
-
-    if (packagesUrl) {
-      packagesUrl +
-        '/autologin?packages=1&site=' +
-        appStore().site +
-        '&bearer=' +
-        token +
-        '&from-mobile-app=1'
-      window.location.replace(packagesUrl)
-    }
+    router.push({ name: 'payments' })
   }
 }
 </script>
