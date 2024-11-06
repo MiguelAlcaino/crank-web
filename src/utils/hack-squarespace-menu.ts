@@ -227,7 +227,7 @@ function hackMobileMenu(userIsLoggedIn: boolean, crankMenuUrls: MenuUrls) {
       const subMenuProfileLink = document.createElement('a')
       subMenuProfileLink.className = mobileClassName
       subMenuProfileLink.href = crankMenuUrls.profileUrl
-      subMenuProfileLink.innerText = 'My Profile'
+      subMenuProfileLink.innerText = 'Login'
       myAccountDiv.appendChild(subMenuProfileLink)
     }
   }
