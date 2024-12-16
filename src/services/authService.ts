@@ -3,9 +3,9 @@ import { useAuthenticationStore } from '@/stores/authToken'
 import { IncorrectCredentialsLoginError, ResetPasswordRequiredError } from '@/model/Exception'
 import router from '@/router'
 import jwt_decode from 'jwt-decode'
-import type { SiteEnum } from '@/gql/graphql'
 import { appStore } from '@/stores/appStorage'
 import type { Role } from '@/utils/userRoles'
+import { SiteEnum } from '@/modules/shared/interfaces/site.enum'
 
 interface JwtTokenPayload {
   exp: number

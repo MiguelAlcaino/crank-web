@@ -15,7 +15,7 @@ interface State {
 import { onMounted, reactive, ref, computed, inject } from 'vue'
 import useVuelidate from '@vuelidate/core'
 import { required, email, minLength, sameAs, maxLength, helpers } from '@vuelidate/validators'
-import { GenderEnum, type RegisterUserInput, SiteEnum } from '@/gql/graphql'
+import { GenderEnum, type RegisterUserInput } from '@/gql/graphql'
 
 import type { ApiService } from '@/services/apiService'
 import { authService } from '@/services/authService'
@@ -28,6 +28,7 @@ import dayjs from 'dayjs'
 import { VueTelInput } from 'vue-tel-input'
 import 'vue-tel-input/vue-tel-input.css'
 import { getFormattedPhoneNumber } from '@/utils/utility-functions'
+import { SiteEnum } from '@/modules/shared/interfaces/site.enum'
 
 const isSaving = ref(false)
 const isLoggingIn = ref(false)
@@ -256,6 +257,7 @@ async function login() {
         <select class="custom-select" v-model="formData.location" required>
           <option :value="SiteEnum.Dubai">Dubai</option>
           <option :value="SiteEnum.AbuDhabi">Abu Dhabi</option>
+          <option :value="SiteEnum.TownSquare">Town Square</option>
         </select>
         <small
           v-for="error in v$.location.$errors"
@@ -777,6 +779,7 @@ a {
   font-weight: bold;
   text-decoration: underline;
 }
+
 a:hover {
   color: #000000;
   font-weight: bold;
@@ -786,14 +789,17 @@ a:hover {
   background-color: #ff7f61 !important;
   border-color: #ff7f61 !important;
 }
+
 .custom-checkbox .custom-control-input:checked:focus ~ .custom-control-label::before {
   box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem #ff7f61;
   border-color: #ff7f61 !important;
 }
+
 .custom-checkbox .custom-control-input:focus ~ .custom-control-label::before {
   box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(0, 0, 0, 0.25);
   border-color: #ff7f61 !important;
 }
+
 .custom-checkbox .custom-control-input:active ~ .custom-control-label::before {
   background-color: #ffc6b9;
   border-color: #ff7f61 !important;
@@ -830,6 +836,7 @@ a:hover {
   background: var(--dp-danger-color) !important;
   color: var(--dp-primary-text-color) !important;
 }
+
 .dp__action_select {
   background: #000000 !important;
   color: var(--dp-primary-text-color) !important;
@@ -838,6 +845,7 @@ a:hover {
 li > span {
   font-family: 'Avenir', sans-serif;
 }
+
 li > strong {
   font-family: 'Avenir', sans-serif;
 }

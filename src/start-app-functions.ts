@@ -20,10 +20,10 @@ import 'bootstrap-icons/font/bootstrap-icons.css'
 import router from './router'
 
 import { appStore } from './stores/appStorage'
-import { SiteEnum } from './gql/graphql'
 
 import App from '@/App.vue'
 import { authService } from './services/authService'
+import { SiteEnum } from './modules/shared/interfaces/site.enum'
 
 const defaultGqlUrl = import.meta.env.VITE_CRANK_GRAPHQL_SERVER_URL
 const defaultAppDiv = '#app'
@@ -50,6 +50,8 @@ export const startBookingCalendarApp = async function (
     siteEnum = SiteEnum.Dubai
   } else if (site === SiteEnum.AbuDhabi) {
     siteEnum = SiteEnum.AbuDhabi
+  } else if (site === SiteEnum.TownSquare) {
+    siteEnum = SiteEnum.TownSquare
   } else {
     throw Error
   }
@@ -234,6 +236,8 @@ export const startPaymentsIframeApp = async function (
     siteEnum = SiteEnum.Dubai
   } else if (site === SiteEnum.AbuDhabi) {
     siteEnum = SiteEnum.AbuDhabi
+  } else if (site === SiteEnum.TownSquare) {
+    siteEnum = SiteEnum.TownSquare
   } else {
     throw Error
   }
@@ -356,6 +360,8 @@ export const startVueAppWithoutPath = async function (
     siteEnum = SiteEnum.Dubai
   } else if (site === SiteEnum.AbuDhabi) {
     siteEnum = SiteEnum.AbuDhabi
+  } else if (site === SiteEnum.TownSquare) {
+    siteEnum = SiteEnum.TownSquare
   } else {
     throw Error
   }

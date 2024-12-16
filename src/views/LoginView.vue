@@ -1,10 +1,3 @@
-<script lang="ts">
-enum SiteEnum {
-  AbuDhabi = 'abu_dhabi',
-  Dubai = 'dubai'
-}
-</script>
-
 <script setup lang="ts">
 import { onMounted, computed, reactive, ref } from 'vue'
 import router from '@/router'
@@ -19,6 +12,7 @@ import { useRoute } from 'vue-router'
 import { ResetPasswordRequiredError } from '@/model/Exception'
 import { hackSquarespaceMenu } from '@/utils/hack-squarespace-menu'
 import { useAuthenticationStore } from '@/stores/authToken'
+import { SiteEnum } from '@/modules/shared/interfaces/site.enum'
 
 const displayLoginError = ref(false)
 const isSubmitting = ref(false)
@@ -36,6 +30,8 @@ onMounted(() => {
 
   if (site === SiteEnum.AbuDhabi) {
     formData.location = SiteEnum.AbuDhabi
+  } else if (site === SiteEnum.TownSquare) {
+    formData.location = SiteEnum.TownSquare
   } else {
     formData.location = SiteEnum.Dubai
   }
@@ -127,6 +123,7 @@ function isValidHttpUrl(value: string) {
               <select class="custom-select" v-model="formData.location" required>
                 <option :value="SiteEnum.Dubai">Dubai</option>
                 <option :value="SiteEnum.AbuDhabi">Abu Dhabi</option>
+                <option :value="SiteEnum.TownSquare">Town Square</option>
               </select>
               <small
                 v-for="error in v$.location.$errors"

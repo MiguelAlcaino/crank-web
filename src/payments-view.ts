@@ -8,8 +8,9 @@ import 'bootstrap-icons/font/bootstrap-icons.css'
 import { ApiService } from '@/services/apiService'
 import { newAnonymousClient, newAuthenticatedApolloClient } from '@/services/graphqlClient'
 import { useAuthenticationStore } from '@/stores/authToken'
-import { SiteEnum } from './gql/graphql'
+
 import { appStore } from './stores/appStorage'
+import { SiteEnum } from './modules/shared/interfaces/site.enum'
 
 startApp()
 
@@ -34,10 +35,12 @@ async function startApp() {
   useAuthenticationStore().setSession(token)
 
   if (site) {
-    if (site === SiteEnum.Dubai.toString()) {
+    if (site === SiteEnum.Dubai) {
       appStore().setSite(SiteEnum.Dubai)
     } else if (site === SiteEnum.AbuDhabi) {
       appStore().setSite(SiteEnum.AbuDhabi)
+    } else if (site === SiteEnum.TownSquare) {
+      appStore().setSite(SiteEnum.TownSquare)
     } else {
       throw Error
     }
