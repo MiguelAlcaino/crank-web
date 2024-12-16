@@ -40,7 +40,8 @@ import type {
   PaginatedClassStats,
   PaginatedPurchases,
   SmsValidationUnion,
-  IsSmsValidationCodeValidUnion
+  IsSmsValidationCodeValidUnion,
+  Site
 } from '@/gql/graphql'
 import { EnrollmentTypeEnum, type SiteSetting } from '@/gql/graphql'
 import { ApolloClient, ApolloError } from '@apollo/client/core'
@@ -1379,6 +1380,28 @@ export class ApiService {
       return new IsSmsValidationCodeValidResponse(response.__typename)
     } catch (error) {
       return new IsSmsValidationCodeValidResponse('UnknownError')
+    }
+  }
+
+  async availableSites(): Promise<Site[]> {
+    try {
+      const query = gql`
+        query availableSites {
+          availableSites {
+            name
+            code
+          }
+        }
+      `
+
+      const queryResult = await this.authApiClient.query({
+        query: query,
+        fetchPolicy: 'no-cache'
+      })
+
+      return queryResult.data.availableSites as Site[]
+    } catch (error) {
+      return []
     }
   }
 }
