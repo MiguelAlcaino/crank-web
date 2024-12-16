@@ -212,6 +212,27 @@ export type ClassIsFullError = Error & {
   code: Scalars['String']
 }
 
+export type ClassPackageProduct = SellableProductInterface & {
+  __typename: 'ClassPackageProduct'
+  alertBeforePurchasing?: Maybe<ProductAlertBeforePurchasing>
+  buttonText?: Maybe<Scalars['String']>
+  currency: Scalars['String']
+  id: Scalars['ID']
+  isVisible: Scalars['Boolean']
+  price: Scalars['Float']
+  subtitle: Scalars['String']
+  title: Scalars['String']
+  type?: Maybe<ClassPackageTypeEnum>
+}
+
+export enum ClassPackageTypeEnum {
+  Membership = 'membership',
+  Regular = 'regular',
+  Special = 'special',
+  Trial = 'trial',
+  Vod = 'vod'
+}
+
 export type ClassPositionInterface = {
   icon: PositionIconEnum
   x: Scalars['Int']
@@ -366,6 +387,8 @@ export type Enrollment = {
 
 export type EnrollmentInfo = EnrollmentInfoInterface & {
   __typename: 'EnrollmentInfo'
+  /** Returns true if the user was booked via ClassPass */
+  bookedViaClassPass: Scalars['Boolean']
   enrollmentDateTime: Scalars['DateTime']
   enrollmentDateTimeWithNoTimeZone: Scalars['DateTimeWithoutTimeZone']
   enrollmentStatus: EnrollmentStatusEnum
@@ -380,6 +403,12 @@ export type EnrollmentInfo = EnrollmentInfoInterface & {
   isBookedForFree: Scalars['Boolean']
   isCheckedIn: Scalars['Boolean']
   isFirstTimeInThisTypeOfClass: Scalars['Boolean']
+  /** Whether this is the first time of this Enrollment's user with this class' instructor */
+  isFirstTimeWithThisInstructor: Scalars['Boolean']
+  /** Returns true if today is the user's birthday */
+  isTodayUserBirthday: Scalars['Boolean']
+  /** Whether the user leaderboard is enabled */
+  isUserLeaderboardEnabled: Scalars['Boolean']
   /** @deprecated Use spotNumber instead. */
   spotInfo?: Maybe<SpotInfo>
   spotNumber?: Maybe<Scalars['Int']>
@@ -483,6 +512,11 @@ export type IsSmsValidationCodeValidUnion =
   | SmsCodeValidatedSuccessfully
   | SmsValidationCodeError
 
+export type ItemToShoppingCartInput = {
+  quantity: Scalars['Int']
+  sellableProductId: Scalars['ID']
+}
+
 export type LateCancellationRequiredError = Error & {
   __typename: 'LateCancellationRequiredError'
   code: Scalars['String']
@@ -506,6 +540,8 @@ export type Mutation = {
   addAdminUser: AdminUserResultUnion
   /** Adds a new device token to be used for device notifications */
   addDeviceTokenToCurrentUser?: Maybe<Scalars['Boolean']>
+  /** Allows to add item to shopping cart */
+  addItemToShoppingCart: Scalars['Boolean']
   /** Books the current user in a class */
   bookClass: BookClassResultUnion
   /** Adds a user into a given class */
@@ -548,6 +584,8 @@ export type Mutation = {
   removeAdminUser: Scalars['Boolean']
   /** Removes the current user's waitlist entry from a class */
   removeCurrentUserFromWaitlist?: Maybe<RemoveCurrentUserFromWaitlistUnion>
+  /** Remove Item from shopping cart */
+  removeItemFromShoppingCart: Scalars['Boolean']
   /** Removes a user from a class */
   removeUserFromClass: CancelEnrollmentResultUnion
   /** Removes a waitlist entry */
@@ -584,6 +622,8 @@ export type Mutation = {
   updateCurrentUserPassword?: Maybe<Scalars['Boolean']>
   /** Updates a gift card */
   updateGiftCard: GiftCard
+  /** Allows to update an Item from Shopping Cart */
+  updateItemInShoppingCart: ShoppingCart
   updateUserPassword?: Maybe<Scalars['Boolean']>
 }
 
@@ -599,6 +639,10 @@ export type MutationAddAdminUserArgs = {
 export type MutationAddDeviceTokenToCurrentUserArgs = {
   input?: InputMaybe<DeviceTokenInput>
   site?: InputMaybe<SiteEnum>
+}
+
+export type MutationAddItemToShoppingCartArgs = {
+  input?: InputMaybe<ItemToShoppingCartInput>
 }
 
 export type MutationBookClassArgs = {
@@ -700,6 +744,10 @@ export type MutationRemoveCurrentUserFromWaitlistArgs = {
   site: SiteEnum
 }
 
+export type MutationRemoveItemFromShoppingCartArgs = {
+  id: Scalars['ID']
+}
+
 export type MutationRemoveUserFromClassArgs = {
   input: CancelEnrollmentInput
 }
@@ -772,6 +820,10 @@ export type MutationUpdateGiftCardArgs = {
   input: UpdateGiftCardInput
 }
 
+export type MutationUpdateItemInShoppingCartArgs = {
+  input?: InputMaybe<ItemToShoppingCartInput>
+}
+
 export type MutationUpdateUserPasswordArgs = {
   input: UpdateUserPasswordInput
 }
@@ -834,6 +886,20 @@ export enum PositionIconEnum {
   Tv = 'tv'
 }
 
+export type ProductAlertBeforePurchasing = {
+  __typename: 'ProductAlertBeforePurchasing'
+  description: Scalars['String']
+  title: Scalars['String']
+}
+
+export enum ProductType {
+  ClassPackage = 'classPackage'
+}
+
+export type ProductsInput = {
+  type?: InputMaybe<ProductType>
+}
+
 export type Purchase = {
   __typename: 'Purchase'
   activationDateTime: Scalars['DateTime']
@@ -893,6 +959,8 @@ export type Query = {
   giftCards: Array<GiftCard>
   /** Verifies whether an sms validation code is valid */
   isSMSValidationCodeValid?: Maybe<IsSmsValidationCodeValidUnion>
+  /** Returns a list of available products for a specific site */
+  products: Array<SellableProductInterface>
   /** Returns a specific room layout */
   roomLayout?: Maybe<RoomLayout>
   /** Returns a list of available RoomLayouts for a site */
@@ -980,6 +1048,11 @@ export type QueryCurrentUserWorkoutStatsPaginatedArgs = {
 
 export type QueryIsSmsValidationCodeValidArgs = {
   smsCode: Scalars['String']
+}
+
+export type QueryProductsArgs = {
+  input?: InputMaybe<ProductsInput>
+  site: SiteEnum
 }
 
 export type QueryRoomLayoutArgs = {
@@ -1154,6 +1227,17 @@ export type SmsValidationUnion =
   | MobilePhoneNotValidError
   | SuccessfulRequestSmsValidation
 
+export type SellableProductInterface = {
+  alertBeforePurchasing?: Maybe<ProductAlertBeforePurchasing>
+  buttonText?: Maybe<Scalars['String']>
+  currency: Scalars['String']
+  id: Scalars['ID']
+  isVisible: Scalars['Boolean']
+  price: Scalars['Float']
+  subtitle: Scalars['String']
+  title: Scalars['String']
+}
+
 export type SendClassStatsToEmailInput = {
   email: Scalars['String']
   enrollmentId: Scalars['ID']
@@ -1162,6 +1246,24 @@ export type SendClassStatsToEmailInput = {
 export type SetRoomLayoutForClassSchedulesInput = {
   classSchedulesIds: Array<Scalars['ID']>
   roomLayoutId?: InputMaybe<Scalars['ID']>
+}
+
+export type ShoppingCart = {
+  __typename: 'ShoppingCart'
+  currency: Scalars['String']
+  discountCode?: Maybe<Scalars['String']>
+  giftCardCode?: Maybe<Scalars['String']>
+  items: Array<ShoppingCartItem>
+  subTotal: Scalars['Float']
+  total: Scalars['Float']
+}
+
+export type ShoppingCartItem = {
+  __typename: 'ShoppingCartItem'
+  id: Scalars['ID']
+  product: SellableProductInterface
+  quantity: Scalars['Int']
+  subtotal: Scalars['Float']
 }
 
 export type SimpleSiteUser = {
@@ -1292,6 +1394,7 @@ export type User = {
   lastName: Scalars['String']
   leaderboardUsername?: Maybe<Scalars['String']>
   phone: Scalars['String']
+  shoppingCart?: Maybe<ShoppingCart>
   siteUsers: Array<SimpleSiteUser>
   state?: Maybe<State>
   weight?: Maybe<Scalars['Float']>
@@ -2080,6 +2183,40 @@ export type CurrentUserPurchasesPaginatedQuery = {
       current: boolean
     }>
   }
+}
+
+export type CurrentUserPhoneNumberQueryVariables = Exact<{ [key: string]: never }>
+
+export type CurrentUserPhoneNumberQuery = {
+  __typename: 'Query'
+  currentUser?: { __typename: 'User'; phone: string } | null
+}
+
+export type RequestSmsValidationMutationVariables = Exact<{
+  input: RequestSmsValidationInput
+}>
+
+export type RequestSmsValidationMutation = {
+  __typename: 'Mutation'
+  requestSMSValidation?:
+    | { __typename: 'MobilePhoneAlreadyVerifiedError'; code: string }
+    | { __typename: 'MobilePhoneNotValidError'; code: string }
+    | { __typename: 'SuccessfulRequestSMSValidation'; success: boolean }
+    | null
+}
+
+export type IsSmsValidationCodeValidQueryVariables = Exact<{
+  smsCode: Scalars['String']
+}>
+
+export type IsSmsValidationCodeValidQuery = {
+  __typename: 'Query'
+  isSMSValidationCodeValid?:
+    | { __typename: 'MobilePhoneAlreadyVerifiedError'; code: string }
+    | { __typename: 'RequestSMSValidationNeededError'; code: string }
+    | { __typename: 'SMSCodeValidatedSuccessfully'; success: boolean }
+    | { __typename: 'SMSValidationCodeError'; code: string }
+    | null
 }
 
 export const SiteSettingsDocument = {
@@ -4670,3 +4807,185 @@ export const CurrentUserPurchasesPaginatedDocument = {
   CurrentUserPurchasesPaginatedQuery,
   CurrentUserPurchasesPaginatedQueryVariables
 >
+export const CurrentUserPhoneNumberDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'currentUserPhoneNumber' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentUser' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'Field', name: { kind: 'Name', value: 'phone' } }]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<CurrentUserPhoneNumberQuery, CurrentUserPhoneNumberQueryVariables>
+export const RequestSmsValidationDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'requestSMSValidation' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'RequestSMSValidationInput' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'requestSMSValidation' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'MobilePhoneAlreadyVerifiedError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'SuccessfulRequestSMSValidation' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'success' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'MobilePhoneNotValidError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<RequestSmsValidationMutation, RequestSmsValidationMutationVariables>
+export const IsSmsValidationCodeValidDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'isSMSValidationCodeValid' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'smsCode' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'isSMSValidationCodeValid' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'smsCode' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'smsCode' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'SMSCodeValidatedSuccessfully' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'success' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'RequestSMSValidationNeededError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'SMSValidationCodeError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'MobilePhoneAlreadyVerifiedError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<IsSmsValidationCodeValidQuery, IsSmsValidationCodeValidQueryVariables>

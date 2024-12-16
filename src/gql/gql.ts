@@ -80,7 +80,13 @@ const documents = {
   '\n      query currentUserWorkoutStatsPaginated($site: SiteEnum!, $pagination: PaginationInput) {\n        currentUserWorkoutStatsPaginated(site: $site, pagination: $pagination) {\n          classStats {\n            enrollment {\n              enrollmentInfo {\n                id\n                ... on EnrollmentInfo {\n                  spotNumber\n                }\n              }\n              class {\n                name\n                start\n                duration\n              }\n            }\n            totalEnergy\n          }\n          total\n        }\n      }\n    ':
     types.CurrentUserWorkoutStatsPaginatedDocument,
   '\n      query currentUserPurchasesPaginated($site: SiteEnum!, $pagination: PaginationInput) {\n        currentUserPurchasesPaginated(site: $site, pagination: $pagination) {\n          purchases {\n            packageName\n            allowanceObtained\n            allowanceRemaining\n            paymentDateTime\n            activationDateTime\n            expirationDateTime\n            current\n          }\n          total\n        }\n      }\n    ':
-    types.CurrentUserPurchasesPaginatedDocument
+    types.CurrentUserPurchasesPaginatedDocument,
+  '\n        query currentUserPhoneNumber {\n          currentUser {\n            phone\n          }\n        }\n      ':
+    types.CurrentUserPhoneNumberDocument,
+  '\n      mutation requestSMSValidation($input: RequestSMSValidationInput!) {\n        requestSMSValidation(input: $input) {\n          ... on MobilePhoneAlreadyVerifiedError {\n            code\n          }\n          ... on SuccessfulRequestSMSValidation {\n            success\n          }\n          ... on MobilePhoneNotValidError {\n            code\n          }\n        }\n      }\n    ':
+    types.RequestSmsValidationDocument,
+  '\n        query isSMSValidationCodeValid($smsCode: String!) {\n          isSMSValidationCodeValid(smsCode: $smsCode) {\n            ... on SMSCodeValidatedSuccessfully {\n              success\n            }\n            ... on RequestSMSValidationNeededError {\n              code\n            }\n            ... on SMSValidationCodeError {\n              code\n            }\n            ... on MobilePhoneAlreadyVerifiedError {\n              code\n            }\n          }\n        }\n      ':
+    types.IsSmsValidationCodeValidDocument
 }
 
 /**
@@ -301,6 +307,24 @@ export function graphql(
 export function graphql(
   source: '\n      query currentUserPurchasesPaginated($site: SiteEnum!, $pagination: PaginationInput) {\n        currentUserPurchasesPaginated(site: $site, pagination: $pagination) {\n          purchases {\n            packageName\n            allowanceObtained\n            allowanceRemaining\n            paymentDateTime\n            activationDateTime\n            expirationDateTime\n            current\n          }\n          total\n        }\n      }\n    '
 ): (typeof documents)['\n      query currentUserPurchasesPaginated($site: SiteEnum!, $pagination: PaginationInput) {\n        currentUserPurchasesPaginated(site: $site, pagination: $pagination) {\n          purchases {\n            packageName\n            allowanceObtained\n            allowanceRemaining\n            paymentDateTime\n            activationDateTime\n            expirationDateTime\n            current\n          }\n          total\n        }\n      }\n    ']
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n        query currentUserPhoneNumber {\n          currentUser {\n            phone\n          }\n        }\n      '
+): (typeof documents)['\n        query currentUserPhoneNumber {\n          currentUser {\n            phone\n          }\n        }\n      ']
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n      mutation requestSMSValidation($input: RequestSMSValidationInput!) {\n        requestSMSValidation(input: $input) {\n          ... on MobilePhoneAlreadyVerifiedError {\n            code\n          }\n          ... on SuccessfulRequestSMSValidation {\n            success\n          }\n          ... on MobilePhoneNotValidError {\n            code\n          }\n        }\n      }\n    '
+): (typeof documents)['\n      mutation requestSMSValidation($input: RequestSMSValidationInput!) {\n        requestSMSValidation(input: $input) {\n          ... on MobilePhoneAlreadyVerifiedError {\n            code\n          }\n          ... on SuccessfulRequestSMSValidation {\n            success\n          }\n          ... on MobilePhoneNotValidError {\n            code\n          }\n        }\n      }\n    ']
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n        query isSMSValidationCodeValid($smsCode: String!) {\n          isSMSValidationCodeValid(smsCode: $smsCode) {\n            ... on SMSCodeValidatedSuccessfully {\n              success\n            }\n            ... on RequestSMSValidationNeededError {\n              code\n            }\n            ... on SMSValidationCodeError {\n              code\n            }\n            ... on MobilePhoneAlreadyVerifiedError {\n              code\n            }\n          }\n        }\n      '
+): (typeof documents)['\n        query isSMSValidationCodeValid($smsCode: String!) {\n          isSMSValidationCodeValid(smsCode: $smsCode) {\n            ... on SMSCodeValidatedSuccessfully {\n              success\n            }\n            ... on RequestSMSValidationNeededError {\n              code\n            }\n            ... on SMSValidationCodeError {\n              code\n            }\n            ... on MobilePhoneAlreadyVerifiedError {\n              code\n            }\n          }\n        }\n      ']
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {}
