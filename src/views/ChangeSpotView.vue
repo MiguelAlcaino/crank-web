@@ -86,7 +86,11 @@ function checkAvailableSpots(classInfo: ClassInfo | null) {
     const matrix = classInfo?.roomLayout?.matrix
 
     for (let i = 0; i < matrix.length; i++) {
-      if (matrix[i].icon === PositionIconEnum.Spot) {
+      if (
+        matrix[i].icon === PositionIconEnum.Spot ||
+        matrix[i].icon === PositionIconEnum.BenchSpot ||
+        matrix[i].icon === PositionIconEnum.BikeSpot
+      ) {
         let bookableSpot = matrix[i] as BookableSpot
 
         let isBooked = classInfo?.usedSpots?.find((x) => x === bookableSpot.spotNumber)
