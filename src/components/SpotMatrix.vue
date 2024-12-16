@@ -9,21 +9,13 @@ interface ClassPosition {
   icon: PositionIconEnum
   spotNumber?: number
 }
-
-enum PositionIconEnum {
-  Empty = 'empty',
-  Fan = 'fan',
-  Instructor = 'instructor',
-  Speaker = 'speaker',
-  Spot = 'spot',
-  Tv = 'tv'
-}
 </script>
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import BookableSpotPosition from '@/components/BookableSpotPosition.vue'
 import IconPositionNotBookable from '@/components/icons/IconPositionNotBookable.vue'
+import { PositionIconEnum } from '@/modules/shared/interfaces/position-icon.enum'
 
 const props = defineProps<{
   matrix?: ClassPosition[]
@@ -123,6 +115,7 @@ function onClickSpotBtn(spotNumber: number) {
 td.class-position {
   padding: 5px;
 }
+
 .table {
   width: 15%;
 }
