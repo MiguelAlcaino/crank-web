@@ -1,5 +1,12 @@
+<script lang="ts">
+export type Site = {
+  code: SiteEnum
+  name: string
+}
+</script>
+
 <script setup lang="ts">
-import { onMounted, computed, reactive, ref } from 'vue'
+import { onMounted, computed, reactive, ref, inject } from 'vue'
 import router from '@/router'
 import { authService } from '@/services/authService'
 import { helpers, required, email } from '@vuelidate/validators'
@@ -13,11 +20,16 @@ import { ResetPasswordRequiredError } from '@/model/Exception'
 import { hackSquarespaceMenu } from '@/utils/hack-squarespace-menu'
 import { useAuthenticationStore } from '@/stores/authToken'
 import { SiteEnum } from '@/modules/shared/interfaces/site.enum'
+import { ApiService } from '@/services/apiService'
+
+const apiService = inject<ApiService>('gqlApiService')!
 
 const displayLoginError = ref(false)
 const isSubmitting = ref(false)
 const passwordIsVisible = ref(false)
 const modalResetPasswordRequiredIsVisible = ref(false)
+const loadingSites = ref(false)
+const sites = ref<Site[]>([])
 
 const formData = reactive({
   location: SiteEnum.Dubai,
@@ -26,15 +38,8 @@ const formData = reactive({
 })
 
 onMounted(() => {
-  let site = (route.query.site ?? null) as string
-
-  if (site === SiteEnum.AbuDhabi) {
-    formData.location = SiteEnum.AbuDhabi
-  } else if (site === SiteEnum.TownSquare) {
-    formData.location = SiteEnum.TownSquare
-  } else {
-    formData.location = SiteEnum.Dubai
-  }
+  let site = (route.query.site ?? null) as string | null
+  fetchSites(site)
 })
 
 const rules = computed(() => {
@@ -110,6 +115,26 @@ function isValidHttpUrl(value: string) {
 
   return url.protocol === 'http:' || url.protocol === 'https:'
 }
+
+async function fetchSites(site?: string | null) {
+  try {
+    loadingSites.value = true
+
+    sites.value = await apiService.availableSites()
+
+    if (site === SiteEnum.AbuDhabi) {
+      formData.location = SiteEnum.AbuDhabi
+    } else if (site === SiteEnum.TownSquare) {
+      formData.location = SiteEnum.TownSquare
+    } else {
+      formData.location = SiteEnum.Dubai
+    }
+  } catch (error) {
+    sites.value = []
+  } finally {
+    loadingSites.value = false
+  }
+}
 </script>
 
 <template>
@@ -120,11 +145,26 @@ function isValidHttpUrl(value: string) {
           <!-- location -->
           <div class="form-row">
             <div class="col-md-12 mb-3">
-              <select class="custom-select" v-model="formData.location" required>
-                <option :value="SiteEnum.Dubai">Dubai</option>
-                <option :value="SiteEnum.AbuDhabi">Abu Dhabi</option>
-                <option :value="SiteEnum.TownSquare">Town Square</option>
-              </select>
+              <div class="position-relative">
+                <select
+                  class="custom-select"
+                  v-model="formData.location"
+                  required
+                  :disabled="loadingSites"
+                >
+                  <option v-for="site in sites" :key="site.code" :value="site.code">
+                    {{ site.name }}
+                  </option>
+                </select>
+                <div
+                  v-if="loadingSites"
+                  class="spinner-border text-primary position-absolute custom-select-spinner"
+                  role="status"
+                >
+                  <span class="sr-only">Loading...</span>
+                </div>
+              </div>
+
               <small
                 v-for="error in v$.location.$errors"
                 :key="error.$uid"
@@ -220,6 +260,7 @@ function isValidHttpUrl(value: string) {
                 type="submit"
                 :is-loading="isSubmitting"
                 text="Login"
+                :disabled="loadingSites"
               >
               </DefaultButtonComponent>
             </div>
@@ -297,5 +338,14 @@ a:active {
   background-color: transparent;
   text-decoration: none;
   font-family: 'BigJohn', sans-serif;
+}
+
+.custom-select-spinner {
+  color: #ff7f61 !important;
+  top: 30%;
+  right: 28px;
+  width: 1rem;
+  height: 1rem;
+  border-width: 0.2em;
 }
 </style>
