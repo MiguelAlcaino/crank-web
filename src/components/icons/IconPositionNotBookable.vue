@@ -1,15 +1,6 @@
-<script lang="ts">
-enum PositionIconEnum {
-  Empty = 'empty',
-  Fan = 'fan',
-  Instructor = 'instructor',
-  Speaker = 'speaker',
-  Spot = 'spot',
-  Tv = 'tv'
-}
-</script>
-
 <script setup lang="ts">
+import { PositionIconEnum } from '@/modules/shared/interfaces/position-icon.enum'
+
 defineProps<{
   icon: PositionIconEnum
 }>()

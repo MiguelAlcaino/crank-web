@@ -4,12 +4,7 @@ import { useRoute } from 'vue-router'
 
 import dayjs from 'dayjs'
 
-import {
-  PositionIconEnum,
-  type ClassInfo,
-  type EnrollmentInfo,
-  type BookableSpot
-} from '@/gql/graphql'
+import { type ClassInfo, type EnrollmentInfo, type BookableSpot } from '@/gql/graphql'
 
 import ModalComponent from '@/components/ModalComponent.vue'
 
@@ -26,6 +21,7 @@ import {
   ERROR_UNKNOWN
 } from '@/utils/errorMessages'
 import { SUCCESS_CHANGE_SPOT } from '@/utils/successMessages'
+import { PositionIconEnum } from '@/modules/shared/interfaces/position-icon.enum'
 
 const route = useRoute()
 
@@ -90,7 +86,10 @@ function checkAvailableSpots(classInfo: ClassInfo | null) {
     const matrix = classInfo?.roomLayout?.matrix
 
     for (let i = 0; i < matrix.length; i++) {
-      if (matrix[i].icon === PositionIconEnum.Spot) {
+      if (
+        matrix[i].icon === PositionIconEnum.Spot ||
+        matrix[i].icon === PositionIconEnum.BikeSpot
+      ) {
         let bookableSpot = matrix[i] as BookableSpot
 
         let isBooked = classInfo?.usedSpots?.find((x) => x === bookableSpot.spotNumber)
@@ -215,7 +214,8 @@ async function editCurrentUserEnrollment() {
             @click-spot="confirmChangeSpot"
             :spot-number-booked-by-current-user="enrollmentInfo?.spotNumber"
             :used-spots="classInfo.usedSpots"
-          ></SpotMatrix>
+          >
+          </SpotMatrix>
         </div>
       </div>
     </div>
