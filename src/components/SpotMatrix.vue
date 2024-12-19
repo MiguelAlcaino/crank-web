@@ -9,21 +9,13 @@ interface ClassPosition {
   icon: PositionIconEnum
   spotNumber?: number
 }
-
-enum PositionIconEnum {
-  Empty = 'empty',
-  Fan = 'fan',
-  Instructor = 'instructor',
-  Speaker = 'speaker',
-  Spot = 'spot',
-  Tv = 'tv'
-}
 </script>
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import BookableSpotPosition from '@/components/BookableSpotPosition.vue'
 import IconPositionNotBookable from '@/components/icons/IconPositionNotBookable.vue'
+import { PositionIconEnum } from '@/modules/shared/interfaces/position-icon.enum'
 
 const props = defineProps<{
   matrix?: ClassPosition[]
@@ -102,7 +94,7 @@ function onClickSpotBtn(spotNumber: number) {
         <tr v-for="(colRow, rowKey) in spotsTable" :key="rowKey" class="text-center">
           <td class="class-position" v-for="(spot, columnKey) in colRow" :key="columnKey">
             <bookable-spot-position
-              v-if="spot.icon === PositionIconEnum.Spot"
+              v-if="spot.icon === PositionIconEnum.Spot || spot.icon === PositionIconEnum.BikeSpot"
               :spotNumber="spot.spotNumber!"
               :is-used="usedSpots?.some((x) => x === spot.spotNumber) ?? false"
               @click-spot="onClickSpotBtn"
@@ -123,6 +115,7 @@ function onClickSpotBtn(spotNumber: number) {
 td.class-position {
   padding: 5px;
 }
+
 .table {
   width: 15%;
 }
