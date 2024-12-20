@@ -6421,6 +6421,18 @@
         "interfaces": null,
         "enumValues": [
           {
+            "name": "benchSpot",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "bikeSpot",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "empty",
             "description": null,
             "isDeprecated": false,
@@ -6447,8 +6459,8 @@
           {
             "name": "spot",
             "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "Use benchSpot or bikeSpot instead."
           },
           {
             "name": "tv",
