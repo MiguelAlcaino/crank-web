@@ -3,6 +3,12 @@ export type Site = {
   code: SiteEnum
   name: string
 }
+
+interface FormData {
+  location: SiteEnum | null
+  email: string
+  password: string
+}
 </script>
 
 <script setup lang="ts">
@@ -31,8 +37,8 @@ const modalResetPasswordRequiredIsVisible = ref(false)
 const loadingSites = ref(false)
 const sites = ref<Site[]>([])
 
-const formData = reactive({
-  location: SiteEnum.Dubai,
+const formData = reactive<FormData>({
+  location: null,
   email: '',
   password: ''
 })
@@ -68,7 +74,7 @@ async function login() {
     displayLoginError.value = false
 
     try {
-      await authService.login(formData.email, formData.password, formData.location)
+      await authService.login(formData.email, formData.password, formData.location!)
 
       hackSquarespaceMenu(true)
 
