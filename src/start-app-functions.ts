@@ -46,7 +46,7 @@ export const startBookingCalendarApp = async function (
 
   let siteEnum: SiteEnum
 
-  if (site === SiteEnum.Dubai.toString()) {
+  if (site === SiteEnum.Dubai) {
     siteEnum = SiteEnum.Dubai
   } else if (site === SiteEnum.AbuDhabi) {
     siteEnum = SiteEnum.AbuDhabi
@@ -232,7 +232,7 @@ export const startPaymentsIframeApp = async function (
 
   let siteEnum: SiteEnum
 
-  if (site === SiteEnum.Dubai.toString()) {
+  if (site === SiteEnum.Dubai) {
     siteEnum = SiteEnum.Dubai
   } else if (site === SiteEnum.AbuDhabi) {
     siteEnum = SiteEnum.AbuDhabi
@@ -339,7 +339,7 @@ export const startLoginRedirectApp = async function (
 
 // TODO: put site parameter in the url
 export const startVueAppWithoutPath = async function (
-  site: string = SiteEnum.Dubai.toString(),
+  site: string = SiteEnum.Dubai,
   gqlUrl: string = defaultGqlUrl,
   appDiv: string = defaultAppDiv
 ) {
@@ -356,7 +356,7 @@ export const startVueAppWithoutPath = async function (
 
   let siteEnum: SiteEnum
 
-  if (site === SiteEnum.Dubai.toString()) {
+  if (site === SiteEnum.Dubai) {
     siteEnum = SiteEnum.Dubai
   } else if (site === SiteEnum.AbuDhabi) {
     siteEnum = SiteEnum.AbuDhabi

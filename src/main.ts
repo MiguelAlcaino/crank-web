@@ -70,7 +70,7 @@ async function startApp() {
   if (site) {
     let siteEnum: SiteEnum
 
-    if (site === SiteEnum.Dubai.toString()) {
+    if (site === SiteEnum.Dubai) {
       siteEnum = SiteEnum.Dubai
     } else if (site === SiteEnum.AbuDhabi) {
       siteEnum = SiteEnum.AbuDhabi
