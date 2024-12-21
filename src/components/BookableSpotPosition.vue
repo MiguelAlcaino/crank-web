@@ -43,7 +43,7 @@ function selectSpot() {
           v-if="showIcon && icon === PositionIconEnum.BenchSpot"
           src="../assets/icons/bench_icon.png"
           alt=""
-          height="18"
+          height="10"
         />
         <i
           v-if="showIcon && icon === PositionIconEnum.BikeSpot"
