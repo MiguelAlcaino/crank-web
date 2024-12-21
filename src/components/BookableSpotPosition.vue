@@ -26,12 +26,13 @@ function selectSpot() {
         <img
           v-if="showIcon && icon === PositionIconEnum.BenchSpot"
           src="../assets/icons/bench_icon.png"
-          alt=""
+          alt="bench_icon"
           height="18"
+          class="bench-icon"
         />
         <i
           v-if="showIcon && icon === PositionIconEnum.BikeSpot"
-          class="bi bi-bicycle"
+          class="bi bi-bicycle bike-icon"
           style="font-size: 1.5rem"
         ></i>
       </div>
@@ -42,12 +43,13 @@ function selectSpot() {
         <img
           v-if="showIcon && icon === PositionIconEnum.BenchSpot"
           src="../assets/icons/bench_icon.png"
-          alt=""
+          alt="bench_icon"
           height="10"
+          class="bench-icon"
         />
         <i
           v-if="showIcon && icon === PositionIconEnum.BikeSpot"
-          class="bi bi-bicycle"
+          class="bi bi-bicycle bike-icon"
           style="font-size: 1.5rem"
         ></i>
       </div>
@@ -120,5 +122,14 @@ function selectSpot() {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.bike-icon {
+  font-size: 1.5rem;
+  margin-top: -6px;
+}
+
+.bench-icon {
+  margin-top: 8px;
 }
 </style>
