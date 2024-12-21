@@ -87,7 +87,6 @@ function checkAvailableSpots(classInfo: ClassInfo | null) {
 
     for (let i = 0; i < matrix.length; i++) {
       if (
-        matrix[i].icon === PositionIconEnum.Spot ||
         matrix[i].icon === PositionIconEnum.BenchSpot ||
         matrix[i].icon === PositionIconEnum.BikeSpot
       ) {

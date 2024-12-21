@@ -98,9 +98,7 @@ function onClickSpotBtn(spotNumber: number) {
           <td class="class-position" v-for="(spot, columnKey) in colRow" :key="columnKey">
             <bookable-spot-position
               v-if="
-                spot.icon === PositionIconEnum.Spot ||
-                spot.icon === PositionIconEnum.BikeSpot ||
-                spot.icon === PositionIconEnum.BenchSpot
+                spot.icon === PositionIconEnum.BikeSpot || spot.icon === PositionIconEnum.BenchSpot
               "
               :spotNumber="spot.spotNumber!"
               :is-used="usedSpots?.some((x) => x === spot.spotNumber) ?? false"
