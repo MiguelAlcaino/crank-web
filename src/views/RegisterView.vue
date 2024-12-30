@@ -52,7 +52,7 @@ const passwordIsVisible = ref(false)
 const confirmPasswordIsVisible = ref(false)
 
 const formData = reactive({
-  location: SiteEnum.Dubai,
+  location: null as SiteEnum | null,
   firstName: '',
   lastName: '',
   email: '',
@@ -203,6 +203,7 @@ const submitForm = async () => {
     isSaving.value = false
 
     if (response === 'SuccessRegistration') {
+      appStore().setSite(formData.location!)
       successModalIsVisible.value = true
     } else {
       if (response === 'PasswordMustContainLetterOrNumberException') {
@@ -259,6 +260,10 @@ async function fetchSites() {
     loadingSites.value = true
 
     sites.value = await apiService.availableSites()
+
+    if (sites.value.length > 0) {
+      formData.location = sites.value[0].code
+    }
   } catch (error) {
     sites.value = []
   } finally {
