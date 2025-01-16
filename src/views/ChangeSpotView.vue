@@ -221,7 +221,7 @@ async function editCurrentUserEnrollment() {
     </div>
   </div>
 
-  <!-- CONFIRIM CHANGE SPOT Modal -->
+  <!-- CONFIRM CHANGE SPOT Modal -->
   <ModalComponent
     v-if="changeSpotModalIsVisible"
     title="CHANGE SPOT"
