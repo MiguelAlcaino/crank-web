@@ -33,7 +33,7 @@ import dayjs from 'dayjs'
 import { VueTelInput } from 'vue-tel-input'
 import 'vue-tel-input/vue-tel-input.css'
 import { getFormattedPhoneNumber } from '@/utils/utility-functions'
-import { SiteEnum } from '@/modules/shared/interfaces/site.enum'
+import type { SiteEnum } from '@/modules/shared/interfaces/site.enum'
 
 const loadingSites = ref(false)
 const sites = ref<Site[]>([])

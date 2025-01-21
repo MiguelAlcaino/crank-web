@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router'
 
 import dayjs from 'dayjs'
 
-import { type ClassInfo, type EnrollmentInfo, type BookableSpot } from '@/gql/graphql'
+import type { ClassInfo, EnrollmentInfo, BookableSpot } from '@/gql/graphql'
 
 import ModalComponent from '@/components/ModalComponent.vue'
 
