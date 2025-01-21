@@ -31,8 +31,9 @@ import { newAnonymousClient, newAuthenticatedApolloClient } from '@/services/gra
 import { useAuthenticationStore } from '@/stores/authToken'
 
 import { appStore } from './stores/appStorage'
-import { SiteEnum } from './gql/graphql'
+
 import { hackSquarespaceMenu } from '@/utils/hack-squarespace-menu'
+import { SiteEnum } from './modules/shared/interfaces/site.enum'
 
 startApp()
 
@@ -69,10 +70,12 @@ async function startApp() {
   if (site) {
     let siteEnum: SiteEnum
 
-    if (site === SiteEnum.Dubai.toString()) {
+    if (site === SiteEnum.Dubai) {
       siteEnum = SiteEnum.Dubai
     } else if (site === SiteEnum.AbuDhabi) {
       siteEnum = SiteEnum.AbuDhabi
+    } else if (site === SiteEnum.TownSquare) {
+      siteEnum = SiteEnum.TownSquare
     } else {
       throw Error
     }

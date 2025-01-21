@@ -73,7 +73,7 @@ const submitForm = async () => {
       if (response === 'PasswordMustContainLetterOrNumberException') {
         errorMessage.value = 'THE PASSWORD MUST CONTAIN A LETTER AND A NUMBER.'
       } else if (response === 'MinimumPasswordLengthException') {
-        errorMessage.value = 'THE PASSWORD MUST CONTAIN AT LEAST 8 CHATACTERS.'
+        errorMessage.value = 'THE PASSWORD MUST CONTAIN AT LEAST 8 CHARACTERS.'
       } else if (response === 'IncorrectPasswordException') {
         errorMessage.value = 'INVALID CURRENT PASSWORD.'
       } else {

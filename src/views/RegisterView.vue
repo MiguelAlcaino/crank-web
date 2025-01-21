@@ -9,13 +9,18 @@ interface State {
   code: string
   name: string
 }
+
+export type Site = {
+  code: SiteEnum
+  name: string
+}
 </script>
 
 <script setup lang="ts">
 import { onMounted, reactive, ref, computed, inject } from 'vue'
 import useVuelidate from '@vuelidate/core'
 import { required, email, minLength, sameAs, maxLength, helpers } from '@vuelidate/validators'
-import { GenderEnum, type RegisterUserInput, SiteEnum } from '@/gql/graphql'
+import { GenderEnum, type RegisterUserInput } from '@/gql/graphql'
 
 import type { ApiService } from '@/services/apiService'
 import { authService } from '@/services/authService'
@@ -28,6 +33,10 @@ import dayjs from 'dayjs'
 import { VueTelInput } from 'vue-tel-input'
 import 'vue-tel-input/vue-tel-input.css'
 import { getFormattedPhoneNumber } from '@/utils/utility-functions'
+import { SiteEnum } from '@/modules/shared/interfaces/site.enum'
+
+const loadingSites = ref(false)
+const sites = ref<Site[]>([])
 
 const isSaving = ref(false)
 const isLoggingIn = ref(false)
@@ -43,7 +52,7 @@ const passwordIsVisible = ref(false)
 const confirmPasswordIsVisible = ref(false)
 
 const formData = reactive({
-  location: SiteEnum.Dubai,
+  location: null as SiteEnum | null,
   firstName: '',
   lastName: '',
   email: '',
@@ -154,6 +163,7 @@ const v$ = useVuelidate(rules, formData)
 const apiService = inject<ApiService>('gqlApiService')!
 
 onMounted(() => {
+  fetchSites()
   getCountries()
   getCountryStates('AE')
 })
@@ -193,6 +203,7 @@ const submitForm = async () => {
     isSaving.value = false
 
     if (response === 'SuccessRegistration') {
+      appStore().setSite(formData.location!)
       successModalIsVisible.value = true
     } else {
       if (response === 'PasswordMustContainLetterOrNumberException') {
@@ -243,6 +254,22 @@ async function login() {
     isLoggingIn.value = false
   }
 }
+
+async function fetchSites() {
+  try {
+    loadingSites.value = true
+
+    sites.value = await apiService.availableSites()
+
+    if (sites.value.length > 0) {
+      formData.location = sites.value[0].code
+    }
+  } catch (error) {
+    sites.value = []
+  } finally {
+    loadingSites.value = false
+  }
+}
 </script>
 
 <template>
@@ -253,10 +280,25 @@ async function login() {
     <!-- location -->
     <div class="form-row">
       <div class="col-md-6 mb-3">
-        <select class="custom-select" v-model="formData.location" required>
-          <option :value="SiteEnum.Dubai">Dubai</option>
-          <option :value="SiteEnum.AbuDhabi">Abu Dhabi</option>
-        </select>
+        <div class="position-relative">
+          <select
+            class="custom-select"
+            v-model="formData.location"
+            required
+            :disabled="loadingSites"
+          >
+            <option v-for="site in sites" :key="site.code" :value="site.code">
+              {{ site.name }}
+            </option>
+          </select>
+          <div
+            v-if="loadingSites"
+            class="spinner-border text-primary position-absolute custom-select-spinner"
+            role="status"
+          >
+            <span class="sr-only">Loading...</span>
+          </div>
+        </div>
         <small
           v-for="error in v$.location.$errors"
           :key="error.$uid"
@@ -777,6 +819,7 @@ a {
   font-weight: bold;
   text-decoration: underline;
 }
+
 a:hover {
   color: #000000;
   font-weight: bold;
@@ -786,17 +829,29 @@ a:hover {
   background-color: #ff7f61 !important;
   border-color: #ff7f61 !important;
 }
+
 .custom-checkbox .custom-control-input:checked:focus ~ .custom-control-label::before {
   box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem #ff7f61;
   border-color: #ff7f61 !important;
 }
+
 .custom-checkbox .custom-control-input:focus ~ .custom-control-label::before {
   box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(0, 0, 0, 0.25);
   border-color: #ff7f61 !important;
 }
+
 .custom-checkbox .custom-control-input:active ~ .custom-control-label::before {
   background-color: #ffc6b9;
   border-color: #ff7f61 !important;
+}
+
+.custom-select-spinner {
+  color: #ff7f61 !important;
+  top: 30%;
+  right: 28px;
+  width: 1rem;
+  height: 1rem;
+  border-width: 0.2em;
 }
 </style>
 
@@ -830,6 +885,7 @@ a:hover {
   background: var(--dp-danger-color) !important;
   color: var(--dp-primary-text-color) !important;
 }
+
 .dp__action_select {
   background: #000000 !important;
   color: var(--dp-primary-text-color) !important;
@@ -838,6 +894,7 @@ a:hover {
 li > span {
   font-family: 'Avenir', sans-serif;
 }
+
 li > strong {
   font-family: 'Avenir', sans-serif;
 }

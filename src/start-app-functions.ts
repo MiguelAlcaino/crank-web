@@ -20,10 +20,10 @@ import 'bootstrap-icons/font/bootstrap-icons.css'
 import router from './router'
 
 import { appStore } from './stores/appStorage'
-import { SiteEnum } from './gql/graphql'
 
 import App from '@/App.vue'
 import { authService } from './services/authService'
+import { SiteEnum } from './modules/shared/interfaces/site.enum'
 
 const defaultGqlUrl = import.meta.env.VITE_CRANK_GRAPHQL_SERVER_URL
 const defaultAppDiv = '#app'
@@ -46,10 +46,12 @@ export const startBookingCalendarApp = async function (
 
   let siteEnum: SiteEnum
 
-  if (site === SiteEnum.Dubai.toString()) {
+  if (site === SiteEnum.Dubai) {
     siteEnum = SiteEnum.Dubai
   } else if (site === SiteEnum.AbuDhabi) {
     siteEnum = SiteEnum.AbuDhabi
+  } else if (site === SiteEnum.TownSquare) {
+    siteEnum = SiteEnum.TownSquare
   } else {
     throw Error
   }
@@ -230,10 +232,12 @@ export const startPaymentsIframeApp = async function (
 
   let siteEnum: SiteEnum
 
-  if (site === SiteEnum.Dubai.toString()) {
+  if (site === SiteEnum.Dubai) {
     siteEnum = SiteEnum.Dubai
   } else if (site === SiteEnum.AbuDhabi) {
     siteEnum = SiteEnum.AbuDhabi
+  } else if (site === SiteEnum.TownSquare) {
+    siteEnum = SiteEnum.TownSquare
   } else {
     throw Error
   }
@@ -335,7 +339,7 @@ export const startLoginRedirectApp = async function (
 
 // TODO: put site parameter in the url
 export const startVueAppWithoutPath = async function (
-  site: string = SiteEnum.Dubai.toString(),
+  site: string = SiteEnum.Dubai,
   gqlUrl: string = defaultGqlUrl,
   appDiv: string = defaultAppDiv
 ) {
@@ -352,10 +356,12 @@ export const startVueAppWithoutPath = async function (
 
   let siteEnum: SiteEnum
 
-  if (site === SiteEnum.Dubai.toString()) {
+  if (site === SiteEnum.Dubai) {
     siteEnum = SiteEnum.Dubai
   } else if (site === SiteEnum.AbuDhabi) {
     siteEnum = SiteEnum.AbuDhabi
+  } else if (site === SiteEnum.TownSquare) {
+    siteEnum = SiteEnum.TownSquare
   } else {
     throw Error
   }

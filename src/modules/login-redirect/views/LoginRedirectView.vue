@@ -10,7 +10,7 @@ import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIn
 import router from '@/router'
 
 import type { ApiService } from '@/services/apiService'
-import { SiteEnum } from '../interfaces/site.enum'
+import { SiteEnum } from '../../shared/interfaces/site.enum'
 const apiService = inject<ApiService>('gqlApiService')!
 
 const isLoading = ref<boolean>(false)
@@ -36,10 +36,12 @@ async function checkLoginSiteAndRedirect(site: string, destination: string) {
 
     let siteEnum: SiteEnum
 
-    if (site === SiteEnum.Dubai.toString()) {
+    if (site === SiteEnum.Dubai) {
       siteEnum = SiteEnum.Dubai
     } else if (site === SiteEnum.AbuDhabi) {
       siteEnum = SiteEnum.AbuDhabi
+    } else if (site === SiteEnum.TownSquare) {
+      siteEnum = SiteEnum.TownSquare
     } else {
       throw Error
     }

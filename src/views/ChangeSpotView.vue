@@ -87,7 +87,7 @@ function checkAvailableSpots(classInfo: ClassInfo | null) {
 
     for (let i = 0; i < matrix.length; i++) {
       if (
-        matrix[i].icon === PositionIconEnum.Spot ||
+        matrix[i].icon === PositionIconEnum.BenchSpot ||
         matrix[i].icon === PositionIconEnum.BikeSpot
       ) {
         let bookableSpot = matrix[i] as BookableSpot
@@ -221,7 +221,7 @@ async function editCurrentUserEnrollment() {
     </div>
   </div>
 
-  <!-- CONFIRIM CHANGE SPOT Modal -->
+  <!-- CONFIRM CHANGE SPOT Modal -->
   <ModalComponent
     v-if="changeSpotModalIsVisible"
     title="CHANGE SPOT"
