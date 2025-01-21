@@ -139,7 +139,7 @@ function acceptErrorModal() {
     @on-ok="acceptLateCancelledSpotInClass()"
   ></ModalComponent>
 
-  <!-- COnform Reject Modal -->
+  <!-- Confirm Reject Modal -->
   <ModalComponent
     title="REJECT CLASS"
     message="ARE YOU SURE YOU WANT TO REJECT THIS CLASS?"

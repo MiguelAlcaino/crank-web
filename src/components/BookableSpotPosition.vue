@@ -1,8 +1,12 @@
 <script setup lang="ts">
+import { PositionIconEnum } from '@/modules/shared/interfaces/position-icon.enum'
+
 const props = defineProps<{
   isBookedByCurrentUser?: boolean | null
   spotNumber: number
   isUsed: boolean
+  icon: PositionIconEnum
+  showIcon: boolean
 }>()
 
 const emits = defineEmits<{
@@ -17,9 +21,39 @@ function selectSpot() {
 <template>
   <div>
     <div v-if="isUsed" :class="isBookedByCurrentUser ? 'bookedSpotByCurrentUser' : 'bookedSpot'">
-      {{ spotNumber }}
+      <div class="spot-container">
+        <span>{{ spotNumber }}</span>
+        <img
+          v-if="showIcon && icon === PositionIconEnum.BenchSpot"
+          src="../assets/icons/bench_icon.png"
+          alt="bench_icon"
+          height="10"
+          class="bench-icon"
+        />
+        <i
+          v-if="showIcon && icon === PositionIconEnum.BikeSpot"
+          class="bi bi-bicycle bike-icon"
+          style="font-size: 1.5rem"
+        ></i>
+      </div>
     </div>
-    <div v-else class="enabledSpot" @click="selectSpot()">{{ spotNumber }}</div>
+    <div v-else class="enabledSpot" @click="selectSpot()">
+      <div class="spot-container">
+        <span>{{ spotNumber }}</span>
+        <img
+          v-if="showIcon && icon === PositionIconEnum.BenchSpot"
+          src="../assets/icons/bench_icon.png"
+          alt="bench_icon"
+          height="10"
+          class="bench-icon"
+        />
+        <i
+          v-if="showIcon && icon === PositionIconEnum.BikeSpot"
+          class="bi bi-bicycle bike-icon"
+          style="font-size: 1.5rem"
+        ></i>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -29,8 +63,8 @@ function selectSpot() {
 <style scoped>
 .bookedSpot {
   background: #888;
-  height: 40px;
-  width: 40px;
+  height: 50px;
+  width: 50px;
   margin: 0 auto;
   display: flex;
   justify-content: center;
@@ -45,8 +79,8 @@ function selectSpot() {
 
 .bookedSpotByCurrentUser {
   background: #ff7f61;
-  height: 40px;
-  width: 40px;
+  height: 50px;
+  width: 50px;
   margin: 0 auto;
   display: flex;
   justify-content: center;
@@ -61,8 +95,8 @@ function selectSpot() {
 
 .enabledSpot {
   display: flex;
-  height: 40px;
-  width: 40px;
+  height: 50px;
+  width: 50px;
   margin: 0 auto;
   background-color: #fff;
   text-align: center;
@@ -79,8 +113,23 @@ function selectSpot() {
 }
 
 .enabledSpot:hover {
-  background-color: black;
+  background-color: #444444;
   color: white;
   font-family: 'Avenir', sans-serif;
+}
+
+.spot-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bike-icon {
+  font-size: 1.5rem;
+  margin-top: -6px;
+}
+
+.bench-icon {
+  margin-top: 8px;
 }
 </style>

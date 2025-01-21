@@ -30,8 +30,10 @@ const emits = defineEmits<{
 
 const spotsTable = ref<Array<Array<ClassPosition>>>([])
 
+const showIcons = ref(false)
 onMounted(() => {
   if (props.matrix) {
+    showIcons.value = props.matrix.some((x) => x.icon === PositionIconEnum.BenchSpot)
     spotsTable.value = getMatrixOfSpotPositions(props.matrix)
   }
 })
@@ -39,6 +41,7 @@ onMounted(() => {
 watch(
   () => props.matrix,
   (matrix) => {
+    showIcons.value = matrix?.some((x) => x.icon === PositionIconEnum.BenchSpot) ?? false
     spotsTable.value = getMatrixOfSpotPositions(matrix!)
   }
 )
@@ -94,11 +97,15 @@ function onClickSpotBtn(spotNumber: number) {
         <tr v-for="(colRow, rowKey) in spotsTable" :key="rowKey" class="text-center">
           <td class="class-position" v-for="(spot, columnKey) in colRow" :key="columnKey">
             <bookable-spot-position
-              v-if="spot.icon === PositionIconEnum.Spot || spot.icon === PositionIconEnum.BikeSpot"
+              v-if="
+                spot.icon === PositionIconEnum.BikeSpot || spot.icon === PositionIconEnum.BenchSpot
+              "
               :spotNumber="spot.spotNumber!"
               :is-used="usedSpots?.some((x) => x === spot.spotNumber) ?? false"
               @click-spot="onClickSpotBtn"
               :is-booked-by-current-user="props.spotNumberBookedByCurrentUser === spot.spotNumber"
+              :icon="spot.icon"
+              :showIcon="showIcons"
             />
             <icon-position-not-bookable v-else :icon="spot.icon" />
           </td>

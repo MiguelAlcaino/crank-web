@@ -1,11 +1,5 @@
-<script lang="ts">
-enum SiteEnum {
-  AbuDhabi = 'abu_dhabi',
-  Dubai = 'dubai'
-}
-</script>
-
 <script setup lang="ts">
+import { SiteEnum } from '@/modules/shared/interfaces/site.enum'
 import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
 import { inject, onMounted, ref } from 'vue'
@@ -49,7 +43,15 @@ function onChangeSite() {
     v-if="sites.length > 1"
   >
     <option v-for="(item, index) in sites" :key="index" :value="item">
-      {{ item === SiteEnum.AbuDhabi ? 'Abu Dhabi' : item === SiteEnum.Dubai ? 'Dubai' : item }}
+      {{
+        item === SiteEnum.AbuDhabi
+          ? 'Abu Dhabi'
+          : item === SiteEnum.Dubai
+          ? 'Dubai'
+          : SiteEnum.TownSquare
+          ? 'Town Square'
+          : item
+      }}
     </option>
   </select>
 </template>
