@@ -26,7 +26,7 @@ import { ResetPasswordRequiredError } from '@/model/Exception'
 import { hackSquarespaceMenu } from '@/utils/hack-squarespace-menu'
 import { useAuthenticationStore } from '@/stores/authToken'
 import { SiteEnum } from '@/modules/shared/interfaces/site.enum'
-import { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/apiService'
 
 const apiService = inject<ApiService>('gqlApiService')!
 

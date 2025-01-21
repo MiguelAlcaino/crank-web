@@ -5,7 +5,7 @@ import router from '@/router'
 import jwt_decode from 'jwt-decode'
 import { appStore } from '@/stores/appStorage'
 import type { Role } from '@/utils/userRoles'
-import { SiteEnum } from '@/modules/shared/interfaces/site.enum'
+import type { SiteEnum } from '@/modules/shared/interfaces/site.enum'
 
 interface JwtTokenPayload {
   exp: number
