@@ -803,7 +803,7 @@ export class ApiService {
       newSpotNumber: newSpotNumber
     } as EditEnrollmentInput
 
-    const muration = gql`
+    const mutation = gql`
       mutation editCurrentUserEnrollment($site: SiteEnum!, $input: EditEnrollmentInput!) {
         editCurrentUserEnrollment(site: $site, input: $input) {
           __typename
@@ -822,7 +822,7 @@ export class ApiService {
 
     try {
       const result = await this.authApiClient.mutate({
-        mutation: muration,
+        mutation: mutation,
         variables: {
           site: site,
           input: input
@@ -839,7 +839,7 @@ export class ApiService {
   async requestPasswordLink(email: string): Promise<ResetPasswordLinkResultUnion | null> {
     const input = { email: email } as RequestPasswordLinkInput
 
-    const muration = gql`
+    const mutation = gql`
       mutation requestPasswordLink($input: RequestPasswordLinkInput) {
         requestPasswordLink(input: $input) {
           ... on TooManyResetPasswordLinkRequestsError {
@@ -854,7 +854,7 @@ export class ApiService {
 
     try {
       const result = await this.authApiClient.mutate({
-        mutation: muration,
+        mutation: mutation,
         variables: {
           input: input
         },
@@ -876,7 +876,7 @@ export class ApiService {
       repeatedPassword: repeatedPassword
     } as ResetPasswordForCurrentUserInput
 
-    const muration = gql`
+    const mutation = gql`
       mutation resetPasswordForCurrentUser($input: ResetPasswordForCurrentUserInput) {
         resetPasswordForCurrentUser(input: $input) {
           __typename
@@ -894,7 +894,7 @@ export class ApiService {
 
     try {
       const result = await this.authApiClient.mutate({
-        mutation: muration,
+        mutation: mutation,
         variables: {
           input: input
         },
@@ -934,7 +934,7 @@ export class ApiService {
     fromSite: string,
     toSite: string
   ): Promise<CreateCurrentUserInSiteUnion | null> {
-    const muration = gql`
+    const mutation = gql`
       mutation createCurrentUserInSite($fromSite: SiteEnum!, $toSite: SiteEnum!) {
         createCurrentUserInSite(fromSite: $fromSite, toSite: $toSite) {
           ... on CreateCurrentUserInSiteSuccess {
@@ -951,7 +951,7 @@ export class ApiService {
 
     try {
       const result = await this.authApiClient.mutate({
-        mutation: muration,
+        mutation: mutation,
         variables: {
           fromSite: fromSite,
           toSite: toSite
@@ -968,7 +968,7 @@ export class ApiService {
   async removeUserFromWaitlist(waitlistEntryId: string): Promise<RemoveUserFromWaitlistUnion> {
     const input = { waitlistEntryId: waitlistEntryId } as RemoveUserFromWaitlistInput
 
-    const muration = gql`
+    const mutation = gql`
       mutation removeUserFromWaitlist($input: RemoveUserFromWaitlistInput!) {
         removeUserFromWaitlist(input: $input) {
           ... on RemoveFromWaitlistResult {
@@ -982,7 +982,7 @@ export class ApiService {
     `
 
     const result = await this.authApiClient.mutate({
-      mutation: muration,
+      mutation: mutation,
       variables: {
         input: input
       },
@@ -1311,7 +1311,7 @@ export class ApiService {
     countryCode: string,
     mobilePhone: string
   ): Promise<SmsValidationResponse> {
-    const muration = gql`
+    const mutation = gql`
       mutation requestSMSValidation($input: RequestSMSValidationInput!) {
         requestSMSValidation(input: $input) {
           ... on MobilePhoneAlreadyVerifiedError {
@@ -1329,7 +1329,7 @@ export class ApiService {
 
     try {
       const result = await this.authApiClient.mutate({
-        mutation: muration,
+        mutation: mutation,
         variables: {
           input: {
             countryCode: countryCode,
