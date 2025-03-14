@@ -43,19 +43,22 @@ export type AddedToWaitlistSuccess = {
 export type AdminUser = {
   __typename: 'AdminUser'
   email: Scalars['String']
+  favoriteSite: Site
   id: Scalars['ID']
   linkedInstructors?: Maybe<Array<Instructor>>
   linkedSites?: Maybe<Array<Site>>
   roles?: Maybe<Array<Scalars['String']>>
+  showCancelledClasses: Scalars['Boolean']
   username: Scalars['String']
 }
 
 export type AdminUserDataInput = {
-  email?: InputMaybe<Scalars['String']>
+  email: Scalars['String']
+  favoriteSite?: InputMaybe<SiteEnum>
   linkedInstructorIds?: InputMaybe<Array<Scalars['ID']>>
   linkedSiteCodes?: InputMaybe<Array<SiteEnum>>
   role: Scalars['String']
-  username?: InputMaybe<Scalars['String']>
+  username: Scalars['String']
 }
 
 export type AdminUserResultUnion = AdminUser | EmailAlreadyUsedError | UsernameAlreadyUsedError
@@ -141,6 +144,18 @@ export type CancelEnrollmentResultUnion =
 export type CancelUserEnrollmentSuccess = {
   __typename: 'CancelUserEnrollmentSuccess'
   status?: Maybe<Scalars['Boolean']>
+}
+
+export type ChallengeDisplay = {
+  __typename: 'ChallengeDisplay'
+  firstLine?: Maybe<Scalars['String']>
+  secondLine?: Maybe<Scalars['String']>
+  thirdLine?: Maybe<Scalars['String']>
+}
+
+export type ChallengeInterface = {
+  challengeDisplay: ChallengeDisplay
+  id: Scalars['ID']
 }
 
 export type ChartPoint = {
@@ -334,6 +349,26 @@ export type DisableEnableSpotResult = {
 }
 
 export type DisableEnableSpotResultUnion = DisableEnableSpotResult | SpotNotFoundError
+
+export type DistanceChallenge = ChallengeInterface & {
+  __typename: 'DistanceChallenge'
+  challengeDisplay: ChallengeDisplay
+  goalInKM: Scalars['Int']
+  id: Scalars['ID']
+  ranking?: Maybe<DistanceRanking>
+}
+
+export type DistanceChallengeRankingPosition = {
+  __typename: 'DistanceChallengeRankingPosition'
+  totalKm: Scalars['Float']
+  userPositionInRanking: UserPositionInRanking
+}
+
+export type DistanceRanking = {
+  __typename: 'DistanceRanking'
+  amountOfUsersInRanking: Scalars['Int']
+  rankingPositions: Array<DistanceChallengeRankingPosition>
+}
 
 export type EditClassInput = {
   classId: Scalars['ID']
@@ -545,7 +580,7 @@ export type Mutation = {
   /** Allows to add a giftcard code to a shopping cart for current user */
   addGiftCardCodeToShoppingCart: Scalars['Boolean']
   /** Allows to add item to shopping cart */
-  addItemToShoppingCart: Scalars['Boolean']
+  addItemToShoppingCart: ShoppingCartResultUnion
   /** Books the current user in a class */
   bookClass: BookClassResultUnion
   /** Adds a user into a given class */
@@ -589,7 +624,7 @@ export type Mutation = {
   /** Removes the current user's waitlist entry from a class */
   removeCurrentUserFromWaitlist?: Maybe<RemoveCurrentUserFromWaitlistUnion>
   /** Remove Item from shopping cart */
-  removeItemFromShoppingCart: Scalars['Boolean']
+  removeItemFromShoppingCart: ShoppingCartResultUnion
   /** Removes a user from a class */
   removeUserFromClass: CancelEnrollmentResultUnion
   /** Removes a waitlist entry */
@@ -620,6 +655,11 @@ export type Mutation = {
   syncClassWithPIQ: ClassInfo
   /** Updates an admin user */
   updateAdminUser: AdminUserResultUnion
+  /** Allows to update the current AdminUser */
+  updateCurrentAdminUser: AdminUser
+  /** Allows to update the favorite site for a AdminUser */
+  updateCurrentAdminUserFavoriteSite: AdminUser
+  updateCurrentAdminUserPassword?: Maybe<Scalars['Boolean']>
   /** Updates the current user */
   updateCurrentUser?: Maybe<User>
   /** Updates a user's password in all the sites */
@@ -627,7 +667,7 @@ export type Mutation = {
   /** Updates a gift card */
   updateGiftCard: GiftCard
   /** Allows to update an Item from Shopping Cart */
-  updateItemInShoppingCart: ShoppingCart
+  updateItemInShoppingCart: ShoppingCartResultUnion
   updateUserPassword?: Maybe<Scalars['Boolean']>
 }
 
@@ -655,6 +695,7 @@ export type MutationAddGiftCardCodeToShoppingCartArgs = {
 
 export type MutationAddItemToShoppingCartArgs = {
   input?: InputMaybe<ItemToShoppingCartInput>
+  site: SiteEnum
 }
 
 export type MutationBookClassArgs = {
@@ -757,7 +798,8 @@ export type MutationRemoveCurrentUserFromWaitlistArgs = {
 }
 
 export type MutationRemoveItemFromShoppingCartArgs = {
-  id: Scalars['ID']
+  shoppingCartItemId: Scalars['ID']
+  site: SiteEnum
 }
 
 export type MutationRemoveUserFromClassArgs = {
@@ -819,6 +861,18 @@ export type MutationUpdateAdminUserArgs = {
   input: UpdateAdminUserInput
 }
 
+export type MutationUpdateCurrentAdminUserArgs = {
+  input: UpdateCurrentAdminUserInput
+}
+
+export type MutationUpdateCurrentAdminUserFavoriteSiteArgs = {
+  input?: InputMaybe<UpdateCurrentAdminUserFavoriteSiteInput>
+}
+
+export type MutationUpdateCurrentAdminUserPasswordArgs = {
+  input: UpdateCurrentUserPasswordInput
+}
+
 export type MutationUpdateCurrentUserArgs = {
   input: UserInput
 }
@@ -834,6 +888,7 @@ export type MutationUpdateGiftCardArgs = {
 
 export type MutationUpdateItemInShoppingCartArgs = {
   input?: InputMaybe<ItemToShoppingCartInput>
+  site: SiteEnum
 }
 
 export type MutationUpdateUserPasswordArgs = {
@@ -907,6 +962,11 @@ export type ProductAlertBeforePurchasing = {
   title: Scalars['String']
 }
 
+export type ProductNotFound = Error & {
+  __typename: 'ProductNotFound'
+  code: Scalars['String']
+}
+
 export enum ProductType {
   ClassPackage = 'classPackage'
 }
@@ -939,6 +999,8 @@ export type Query = {
   availableInstructors: Array<Instructor>
   /** Returns a list of all the available sites */
   availableSites?: Maybe<Array<Site>>
+  /** return the total for the current shoppingCart for the current user */
+  calculateTotalForShoppingCart: ShoppingCartResultUnion
   /** Get next classes */
   calendarClasses: Array<Class>
   /** Get a single class information */
@@ -949,6 +1011,10 @@ export type Query = {
   countries?: Maybe<Array<Maybe<Country>>>
   /** Returns a specific country by a given country code */
   country?: Maybe<Country>
+  /** Returns the current AdminUser */
+  currentAdminUser: AdminUser
+  /** Returns information of the current CRANK challenge */
+  currentCRANKChallenge: ChallengeInterface
   /** Returns the current user by the given Authentication header */
   currentUser?: Maybe<User>
   /**
@@ -1003,6 +1069,10 @@ export type QueryAdminUserArgs = {
 
 export type QueryAvailableClassTypesArgs = {
   site?: InputMaybe<SiteEnum>
+}
+
+export type QueryCalculateTotalForShoppingCartArgs = {
+  site: SiteEnum
 }
 
 export type QueryCalendarClassesArgs = {
@@ -1268,9 +1338,15 @@ export type ShoppingCart = {
   currency: Scalars['String']
   discountCode?: Maybe<Scalars['String']>
   giftCardCode?: Maybe<Scalars['String']>
+  id: Scalars['ID']
   items: Array<ShoppingCartItem>
-  subTotal: Scalars['Float']
-  total: Scalars['Float']
+  subTotal?: Maybe<Scalars['Float']>
+  total?: Maybe<Scalars['Float']>
+}
+
+export type ShoppingCartIsEmpty = Error & {
+  __typename: 'ShoppingCartIsEmpty'
+  code: Scalars['String']
 }
 
 export type ShoppingCartItem = {
@@ -1278,8 +1354,25 @@ export type ShoppingCartItem = {
   id: Scalars['ID']
   product: SellableProductInterface
   quantity: Scalars['Int']
-  subtotal: Scalars['Float']
+  subtotal?: Maybe<Scalars['Float']>
 }
+
+export type ShoppingCartItemNotFound = Error & {
+  __typename: 'ShoppingCartItemNotFound'
+  code: Scalars['String']
+}
+
+export type ShoppingCartNotFound = Error & {
+  __typename: 'ShoppingCartNotFound'
+  code: Scalars['String']
+}
+
+export type ShoppingCartResultUnion =
+  | ProductNotFound
+  | ShoppingCart
+  | ShoppingCartIsEmpty
+  | ShoppingCartItemNotFound
+  | ShoppingCartNotFound
 
 export type SimpleSiteUser = {
   __typename: 'SimpleSiteUser'
@@ -1374,6 +1467,14 @@ export type UpdateAdminUserInput = {
   userDataInput: AdminUserDataInput
 }
 
+export type UpdateCurrentAdminUserFavoriteSiteInput = {
+  favoriteSite?: InputMaybe<SiteEnum>
+}
+
+export type UpdateCurrentAdminUserInput = {
+  showCancelledClasses: Scalars['Boolean']
+}
+
 export type UpdateCurrentUserPasswordInput = {
   currentPassword: Scalars['String']
   newPassword: Scalars['String']
@@ -1410,7 +1511,7 @@ export type User = {
   lastName: Scalars['String']
   leaderboardUsername?: Maybe<Scalars['String']>
   phone: Scalars['String']
-  shoppingCart?: Maybe<ShoppingCart>
+  shoppingCart: ShoppingCart
   siteUsers: Array<SimpleSiteUser>
   state?: Maybe<State>
   weight?: Maybe<Scalars['Float']>
@@ -1423,6 +1524,10 @@ export type UserDoesExistInSiteArgs = {
 
 export type UserEnrollmentInClassArgs = {
   classId: Scalars['ID']
+}
+
+export type UserShoppingCartArgs = {
+  site: SiteEnum
 }
 
 export type UserAlreadyExistsError = Error & {
@@ -1463,6 +1568,12 @@ export type UserInput = {
 export type UserPasswordDoesNotMatchError = Error & {
   __typename: 'UserPasswordDoesNotMatchError'
   code: Scalars['String']
+}
+
+export type UserPositionInRanking = {
+  __typename: 'UserPositionInRanking'
+  positionInRanking: Scalars['Int']
+  user: User
 }
 
 export type UserRanking = {
