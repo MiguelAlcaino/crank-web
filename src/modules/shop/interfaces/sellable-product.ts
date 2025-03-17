@@ -1,11 +1,11 @@
-import { ProductAlertBeforePurchasing } from './product-alert-before-purchasing'
+import type { ProductAlertBeforePurchasing } from './product-alert-before-purchasing'
 
 export interface SellableProduct {
   id: string
   title: string
   subtitle: string
-  buttonText?: string
+  buttonText?: string | null
   price: number
   currency: string
-  alertBeforePurchasing?: ProductAlertBeforePurchasing
+  alertBeforePurchasing?: ProductAlertBeforePurchasing | null
 }

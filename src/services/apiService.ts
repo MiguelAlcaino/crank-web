@@ -44,7 +44,6 @@ import type {
   Site,
   ItemToShoppingCartInput,
   ShoppingCartResultUnion,
-  UpdateCurrentAdminUserInput,
   ProductsInput,
   SellableProductInterface
 } from '@/gql/graphql'
@@ -53,6 +52,8 @@ import { ApolloClient, ApolloError } from '@apollo/client/core'
 import { CustomCalendarClasses } from '@/model/CustomCalendarClasses'
 import { SmsValidationResponse } from '@/modules/buy_packages/models/sms-validation-response'
 import { IsSmsValidationCodeValidResponse } from '@/modules/buy_packages/models/is-sms-validation-code-valid-response'
+import { EditShoppingCartResponse } from '@/modules/shop/interfaces/edit-shopping-cart-response'
+import type { ShoppingCart } from '@/modules/shop/interfaces'
 
 export class ApiService {
   authApiClient: ApolloClient<any>
@@ -1430,7 +1431,7 @@ export class ApiService {
 
       const queryResult = await this.authApiClient.query({
         query: query,
-        fetchPolicy: 'no-cache',
+        fetchPolicy: 'network-only',
         variables: { site: site, input: input }
       })
 
@@ -1440,24 +1441,278 @@ export class ApiService {
     }
   }
 
+  async fetchUserCart(site: SiteEnum): Promise<ShoppingCart | null> {
+    try {
+      const query = gql`
+        query currentUserShoppingCart($site: SiteEnum!) {
+          currentUser {
+            shoppingCart(site: $site) {
+              id
+              total
+              currency
+              subTotal
+              giftCardCode
+              discountCode
+              items {
+                id
+                quantity
+                subtotal
+                product {
+                  currency
+                  price
+                  buttonText
+                  title
+                  id
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const queryResult = await this.authApiClient.query({
+        query: query,
+        fetchPolicy: 'network-only',
+        variables: {
+          site: site
+        }
+      })
+
+      const user = queryResult.data.currentUser as User
+      return user.shoppingCart as ShoppingCart
+    } catch (error) {
+      console.log(error)
+      return null
+    }
+  }
+
   async addItemToShoppingCart(
     site: SiteEnum,
-    input: ItemToShoppingCartInput
-  ): Promise<ShoppingCartResultUnion> {
-    throw new Error('Method not implemented.')
+    sellableProductId: string,
+    quantity: number
+  ): Promise<EditShoppingCartResponse> {
+    const input = { quantity, sellableProductId } as ItemToShoppingCartInput
+
+    const mutation = gql`
+      mutation addItemToShoppingCart($site: SiteEnum!, $input: ItemToShoppingCartInput) {
+        addItemToShoppingCart(site: $site, input: $input) {
+          __typename
+          ... on ShoppingCart {
+            id
+            total
+            currency
+            subTotal
+            giftCardCode
+            discountCode
+            items {
+              id
+              quantity
+              subtotal
+              product {
+                alertBeforePurchasing {
+                  title
+                  description
+                }
+                currency
+                price
+                buttonText
+                title
+                id
+              }
+            }
+          }
+          ... on ProductNotFound {
+            code
+          }
+          ... on ShoppingCartNotFound {
+            code
+          }
+          ... on ShoppingCartIsEmpty {
+            code
+          }
+          ... on ShoppingCartItemNotFound {
+            code
+          }
+        }
+      }
+    `
+
+    try {
+      const result = await this.authApiClient.mutate({
+        mutation: mutation,
+        variables: {
+          site: site,
+          input: input
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      const shoppingCartResultUnion = result.data.addItemToShoppingCart as ShoppingCartResultUnion
+
+      if (shoppingCartResultUnion.__typename === 'ShoppingCart') {
+        const shoppingCart = shoppingCartResultUnion as ShoppingCart
+
+        return new EditShoppingCartResponse(shoppingCartResultUnion.__typename, shoppingCart)
+      } else {
+        return new EditShoppingCartResponse(shoppingCartResultUnion.__typename)
+      }
+    } catch (error) {
+      console.log(error)
+      return new EditShoppingCartResponse('UnknownError')
+    }
   }
+
   async removeItemFromShoppingCart(
     site: SiteEnum,
     shoppingCartItemId: string
-  ): Promise<ShoppingCartResultUnion> {
-    throw new Error('Method not implemented.')
+  ): Promise<EditShoppingCartResponse> {
+    console.log('removeItemFromShoppingCart', shoppingCartItemId)
+    const mutation = gql`
+      mutation RemoveItemFromShoppingCart($site: SiteEnum!, $shoppingCartItemId: ID!) {
+        removeItemFromShoppingCart(site: $site, shoppingCartItemId: $shoppingCartItemId) {
+          __typename
+          ... on ShoppingCart {
+            id
+            total
+            currency
+            subTotal
+            giftCardCode
+            discountCode
+            items {
+              id
+              quantity
+              subtotal
+              product {
+                alertBeforePurchasing {
+                  title
+                  description
+                }
+                currency
+                price
+                buttonText
+                title
+                id
+              }
+            }
+          }
+          ... on ProductNotFound {
+            code
+          }
+          ... on ShoppingCartNotFound {
+            code
+          }
+          ... on ShoppingCartIsEmpty {
+            code
+          }
+          ... on ShoppingCartItemNotFound {
+            code
+          }
+        }
+      }
+    `
+
+    try {
+      const result = await this.authApiClient.mutate({
+        mutation: mutation,
+        variables: {
+          site: site,
+          shoppingCartItemId: shoppingCartItemId
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      const shoppingCartResultUnion = result.data
+        .removeItemFromShoppingCart as ShoppingCartResultUnion
+
+      if (shoppingCartResultUnion.__typename === 'ShoppingCart') {
+        const shoppingCart = shoppingCartResultUnion as ShoppingCart
+
+        return new EditShoppingCartResponse(shoppingCartResultUnion.__typename, shoppingCart)
+      } else {
+        return new EditShoppingCartResponse(shoppingCartResultUnion.__typename)
+      }
+    } catch (error) {
+      console.log(error)
+      return new EditShoppingCartResponse('UnknownError')
+    }
   }
+
   async updateItemInShoppingCart(
     site: SiteEnum,
-    input: ItemToShoppingCartInput
-  ): Promise<ShoppingCartResultUnion> {
-    throw new Error('Method not implemented.')
+    sellableProductId: string,
+    quantity: number
+  ): Promise<EditShoppingCartResponse> {
+    const input = { quantity, sellableProductId } as ItemToShoppingCartInput
+
+    const mutation = gql`
+      mutation UpdateItemInShoppingCart($site: SiteEnum!, $input: ItemToShoppingCartInput) {
+        updateItemInShoppingCart(site: $site, input: $input) {
+          ... on ShoppingCart {
+            id
+            total
+            currency
+            subTotal
+            giftCardCode
+            discountCode
+            items {
+              id
+              quantity
+              subtotal
+              product {
+                alertBeforePurchasing {
+                  title
+                  description
+                }
+                currency
+                price
+                buttonText
+                title
+                id
+              }
+            }
+          }
+          ... on ProductNotFound {
+            code
+          }
+          ... on ShoppingCartNotFound {
+            code
+          }
+          ... on ShoppingCartIsEmpty {
+            code
+          }
+          ... on ShoppingCartItemNotFound {
+            code
+          }
+        }
+      }
+    `
+
+    try {
+      const result = await this.authApiClient.mutate({
+        mutation: mutation,
+        variables: {
+          site: site,
+          input: input
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      const shoppingCartResultUnion = result.data
+        .updateItemInShoppingCart as ShoppingCartResultUnion
+
+      if (shoppingCartResultUnion.__typename === 'ShoppingCart') {
+        const shoppingCart = shoppingCartResultUnion as ShoppingCart
+
+        return new EditShoppingCartResponse(shoppingCartResultUnion.__typename, shoppingCart)
+      } else {
+        return new EditShoppingCartResponse(shoppingCartResultUnion.__typename)
+      }
+    } catch (error) {
+      console.log(error)
+      return new EditShoppingCartResponse('UnknownError')
+    }
   }
+
   async addGiftCardCodeToShoppingCart(giftCard: string): Promise<string> {
     throw new Error('Method not implemented.')
   }

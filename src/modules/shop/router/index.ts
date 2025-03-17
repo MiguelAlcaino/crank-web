@@ -11,6 +11,11 @@ export const shopRoute: RouteRecordRaw = {
       path: `/${ROUTE_NAME}/products`,
       name: 'products-list',
       component: () => import('@/modules/shop/views/ProductsView.vue')
+    },
+    {
+      path: `/${ROUTE_NAME}/cart`,
+      name: 'shopping-cart',
+      component: () => import('@/modules/shop/views/ShoppingCartView.vue')
     }
   ]
 }

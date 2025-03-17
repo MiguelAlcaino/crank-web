@@ -1,12 +1,11 @@
-import { ShoppingCartItem } from './shopping-cart-item'
+import type { ShoppingCartItem } from './shopping-cart-item'
 
 export interface ShoppingCart {
   id: string
-  quantity: number
   items: ShoppingCartItem[]
-  total: number
+  total?: number | null
   currency: string
-  subTotal: number
-  giftCardCode: string
-  discountCode: string
+  subTotal?: number | null
+  giftCardCode?: string | null
+  discountCode?: string | null
 }

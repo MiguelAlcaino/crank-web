@@ -2,8 +2,9 @@
 import { ApiService } from '@/services/apiService'
 import { useProducts } from '../composables/useProducts'
 import { inject } from 'vue'
+import ShoppingCart from '../components/ShoppingCartDrawer.vue'
 
-const { isLoading, hasError, products, cart, addToCart, removeFromCart, removeAllFromCart } =
+const { isLoading, hasError, products, addToCart, removeFromCart, removeAllFromCart } =
   useProducts(inject<ApiService>('gqlApiService')!)
 </script>
 
@@ -20,15 +21,11 @@ const { isLoading, hasError, products, cart, addToCart, removeFromCart, removeAl
         <button @click="removeAllFromCart(product)">Remove All</button>
       </div>
     </div>
-    <div>
-      <h2>Shopping Cart</h2>
-      <div v-for="item in cart?.items" :key="item.id" class="cart-item">
-        <h3>{{ item.product.title }}</h3>
-        <p>{{ item.product.price }} {{ item.product.currency }} x {{ item.quantity }}</p>
-      </div>
-      <div v-if="cart?.items.length === 0">Your cart is empty.</div>
-    </div>
+    <ShoppingCart></ShoppingCart>
   </div>
+
 </template>
 
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>
 <style scoped></style>

@@ -1,6 +1,6 @@
 import type { ApiService } from '@/services/apiService'
 import { onMounted, readonly, ref } from 'vue'
-import type { ShoppingCart, SellableProduct, ShoppingCartItem } from '../interfaces'
+import type { SellableProduct } from '../interfaces'
 import { appStore } from '@/stores/appStorage'
 import { ProductType } from '@/gql/graphql'
 
@@ -8,13 +8,12 @@ export const useProducts = (apiService: ApiService) => {
   const hasError = ref<boolean>(false)
   const isLoading = ref<boolean>(false)
   const products = ref<SellableProduct[]>([])
-  const shoppingCart = ref<ShoppingCart>({items: [], currency: 'USD', total: 0, discountCode: '',  giftCardCode: '', quantity: 0, id: '', subTotal: 0})
 
   onMounted(() => {
-    fetchProducts()
+    fetchUserCart()
   })
 
-  async function fetchProducts() {
+  async function fetchUserCart() {
     hasError.value = false
     isLoading.value = true
 
@@ -31,27 +30,40 @@ export const useProducts = (apiService: ApiService) => {
     }
   }
 
-  const addToCart = (product: SellableProduct) => {
-    console.log('Adding to cart', product)
-    const item = shoppingCart.value?.items.find((item) => item.product.id === product.id)
-    if (item) {
-      item.quantity++
-    } else {
-      const shoppingCartItem = {product: product,quantity: 1, subtotal: 10  } as ShoppingCartItem
-      shoppingCart.value?.items.push({ ...shoppingCartItem, quantity: 1 });
-    }
+  const addToCart = async (product: SellableProduct) => {
+    console.log('Add to cart', product)
+    try {
+      const result = await apiService.addItemToShoppingCart(appStore().site, product.id, 1)
+      console.log('Cart', result)
+      if (result.success && result.shoppingCart) {
+        // shoppingCart.value = result.shoppingCart
+        // console.log('Cart', shoppingCart.value)
+      } else {
+      }
 
-    console.log('Cart', shoppingCart.value)
+      //const item = shoppingCart.value?.items.find((item) => item.product.id === product.id)
+      // if (item) {
+      // //  item.quantity++
+      // } else {
+      //   const shoppingCartItem = { product: product, quantity: 1, subtotal: 10 } as ShoppingCartItem
+      // //  shoppingCart.value?.items.push({ ...shoppingCartItem, quantity: 1 })
+      // }
+
+      // console.log('Cart', shoppingCart.value)
+    } catch (error) {
+      console.log('Error', error)
+    } finally {
+    }
   }
 
   const removeFromCart = (product: SellableProduct) => {
-    const item = shoppingCart.value?.items.find((item) => item.id === product.id)
-    if (item) {
-      item.quantity--
-      if (item.quantity === 0) {
-        // cart.value?.items = cart.value?.items.filter((item) => item.id !== product.id);
-      }
-    }
+    // const item = shoppingCart.value?.items.find((item) => item.id === product.id)
+    // if (item) {
+    //   item.quantity--
+    //   if (item.quantity === 0) {
+    //     // cart.value?.items = cart.value?.items.filter((item) => item.id !== product.id);
+    //   }
+    // }
   }
 
   const removeAllFromCart = (product: SellableProduct) => {
@@ -63,7 +75,6 @@ export const useProducts = (apiService: ApiService) => {
     isLoading: readonly(isLoading),
     hasError: hasError,
     products: readonly(products),
-    cart: shoppingCart,
 
     // Methods
     addToCart,
