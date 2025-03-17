@@ -41,7 +41,12 @@ import type {
   PaginatedPurchases,
   SmsValidationUnion,
   IsSmsValidationCodeValidUnion,
-  Site
+  Site,
+  ItemToShoppingCartInput,
+  ShoppingCartResultUnion,
+  UpdateCurrentAdminUserInput,
+  ProductsInput,
+  SellableProductInterface
 } from '@/gql/graphql'
 import { EnrollmentTypeEnum, type SiteSetting } from '@/gql/graphql'
 import { ApolloClient, ApolloError } from '@apollo/client/core'
@@ -1403,5 +1408,61 @@ export class ApiService {
     } catch (error) {
       return []
     }
+  }
+
+  async getProducts(site: SiteEnum, input: ProductsInput) {
+    try {
+      const query = gql`
+        query products($site: SiteEnum!, $input: ProductsInput) {
+          products(site: $site, input: $input) {
+            id
+            title
+            currency
+            buttonText
+            price
+            alertBeforePurchasing {
+              title
+              description
+            }
+          }
+        }
+      `
+
+      const queryResult = await this.authApiClient.query({
+        query: query,
+        fetchPolicy: 'no-cache',
+        variables: { site: site, input: input }
+      })
+
+      return queryResult.data.products as SellableProductInterface[]
+    } catch (error) {
+      return []
+    }
+  }
+
+  async addItemToShoppingCart(
+    site: SiteEnum,
+    input: ItemToShoppingCartInput
+  ): Promise<ShoppingCartResultUnion> {
+    throw new Error('Method not implemented.')
+  }
+  async removeItemFromShoppingCart(
+    site: SiteEnum,
+    shoppingCartItemId: string
+  ): Promise<ShoppingCartResultUnion> {
+    throw new Error('Method not implemented.')
+  }
+  async updateItemInShoppingCart(
+    site: SiteEnum,
+    input: ItemToShoppingCartInput
+  ): Promise<ShoppingCartResultUnion> {
+    throw new Error('Method not implemented.')
+  }
+  async addGiftCardCodeToShoppingCart(giftCard: string): Promise<string> {
+    throw new Error('Method not implemented.')
+  }
+
+  async addDiscountCodeToShoppingCart(discountCode: string): Promise<boolean> {
+    throw new Error('Method not implemented.')
   }
 }

@@ -18,6 +18,7 @@ import MenuLayout from '@/layouts/MenuLayout.vue'
 import PaymentsIframeView from '@/views/PaymentsIframeView.vue'
 import LoginRedirectView from '@/modules/login-redirect/views/LoginRedirectView.vue'
 import SmsVerificationView from '@/modules/buy_packages/views/SmsVerificationView.vue'
+import { shopRoute } from '@/modules/shop/router'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -122,6 +123,11 @@ const router = createRouter({
       path: '/sms-verification',
       name: 'sms_verification',
       component: SmsVerificationView
+    },
+    {
+      ...shopRoute,
+      path: '/shop',
+      meta: { requiresAuth: true }
     }
   ]
 })
