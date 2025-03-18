@@ -1,8 +1,7 @@
-import type { ApiService } from '@/services/apiService'
-import { onMounted, readonly, ref } from 'vue'
-import type { ShoppingCart, SellableProduct } from '../interfaces'
+import { computed, onMounted, readonly, ref } from 'vue'
 import { appStore } from '@/stores/appStorage'
-import { ProductType } from '@/gql/graphql'
+import type { ApiService } from '@/services/apiService'
+import type { ShoppingCart, SellableProduct } from '../interfaces'
 
 const shoppingCart = ref<ShoppingCart | null>(null)
 
@@ -27,11 +26,10 @@ export const useShoppingCart = (apiService: ApiService) => {
     }
   }
 
-  const addToCart = async (product: SellableProduct) => {
-    console.log('Add to cart', product)
+  const addToCart = async (sellableProductId: string) => {
     try {
-      const result = await apiService.addItemToShoppingCart(appStore().site, product.id, 1)
-      console.log('Cart', result)
+      const result = await apiService.addItemToShoppingCart(appStore().site, sellableProductId, 1)
+
       if (result.success && result.shoppingCart) {
         shoppingCart.value = result.shoppingCart
 
@@ -65,10 +63,6 @@ export const useShoppingCart = (apiService: ApiService) => {
     }
   }
 
-  const removeAllFromCart = (product: SellableProduct) => {
-    // cart.value = cart.value.filter((item) => item.id !== product.id);
-  }
-
   const updateItemInShoppingCart = async (sellableProductId: string, quantity: number) => {
     hasError.value = false
     isLoading.value = true
@@ -91,16 +85,20 @@ export const useShoppingCart = (apiService: ApiService) => {
     }
   }
 
+  const productIdsInCart = computed(() => {
+    return shoppingCart.value?.items.map((item) => item.product.id) || []
+  })
+
   return {
     // Properties
     isLoading: readonly(isLoading),
     hasError: hasError,
     shoppingCart: shoppingCart,
+    productIdsInCart: readonly(productIdsInCart),
 
     // Methods
     addToCart,
     removeFromCart,
-    removeAllFromCart,
     updateItemInShoppingCart
   }
 }
