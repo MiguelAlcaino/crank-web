@@ -15,7 +15,7 @@ const open = () => {
 <template>
   <div class="icon-wrapper" @click="open">
     <i class="bi bi-bag" style="font-size: 2rem"></i>
-    <span class="number">5</span>
+    <span class="number">{{ totalItems }}</span>
   </div>
 </template>
 
