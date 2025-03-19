@@ -96,7 +96,7 @@ const subtotal = computed(() => {
 
         <div class="drawer-body">
           <!-- <slot></slot> -->
-          <div v-for="item in shoppingCart?.items" :key="item.id" class="cart-item">    
+          <div v-for="item in shoppingCart?.items" :key="item.id" class="cart-item">
             <div class="cart-item-header">
               <button class="btn btn-link p-0" @click="removeItem(item.id)">
                 <i class="bi bi-trash"></i>

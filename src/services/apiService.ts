@@ -1418,12 +1418,16 @@ export class ApiService {
           products(site: $site, input: $input) {
             id
             title
+            subtitle
             currency
             buttonText
             price
             alertBeforePurchasing {
               title
               description
+            }
+            ... on ClassPackageProduct {
+              type
             }
           }
         }

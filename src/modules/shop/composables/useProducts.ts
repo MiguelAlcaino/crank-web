@@ -1,6 +1,6 @@
 import type { ApiService } from '@/services/apiService'
-import { onMounted, readonly, ref } from 'vue'
-import type { SellableProduct } from '../interfaces'
+import { computed, onMounted, readonly, ref } from 'vue'
+import { ClassPackageTypeEnum, type SellableProduct } from '../interfaces'
 import { appStore } from '@/stores/appStorage'
 import { ProductType } from '@/gql/graphql'
 
@@ -11,6 +11,26 @@ export const useProducts = (apiService: ApiService) => {
 
   onMounted(() => {
     fetchUserCart()
+  })
+
+  const trialPackages = computed(() => {
+    return products.value?.filter((item) => item.type === ClassPackageTypeEnum.Trial) || []
+  })
+
+  const vodPackages = computed(() => {
+    return products.value?.filter((item) => item.type === ClassPackageTypeEnum.Vod) || []
+  })
+
+  const regularPackages = computed(() => {
+    return products.value?.filter((item) => item.type === ClassPackageTypeEnum.Regular) || []
+  })
+
+  const memberships = computed(() => {
+    return products.value?.filter((item) => item.type === ClassPackageTypeEnum.Membership) || []
+  })
+
+  const specialPackages = computed(() => {
+    return products.value?.filter((item) => item.type === ClassPackageTypeEnum.Special) || []
   })
 
   async function fetchUserCart() {
@@ -34,7 +54,12 @@ export const useProducts = (apiService: ApiService) => {
     // Properties
     isLoading: readonly(isLoading),
     hasError: hasError,
-    products: readonly(products)
+
+    trialPackages: readonly(trialPackages),
+    vodPackages: readonly(vodPackages),
+    regularPackages: readonly(regularPackages),
+    memberships: readonly(memberships),
+    specialPackages: readonly(specialPackages)
 
     // Methods
   }

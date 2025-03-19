@@ -13,7 +13,7 @@ const open = () => {
 </script>
 
 <template>
-  <div class="icon-wrapper" @click="open">
+  <div class="icon-wrapper" @click="open" aria-label="Open shopping cart">
     <i class="bi bi-bag" style="font-size: 2rem"></i>
     <span class="number">{{ totalItems }}</span>
   </div>
@@ -43,5 +43,9 @@ const open = () => {
   transform: translate(-50%, -50%);
   color: black;
   font-size: 10px;
+}
+
+.icon-wrapper:hover {
+  background-color: #f0f0f0;
 }
 </style>
