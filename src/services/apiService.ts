@@ -52,7 +52,7 @@ import { ApolloClient, ApolloError } from '@apollo/client/core'
 import { CustomCalendarClasses } from '@/model/CustomCalendarClasses'
 import { SmsValidationResponse } from '@/modules/buy_packages/models/sms-validation-response'
 import { IsSmsValidationCodeValidResponse } from '@/modules/buy_packages/models/is-sms-validation-code-valid-response'
-import { EditShoppingCartResponse } from '@/modules/shop/interfaces/edit-shopping-cart-response'
+import { ShoppingCartResult } from '@/modules/shop/interfaces/shopping-cart-result'
 import type { ShoppingCart } from '@/modules/shop/interfaces'
 
 export class ApiService {
@@ -1494,7 +1494,7 @@ export class ApiService {
     site: SiteEnum,
     sellableProductId: string,
     quantity: number
-  ): Promise<EditShoppingCartResponse> {
+  ): Promise<ShoppingCartResult> {
     const input = { quantity, sellableProductId } as ItemToShoppingCartInput
 
     const mutation = gql`
@@ -1556,20 +1556,20 @@ export class ApiService {
       if (shoppingCartResultUnion.__typename === 'ShoppingCart') {
         const shoppingCart = shoppingCartResultUnion as ShoppingCart
 
-        return new EditShoppingCartResponse(shoppingCartResultUnion.__typename, shoppingCart)
+        return new ShoppingCartResult(shoppingCartResultUnion.__typename, shoppingCart)
       } else {
-        return new EditShoppingCartResponse(shoppingCartResultUnion.__typename)
+        return new ShoppingCartResult(shoppingCartResultUnion.__typename)
       }
     } catch (error) {
       console.log(error)
-      return new EditShoppingCartResponse('UnknownError')
+      return new ShoppingCartResult('UnknownError')
     }
   }
 
   async removeItemFromShoppingCart(
     site: SiteEnum,
     shoppingCartItemId: string
-  ): Promise<EditShoppingCartResponse> {
+  ): Promise<ShoppingCartResult> {
     console.log('removeItemFromShoppingCart', shoppingCartItemId)
     const mutation = gql`
       mutation RemoveItemFromShoppingCart($site: SiteEnum!, $shoppingCartItemId: ID!) {
@@ -1631,13 +1631,13 @@ export class ApiService {
       if (shoppingCartResultUnion.__typename === 'ShoppingCart') {
         const shoppingCart = shoppingCartResultUnion as ShoppingCart
 
-        return new EditShoppingCartResponse(shoppingCartResultUnion.__typename, shoppingCart)
+        return new ShoppingCartResult(shoppingCartResultUnion.__typename, shoppingCart)
       } else {
-        return new EditShoppingCartResponse(shoppingCartResultUnion.__typename)
+        return new ShoppingCartResult(shoppingCartResultUnion.__typename)
       }
     } catch (error) {
       console.log(error)
-      return new EditShoppingCartResponse('UnknownError')
+      return new ShoppingCartResult('UnknownError')
     }
   }
 
@@ -1645,7 +1645,7 @@ export class ApiService {
     site: SiteEnum,
     sellableProductId: string,
     quantity: number
-  ): Promise<EditShoppingCartResponse> {
+  ): Promise<ShoppingCartResult> {
     const input = { quantity, sellableProductId } as ItemToShoppingCartInput
 
     const mutation = gql`
@@ -1707,13 +1707,13 @@ export class ApiService {
       if (shoppingCartResultUnion.__typename === 'ShoppingCart') {
         const shoppingCart = shoppingCartResultUnion as ShoppingCart
 
-        return new EditShoppingCartResponse(shoppingCartResultUnion.__typename, shoppingCart)
+        return new ShoppingCartResult(shoppingCartResultUnion.__typename, shoppingCart)
       } else {
-        return new EditShoppingCartResponse(shoppingCartResultUnion.__typename)
+        return new ShoppingCartResult(shoppingCartResultUnion.__typename)
       }
     } catch (error) {
       console.log(error)
-      return new EditShoppingCartResponse('UnknownError')
+      return new ShoppingCartResult('UnknownError')
     }
   }
 
@@ -1723,5 +1723,74 @@ export class ApiService {
 
   async addDiscountCodeToShoppingCart(discountCode: string): Promise<boolean> {
     throw new Error('Method not implemented.')
+  }
+
+  async calculateTotalForShoppingCart(site: SiteEnum): Promise<ShoppingCartResult> {
+    const mutation = gql`
+      mutation CalculateTotalForShoppingCart($site: SiteEnum!) {
+        calculateTotalForShoppingCart(site: $site) {
+          ... on ShoppingCart {
+            id
+            total
+            currency
+            subTotal
+            giftCardCode
+            discountCode
+            items {
+              id
+              quantity
+              subtotal
+              product {
+                alertBeforePurchasing {
+                  title
+                  description
+                }
+                currency
+                price
+                buttonText
+                title
+                id
+              }
+            }
+          }
+          ... on ProductNotFound {
+            code
+          }
+          ... on ShoppingCartNotFound {
+            code
+          }
+          ... on ShoppingCartIsEmpty {
+            code
+          }
+          ... on ShoppingCartItemNotFound {
+            code
+          }
+        }
+      }
+    `
+
+    try {
+      const result = await this.authApiClient.mutate({
+        mutation: mutation,
+        variables: {
+          site: site
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      const shoppingCartResultUnion = result.data
+        .calculateTotalForShoppingCart as ShoppingCartResultUnion
+
+      if (shoppingCartResultUnion.__typename === 'ShoppingCart') {
+        const shoppingCart = shoppingCartResultUnion as ShoppingCart
+
+        return new ShoppingCartResult(shoppingCartResultUnion.__typename, shoppingCart)
+      } else {
+        return new ShoppingCartResult(shoppingCartResultUnion.__typename)
+      }
+    } catch (error) {
+      console.log(error)
+      return new ShoppingCartResult('UnknownError')
+    }
   }
 }

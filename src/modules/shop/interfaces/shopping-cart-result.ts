@@ -1,7 +1,7 @@
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 import type { ShoppingCart } from './shopping-cart'
 
-export class EditShoppingCartResponse {
+export class ShoppingCartResult {
   code:
     | 'ShoppingCart'
     | 'ShoppingCartIsEmpty'
