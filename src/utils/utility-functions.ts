@@ -25,3 +25,10 @@ export function secondsToMMSS(seconds?: number): string {
 
   return minutesStr + ':' + secondsStr
 }
+
+export const formatPrice = (price: number): string => {
+  return new Intl.NumberFormat('en-AE', {
+    style: 'currency',
+    currency: 'AED'
+  }).format(price)
+}

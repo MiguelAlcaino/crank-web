@@ -13,7 +13,7 @@ const toggleCart = () => {
   <div>
     <header>
       <div class="header-content">
-        <h3></h3>
+        <div></div>
         <ShoppingCartDrawer @close="toggleCart" />
       </div>
     </header>

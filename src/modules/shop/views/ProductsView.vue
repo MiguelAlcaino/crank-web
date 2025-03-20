@@ -22,7 +22,7 @@ const { productIdsInCart, addToCart } = useShoppingCart(apiService)
 </script>
 
 <template>
-  <div>
+  <div class="mt-3">
     <h1>Buy Sessions</h1>
     <div class="row">
       <div class="col-12" style="text-align: center">
@@ -34,8 +34,10 @@ const { productIdsInCart, addToCart } = useShoppingCart(apiService)
     </div>
     <div v-if="hasError">Error loading products.</div>
     <div v-if="!isLoading && !hasError">
-      <div class="row">
-        <div class="col-12"><h2>Trial Packages*</h2></div>
+      <div class="row mt-3">
+        <div class="col-12">
+          <h2>Trial Packages*</h2>
+        </div>
         <div
           class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3"
           v-for="product in trialPackages"
@@ -45,12 +47,15 @@ const { productIdsInCart, addToCart } = useShoppingCart(apiService)
             :product="product"
             :is-in-cart="productIdsInCart.includes(product.id)"
             @add-to-cart="addToCart"
-          ></ProductCard>
+          >
+          </ProductCard>
         </div>
       </div>
 
-      <div class="row">
-        <div class="col-12"><h2>Video-on-Demand Packages*</h2></div>
+      <div class="row mt-3">
+        <div class="col-12">
+          <h2>Video-on-Demand Packages*</h2>
+        </div>
         <div
           class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3"
           v-for="product in vodPackages"
@@ -60,12 +65,15 @@ const { productIdsInCart, addToCart } = useShoppingCart(apiService)
             :product="product"
             :is-in-cart="productIdsInCart.includes(product.id)"
             @add-to-cart="addToCart"
-          ></ProductCard>
+          >
+          </ProductCard>
         </div>
       </div>
 
-      <div class="row">
-        <div class="col-12"><h2>Regular Packages*</h2></div>
+      <div class="row mt-3">
+        <div class="col-12">
+          <h2>Regular Packages*</h2>
+        </div>
         <div
           class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3"
           v-for="product in regularPackages"
@@ -75,12 +83,15 @@ const { productIdsInCart, addToCart } = useShoppingCart(apiService)
             :product="product"
             :is-in-cart="productIdsInCart.includes(product.id)"
             @add-to-cart="addToCart"
-          ></ProductCard>
+          >
+          </ProductCard>
         </div>
       </div>
 
-      <div class="row">
-        <div class="col-12"><h2>Memberships*</h2></div>
+      <div class="row mt-3">
+        <div class="col-12">
+          <h2>Memberships*</h2>
+        </div>
         <div
           class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3"
           v-for="product in memberships"
@@ -90,7 +101,8 @@ const { productIdsInCart, addToCart } = useShoppingCart(apiService)
             :product="product"
             :is-in-cart="productIdsInCart.includes(product.id)"
             @add-to-cart="addToCart"
-          ></ProductCard>
+          >
+          </ProductCard>
         </div>
       </div>
     </div>

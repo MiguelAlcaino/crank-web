@@ -4,6 +4,7 @@ import { computed, inject, ref, watch } from 'vue'
 import { useShoppingCart } from '../composables/userShoppingCart'
 import { ApiService } from '@/services/apiService'
 import ShoppingCartIcon from './ShoppingCartIcon.vue'
+import { formatPrice } from '@/utils/utility-functions'
 
 const modelValue = ref(false)
 const title = ref('Your Cart')
@@ -11,7 +12,7 @@ const position = ref('right')
 const width = ref('400px')
 
 const apiService = inject<ApiService>('gqlApiService')!
-const { shoppingCart, removeFromCart } = useShoppingCart(apiService)
+const { shoppingCart, removeFromCart, calculatedSubtotal } = useShoppingCart(apiService)
 
 watch(
   () => modelValue.value,
@@ -37,15 +38,8 @@ const open = () => {
   modelValue.value = true
 }
 
-const formatPrice = (price: number): string => {
-  return new Intl.NumberFormat('en-AE', {
-    style: 'currency',
-    currency: 'AED'
-  }).format(price)
-}
-
 const checkout = () => {
-  //TODO: Implement checkout
+  router.push('/shop/checkout')
   close()
 }
 
@@ -55,15 +49,6 @@ const removeItem = (itemId: string) => {
 
 const totalItems = computed(() => {
   return shoppingCart.value?.items.reduce((total, item) => total + item.quantity, 0) || 0
-})
-
-const subtotal = computed(() => {
-  return (
-    shoppingCart.value?.items.reduce(
-      (total, item) => total + item.quantity * item.product.price,
-      0
-    ) || 0
-  )
 })
 </script>
 
@@ -113,7 +98,7 @@ const subtotal = computed(() => {
           <hr />
           <div class="drawer-subtotal">
             <span>Subtotal: </span>
-            <span class="drawer-price">{{ formatPrice(subtotal) }}</span>
+            <span class="drawer-price">{{ calculatedSubtotal }}</span>
           </div>
 
           <button class="btn btn-secondary btn-block" @click="viewCart">View Cart</button>

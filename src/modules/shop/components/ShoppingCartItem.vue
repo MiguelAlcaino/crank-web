@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { ShoppingCartItem } from '../interfaces'
-import NumberInput from './NumberInput.vue'
+import ProductNumberInput from './ProductNumberInput.vue'
+import { formatPrice } from '@/utils/utility-functions'
 
 const props = defineProps<{
   shoppingCartItem: ShoppingCartItem
@@ -21,7 +22,7 @@ const removeItem = () => {
 }
 
 const subtotal = computed(() => {
-  return (props.shoppingCartItem.product.price * props.shoppingCartItem.quantity).toFixed(2)
+  return props.shoppingCartItem.product.price * props.shoppingCartItem.quantity
 })
 </script>
 
@@ -30,18 +31,20 @@ const subtotal = computed(() => {
     <div class="row">
       <div class="col-6">
         <p>{{ shoppingCartItem.product.title }}</p>
-        <p>{{ shoppingCartItem.product.price }} {{ shoppingCartItem.product.currency }}</p>
-        <NumberInput
+        <p>{{ formatPrice(shoppingCartItem.product.price) }}</p>
+        <ProductNumberInput
           :model-value="shoppingCartItem.quantity"
           @update-item="updateItem"
           :min="1"
           :max="1000"
           :step="1"
         >
-        </NumberInput>
-        <button type="button" class="btn btn-link avenir-font" @click="removeItem">remove</button>
+        </ProductNumberInput>
+        <button type="button" class="btn btn-link avenir-font" @click="removeItem">
+          remove item
+        </button>
       </div>
-      <div class="col-6">{{ subtotal }}{{ shoppingCartItem.product.currency }}</div>
+      <div class="col-6">{{ formatPrice(subtotal) }}</div>
     </div>
   </div>
 </template>

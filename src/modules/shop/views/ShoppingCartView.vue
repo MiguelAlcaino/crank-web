@@ -3,8 +3,9 @@ import { ApiService } from '@/services/apiService'
 import ShoppingCartItem from '../components/ShoppingCartItem.vue'
 import { inject, ref } from 'vue'
 import { useShoppingCart } from '../composables/userShoppingCart'
+import router from '@/router'
 
-const { isLoading, hasError, shoppingCart, removeFromCart, updateItemInShoppingCart } =
+const { shoppingCart, removeFromCart, updateItemInShoppingCart, calculatedSubtotal } =
   useShoppingCart(inject<ApiService>('gqlApiService')!)
 
 const emit = defineEmits(['update:modelValue', 'removeItem'])
@@ -31,15 +32,14 @@ const handleUpdateItem = (sellableProductId: string, quantity: number) => {
 }
 
 const checkout = () => {
-  //TODO: Implement checkout
-  //  emit('checkout');
+  router.push('/shop/checkout')
   closeDrawer()
 }
 </script>
 
 <template>
   <div>
-    <div class="row">
+    <div class="row mt-3">
       <div class="col-12 col-sm-12 col-md-6 col-lg-7 col-xl-7">
         <div v-for="(shoppingCartItem, index) in shoppingCart?.items" :key="index">
           <ShoppingCartItem
@@ -52,8 +52,7 @@ const checkout = () => {
         </div>
       </div>
       <div class="col-12 col-sm-12 col-md-6 col-lg-5 col-xl-4">
-        {{ shoppingCart?.subTotal }}
-        {{ shoppingCart?.total }}
+        {{ calculatedSubtotal }}
         <button class="btn btn-primary btn-block" @click="checkout">
           <i class="bi bi-cart-check"></i> Checkout
         </button>

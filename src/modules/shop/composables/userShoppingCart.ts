@@ -1,7 +1,8 @@
 import { computed, onMounted, readonly, ref } from 'vue'
 import { appStore } from '@/stores/appStorage'
 import type { ApiService } from '@/services/apiService'
-import type { ShoppingCart, SellableProduct } from '../interfaces'
+import type { ShoppingCart } from '../interfaces'
+import { formatPrice } from '@/utils/utility-functions'
 
 const shoppingCart = ref<ShoppingCart | null>(null)
 
@@ -89,12 +90,21 @@ export const useShoppingCart = (apiService: ApiService) => {
     return shoppingCart.value?.items.map((item) => item.product.id) || []
   })
 
+  const calculatedSubtotal = computed(() => {
+    return formatPrice(
+      shoppingCart.value?.items.reduce((acc, item) => {
+        return acc + item.product.price * item.quantity
+      }, 0) || 0
+    )
+  })
+
   return {
     // Properties
     isLoading: readonly(isLoading),
     hasError: hasError,
     shoppingCart: shoppingCart,
     productIdsInCart: readonly(productIdsInCart),
+    calculatedSubtotal: readonly(calculatedSubtotal),
 
     // Methods
     addToCart,
