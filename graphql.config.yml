@@ -1,0 +1,14 @@
+extensions:
+  endpoints:
+    default:
+      url: https://payments2.crank-fit.com/api/graphql/
+projects:
+  default:
+    schema: 'https://payments2.crank-fit.com/api/graphql/'
+    documents: 'src/**/*.graphql'
+    extensions:
+      endpoints:
+        default:
+          url: 'https://payments2.crank-fit.com/api/graphql/'
+
+schema: 'https://payments2.crank-fit.com/api/graphql/'
