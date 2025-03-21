@@ -613,6 +613,8 @@ export type Mutation = {
   editUser?: Maybe<EditUserResultUnion>
   /** Enabled a spot in a class */
   enableSpot?: Maybe<DisableEnableSpotResultUnion>
+  /** Returns the html of a payment form to be used to pay */
+  payfortForm: PayfortFormResult
   /** Registers a new user and returns an IdentifiableUser type */
   registerIdentifiableUser?: Maybe<IdentifiableSiteUser>
   /** Registers a new user */
@@ -773,6 +775,11 @@ export type MutationEnableSpotArgs = {
   input?: InputMaybe<DisableEnableSpotInput>
 }
 
+export type MutationPayfortFormArgs = {
+  input: PayfortFormInput
+  site: SiteEnum
+}
+
 export type MutationRegisterIdentifiableUserArgs = {
   input: RegisterUserInput
   site: SiteEnum
@@ -931,6 +938,17 @@ export type PaginationInput = {
 export type PasswordsDontMatchError = Error & {
   __typename: 'PasswordsDontMatchError'
   code: Scalars['String']
+}
+
+export type PayfortFormInput = {
+  deviceFingerprint: Scalars['String']
+  merchantReference: Scalars['ID']
+  savePaymentCard: Scalars['Boolean']
+}
+
+export type PayfortFormResult = {
+  __typename: 'PayfortFormResult'
+  htmlForm: Scalars['String']
 }
 
 /** Error returned when a client does not have enough credit or allowance to book a class */
@@ -2503,6 +2521,47 @@ export type UpdateItemInShoppingCartMutationVariables = Exact<{
 export type UpdateItemInShoppingCartMutation = {
   __typename: 'Mutation'
   updateItemInShoppingCart:
+    | { __typename: 'ProductNotFound'; code: string }
+    | {
+        __typename: 'ShoppingCart'
+        id: string
+        total?: number | null
+        currency: string
+        subTotal?: number | null
+        giftCardCode?: string | null
+        discountCode?: string | null
+        items: Array<{
+          __typename: 'ShoppingCartItem'
+          id: string
+          quantity: number
+          subtotal?: number | null
+          product: {
+            __typename: 'ClassPackageProduct'
+            currency: string
+            price: number
+            buttonText?: string | null
+            title: string
+            id: string
+            alertBeforePurchasing?: {
+              __typename: 'ProductAlertBeforePurchasing'
+              title: string
+              description: string
+            } | null
+          }
+        }>
+      }
+    | { __typename: 'ShoppingCartIsEmpty'; code: string }
+    | { __typename: 'ShoppingCartItemNotFound'; code: string }
+    | { __typename: 'ShoppingCartNotFound'; code: string }
+}
+
+export type CalculateTotalForShoppingCartQueryVariables = Exact<{
+  site: SiteEnum
+}>
+
+export type CalculateTotalForShoppingCartQuery = {
+  __typename: 'Query'
+  calculateTotalForShoppingCart:
     | { __typename: 'ProductNotFound'; code: string }
     | {
         __typename: 'ShoppingCart'
@@ -5963,4 +6022,150 @@ export const UpdateItemInShoppingCartDocument = {
 } as unknown as DocumentNode<
   UpdateItemInShoppingCartMutation,
   UpdateItemInShoppingCartMutationVariables
+>
+export const CalculateTotalForShoppingCartDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'CalculateTotalForShoppingCart' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'calculateTotalForShoppingCart' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCart' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'total' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'currency' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'subTotal' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'giftCardCode' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'discountCode' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'items' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'quantity' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'subtotal' } },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'product' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'alertBeforePurchasing' },
+                                    selectionSet: {
+                                      kind: 'SelectionSet',
+                                      selections: [
+                                        { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+                                        {
+                                          kind: 'Field',
+                                          name: { kind: 'Name', value: 'description' }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'currency' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'price' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'buttonText' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'id' } }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ProductNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartIsEmpty' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartItemNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  CalculateTotalForShoppingCartQuery,
+  CalculateTotalForShoppingCartQueryVariables
 >
