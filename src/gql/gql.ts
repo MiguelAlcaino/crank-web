@@ -17,16 +17,10 @@ const documents = {
     types.SiteSettingsDocument,
   '\n      query currentUser {\n        currentUser {\n          email\n          firstName\n          lastName\n          gender\n          birthdate\n          country {\n            name\n            code\n            states {\n              name\n              code\n            }\n          }\n          state {\n            name\n            code\n          }\n          city\n          address1\n          address2\n          zipCode\n          phone\n          emergencyContactName\n          emergencyContactPhone\n          emergencyContactRelationship\n          hideMetrics\n          weight\n          leaderboardUsername\n        }\n      }\n    ':
     types.CurrentUserDocument,
-  '\n      query currentUserWorkoutStats($site: SiteEnum!) {\n        currentUserWorkoutStats(site: $site) {\n          enrollment {\n            enrollmentInfo {\n              id\n              ... on EnrollmentInfo {\n                spotNumber\n              }\n            }\n            class {\n              name\n              start\n              duration\n            }\n          }\n          totalEnergy\n        }\n      }\n    ':
-    types.CurrentUserWorkoutStatsDocument,
   '\n      query currentUserSingleWorkoutStat($enrollmentId: ID!) {\n        currentUserSingleWorkoutStat(enrollmentId: $enrollmentId) {\n          enrollment {\n            enrollmentInfo {\n              id\n              ... on EnrollmentInfo {\n                spotNumber\n              }\n            }\n            class {\n              id\n              name\n              start\n              duration\n              instructorName\n            }\n          }\n          averagePower\n          highPower\n          averageRpm\n          highRpm\n          totalEnergy\n          calories\n          distance\n          adjustedChartPoints(amountOfPoints: 62) {\n            time\n            rpm\n            power\n          }\n        }\n      }\n    ':
     types.CurrentUserSingleWorkoutStatDocument,
-  '\n      query currentUserEnrollments($site: SiteEnum!, $params: CurrentUserEnrollmentsParams) {\n        currentUserEnrollments(site: $site, params: $params) {\n          enrollmentInfo {\n            id\n            enrollmentStatus\n            enrollmentDateTime\n            enrollmentDateTimeWithNoTimeZone\n            ... on EnrollmentInfo {\n              spotNumber\n            }\n            ... on WaitlistEntry {\n              canBeTurnedIntoEnrollment\n            }\n          }\n          class {\n            id\n            name\n            description\n            instructorName\n            start\n            startWithNoTimeZone\n            duration\n            waitListAvailable\n            showAsDisabled\n          }\n        }\n      }\n    ':
-    types.CurrentUserEnrollmentsDocument,
   '\n      query currentUserEnrollmentInClass($classId: ID!) {\n        currentUser {\n          enrollmentInClass(classId: $classId) {\n            id\n            enrollmentStatus\n            enrollmentDateTime\n            ... on EnrollmentInfo {\n              spotNumber\n            }\n          }\n        }\n      }\n    ':
     types.CurrentUserEnrollmentInClassDocument,
-  '\n      query currentUserPurchases($site: SiteEnum!) {\n        currentUserPurchases(site: $site) {\n          packageName\n          allowanceObtained\n          allowanceRemaining\n          paymentDateTime\n          activationDateTime\n          expirationDateTime\n        }\n      }\n    ':
-    types.CurrentUserPurchasesDocument,
   '\n      query Countries {\n        countries {\n          name\n          code\n        }\n      }\n    ':
     types.CountriesDocument,
   '\n      query country($countryCode: String!) {\n        country(countryCode: $countryCode) {\n          name\n          code\n          states {\n            name\n            code\n          }\n        }\n      }\n    ':
@@ -100,7 +94,11 @@ const documents = {
   '\n      mutation UpdateItemInShoppingCart($site: SiteEnum!, $input: ItemToShoppingCartInput) {\n        updateItemInShoppingCart(site: $site, input: $input) {\n          ... on ShoppingCart {\n            id\n            total\n            currency\n            subTotal\n            giftCardCode\n            discountCode\n            items {\n              id\n              quantity\n              subtotal\n              product {\n                alertBeforePurchasing {\n                  title\n                  description\n                }\n                currency\n                price\n                buttonText\n                title\n                id\n              }\n            }\n          }\n          ... on ProductNotFound {\n            code\n          }\n          ... on ShoppingCartNotFound {\n            code\n          }\n          ... on ShoppingCartIsEmpty {\n            code\n          }\n          ... on ShoppingCartItemNotFound {\n            code\n          }\n        }\n      }\n    ':
     types.UpdateItemInShoppingCartDocument,
   '\n      query CalculateTotalForShoppingCart($site: SiteEnum!) {\n        calculateTotalForShoppingCart(site: $site) {\n          ... on ShoppingCart {\n            id\n            total\n            currency\n            subTotal\n            giftCardCode\n            discountCode\n            items {\n              id\n              quantity\n              subtotal\n              product {\n                alertBeforePurchasing {\n                  title\n                  description\n                }\n                currency\n                price\n                buttonText\n                title\n                id\n              }\n            }\n          }\n          ... on ProductNotFound {\n            code\n          }\n          ... on ShoppingCartNotFound {\n            code\n          }\n          ... on ShoppingCartIsEmpty {\n            code\n          }\n          ... on ShoppingCartItemNotFound {\n            code\n          }\n        }\n      }\n    ':
-    types.CalculateTotalForShoppingCartDocument
+    types.CalculateTotalForShoppingCartDocument,
+  '\n      mutation PayfortForm($site: SiteEnum!, $input: PayfortFormInput!) {\n        payfortForm(site: $site, input: $input) {\n          htmlForm\n        }\n      }\n    ':
+    types.PayfortFormDocument,
+  '\n        mutation PayfortForm($site: SiteEnum!, $input: PayfortFormInput!) {\n            payfortForm(site: $site, input: $input) {\n                htmlForm\n            }\n        }\n    ':
+    types.PayfortFormDocument
 }
 
 /**
@@ -133,32 +131,14 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: '\n      query currentUserWorkoutStats($site: SiteEnum!) {\n        currentUserWorkoutStats(site: $site) {\n          enrollment {\n            enrollmentInfo {\n              id\n              ... on EnrollmentInfo {\n                spotNumber\n              }\n            }\n            class {\n              name\n              start\n              duration\n            }\n          }\n          totalEnergy\n        }\n      }\n    '
-): (typeof documents)['\n      query currentUserWorkoutStats($site: SiteEnum!) {\n        currentUserWorkoutStats(site: $site) {\n          enrollment {\n            enrollmentInfo {\n              id\n              ... on EnrollmentInfo {\n                spotNumber\n              }\n            }\n            class {\n              name\n              start\n              duration\n            }\n          }\n          totalEnergy\n        }\n      }\n    ']
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
   source: '\n      query currentUserSingleWorkoutStat($enrollmentId: ID!) {\n        currentUserSingleWorkoutStat(enrollmentId: $enrollmentId) {\n          enrollment {\n            enrollmentInfo {\n              id\n              ... on EnrollmentInfo {\n                spotNumber\n              }\n            }\n            class {\n              id\n              name\n              start\n              duration\n              instructorName\n            }\n          }\n          averagePower\n          highPower\n          averageRpm\n          highRpm\n          totalEnergy\n          calories\n          distance\n          adjustedChartPoints(amountOfPoints: 62) {\n            time\n            rpm\n            power\n          }\n        }\n      }\n    '
 ): (typeof documents)['\n      query currentUserSingleWorkoutStat($enrollmentId: ID!) {\n        currentUserSingleWorkoutStat(enrollmentId: $enrollmentId) {\n          enrollment {\n            enrollmentInfo {\n              id\n              ... on EnrollmentInfo {\n                spotNumber\n              }\n            }\n            class {\n              id\n              name\n              start\n              duration\n              instructorName\n            }\n          }\n          averagePower\n          highPower\n          averageRpm\n          highRpm\n          totalEnergy\n          calories\n          distance\n          adjustedChartPoints(amountOfPoints: 62) {\n            time\n            rpm\n            power\n          }\n        }\n      }\n    ']
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: '\n      query currentUserEnrollments($site: SiteEnum!, $params: CurrentUserEnrollmentsParams) {\n        currentUserEnrollments(site: $site, params: $params) {\n          enrollmentInfo {\n            id\n            enrollmentStatus\n            enrollmentDateTime\n            enrollmentDateTimeWithNoTimeZone\n            ... on EnrollmentInfo {\n              spotNumber\n            }\n            ... on WaitlistEntry {\n              canBeTurnedIntoEnrollment\n            }\n          }\n          class {\n            id\n            name\n            description\n            instructorName\n            start\n            startWithNoTimeZone\n            duration\n            waitListAvailable\n            showAsDisabled\n          }\n        }\n      }\n    '
-): (typeof documents)['\n      query currentUserEnrollments($site: SiteEnum!, $params: CurrentUserEnrollmentsParams) {\n        currentUserEnrollments(site: $site, params: $params) {\n          enrollmentInfo {\n            id\n            enrollmentStatus\n            enrollmentDateTime\n            enrollmentDateTimeWithNoTimeZone\n            ... on EnrollmentInfo {\n              spotNumber\n            }\n            ... on WaitlistEntry {\n              canBeTurnedIntoEnrollment\n            }\n          }\n          class {\n            id\n            name\n            description\n            instructorName\n            start\n            startWithNoTimeZone\n            duration\n            waitListAvailable\n            showAsDisabled\n          }\n        }\n      }\n    ']
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
   source: '\n      query currentUserEnrollmentInClass($classId: ID!) {\n        currentUser {\n          enrollmentInClass(classId: $classId) {\n            id\n            enrollmentStatus\n            enrollmentDateTime\n            ... on EnrollmentInfo {\n              spotNumber\n            }\n          }\n        }\n      }\n    '
 ): (typeof documents)['\n      query currentUserEnrollmentInClass($classId: ID!) {\n        currentUser {\n          enrollmentInClass(classId: $classId) {\n            id\n            enrollmentStatus\n            enrollmentDateTime\n            ... on EnrollmentInfo {\n              spotNumber\n            }\n          }\n        }\n      }\n    ']
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: '\n      query currentUserPurchases($site: SiteEnum!) {\n        currentUserPurchases(site: $site) {\n          packageName\n          allowanceObtained\n          allowanceRemaining\n          paymentDateTime\n          activationDateTime\n          expirationDateTime\n        }\n      }\n    '
-): (typeof documents)['\n      query currentUserPurchases($site: SiteEnum!) {\n        currentUserPurchases(site: $site) {\n          packageName\n          allowanceObtained\n          allowanceRemaining\n          paymentDateTime\n          activationDateTime\n          expirationDateTime\n        }\n      }\n    ']
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -381,6 +361,18 @@ export function graphql(
 export function graphql(
   source: '\n      query CalculateTotalForShoppingCart($site: SiteEnum!) {\n        calculateTotalForShoppingCart(site: $site) {\n          ... on ShoppingCart {\n            id\n            total\n            currency\n            subTotal\n            giftCardCode\n            discountCode\n            items {\n              id\n              quantity\n              subtotal\n              product {\n                alertBeforePurchasing {\n                  title\n                  description\n                }\n                currency\n                price\n                buttonText\n                title\n                id\n              }\n            }\n          }\n          ... on ProductNotFound {\n            code\n          }\n          ... on ShoppingCartNotFound {\n            code\n          }\n          ... on ShoppingCartIsEmpty {\n            code\n          }\n          ... on ShoppingCartItemNotFound {\n            code\n          }\n        }\n      }\n    '
 ): (typeof documents)['\n      query CalculateTotalForShoppingCart($site: SiteEnum!) {\n        calculateTotalForShoppingCart(site: $site) {\n          ... on ShoppingCart {\n            id\n            total\n            currency\n            subTotal\n            giftCardCode\n            discountCode\n            items {\n              id\n              quantity\n              subtotal\n              product {\n                alertBeforePurchasing {\n                  title\n                  description\n                }\n                currency\n                price\n                buttonText\n                title\n                id\n              }\n            }\n          }\n          ... on ProductNotFound {\n            code\n          }\n          ... on ShoppingCartNotFound {\n            code\n          }\n          ... on ShoppingCartIsEmpty {\n            code\n          }\n          ... on ShoppingCartItemNotFound {\n            code\n          }\n        }\n      }\n    ']
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n      mutation PayfortForm($site: SiteEnum!, $input: PayfortFormInput!) {\n        payfortForm(site: $site, input: $input) {\n          htmlForm\n        }\n      }\n    '
+): (typeof documents)['\n      mutation PayfortForm($site: SiteEnum!, $input: PayfortFormInput!) {\n        payfortForm(site: $site, input: $input) {\n          htmlForm\n        }\n      }\n    ']
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n        mutation PayfortForm($site: SiteEnum!, $input: PayfortFormInput!) {\n            payfortForm(site: $site, input: $input) {\n                htmlForm\n            }\n        }\n    '
+): (typeof documents)['\n        mutation PayfortForm($site: SiteEnum!, $input: PayfortFormInput!) {\n            payfortForm(site: $site, input: $input) {\n                htmlForm\n            }\n        }\n    ']
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {}

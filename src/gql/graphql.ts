@@ -613,6 +613,8 @@ export type Mutation = {
   editUser?: Maybe<EditUserResultUnion>
   /** Enabled a spot in a class */
   enableSpot?: Maybe<DisableEnableSpotResultUnion>
+  /** Generate a unique Merchant Reference */
+  generateMerchantReference: Scalars['ID']
   /** Returns the html of a payment form to be used to pay */
   payfortForm: PayfortFormResult
   /** Registers a new user and returns an IdentifiableUser type */
@@ -773,6 +775,10 @@ export type MutationEditUserArgs = {
 
 export type MutationEnableSpotArgs = {
   input?: InputMaybe<DisableEnableSpotInput>
+}
+
+export type MutationGenerateMerchantReferenceArgs = {
+  site: SiteEnum
 }
 
 export type MutationPayfortFormArgs = {
@@ -1674,25 +1680,6 @@ export type CurrentUserQuery = {
   } | null
 }
 
-export type CurrentUserWorkoutStatsQueryVariables = Exact<{
-  site: SiteEnum
-}>
-
-export type CurrentUserWorkoutStatsQuery = {
-  __typename: 'Query'
-  currentUserWorkoutStats: Array<{
-    __typename: 'ClassStat'
-    totalEnergy?: number | null
-    enrollment: {
-      __typename: 'Enrollment'
-      enrollmentInfo:
-        | { __typename: 'EnrollmentInfo'; spotNumber?: number | null; id: string }
-        | { __typename: 'WaitlistEntry'; id: string }
-      class: { __typename: 'Class'; name: string; start: any; duration: number }
-    }
-  } | null>
-}
-
 export type CurrentUserSingleWorkoutStatQueryVariables = Exact<{
   enrollmentId: Scalars['ID']
 }>
@@ -1731,47 +1718,6 @@ export type CurrentUserSingleWorkoutStatQuery = {
   } | null
 }
 
-export type CurrentUserEnrollmentsQueryVariables = Exact<{
-  site: SiteEnum
-  params?: InputMaybe<CurrentUserEnrollmentsParams>
-}>
-
-export type CurrentUserEnrollmentsQuery = {
-  __typename: 'Query'
-  currentUserEnrollments: Array<{
-    __typename: 'Enrollment'
-    enrollmentInfo:
-      | {
-          __typename: 'EnrollmentInfo'
-          spotNumber?: number | null
-          id: string
-          enrollmentStatus: EnrollmentStatusEnum
-          enrollmentDateTime: any
-          enrollmentDateTimeWithNoTimeZone: any
-        }
-      | {
-          __typename: 'WaitlistEntry'
-          canBeTurnedIntoEnrollment: boolean
-          id: string
-          enrollmentStatus: EnrollmentStatusEnum
-          enrollmentDateTime: any
-          enrollmentDateTimeWithNoTimeZone: any
-        }
-    class: {
-      __typename: 'Class'
-      id: string
-      name: string
-      description: string
-      instructorName: string
-      start: any
-      startWithNoTimeZone: any
-      duration: number
-      waitListAvailable: boolean
-      showAsDisabled: boolean
-    }
-  }>
-}
-
 export type CurrentUserEnrollmentInClassQueryVariables = Exact<{
   classId: Scalars['ID']
 }>
@@ -1796,23 +1742,6 @@ export type CurrentUserEnrollmentInClassQuery = {
         }
       | null
   } | null
-}
-
-export type CurrentUserPurchasesQueryVariables = Exact<{
-  site: SiteEnum
-}>
-
-export type CurrentUserPurchasesQuery = {
-  __typename: 'Query'
-  currentUserPurchases?: Array<{
-    __typename: 'Purchase'
-    packageName: string
-    allowanceObtained: number
-    allowanceRemaining: number
-    paymentDateTime: any
-    activationDateTime: any
-    expirationDateTime: any
-  } | null> | null
 }
 
 export type CountriesQueryVariables = Exact<{ [key: string]: never }>
@@ -2596,6 +2525,16 @@ export type CalculateTotalForShoppingCartQuery = {
     | { __typename: 'ShoppingCartNotFound'; code: string }
 }
 
+export type PayfortFormMutationVariables = Exact<{
+  site: SiteEnum
+  input: PayfortFormInput
+}>
+
+export type PayfortFormMutation = {
+  __typename: 'Mutation'
+  payfortForm: { __typename: 'PayfortFormResult'; htmlForm: string }
+}
+
 export const SiteSettingsDocument = {
   kind: 'Document',
   definitions: [
@@ -2712,92 +2651,6 @@ export const CurrentUserDocument = {
     }
   ]
 } as unknown as DocumentNode<CurrentUserQuery, CurrentUserQueryVariables>
-export const CurrentUserWorkoutStatsDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'currentUserWorkoutStats' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
-          }
-        }
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'currentUserWorkoutStats' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'site' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
-              }
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'enrollment' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'enrollmentInfo' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                            {
-                              kind: 'InlineFragment',
-                              typeCondition: {
-                                kind: 'NamedType',
-                                name: { kind: 'Name', value: 'EnrollmentInfo' }
-                              },
-                              selectionSet: {
-                                kind: 'SelectionSet',
-                                selections: [
-                                  { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } }
-                                ]
-                              }
-                            }
-                          ]
-                        }
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'class' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'start' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'duration' } }
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                },
-                { kind: 'Field', name: { kind: 'Name', value: 'totalEnergy' } }
-              ]
-            }
-          }
-        ]
-      }
-    }
-  ]
-} as unknown as DocumentNode<CurrentUserWorkoutStatsQuery, CurrentUserWorkoutStatsQueryVariables>
 export const CurrentUserSingleWorkoutStatDocument = {
   kind: 'Document',
   definitions: [
@@ -2914,120 +2767,6 @@ export const CurrentUserSingleWorkoutStatDocument = {
   CurrentUserSingleWorkoutStatQuery,
   CurrentUserSingleWorkoutStatQueryVariables
 >
-export const CurrentUserEnrollmentsDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'currentUserEnrollments' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
-          }
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'params' } },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'CurrentUserEnrollmentsParams' } }
-        }
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'currentUserEnrollments' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'site' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'params' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'params' } }
-              }
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'enrollmentInfo' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'enrollmentStatus' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'enrollmentDateTime' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'enrollmentDateTimeWithNoTimeZone' }
-                      },
-                      {
-                        kind: 'InlineFragment',
-                        typeCondition: {
-                          kind: 'NamedType',
-                          name: { kind: 'Name', value: 'EnrollmentInfo' }
-                        },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } }
-                          ]
-                        }
-                      },
-                      {
-                        kind: 'InlineFragment',
-                        typeCondition: {
-                          kind: 'NamedType',
-                          name: { kind: 'Name', value: 'WaitlistEntry' }
-                        },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'canBeTurnedIntoEnrollment' }
-                            }
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'class' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'instructorName' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'start' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'startWithNoTimeZone' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'duration' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'waitListAvailable' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'showAsDisabled' } }
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
-    }
-  ]
-} as unknown as DocumentNode<CurrentUserEnrollmentsQuery, CurrentUserEnrollmentsQueryVariables>
 export const CurrentUserEnrollmentInClassDocument = {
   kind: 'Document',
   definitions: [
@@ -3097,53 +2836,6 @@ export const CurrentUserEnrollmentInClassDocument = {
   CurrentUserEnrollmentInClassQuery,
   CurrentUserEnrollmentInClassQueryVariables
 >
-export const CurrentUserPurchasesDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'currentUserPurchases' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
-          }
-        }
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'currentUserPurchases' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'site' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
-              }
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'packageName' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'allowanceObtained' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'allowanceRemaining' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'paymentDateTime' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'activationDateTime' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'expirationDateTime' } }
-              ]
-            }
-          }
-        ]
-      }
-    }
-  ]
-} as unknown as DocumentNode<CurrentUserPurchasesQuery, CurrentUserPurchasesQueryVariables>
 export const CountriesDocument = {
   kind: 'Document',
   definitions: [
@@ -6169,3 +5861,56 @@ export const CalculateTotalForShoppingCartDocument = {
   CalculateTotalForShoppingCartQuery,
   CalculateTotalForShoppingCartQueryVariables
 >
+export const PayfortFormDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'PayfortForm' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'PayfortFormInput' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'payfortForm' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'Field', name: { kind: 'Name', value: 'htmlForm' } }]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<PayfortFormMutation, PayfortFormMutationVariables>
