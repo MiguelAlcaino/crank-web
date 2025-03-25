@@ -10,7 +10,7 @@ export const useProducts = (apiService: ApiService) => {
   const products = ref<SellableProduct[]>([])
 
   onMounted(() => {
-    fetchUserCart()
+    fetchProducts()
   })
 
   const trialPackages = computed(() => {
@@ -33,7 +33,7 @@ export const useProducts = (apiService: ApiService) => {
     return products.value?.filter((item) => item.type === ClassPackageTypeEnum.Special) || []
   })
 
-  async function fetchUserCart() {
+  async function fetchProducts(): Promise<void> {
     hasError.value = false
     isLoading.value = true
 

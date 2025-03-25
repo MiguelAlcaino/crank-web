@@ -1,5 +1,7 @@
 import { gql } from '@apollo/client'
 import type {
+  AcceptLateCancelledSpotInClassInput,
+  AcceptLateCancelledSpotInClassResultUnion,
   BookClassInput,
   CalendarClassesParams,
   CancelEnrollmentInput,
@@ -15,8 +17,18 @@ import type {
   EditEnrollmentResultUnion,
   Enrollment,
   EnrollmentInfo,
-  Purchase,
+  IsSmsValidationCodeValidUnion,
+  ItemToShoppingCartInput,
+  PaginatedClassStats,
+  PaginatedEnrollments,
+  PaginatedPurchases,
+  PaginationInput,
+  PayfortFormInput,
+  PayfortFormResult,
+  ProductsInput,
   RegisterUserInput,
+  RejectLateBookingResultUnion,
+  RejectLateCancelledSpotInClassInput,
   RemoveCurrentUserFromWaitlistInput,
   RemoveUserFromWaitlistInput,
   RemoveUserFromWaitlistUnion,
@@ -24,28 +36,17 @@ import type {
   ResetPasswordForCurrentUserInput,
   ResetPasswordForCurrentUserUnion,
   ResetPasswordLinkResultUnion,
+  SellableProductInterface,
+  ShoppingCartResultUnion,
+  SimpleSiteUser,
+  Site,
   SiteEnum,
+  SmsValidationUnion,
   UpdateCurrentUserPasswordInput,
   User,
   UserInClassRanking,
-  UserInRankingParams,
   UserInput,
-  AcceptLateCancelledSpotInClassInput,
-  AcceptLateCancelledSpotInClassResultUnion,
-  RejectLateCancelledSpotInClassInput,
-  RejectLateBookingResultUnion,
-  SimpleSiteUser,
-  PaginationInput,
-  PaginatedEnrollments,
-  PaginatedClassStats,
-  PaginatedPurchases,
-  SmsValidationUnion,
-  IsSmsValidationCodeValidUnion,
-  Site,
-  ItemToShoppingCartInput,
-  ShoppingCartResultUnion,
-  ProductsInput,
-  SellableProductInterface
+  UserInRankingParams
 } from '@/gql/graphql'
 import { EnrollmentTypeEnum, type SiteSetting } from '@/gql/graphql'
 import { ApolloClient, ApolloError } from '@apollo/client/core'
@@ -134,39 +135,6 @@ export class ApiService {
     }
   }
 
-  async getCurrentUserWorkoutStats(site: SiteEnum): Promise<ClassStat[]> {
-    const query = gql`
-      query currentUserWorkoutStats($site: SiteEnum!) {
-        currentUserWorkoutStats(site: $site) {
-          enrollment {
-            enrollmentInfo {
-              id
-              ... on EnrollmentInfo {
-                spotNumber
-              }
-            }
-            class {
-              name
-              start
-              duration
-            }
-          }
-          totalEnergy
-        }
-      }
-    `
-
-    const queryResult = await this.authApiClient.query({
-      query: query,
-      variables: {
-        site: site
-      },
-      fetchPolicy: 'network-only'
-    })
-
-    return queryResult.data.currentUserWorkoutStats as ClassStat[]
-  }
-
   async currentUserSingleWorkoutStat(enrollmentId: string): Promise<ClassStat> {
     const query = gql`
       query currentUserSingleWorkoutStat($enrollmentId: ID!) {
@@ -212,52 +180,6 @@ export class ApiService {
     return queryResult.data.currentUserSingleWorkoutStat as ClassStat
   }
 
-  async getCurrentUserEnrollments(
-    site: SiteEnum,
-    params: CurrentUserEnrollmentsParams
-  ): Promise<Enrollment[]> {
-    const CURRENT_USER_ENROLLMENTS_QUERY = gql`
-      query currentUserEnrollments($site: SiteEnum!, $params: CurrentUserEnrollmentsParams) {
-        currentUserEnrollments(site: $site, params: $params) {
-          enrollmentInfo {
-            id
-            enrollmentStatus
-            enrollmentDateTime
-            enrollmentDateTimeWithNoTimeZone
-            ... on EnrollmentInfo {
-              spotNumber
-            }
-            ... on WaitlistEntry {
-              canBeTurnedIntoEnrollment
-            }
-          }
-          class {
-            id
-            name
-            description
-            instructorName
-            start
-            startWithNoTimeZone
-            duration
-            waitListAvailable
-            showAsDisabled
-          }
-        }
-      }
-    `
-
-    const queryResult = await this.authApiClient.query({
-      query: CURRENT_USER_ENROLLMENTS_QUERY,
-      variables: {
-        site: site,
-        params: params
-      },
-      fetchPolicy: 'network-only'
-    })
-
-    return queryResult.data.currentUserEnrollments as Enrollment[]
-  }
-
   async getCurrentUserEnrollmentInClass(classId: string): Promise<EnrollmentInfo | null> {
     const CURRENT_USER_ENROLLMENT_IN_CLASS_QUERY = gql`
       query currentUserEnrollmentInClass($classId: ID!) {
@@ -287,33 +209,6 @@ export class ApiService {
       return null
     } catch (error) {
       return null
-    }
-  }
-
-  async getCurrentUserPurchases(site: SiteEnum): Promise<Purchase[]> {
-    const CURRENT_USER_PURCHASES_QUERY = gql`
-      query currentUserPurchases($site: SiteEnum!) {
-        currentUserPurchases(site: $site) {
-          packageName
-          allowanceObtained
-          allowanceRemaining
-          paymentDateTime
-          activationDateTime
-          expirationDateTime
-        }
-      }
-    `
-    try {
-      const queryResult = await this.authApiClient.query({
-        query: CURRENT_USER_PURCHASES_QUERY,
-        variables: {
-          site: site
-        }
-      })
-
-      return queryResult.data.currentUserPurchases as Purchase[]
-    } catch (error) {
-      return []
     }
   }
 
@@ -1570,7 +1465,6 @@ export class ApiService {
     site: SiteEnum,
     shoppingCartItemId: string
   ): Promise<ShoppingCartResult> {
-    console.log('removeItemFromShoppingCart', shoppingCartItemId)
     const mutation = gql`
       mutation RemoveItemFromShoppingCart($site: SiteEnum!, $shoppingCartItemId: ID!) {
         removeItemFromShoppingCart(site: $site, shoppingCartItemId: $shoppingCartItemId) {
@@ -1726,8 +1620,8 @@ export class ApiService {
   }
 
   async calculateTotalForShoppingCart(site: SiteEnum): Promise<ShoppingCartResult> {
-    const mutation = gql`
-      mutation CalculateTotalForShoppingCart($site: SiteEnum!) {
+    const query = gql`
+      query CalculateTotalForShoppingCart($site: SiteEnum!) {
         calculateTotalForShoppingCart(site: $site) {
           ... on ShoppingCart {
             id
@@ -1770,8 +1664,8 @@ export class ApiService {
     `
 
     try {
-      const result = await this.authApiClient.mutate({
-        mutation: mutation,
+      const result = await this.authApiClient.query({
+        query: query,
         variables: {
           site: site
         },
@@ -1791,6 +1685,59 @@ export class ApiService {
     } catch (error) {
       console.log(error)
       return new ShoppingCartResult('UnknownError')
+    }
+  }
+
+  async getPayfortForm(
+    site: SiteEnum,
+    savePaymentCard: boolean,
+    deviceFingerprint: string,
+    merchantReference: string
+  ): Promise<string> {
+    const input = { savePaymentCard, deviceFingerprint, merchantReference } as PayfortFormInput
+
+    const mutation = gql`
+      mutation PayfortForm($site: SiteEnum!, $input: PayfortFormInput!) {
+        payfortForm(site: $site, input: $input) {
+          htmlForm
+        }
+      }
+    `
+
+    try {
+      const result = await this.authApiClient.mutate({
+        mutation: mutation,
+        variables: {
+          site: site,
+          input: input
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      const payfortForm = result.data.payfortForm as PayfortFormResult
+      return payfortForm.htmlForm
+    } catch (error) {
+      return ''
+    }
+  }
+
+  async generateMerchantReference(site: SiteEnum): Promise<string> {
+    const mutation = gql`
+      mutation GenerateMerchantReference($site: SiteEnum!) {
+        generateMerchantReference(site: $site)
+      }
+    `
+
+    try {
+      const { data } = await this.authApiClient.mutate({
+        mutation: mutation,
+        variables: { site },
+        fetchPolicy: 'network-only'
+      })
+
+      return data?.generateMerchantReference || ''
+    } catch (error) {
+      return ''
     }
   }
 }

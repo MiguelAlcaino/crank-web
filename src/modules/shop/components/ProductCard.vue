@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SellableProduct } from '../interfaces'
+import type { SellableProduct } from '../interfaces'
 import router from '@/router'
 
 const props = defineProps<{

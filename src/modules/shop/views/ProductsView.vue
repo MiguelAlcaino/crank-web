@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/apiService'
 import { useProducts } from '../composables/useProducts'
 import { inject } from 'vue'
 import { useShoppingCart } from '../composables/userShoppingCart'
