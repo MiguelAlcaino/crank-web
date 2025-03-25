@@ -312,7 +312,6 @@ function onChangeCountry() {
           class="custom-select"
           v-model="formData.gender"
           id="genderMyProfile"
-          placeholder="Gender"
           required
         >
           <option value="M">Male</option>

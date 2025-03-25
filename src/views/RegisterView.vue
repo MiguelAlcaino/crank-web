@@ -459,7 +459,6 @@ async function fetchSites() {
           class="custom-select"
           v-model="formData.gender"
           id="genderRegistration"
-          placeholder="Gender"
           required
         >
           <option value="M">Male</option>
