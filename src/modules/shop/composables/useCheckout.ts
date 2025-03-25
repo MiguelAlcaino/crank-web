@@ -76,6 +76,6 @@ export const useCheckout = (apiService: ApiService) => {
     // Methods
     payNow,
     getPayfortForm,
-    luhnCheck,
+    luhnCheck
   }
 }

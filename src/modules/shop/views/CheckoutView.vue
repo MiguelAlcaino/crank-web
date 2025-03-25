@@ -137,8 +137,6 @@ const validateForm = (): boolean => {
   return isValid
 }
 
-
-
 const handleSubmit = async () => {
   if (!validateForm()) {
     return
@@ -148,7 +146,6 @@ const handleSubmit = async () => {
 
   try {
     const fingerprintElement = document.getElementById(fingerprintInputId) as HTMLInputElement
-
 
     // Get HTML form as string
     let hiddenPayFormHtml = await getPayfortForm(fingerprintElement.value)
