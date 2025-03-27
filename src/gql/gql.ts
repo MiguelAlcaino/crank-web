@@ -97,8 +97,10 @@ const documents = {
     types.CalculateTotalForShoppingCartDocument,
   '\n      mutation PayfortForm($site: SiteEnum!, $input: PayfortFormInput!) {\n        payfortForm(site: $site, input: $input) {\n          htmlForm\n        }\n      }\n    ':
     types.PayfortFormDocument,
-  '\n        mutation PayfortForm($site: SiteEnum!, $input: PayfortFormInput!) {\n            payfortForm(site: $site, input: $input) {\n                htmlForm\n            }\n        }\n    ':
-    types.PayfortFormDocument
+  '\n      mutation GenerateMerchantReference($site: SiteEnum!) {\n        generateMerchantReference(site: $site)\n      }\n    ':
+    types.GenerateMerchantReferenceDocument,
+  '\n      query PaymentTransactionStatus($input: PaymentTransactionStatusInput) {\n        paymentTransactionStatus(input: $input) {\n          ... on PaymentTransactionStatus {\n            status\n          }\n          ... on TemporalTransactionNotFound {\n            code\n          }\n        }\n      }\n    ':
+    types.PaymentTransactionStatusDocument
 }
 
 /**
@@ -371,8 +373,14 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: '\n        mutation PayfortForm($site: SiteEnum!, $input: PayfortFormInput!) {\n            payfortForm(site: $site, input: $input) {\n                htmlForm\n            }\n        }\n    '
-): (typeof documents)['\n        mutation PayfortForm($site: SiteEnum!, $input: PayfortFormInput!) {\n            payfortForm(site: $site, input: $input) {\n                htmlForm\n            }\n        }\n    ']
+  source: '\n      mutation GenerateMerchantReference($site: SiteEnum!) {\n        generateMerchantReference(site: $site)\n      }\n    '
+): (typeof documents)['\n      mutation GenerateMerchantReference($site: SiteEnum!) {\n        generateMerchantReference(site: $site)\n      }\n    ']
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n      query PaymentTransactionStatus($input: PaymentTransactionStatusInput) {\n        paymentTransactionStatus(input: $input) {\n          ... on PaymentTransactionStatus {\n            status\n          }\n          ... on TemporalTransactionNotFound {\n            code\n          }\n        }\n      }\n    '
+): (typeof documents)['\n      query PaymentTransactionStatus($input: PaymentTransactionStatusInput) {\n        paymentTransactionStatus(input: $input) {\n          ... on PaymentTransactionStatus {\n            status\n          }\n          ... on TemporalTransactionNotFound {\n            code\n          }\n        }\n      }\n    ']
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {}

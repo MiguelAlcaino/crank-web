@@ -350,6 +350,16 @@ export type DisableEnableSpotResult = {
 
 export type DisableEnableSpotResultUnion = DisableEnableSpotResult | SpotNotFoundError
 
+export type DiscountCodeIsEmpty = Error & {
+  __typename: 'DiscountCodeIsEmpty'
+  code: Scalars['String']
+}
+
+export type DiscountCodeIsInvalid = Error & {
+  __typename: 'DiscountCodeIsInvalid'
+  code: Scalars['String']
+}
+
 export type DistanceChallenge = ChallengeInterface & {
   __typename: 'DistanceChallenge'
   challengeDisplay: ChallengeDisplay
@@ -576,7 +586,7 @@ export type Mutation = {
   /** Adds a new device token to be used for device notifications */
   addDeviceTokenToCurrentUser?: Maybe<Scalars['Boolean']>
   /** Allows to add a discount code code to a shopping cart for current user */
-  addDiscountCodeToShoppingCart: Scalars['Boolean']
+  addDiscountCodeToShoppingCart: ShoppingCartResultUnion
   /** Allows to add a giftcard code to a shopping cart for current user */
   addGiftCardCodeToShoppingCart: Scalars['Boolean']
   /** Allows to add item to shopping cart */
@@ -627,6 +637,8 @@ export type Mutation = {
   removeAdminUser: Scalars['Boolean']
   /** Removes the current user's waitlist entry from a class */
   removeCurrentUserFromWaitlist?: Maybe<RemoveCurrentUserFromWaitlistUnion>
+  /** Remove discount code from current shopping cart */
+  removeDiscountCodeForCurrentShoppingCart: ShoppingCartResultUnion
   /** Remove Item from shopping cart */
   removeItemFromShoppingCart: ShoppingCartResultUnion
   /** Removes a user from a class */
@@ -691,6 +703,7 @@ export type MutationAddDeviceTokenToCurrentUserArgs = {
 
 export type MutationAddDiscountCodeToShoppingCartArgs = {
   discountCode: Scalars['String']
+  site: SiteEnum
 }
 
 export type MutationAddGiftCardCodeToShoppingCartArgs = {
@@ -807,6 +820,10 @@ export type MutationRemoveAdminUserArgs = {
 
 export type MutationRemoveCurrentUserFromWaitlistArgs = {
   input: RemoveCurrentUserFromWaitlistInput
+  site: SiteEnum
+}
+
+export type MutationRemoveDiscountCodeForCurrentShoppingCartArgs = {
   site: SiteEnum
 }
 
@@ -963,6 +980,24 @@ export type PaymentRequiredError = Error & {
   code: Scalars['String']
 }
 
+export type PaymentTransactionStatus = {
+  __typename: 'PaymentTransactionStatus'
+  status: PaymentTransactionStatusEnum
+}
+
+export enum PaymentTransactionStatusEnum {
+  Refunded = 'refunded',
+  Rejected = 'rejected',
+  Successful = 'successful',
+  WaitingConfirmation = 'waitingConfirmation'
+}
+
+export type PaymentTransactionStatusInput = {
+  merchantReference: Scalars['ID']
+}
+
+export type PaymentTransactionUnion = PaymentTransactionStatus | TemporalTransactionNotFound
+
 export type PositionAlreadyTakenError = Error & {
   __typename: 'PositionAlreadyTakenError'
   code: Scalars['String']
@@ -1023,7 +1058,7 @@ export type Query = {
   availableInstructors: Array<Instructor>
   /** Returns a list of all the available sites */
   availableSites?: Maybe<Array<Site>>
-  /** return the total for the current shoppingCart for the current user */
+  /** Return the total for the current shoppingCart for the current user */
   calculateTotalForShoppingCart: ShoppingCartResultUnion
   /** Get next classes */
   calendarClasses: Array<Class>
@@ -1064,6 +1099,8 @@ export type Query = {
   giftCards: Array<GiftCard>
   /** Verifies whether an sms validation code is valid */
   isSMSValidationCodeValid?: Maybe<IsSmsValidationCodeValidUnion>
+  /** Allows to get the status of a transaction  */
+  paymentTransactionStatus: PaymentTransactionUnion
   /** Returns a list of available products for a specific site */
   products: Array<SellableProductInterface>
   /** Returns a specific room layout */
@@ -1157,6 +1194,10 @@ export type QueryCurrentUserWorkoutStatsPaginatedArgs = {
 
 export type QueryIsSmsValidationCodeValidArgs = {
   smsCode: Scalars['String']
+}
+
+export type QueryPaymentTransactionStatusArgs = {
+  input?: InputMaybe<PaymentTransactionStatusInput>
 }
 
 export type QueryProductsArgs = {
@@ -1392,6 +1433,8 @@ export type ShoppingCartNotFound = Error & {
 }
 
 export type ShoppingCartResultUnion =
+  | DiscountCodeIsEmpty
+  | DiscountCodeIsInvalid
   | ProductNotFound
   | ShoppingCart
   | ShoppingCartIsEmpty
@@ -1468,6 +1511,11 @@ export type SwapSpotSuccess = {
   __typename: 'SwapSpotSuccess'
   affectedEnrollment?: Maybe<EnrollmentInfoInterface>
   selectedEnrollment: EnrollmentInfoInterface
+}
+
+export type TemporalTransactionNotFound = Error & {
+  __typename: 'TemporalTransactionNotFound'
+  code: Scalars['String']
 }
 
 export type TooManyResetPasswordLinkRequestsError = Error & {
@@ -2366,6 +2414,8 @@ export type AddItemToShoppingCartMutationVariables = Exact<{
 export type AddItemToShoppingCartMutation = {
   __typename: 'Mutation'
   addItemToShoppingCart:
+    | { __typename: 'DiscountCodeIsEmpty' }
+    | { __typename: 'DiscountCodeIsInvalid' }
     | { __typename: 'ProductNotFound'; code: string }
     | {
         __typename: 'ShoppingCart'
@@ -2408,6 +2458,8 @@ export type RemoveItemFromShoppingCartMutationVariables = Exact<{
 export type RemoveItemFromShoppingCartMutation = {
   __typename: 'Mutation'
   removeItemFromShoppingCart:
+    | { __typename: 'DiscountCodeIsEmpty' }
+    | { __typename: 'DiscountCodeIsInvalid' }
     | { __typename: 'ProductNotFound'; code: string }
     | {
         __typename: 'ShoppingCart'
@@ -2450,6 +2502,8 @@ export type UpdateItemInShoppingCartMutationVariables = Exact<{
 export type UpdateItemInShoppingCartMutation = {
   __typename: 'Mutation'
   updateItemInShoppingCart:
+    | { __typename: 'DiscountCodeIsEmpty' }
+    | { __typename: 'DiscountCodeIsInvalid' }
     | { __typename: 'ProductNotFound'; code: string }
     | {
         __typename: 'ShoppingCart'
@@ -2491,6 +2545,8 @@ export type CalculateTotalForShoppingCartQueryVariables = Exact<{
 export type CalculateTotalForShoppingCartQuery = {
   __typename: 'Query'
   calculateTotalForShoppingCart:
+    | { __typename: 'DiscountCodeIsEmpty' }
+    | { __typename: 'DiscountCodeIsInvalid' }
     | { __typename: 'ProductNotFound'; code: string }
     | {
         __typename: 'ShoppingCart'
@@ -2533,6 +2589,26 @@ export type PayfortFormMutationVariables = Exact<{
 export type PayfortFormMutation = {
   __typename: 'Mutation'
   payfortForm: { __typename: 'PayfortFormResult'; htmlForm: string }
+}
+
+export type GenerateMerchantReferenceMutationVariables = Exact<{
+  site: SiteEnum
+}>
+
+export type GenerateMerchantReferenceMutation = {
+  __typename: 'Mutation'
+  generateMerchantReference: string
+}
+
+export type PaymentTransactionStatusQueryVariables = Exact<{
+  input?: InputMaybe<PaymentTransactionStatusInput>
+}>
+
+export type PaymentTransactionStatusQuery = {
+  __typename: 'Query'
+  paymentTransactionStatus:
+    | { __typename: 'PaymentTransactionStatus'; status: PaymentTransactionStatusEnum }
+    | { __typename: 'TemporalTransactionNotFound'; code: string }
 }
 
 export const SiteSettingsDocument = {
@@ -5914,3 +5990,105 @@ export const PayfortFormDocument = {
     }
   ]
 } as unknown as DocumentNode<PayfortFormMutation, PayfortFormMutationVariables>
+export const GenerateMerchantReferenceDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'GenerateMerchantReference' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'generateMerchantReference' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  GenerateMerchantReferenceMutation,
+  GenerateMerchantReferenceMutationVariables
+>
+export const PaymentTransactionStatusDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'PaymentTransactionStatus' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NamedType',
+            name: { kind: 'Name', value: 'PaymentTransactionStatusInput' }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'paymentTransactionStatus' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'PaymentTransactionStatus' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'status' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'TemporalTransactionNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<PaymentTransactionStatusQuery, PaymentTransactionStatusQueryVariables>
