@@ -1404,4 +1404,39 @@ export class ApiService {
       return []
     }
   }
+
+  async getCurrentUserSitesWithNames(): Promise<Site[]> {
+    const query = gql`
+      query CurrentUserSites {
+        currentUser {
+          siteUsers {
+            site
+          }
+        }
+        availableSites {
+          name
+          code
+        }
+      }
+    `
+    try {
+      const queryResult = await this.authApiClient.query({
+        query: query,
+        fetchPolicy: 'no-cache'
+      })
+
+      const availableSites = queryResult.data.availableSites as Site[]
+      const currentUser = queryResult.data.currentUser as User
+
+      const sites: Site[] = []
+      currentUser.siteUsers.forEach((siteUser: SimpleSiteUser) => {
+        const site = availableSites.find((site: Site) => site.code === siteUser.site)
+        if (site) sites.push(site)
+      })
+
+      return sites
+    } catch (error) {
+      return []
+    }
+  }
 }
