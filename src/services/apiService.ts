@@ -25,6 +25,8 @@ import type {
   PaginationInput,
   PayfortFormInput,
   PayfortFormResult,
+  PaymentTransactionStatusInput,
+  PaymentTransactionUnion,
   ProductsInput,
   RegisterUserInput,
   RejectLateBookingResultUnion,
@@ -55,6 +57,7 @@ import { SmsValidationResponse } from '@/modules/buy_packages/models/sms-validat
 import { IsSmsValidationCodeValidResponse } from '@/modules/buy_packages/models/is-sms-validation-code-valid-response'
 import { ShoppingCartResult } from '@/modules/shop/interfaces/shopping-cart-result'
 import type { ShoppingCart } from '@/modules/shop/interfaces'
+import { PaymentTransactionResponse } from '@/modules/shop/models/payment-transaction-response'
 
 export class ApiService {
   authApiClient: ApolloClient<any>
@@ -1773,6 +1776,44 @@ export class ApiService {
       return sites
     } catch (error) {
       return []
+    }
+  }
+
+  async paymentTransactionStatus(merchantReference: string): Promise<PaymentTransactionResponse> {
+    const input = { merchantReference } as PaymentTransactionStatusInput
+
+    const query = gql`
+      query PaymentTransactionStatus($input: PaymentTransactionStatusInput) {
+        paymentTransactionStatus(input: $input) {
+          ... on PaymentTransactionStatus {
+            status
+          }
+          ... on TemporalTransactionNotFound {
+            code
+          }
+        }
+      }
+    `
+
+    try {
+      const result = await this.authApiClient.query({
+        query: query,
+        variables: { input },
+        fetchPolicy: 'network-only'
+      })
+
+      const paymentTransaction = result.data.PaymentTransactionStatus as PaymentTransactionUnion
+
+      if (paymentTransaction.__typename === 'PaymentTransactionStatus') {
+        return new PaymentTransactionResponse(
+          paymentTransaction.__typename,
+          paymentTransaction.status
+        )
+      } else {
+        return new PaymentTransactionResponse(paymentTransaction.__typename)
+      }
+    } catch (error) {
+      return new PaymentTransactionResponse('UnknownError')
     }
   }
 }
