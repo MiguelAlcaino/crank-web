@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { SiteEnum } from '@/modules/shared/interfaces/site.enum'
+import type { Site } from '@/modules/shared/interfaces/site'
+import type { SiteEnum } from '@/modules/shared/interfaces/site.enum'
 import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
 import { inject, onMounted, ref } from 'vue'
@@ -14,7 +15,7 @@ const emits = defineEmits<{
   (e: 'afterChangingSite'): void
 }>()
 
-const sites = ref<SiteEnum[]>([])
+const sites = ref<Site[]>([])
 
 const selectedSite = ref<SiteEnum>(appStore().site)
 
@@ -23,7 +24,7 @@ onMounted(() => {
 })
 
 async function getAvailableSites() {
-  sites.value = await apiService.getCurrentUserSites()
+  sites.value = await apiService.getCurrentUserSitesWithNames()
 }
 
 function onChangeSite() {
@@ -42,16 +43,8 @@ function onChangeSite() {
     :disabled="disabled"
     v-if="sites.length > 1"
   >
-    <option v-for="(item, index) in sites" :key="index" :value="item">
-      {{
-        item === SiteEnum.AbuDhabi
-          ? 'Abu Dhabi'
-          : item === SiteEnum.Dubai
-          ? 'Dubai'
-          : SiteEnum.TownSquare
-          ? 'Town Square'
-          : item
-      }}
+    <option v-for="(item, index) in sites" :key="index" :value="item.code">
+      {{ item.name }}
     </option>
   </select>
 </template>
