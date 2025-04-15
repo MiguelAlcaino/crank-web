@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { ShoppingCartItem } from '../interfaces'
+import type { ShoppingCartItem } from '../interfaces'
 import ProductNumberInput from './ProductNumberInput.vue'
-import { formatPrice } from '@/utils/utility-functions'
+import { formatPrice } from '../utils/shop-utils'
 
 const props = defineProps<{
   shoppingCartItem: ShoppingCartItem
