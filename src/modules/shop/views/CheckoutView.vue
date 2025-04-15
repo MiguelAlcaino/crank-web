@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { reactive, ref, computed, inject } from 'vue'
-import FingerprintHiddenInput from '@/modules/shop/components/FingerprintHiddenInput.vue'
+
 import type { ApiService } from '@/services/apiService'
 import type { CardData } from '@/modules/shop/interfaces/card-data'
 import { useCheckout } from '@/modules/shop/composables/useCheckout'
+import { luhnCheck, convertDateFormat } from '@/modules/shop/utils/shop-utils'
+import FingerprintHiddenInput from '@/modules/shop/components/FingerprintHiddenInput.vue'
 
 const apiService = inject<ApiService>('gqlApiService')!
-const { getPayfortForm, luhnCheck } = useCheckout(apiService)
+const { getPayfortForm } = useCheckout(apiService)
 
 const fingerprintInputId = 'device_fingerprint'
 
@@ -215,16 +217,10 @@ const handleSubmit = async () => {
     isSubmitting.value = false
   }
 }
-
-const convertDateFormat = (dateString: string): string => {
-  const [month, year] = dateString.split('/')
-  return year + month
-}
 </script>
 
 <template>
   <div class="payment-form-container mt-3">
-    <FingerprintHiddenInput :input-id="fingerprintInputId" />
     <h2>Payment Form</h2>
     <form @submit.prevent="handleSubmit" class="payment-form">
       <div class="form-group">
@@ -296,6 +292,7 @@ const convertDateFormat = (dateString: string): string => {
         {{ isSubmitting ? 'Processing...' : 'Pay' }}
       </button>
     </form>
+    <FingerprintHiddenInput :input-id="fingerprintInputId" />
   </div>
 </template>
 

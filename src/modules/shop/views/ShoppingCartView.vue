@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import { ApiService } from '@/services/apiService'
-import ShoppingCartItem from '../components/ShoppingCartItem.vue'
 import { inject, ref } from 'vue'
+
+import type { ApiService } from '@/services/apiService'
+import ShoppingCartItem from '../components/ShoppingCartItem.vue'
 import { useShoppingCart } from '../composables/userShoppingCart'
 import router from '@/router'
 
+const apiService = inject<ApiService>('gqlApiService')!
+
 const { shoppingCart, removeFromCart, updateItemInShoppingCart, calculatedSubtotal } =
-  useShoppingCart(inject<ApiService>('gqlApiService')!)
+  useShoppingCart(apiService)
 
 const emit = defineEmits(['update:modelValue', 'removeItem'])
 

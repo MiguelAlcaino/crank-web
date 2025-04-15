@@ -308,12 +308,7 @@ function onChangeCountry() {
     <div class="form-row">
       <div class="col-md-6 mb-3">
         <label for="genderMyProfile" class="input-label">Gender *</label>
-        <select
-          class="custom-select"
-          v-model="formData.gender"
-          id="genderMyProfile"
-          required
-        >
+        <select class="custom-select" v-model="formData.gender" id="genderMyProfile" required>
           <option value="M">Male</option>
           <option value="F">Female</option>
         </select>

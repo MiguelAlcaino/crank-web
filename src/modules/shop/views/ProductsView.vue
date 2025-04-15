@@ -9,15 +9,8 @@ import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIn
 
 const apiService = inject<ApiService>('gqlApiService')!
 
-const {
-  isLoading,
-  hasError,
-  memberships,
-  regularPackages,
-  specialPackages,
-  trialPackages,
-  vodPackages
-} = useProducts(apiService)
+const { isLoading, hasError, memberships, regularPackages, trialPackages, vodPackages } =
+  useProducts(apiService)
 const { productIdsInCart, addToCart } = useShoppingCart(apiService)
 </script>
 
@@ -116,7 +109,11 @@ const { productIdsInCart, addToCart } = useShoppingCart(apiService)
       <div class="text-center">
         <small>We accept payments online using Visa and MasterCard credit/debit card in AED</small>
         <br />
-        <img style="max-height: 50px" src="../../../assets/images/cards_accepted_white2.png" />
+        <img
+          style="max-height: 50px"
+          src="../../../assets/images/cards_accepted_white2.png"
+          alt="Cards Accepted"
+        />
       </div>
     </div>
   </div>

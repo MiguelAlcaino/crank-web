@@ -2,7 +2,7 @@ import { computed, onMounted, readonly, ref } from 'vue'
 import { appStore } from '@/stores/appStorage'
 import type { ApiService } from '@/services/apiService'
 import type { ShoppingCart } from '../interfaces'
-import { formatPrice } from '@/utils/utility-functions'
+import { formatPrice } from '../utils/shop-utils'
 
 const shoppingCart = ref<ShoppingCart | null>(null)
 

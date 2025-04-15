@@ -1,7 +1,6 @@
 import type { ApiService } from '@/services/apiService'
 import { onMounted, readonly, ref } from 'vue'
 import { appStore } from '@/stores/appStorage'
-import type { CardData } from '@/modules/shop/interfaces/card-data'
 
 export const useCheckout = (apiService: ApiService) => {
   const hasError = ref<boolean>(false)
@@ -44,29 +43,6 @@ export const useCheckout = (apiService: ApiService) => {
     }
   }
 
-  // Luhn algorithm for card number validation
-  const luhnCheck = (cardNumber: string): boolean => {
-    let sum = 0
-    let shouldDouble = false
-
-    // Loop through values starting from the rightmost digit
-    for (let i = cardNumber.length - 1; i >= 0; i--) {
-      let digit = parseInt(cardNumber.charAt(i))
-
-      if (shouldDouble) {
-        digit *= 2
-        if (digit > 9) {
-          digit -= 9
-        }
-      }
-
-      sum += digit
-      shouldDouble = !shouldDouble
-    }
-
-    return sum % 10 === 0
-  }
-
   return {
     // Properties
     isLoading: readonly(isLoading),
@@ -75,7 +51,6 @@ export const useCheckout = (apiService: ApiService) => {
 
     // Methods
     payNow,
-    getPayfortForm,
-    luhnCheck
+    getPayfortForm
   }
 }

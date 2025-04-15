@@ -3,10 +3,12 @@ import type { ShoppingCart } from './shopping-cart'
 
 export class ShoppingCartResult {
   code:
+    | 'DiscountCodeIsEmpty'
+    | 'DiscountCodeIsInvalid'
+    | 'ProductNotFound'
     | 'ShoppingCart'
     | 'ShoppingCartIsEmpty'
     | 'ShoppingCartItemNotFound'
-    | 'ProductNotFound'
     | 'ShoppingCartNotFound'
     | 'UnknownError'
 
@@ -14,10 +16,12 @@ export class ShoppingCartResult {
 
   constructor(
     typeName:
+      | 'DiscountCodeIsEmpty'
+      | 'DiscountCodeIsInvalid'
+      | 'ProductNotFound'
       | 'ShoppingCart'
       | 'ShoppingCartIsEmpty'
       | 'ShoppingCartItemNotFound'
-      | 'ProductNotFound'
       | 'ShoppingCartNotFound'
       | 'UnknownError',
     shoppingCart?: ShoppingCart
