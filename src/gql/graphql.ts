@@ -506,15 +506,26 @@ export type GenderRanking = {
   ranking?: Maybe<UserRanking>
 }
 
-export type GiftCard = {
+export type GiftCard = SellableProductInterface & {
   __typename: 'GiftCard'
+  alertBeforePurchasing?: Maybe<ProductAlertBeforePurchasing>
+  buttonText?: Maybe<Scalars['String']>
+  currency: Scalars['String']
+  /** @deprecated Use title instead */
   description: Scalars['String']
+  /** @deprecated Use price instead */
   grandTotal: Scalars['Float']
   id: Scalars['ID']
+  isVisible: Scalars['Boolean']
+  price: Scalars['Float']
   purchaseUrl: Scalars['String']
+  /** @deprecated Use price instead */
   salePrice: Scalars['Float']
   site: Site
+  subtitle?: Maybe<Scalars['String']>
+  /** @deprecated Use alertBeforePurchasing instead */
   terms: Scalars['String']
+  title: Scalars['String']
 }
 
 export type IconPosition = ClassPositionInterface & {
@@ -625,6 +636,8 @@ export type Mutation = {
   enableSpot?: Maybe<DisableEnableSpotResultUnion>
   /** Generate a unique Merchant Reference */
   generateMerchantReference: Scalars['ID']
+  /** To lock the shoppingcart when the user is in the payment process */
+  lockShoppingCart: Scalars['Boolean']
   /** Returns the html of a payment form to be used to pay */
   payfortForm: PayfortFormResult
   /** Registers a new user and returns an IdentifiableUser type */
@@ -791,6 +804,10 @@ export type MutationEnableSpotArgs = {
 }
 
 export type MutationGenerateMerchantReferenceArgs = {
+  site: SiteEnum
+}
+
+export type MutationLockShoppingCartArgs = {
   site: SiteEnum
 }
 
@@ -2355,21 +2372,37 @@ export type ProductsQueryVariables = Exact<{
 
 export type ProductsQuery = {
   __typename: 'Query'
-  products: Array<{
-    __typename: 'ClassPackageProduct'
-    type?: ClassPackageTypeEnum | null
-    id: string
-    title: string
-    subtitle?: string | null
-    currency: string
-    buttonText?: string | null
-    price: number
-    alertBeforePurchasing?: {
-      __typename: 'ProductAlertBeforePurchasing'
-      title: string
-      description: string
-    } | null
-  }>
+  products: Array<
+    | {
+        __typename: 'ClassPackageProduct'
+        type?: ClassPackageTypeEnum | null
+        id: string
+        title: string
+        subtitle?: string | null
+        currency: string
+        buttonText?: string | null
+        price: number
+        alertBeforePurchasing?: {
+          __typename: 'ProductAlertBeforePurchasing'
+          title: string
+          description: string
+        } | null
+      }
+    | {
+        __typename: 'GiftCard'
+        id: string
+        title: string
+        subtitle?: string | null
+        currency: string
+        buttonText?: string | null
+        price: number
+        alertBeforePurchasing?: {
+          __typename: 'ProductAlertBeforePurchasing'
+          title: string
+          description: string
+        } | null
+      }
+  >
 }
 
 export type CurrentUserShoppingCartQueryVariables = Exact<{
@@ -2393,14 +2426,23 @@ export type CurrentUserShoppingCartQuery = {
         id: string
         quantity: number
         subtotal?: number | null
-        product: {
-          __typename: 'ClassPackageProduct'
-          currency: string
-          price: number
-          buttonText?: string | null
-          title: string
-          id: string
-        }
+        product:
+          | {
+              __typename: 'ClassPackageProduct'
+              currency: string
+              price: number
+              buttonText?: string | null
+              title: string
+              id: string
+            }
+          | {
+              __typename: 'GiftCard'
+              currency: string
+              price: number
+              buttonText?: string | null
+              title: string
+              id: string
+            }
       }>
     }
   } | null
@@ -2430,19 +2472,33 @@ export type AddItemToShoppingCartMutation = {
           id: string
           quantity: number
           subtotal?: number | null
-          product: {
-            __typename: 'ClassPackageProduct'
-            currency: string
-            price: number
-            buttonText?: string | null
-            title: string
-            id: string
-            alertBeforePurchasing?: {
-              __typename: 'ProductAlertBeforePurchasing'
-              title: string
-              description: string
-            } | null
-          }
+          product:
+            | {
+                __typename: 'ClassPackageProduct'
+                currency: string
+                price: number
+                buttonText?: string | null
+                title: string
+                id: string
+                alertBeforePurchasing?: {
+                  __typename: 'ProductAlertBeforePurchasing'
+                  title: string
+                  description: string
+                } | null
+              }
+            | {
+                __typename: 'GiftCard'
+                currency: string
+                price: number
+                buttonText?: string | null
+                title: string
+                id: string
+                alertBeforePurchasing?: {
+                  __typename: 'ProductAlertBeforePurchasing'
+                  title: string
+                  description: string
+                } | null
+              }
         }>
       }
     | { __typename: 'ShoppingCartIsEmpty'; code: string }
@@ -2474,19 +2530,33 @@ export type RemoveItemFromShoppingCartMutation = {
           id: string
           quantity: number
           subtotal?: number | null
-          product: {
-            __typename: 'ClassPackageProduct'
-            currency: string
-            price: number
-            buttonText?: string | null
-            title: string
-            id: string
-            alertBeforePurchasing?: {
-              __typename: 'ProductAlertBeforePurchasing'
-              title: string
-              description: string
-            } | null
-          }
+          product:
+            | {
+                __typename: 'ClassPackageProduct'
+                currency: string
+                price: number
+                buttonText?: string | null
+                title: string
+                id: string
+                alertBeforePurchasing?: {
+                  __typename: 'ProductAlertBeforePurchasing'
+                  title: string
+                  description: string
+                } | null
+              }
+            | {
+                __typename: 'GiftCard'
+                currency: string
+                price: number
+                buttonText?: string | null
+                title: string
+                id: string
+                alertBeforePurchasing?: {
+                  __typename: 'ProductAlertBeforePurchasing'
+                  title: string
+                  description: string
+                } | null
+              }
         }>
       }
     | { __typename: 'ShoppingCartIsEmpty'; code: string }
@@ -2518,19 +2588,33 @@ export type UpdateItemInShoppingCartMutation = {
           id: string
           quantity: number
           subtotal?: number | null
-          product: {
-            __typename: 'ClassPackageProduct'
-            currency: string
-            price: number
-            buttonText?: string | null
-            title: string
-            id: string
-            alertBeforePurchasing?: {
-              __typename: 'ProductAlertBeforePurchasing'
-              title: string
-              description: string
-            } | null
-          }
+          product:
+            | {
+                __typename: 'ClassPackageProduct'
+                currency: string
+                price: number
+                buttonText?: string | null
+                title: string
+                id: string
+                alertBeforePurchasing?: {
+                  __typename: 'ProductAlertBeforePurchasing'
+                  title: string
+                  description: string
+                } | null
+              }
+            | {
+                __typename: 'GiftCard'
+                currency: string
+                price: number
+                buttonText?: string | null
+                title: string
+                id: string
+                alertBeforePurchasing?: {
+                  __typename: 'ProductAlertBeforePurchasing'
+                  title: string
+                  description: string
+                } | null
+              }
         }>
       }
     | { __typename: 'ShoppingCartIsEmpty'; code: string }
@@ -2561,19 +2645,33 @@ export type CalculateTotalForShoppingCartQuery = {
           id: string
           quantity: number
           subtotal?: number | null
-          product: {
-            __typename: 'ClassPackageProduct'
-            currency: string
-            price: number
-            buttonText?: string | null
-            title: string
-            id: string
-            alertBeforePurchasing?: {
-              __typename: 'ProductAlertBeforePurchasing'
-              title: string
-              description: string
-            } | null
-          }
+          product:
+            | {
+                __typename: 'ClassPackageProduct'
+                currency: string
+                price: number
+                buttonText?: string | null
+                title: string
+                id: string
+                alertBeforePurchasing?: {
+                  __typename: 'ProductAlertBeforePurchasing'
+                  title: string
+                  description: string
+                } | null
+              }
+            | {
+                __typename: 'GiftCard'
+                currency: string
+                price: number
+                buttonText?: string | null
+                title: string
+                id: string
+                alertBeforePurchasing?: {
+                  __typename: 'ProductAlertBeforePurchasing'
+                  title: string
+                  description: string
+                } | null
+              }
         }>
       }
     | { __typename: 'ShoppingCartIsEmpty'; code: string }
@@ -2598,6 +2696,17 @@ export type GenerateMerchantReferenceMutationVariables = Exact<{
 export type GenerateMerchantReferenceMutation = {
   __typename: 'Mutation'
   generateMerchantReference: string
+}
+
+export type CurrentUserSitesQueryVariables = Exact<{ [key: string]: never }>
+
+export type CurrentUserSitesQuery = {
+  __typename: 'Query'
+  currentUser?: {
+    __typename: 'User'
+    siteUsers: Array<{ __typename: 'SimpleSiteUser'; site: SiteEnum }>
+  } | null
+  availableSites?: Array<{ __typename: 'Site'; name: string; code: SiteEnum }> | null
 }
 
 export type PaymentTransactionStatusQueryVariables = Exact<{
@@ -6029,6 +6138,49 @@ export const GenerateMerchantReferenceDocument = {
   GenerateMerchantReferenceMutation,
   GenerateMerchantReferenceMutationVariables
 >
+export const CurrentUserSitesDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'CurrentUserSites' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentUser' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'siteUsers' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'site' } }]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'availableSites' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'code' } }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<CurrentUserSitesQuery, CurrentUserSitesQueryVariables>
 export const PaymentTransactionStatusDocument = {
   kind: 'Document',
   definitions: [

@@ -99,6 +99,8 @@ const documents = {
     types.PayfortFormDocument,
   '\n      mutation GenerateMerchantReference($site: SiteEnum!) {\n        generateMerchantReference(site: $site)\n      }\n    ':
     types.GenerateMerchantReferenceDocument,
+  '\n      query CurrentUserSites {\n        currentUser {\n          siteUsers {\n            site\n          }\n        }\n        availableSites {\n          name\n          code\n        }\n      }\n    ':
+    types.CurrentUserSitesDocument,
   '\n      query PaymentTransactionStatus($input: PaymentTransactionStatusInput) {\n        paymentTransactionStatus(input: $input) {\n          ... on PaymentTransactionStatus {\n            status\n          }\n          ... on TemporalTransactionNotFound {\n            code\n          }\n        }\n      }\n    ':
     types.PaymentTransactionStatusDocument
 }
@@ -375,6 +377,12 @@ export function graphql(
 export function graphql(
   source: '\n      mutation GenerateMerchantReference($site: SiteEnum!) {\n        generateMerchantReference(site: $site)\n      }\n    '
 ): (typeof documents)['\n      mutation GenerateMerchantReference($site: SiteEnum!) {\n        generateMerchantReference(site: $site)\n      }\n    ']
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n      query CurrentUserSites {\n        currentUser {\n          siteUsers {\n            site\n          }\n        }\n        availableSites {\n          name\n          code\n        }\n      }\n    '
+): (typeof documents)['\n      query CurrentUserSites {\n        currentUser {\n          siteUsers {\n            site\n          }\n        }\n        availableSites {\n          name\n          code\n        }\n      }\n    ']
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
