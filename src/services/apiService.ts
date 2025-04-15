@@ -1746,7 +1746,7 @@ export class ApiService {
 
   async getCurrentUserSitesWithNames(): Promise<Site[]> {
     const query = gql`
-      query CurrentUserSites {
+      query CurrentUserSitesWithNames {
         currentUser {
           siteUsers {
             site

@@ -2698,9 +2698,9 @@ export type GenerateMerchantReferenceMutation = {
   generateMerchantReference: string
 }
 
-export type CurrentUserSitesQueryVariables = Exact<{ [key: string]: never }>
+export type CurrentUserSitesWithNamesQueryVariables = Exact<{ [key: string]: never }>
 
-export type CurrentUserSitesQuery = {
+export type CurrentUserSitesWithNamesQuery = {
   __typename: 'Query'
   currentUser?: {
     __typename: 'User'
@@ -6138,13 +6138,13 @@ export const GenerateMerchantReferenceDocument = {
   GenerateMerchantReferenceMutation,
   GenerateMerchantReferenceMutationVariables
 >
-export const CurrentUserSitesDocument = {
+export const CurrentUserSitesWithNamesDocument = {
   kind: 'Document',
   definitions: [
     {
       kind: 'OperationDefinition',
       operation: 'query',
-      name: { kind: 'Name', value: 'CurrentUserSites' },
+      name: { kind: 'Name', value: 'CurrentUserSitesWithNames' },
       selectionSet: {
         kind: 'SelectionSet',
         selections: [
@@ -6180,7 +6180,10 @@ export const CurrentUserSitesDocument = {
       }
     }
   ]
-} as unknown as DocumentNode<CurrentUserSitesQuery, CurrentUserSitesQueryVariables>
+} as unknown as DocumentNode<
+  CurrentUserSitesWithNamesQuery,
+  CurrentUserSitesWithNamesQueryVariables
+>
 export const PaymentTransactionStatusDocument = {
   kind: 'Document',
   definitions: [
