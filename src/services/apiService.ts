@@ -1327,6 +1327,9 @@ export class ApiService {
             ... on ClassPackageProduct {
               type
             }
+            ... on GiftCard {
+              purchaseUrl
+            }
           }
         }
       `

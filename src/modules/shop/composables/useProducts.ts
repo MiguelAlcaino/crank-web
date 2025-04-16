@@ -14,9 +14,11 @@ export const useProducts = (apiService: ApiService) => {
 
   const sessionsProducts = ref<SessionsProduct[]>([])
   const classPackageSelectType = ref<ClassPackageTypeEnum | null>(null)
+  const giftCards = ref<SellableProduct[]>([])
 
   onMounted(() => {
     fetchClassPackages()
+    fetchGiftCards()
   })
 
   const filteredSessionsProducts = computed(() => {
@@ -110,6 +112,23 @@ export const useProducts = (apiService: ApiService) => {
     }
   }
 
+  async function fetchGiftCards(): Promise<void> {
+    hasError.value = false
+    isLoading.value = true
+
+    giftCards.value = []
+
+    try {
+      giftCards.value = (await apiService.getProducts(appStore().site, {
+        type: ProductType.GiftCard
+      })) as SellableProduct[]
+    } catch (error) {
+      hasError.value = true
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   const setActiveTab = (tab: 'SESSIONS' | 'GIFT CARDS' | 'F&B') => {
     activeTab.value = tab
   }
@@ -126,6 +145,7 @@ export const useProducts = (apiService: ApiService) => {
     activeTab: readonly(activeTab),
     sessionsProducts: readonly(sessionsProducts),
     filteredSessionsProducts: readonly(filteredSessionsProducts),
+    giftCards: readonly(giftCards),
 
     // Methods
     setActiveTab,

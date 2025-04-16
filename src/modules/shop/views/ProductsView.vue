@@ -16,6 +16,7 @@ const {
   activeTab,
   filteredSessionsProducts,
   sessionsProducts,
+  giftCards,
   setActiveTab,
   setClassPackageSelectType
 } = useProducts(apiService)
@@ -108,7 +109,22 @@ const { productIdsInCart, addToCart } = useShoppingCart(apiService)
           </div>
         </div>
       </div>
-      <div v-else-if="activeTab === 'GIFT CARDS'"></div>
+      <div v-else-if="activeTab === 'GIFT CARDS'">
+        <div class="row mt-3">
+          <div
+            class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3"
+            v-for="giftCard in giftCards"
+            :key="giftCard.id"
+          >
+            <ProductCard
+              :product="giftCard"
+              :is-in-cart="productIdsInCart.includes(giftCard.id)"
+              @add-to-cart="addToCart"
+            >
+            </ProductCard>
+          </div>
+        </div>
+      </div>
       <div v-else-if="activeTab === 'F&B'"></div>
     </div>
   </div>
