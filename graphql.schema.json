@@ -5696,6 +5696,39 @@
             "deprecationReason": null
           },
           {
+            "name": "emptyShoppingCart",
+            "description": "Allows to remove all items from the shoppingcart",
+            "args": [
+              {
+                "name": "site",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "ENUM",
+                    "name": "SiteEnum",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "UNION",
+                "name": "ShoppingCartResultUnion",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "enableSpot",
             "description": "Enabled a spot in a class",
             "args": [
@@ -7644,6 +7677,12 @@
         "enumValues": [
           {
             "name": "classPackage",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "giftCard",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null

@@ -632,6 +632,8 @@ export type Mutation = {
   editRoomLayout: RoomLayout
   /** Edits a user */
   editUser?: Maybe<EditUserResultUnion>
+  /** Allows to remove all items from the shoppingcart */
+  emptyShoppingCart: ShoppingCartResultUnion
   /** Enabled a spot in a class */
   enableSpot?: Maybe<DisableEnableSpotResultUnion>
   /** Generate a unique Merchant Reference */
@@ -797,6 +799,10 @@ export type MutationEditRoomLayoutArgs = {
 
 export type MutationEditUserArgs = {
   input: EditUserInput
+}
+
+export type MutationEmptyShoppingCartArgs = {
+  site: SiteEnum
 }
 
 export type MutationEnableSpotArgs = {
@@ -1044,7 +1050,8 @@ export type ProductNotFound = Error & {
 }
 
 export enum ProductType {
-  ClassPackage = 'classPackage'
+  ClassPackage = 'classPackage',
+  GiftCard = 'giftCard'
 }
 
 export type ProductsInput = {

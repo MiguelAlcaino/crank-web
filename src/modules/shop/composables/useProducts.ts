@@ -19,6 +19,13 @@ export const useProducts = (apiService: ApiService) => {
     fetchClassPackages()
   })
 
+  const filteredSessionsProducts = computed(() => {
+    if (!classPackageSelectType.value) {
+      return sessionsProducts.value
+    }
+    return sessionsProducts.value.filter((product) => product.type === classPackageSelectType.value)
+  })
+
   async function fetchClassPackages(): Promise<void> {
     hasError.value = false
     isLoading.value = true
@@ -110,13 +117,6 @@ export const useProducts = (apiService: ApiService) => {
   const setClassPackageSelectType = (type: ClassPackageTypeEnum | string | null) => {
     classPackageSelectType.value = type === 'all' ? null : (type as ClassPackageTypeEnum | null)
   }
-
-  const filteredSessionsProducts = computed(() => {
-    if (!classPackageSelectType.value) {
-      return sessionsProducts.value
-    }
-    return sessionsProducts.value.filter((product) => product.type === classPackageSelectType.value)
-  })
 
   return {
     // Properties
