@@ -10,16 +10,8 @@ import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIn
 
 const apiService = inject<ApiService>('gqlApiService')!
 
-const {
-  isLoading,
-  hasError,
-  memberships,
-  regularPackages,
-  trialPackages,
-  vodPackages,
-  activeTab,
-  setActiveTab
-} = useProducts(apiService)
+const { isLoading, hasError, activeTab, filteredSessionsProducts, setActiveTab } =
+  useProducts(apiService)
 const { productIdsInCart, addToCart } = useShoppingCart(apiService)
 </script>
 
@@ -61,7 +53,19 @@ const { productIdsInCart, addToCart } = useShoppingCart(apiService)
       </div>
       <div v-if="activeTab === 'SESSIONS'">
         <div class="text-center mb-3">
-          <p class="text-uppercase font-weight-bold small">Regular Packages ▼</p>
+          <select
+            class="custom-select text-uppercase font-weight-bold small"
+            style="max-width: 300px; margin: 0 auto"
+          >
+            <option value="all">All</option>
+            <option
+              v-for="sessionsProduct in sessionsProducts"
+              :key="sessionsProduct.type"
+              :value="sessionsProduct.type"
+            >
+              {{ sessionsProduct.title }}
+            </option>
+          </select>
         </div>
         <div class="row">
           <div class="col-12" style="text-align: center">
@@ -73,68 +77,17 @@ const { productIdsInCart, addToCart } = useShoppingCart(apiService)
         </div>
         <div v-if="hasError">Error loading products.</div>
         <div v-if="!isLoading && !hasError">
-          <div class="row mt-3">
+          <div
+            class="row mt-3"
+            v-for="sessionsProduct in filteredSessionsProducts"
+            :key="sessionsProduct.type"
+          >
             <div class="col-12">
-              <h4>Trial Packages*</h4>
-            </div>
-
-            <div
-              class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3"
-              v-for="product in trialPackages"
-              :key="product.id"
-            >
-              <ProductCard
-                :product="product"
-                :is-in-cart="productIdsInCart.includes(product.id)"
-                @add-to-cart="addToCart"
-              >
-              </ProductCard>
-            </div>
-          </div>
-
-          <div class="row mt-3">
-            <div class="col-12">
-              <h4>Video-on-Demand Packages*</h4>
+              <h4>{{ sessionsProduct.title }}</h4>
             </div>
             <div
               class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3"
-              v-for="product in vodPackages"
-              :key="product.id"
-            >
-              <ProductCard
-                :product="product"
-                :is-in-cart="productIdsInCart.includes(product.id)"
-                @add-to-cart="addToCart"
-              >
-              </ProductCard>
-            </div>
-          </div>
-
-          <div class="row mt-3">
-            <div class="col-12">
-              <h4>Regular Packages*</h4>
-            </div>
-            <div
-              class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3"
-              v-for="product in regularPackages"
-              :key="product.id"
-            >
-              <ProductCard
-                :product="product"
-                :is-in-cart="productIdsInCart.includes(product.id)"
-                @add-to-cart="addToCart"
-              >
-              </ProductCard>
-            </div>
-          </div>
-
-          <div class="row mt-3">
-            <div class="col-11">
-              <h4>Memberships*</h4>
-            </div>
-            <div
-              class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3"
-              v-for="product in memberships"
+              v-for="product in sessionsProduct.products"
               :key="product.id"
             >
               <ProductCard
