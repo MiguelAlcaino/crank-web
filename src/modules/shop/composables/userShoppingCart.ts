@@ -6,6 +6,10 @@ import { formatPrice } from '../utils/shop-utils'
 
 const shoppingCart = ref<ShoppingCart | null>(null)
 
+const totalItemsInCart = computed(() => {
+  return shoppingCart.value?.items.reduce((total, item) => total + item.quantity, 0) || 0
+})
+
 export const useShoppingCart = (apiService: ApiService) => {
   const hasError = ref<boolean>(false)
   const isLoading = ref<boolean>(false)
@@ -105,6 +109,7 @@ export const useShoppingCart = (apiService: ApiService) => {
     shoppingCart: shoppingCart,
     productIdsInCart: readonly(productIdsInCart),
     calculatedSubtotal: readonly(calculatedSubtotal),
+    totalItemsInCart: readonly(totalItemsInCart),
 
     // Methods
     addToCart,
