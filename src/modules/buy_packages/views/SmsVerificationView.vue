@@ -11,8 +11,9 @@ import DefaultButtonComponent from '@/components/DefaultButtonComponent.vue'
 import ModalComponent from '@/components/ModalComponent.vue'
 import type { PhoneObject } from '../interfaces/phone-object.interface'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
-import { useRoute } from 'vue-router'
-import router from '@/router'
+import { useRoute, useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const apiService = inject<ApiService>('gqlApiService')!
 

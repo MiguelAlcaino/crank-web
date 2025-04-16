@@ -1,7 +1,6 @@
 import { createApp, h, provide } from 'vue'
 import { createPinia } from 'pinia'
 import PaymentsIframeView from './views/PaymentsIframeView.vue'
-import router from '@/router'
 import '@/assets/main.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
@@ -11,6 +10,9 @@ import { useAuthenticationStore } from '@/stores/authToken'
 
 import { appStore } from './stores/appStorage'
 import { SiteEnum } from './modules/shared/interfaces/site.enum'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 startApp()
 

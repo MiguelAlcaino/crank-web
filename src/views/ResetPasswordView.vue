@@ -24,11 +24,12 @@ import {
   ERROR_UNKNOWN
 } from '@/utils/errorMessages'
 import { SUCCESS_RESET_PASSWORD } from '@/utils/successMessages'
-import router from '@/router'
-import { useRoute } from 'vue-router'
+
+import { useRoute, useRouter } from 'vue-router'
 import { authService } from '@/services/authService'
 import { appStore } from '@/stores/appStorage'
 
+const router = useRouter()
 const route = useRoute()
 
 onMounted(() => {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 import { inject, onMounted, ref } from 'vue'
 import { authService } from '@/services/authService'
@@ -7,14 +7,15 @@ import { useAuthenticationStore } from '@/stores/authToken'
 import { appStore } from '@/stores/appStorage'
 
 import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
-import router from '@/router'
 
 import type { ApiService } from '@/services/apiService'
 import { SiteEnum } from '../../shared/interfaces/site.enum'
+
 const apiService = inject<ApiService>('gqlApiService')!
 
 const isLoading = ref<boolean>(false)
 const defaultUrl = 'https://www.crank-fit.com/'
+const router = useRouter()
 
 onMounted(() => {
   const route = useRoute()

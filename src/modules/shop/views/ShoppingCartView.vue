@@ -4,8 +4,9 @@ import { inject, ref } from 'vue'
 import type { ApiService } from '@/services/apiService'
 import ShoppingCartItem from '../components/ShoppingCartItem.vue'
 import { useShoppingCart } from '../composables/userShoppingCart'
-import router from '@/router'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const apiService = inject<ApiService>('gqlApiService')!
 
 const { shoppingCart, removeFromCart, updateItemInShoppingCart, calculatedSubtotal } =

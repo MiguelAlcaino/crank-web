@@ -22,8 +22,9 @@ import ModalComponent from '@/components/ModalComponent.vue'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 import { SUCCESS_RESET_PASSWORD_LINK_SENT } from '@/utils/successMessages'
 import dayjs from 'dayjs'
-import router from '@/router'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const apiService = inject<ApiService>('gqlApiService')!
 
 const sendingEmail = ref<boolean>(false)

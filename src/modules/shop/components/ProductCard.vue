@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { SellableProduct } from '../interfaces'
-import router from '@/router'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const props = defineProps<{
   product: SellableProduct

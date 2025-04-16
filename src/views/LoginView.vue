@@ -13,7 +13,6 @@ interface FormData {
 
 <script setup lang="ts">
 import { onMounted, computed, reactive, ref, inject } from 'vue'
-import router from '@/router'
 import { authService } from '@/services/authService'
 import { helpers, required, email } from '@vuelidate/validators'
 import useVuelidate from '@vuelidate/core'
@@ -21,7 +20,7 @@ import useVuelidate from '@vuelidate/core'
 import DefaultButtonComponent from '@/components/DefaultButtonComponent.vue'
 import ModalComponent from '@/components/ModalComponent.vue'
 
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ResetPasswordRequiredError } from '@/model/Exception'
 import { hackSquarespaceMenu } from '@/utils/hack-squarespace-menu'
 import { useAuthenticationStore } from '@/stores/authToken'
@@ -29,6 +28,7 @@ import { SiteEnum } from '@/modules/shared/interfaces/site.enum'
 import type { ApiService } from '@/services/apiService'
 
 const apiService = inject<ApiService>('gqlApiService')!
+const router = useRouter()
 
 const displayLoginError = ref(false)
 const isSubmitting = ref(false)
@@ -253,8 +253,8 @@ async function fetchSites(site?: string | null) {
           <div class="row">
             <div class="col-md-12 mb-3" style="text-align: right">
               <RouterLink class="nav-link" :to="{ name: 'forgot_password' }"
-                >Forgot Password?</RouterLink
-              >
+                >Forgot Password?
+              </RouterLink>
             </div>
           </div>
 

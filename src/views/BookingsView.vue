@@ -20,7 +20,8 @@ import PaginationComponent from '@/components/PaginationComponent.vue'
 import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
-import router from '@/router'
+
+const router = useRouter()
 
 const upcomingEnrollments = ref<Enrollment[]>([])
 const waitlistEnrollments = ref<Enrollment[]>([])

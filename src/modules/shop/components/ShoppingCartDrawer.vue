@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import router from '@/router'
 import { computed, inject, ref, watch } from 'vue'
 import { useShoppingCart } from '../composables/userShoppingCart'
 import type { ApiService } from '@/services/apiService'
 import ShoppingCartIcon from './ShoppingCartIcon.vue'
 import { formatPrice } from '../utils/shop-utils'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const modelValue = ref(false)
 const title = ref('Your Cart')
 const position = ref('right')

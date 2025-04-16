@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { inject, onMounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 import dayjs from 'dayjs'
 
-import { EnrollmentStatusEnum, type ClassInfo, type EnrollmentInfo } from '@/gql/graphql'
+import { type ClassInfo, type EnrollmentInfo, EnrollmentStatusEnum } from '@/gql/graphql'
 
 import ModalComponent from '@/components/ModalComponent.vue'
 
@@ -15,14 +15,13 @@ import YouAreAlreadyEnrolled from '@/components/YouAreAlreadyEnrolled.vue'
 import CancelEnrollment from '@/components/CancelEnrollment.vue'
 import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
 
-import router from '@/router'
 import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
 import {
   ERROR_BOOKING_OVERLAPS_ANOTHER_ONE,
   ERROR_CLASS_IS_FULL,
-  ERROR_CLIENT_IS_ALREADY_BOOKED,
   ERROR_CLIENT_IS_ALREADY__ON_WAITLIST,
+  ERROR_CLIENT_IS_ALREADY_BOOKED,
   ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW,
   ERROR_PAYMENT_REQUIRED,
   ERROR_SPOT_ALREADY_RESERVED,
@@ -31,6 +30,7 @@ import {
 } from '@/utils/errorMessages'
 import { SUCCESS_ADDED_TO_WAITLIST, SUCCESS_BOOK_CLASS } from '@/utils/successMessages'
 
+const router = useRouter()
 const route = useRoute()
 
 const classId = ref<string>('')

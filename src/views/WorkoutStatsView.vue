@@ -26,14 +26,15 @@ import { inject, onMounted, ref } from 'vue'
 import dayjs from 'dayjs'
 import type { ApiService } from '@/services/apiService'
 import { appStore } from '@/stores/appStorage'
-import router from '@/router'
 
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 
 import ModalComponent from '@/components/ModalComponent.vue'
 import SiteSelector from '@/components/SiteSelector.vue'
 import PaginationComponent from '@/components/PaginationComponent.vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const apiService = inject<ApiService>('gqlApiService')!
 
 const isLoading = ref<boolean>(false)
@@ -157,6 +158,7 @@ function afterChangingSite() {
 tr {
   cursor: pointer;
 }
+
 tr:hover {
   background-color: #dadada !important;
 }

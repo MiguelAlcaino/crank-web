@@ -25,7 +25,6 @@ import { GenderEnum, type RegisterUserInput } from '@/gql/graphql'
 import type { ApiService } from '@/services/apiService'
 import { authService } from '@/services/authService'
 import { appStore } from '@/stores/appStorage'
-import router from '@/router'
 import ModalComponent from '@/components/ModalComponent.vue'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 import dayjs from 'dayjs'
@@ -34,7 +33,9 @@ import { VueTelInput } from 'vue-tel-input'
 import 'vue-tel-input/vue-tel-input.css'
 import { getFormattedPhoneNumber } from '@/utils/utility-functions'
 import type { SiteEnum } from '@/modules/shared/interfaces/site.enum'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const loadingSites = ref(false)
 const sites = ref<Site[]>([])
 
