@@ -134,7 +134,7 @@ export const useProducts = (apiService: ApiService) => {
   }
 
   const setClassPackageSelectType = (type: ClassPackageTypeEnum | string | null) => {
-    classPackageSelectType.value = type === 'all' ? null : (type as ClassPackageTypeEnum | null)
+    classPackageSelectType.value = type === 'All' ? null : (type as ClassPackageTypeEnum | null)
   }
 
   return {
@@ -146,6 +146,7 @@ export const useProducts = (apiService: ApiService) => {
     sessionsProducts: readonly(sessionsProducts),
     filteredSessionsProducts: readonly(filteredSessionsProducts),
     giftCards: readonly(giftCards),
+    classPackageSelectType: classPackageSelectType,
 
     // Methods
     setActiveTab,

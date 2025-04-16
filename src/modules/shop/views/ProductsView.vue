@@ -17,6 +17,7 @@ const {
   filteredSessionsProducts,
   sessionsProducts,
   giftCards,
+  classPackageSelectType,
   setActiveTab,
   setClassPackageSelectType
 } = useProducts(apiService)
@@ -62,11 +63,12 @@ const { productIdsInCart, addToCart } = useShoppingCart(apiService)
       <div v-if="activeTab === 'SESSIONS'">
         <div class="text-center mb-3">
           <select
+            v-model="classPackageSelectType"
             class="custom-select text-uppercase font-weight-bold small"
             style="max-width: 300px; margin: 0 auto"
             @change="setClassPackageSelectType($event.target.value)"
           >
-            <option :value="'all'">All</option>
+            <option :value="null">All</option>
             <option
               v-for="sessionsProduct in sessionsProducts"
               :key="sessionsProduct.type"
