@@ -8,6 +8,7 @@ export const useProducts = (apiService: ApiService) => {
   const hasError = ref<boolean>(false)
   const isLoading = ref<boolean>(false)
   const products = ref<SellableProduct[]>([])
+  const activeTab = ref<'SESSIONS' | 'GIFT CARDS' | 'F&B'>('SESSIONS')
 
   onMounted(() => {
     fetchProducts()
@@ -50,6 +51,10 @@ export const useProducts = (apiService: ApiService) => {
     }
   }
 
+  const setActiveTab = (tab: 'SESSIONS' | 'GIFT CARDS' | 'F&B') => {
+    activeTab.value = tab
+  }
+
   return {
     // Properties
     isLoading: readonly(isLoading),
@@ -59,8 +64,10 @@ export const useProducts = (apiService: ApiService) => {
     vodPackages: readonly(vodPackages),
     regularPackages: readonly(regularPackages),
     memberships: readonly(memberships),
-    specialPackages: readonly(specialPackages)
+    specialPackages: readonly(specialPackages),
+    activeTab: readonly(activeTab),
 
     // Methods
+    setActiveTab
   }
 }
