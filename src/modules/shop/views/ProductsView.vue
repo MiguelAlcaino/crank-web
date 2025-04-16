@@ -10,8 +10,15 @@ import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIn
 
 const apiService = inject<ApiService>('gqlApiService')!
 
-const { isLoading, hasError, activeTab, filteredSessionsProducts, setActiveTab } =
-  useProducts(apiService)
+const {
+  isLoading,
+  hasError,
+  activeTab,
+  filteredSessionsProducts,
+  sessionsProducts,
+  setActiveTab,
+  setClassPackageSelectType
+} = useProducts(apiService)
 const { productIdsInCart, addToCart } = useShoppingCart(apiService)
 </script>
 
@@ -56,8 +63,9 @@ const { productIdsInCart, addToCart } = useShoppingCart(apiService)
           <select
             class="custom-select text-uppercase font-weight-bold small"
             style="max-width: 300px; margin: 0 auto"
+            @change="setClassPackageSelectType($event.target.value)"
           >
-            <option value="all">All</option>
+            <option :value="'all'">All</option>
             <option
               v-for="sessionsProduct in sessionsProducts"
               :key="sessionsProduct.type"
