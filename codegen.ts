@@ -10,12 +10,15 @@ const config: CodegenConfig = {
     './src/gql/': {
       preset: 'client',
       plugins: [],
-      config: { nonOptionalTypename: true, useTypeImports: true }
+      config: { 
+        nonOptionalTypename: true,
+        useTypeImports: true,    
+        preResolveTypes: true}
     },
     './graphql.schema.json': {
       plugins: ['introspection']
     }
-  }
+  }, 
 }
 
 export default config
