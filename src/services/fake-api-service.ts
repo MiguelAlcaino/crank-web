@@ -40,7 +40,8 @@ import { SmsValidationResponse } from '@/modules/buy_packages/models/sms-validat
 import { ShoppingCart } from '@/modules/shop/interfaces'
 import { ShoppingCartResult } from '@/modules/shop/interfaces/shopping-cart-result'
 import { PaymentTransactionResponse } from '@/modules/shop/models/payment-transaction-response'
-import { IApiService } from './api-service.interface'
+import type { IApiService } from './api-service.interface'
+import { Product } from '@/modules/shop/models/product'
 
 export class FakeApiService implements IApiService {
   getSiteSettings(site: SiteEnum): Promise<SiteSetting | null> {
@@ -105,7 +106,7 @@ export class FakeApiService implements IApiService {
   ): Promise<any> {
     throw new Error('Method not implemented.')
   }
-  
+
   removeUserFromClass(enrollmentId: string, lateCancel?: boolean): Promise<string> {
     throw new Error('Method not implemented.')
   }
@@ -162,14 +163,14 @@ export class FakeApiService implements IApiService {
   getCurrentUserSites(): Promise<SiteEnum[]> {
     throw new Error('Method not implemented.')
   }
-  
+
   getCurrentUserRankingInClass(
     site: SiteEnum,
     params: UserInRankingParams
   ): Promise<UserInClassRanking> {
     throw new Error('Method not implemented.')
   }
-  
+
   acceptLateCancelledSpotInClass(
     site: SiteEnum,
     waitlistEntryId: string
@@ -222,7 +223,7 @@ export class FakeApiService implements IApiService {
     throw new Error('Method not implemented.')
   }
 
-  getProducts(site: SiteEnum, input: ProductsInput): Promise<SellableProductInterface[]> {
+  getProducts(site: SiteEnum, input: ProductsInput): Promise<Product[]> {
     throw new Error('Method not implemented.')
   }
 

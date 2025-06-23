@@ -1,8 +1,8 @@
 import { computed, onMounted, readonly, ref } from 'vue'
 import { appStore } from '@/stores/appStorage'
-import type { ApiService } from '@/services/apiService'
 import type { ShoppingCart } from '../interfaces'
 import { formatPrice } from '../utils/shop-utils'
+import type { IApiService } from '@/services/api-service.interface'
 
 const shoppingCart = ref<ShoppingCart | null>(null)
 
@@ -10,7 +10,7 @@ const totalItemsInCart = computed(() => {
   return shoppingCart.value?.items.reduce((total, item) => total + item.quantity, 0) || 0
 })
 
-export const useShoppingCart = (apiService: ApiService) => {
+export const useShoppingCart = (apiService: IApiService) => {
   const hasError = ref<boolean>(false)
   const isLoading = ref<boolean>(false)
 

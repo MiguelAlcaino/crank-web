@@ -1,135 +1,83 @@
 import type { ApiService } from '@/services/apiService'
 import { computed, onMounted, readonly, ref } from 'vue'
-import { ClassPackageTypeEnum, type SellableProduct } from '../interfaces'
+import { ClassPackageTypeEnum } from '../interfaces'
 import { appStore } from '@/stores/appStorage'
-import { ProductType } from '@/gql/graphql'
-import type { SessionsProduct } from '@/modules/shop/interfaces/sessions-product'
+import { ClassPackage, GiftCardProduct, Product } from '../models/product'
+import type { SessionsProductGroup } from '../interfaces/sessions-product-group'
+import type { IApiService } from '@/services/api-service.interface'
 
-export const useProducts = (apiService: ApiService) => {
+export const useProducts = (apiService: IApiService) => {
+  const isLoading = ref<boolean>(true)
   const hasError = ref<boolean>(false)
-  const isLoading = ref<boolean>(false)
-  let classPackages: SellableProduct[] = []
 
-  const activeTab = ref<'SESSIONS' | 'GIFT CARDS' | 'F&B'>('SESSIONS')
+  const allProducts = ref<Product[]>([])
 
-  const sessionsProducts = ref<SessionsProduct[]>([])
+  const activeTab = ref<'SESSIONS' | 'GIFT_CARDS' | 'FB'>('SESSIONS')
   const classPackageSelectType = ref<ClassPackageTypeEnum | null>(null)
-  const giftCards = ref<SellableProduct[]>([])
 
-  onMounted(() => {
-    fetchClassPackages()
-    fetchGiftCards()
+  // --- LIFECYCLE ---
+  onMounted(fetchAllProducts)
+
+  const classPackages = computed((): ClassPackage[] =>
+    allProducts.value.filter((p): p is ClassPackage => p instanceof ClassPackage)
+  )
+
+  const giftCards = computed((): GiftCardProduct[] =>
+    allProducts.value.filter((p): p is GiftCardProduct => p instanceof GiftCardProduct)
+  )
+
+  const sessionsProductGroups = computed((): SessionsProductGroup[] => {
+    const groups: SessionsProductGroup[] = []
+    const packages = classPackages.value
+
+    const groupDefinitions = new Map<ClassPackageTypeEnum, string>([
+      [ClassPackageTypeEnum.Trial, 'Trial Packages*'],
+      [ClassPackageTypeEnum.Vod, 'Video-on-Demand Packages*'],
+      [ClassPackageTypeEnum.Regular, 'Regular Packages*'],
+      [ClassPackageTypeEnum.Membership, 'Memberships*'],
+      [ClassPackageTypeEnum.Special, 'Special*']
+    ])
+
+    groupDefinitions.forEach((title, type) => {
+      const filteredProducts = packages.filter((p) => p.classPackageType === type)
+
+      if (filteredProducts.length > 0) {
+        groups.push({
+          type,
+          title,
+          products: filteredProducts
+        })
+      }
+    })
+
+    return groups
   })
 
-  const filteredSessionsProducts = computed(() => {
+  const filteredSessionsProductGroups = computed(() => {
     if (!classPackageSelectType.value) {
-      return sessionsProducts.value
+      return sessionsProductGroups.value
     }
-    return sessionsProducts.value.filter((product) => product.type === classPackageSelectType.value)
+    return sessionsProductGroups.value.filter(
+      (group) => group.type === classPackageSelectType.value
+    )
   })
 
-  async function fetchClassPackages(): Promise<void> {
-    hasError.value = false
+  async function fetchAllProducts(): Promise<void> {
     isLoading.value = true
-
-    classPackages = []
-    sessionsProducts.value = []
-    classPackageSelectType.value = null
+    hasError.value = false
 
     try {
-      classPackages = (await apiService.getProducts(appStore().site, {
-        type: ProductType.ClassPackage
-      })) as SellableProduct[]
-
-      // Trial Packages*
-      const trialPackages = classPackages.filter(
-        (classPackage) => classPackage.type === ClassPackageTypeEnum.Trial
-      )
-
-      if (trialPackages.length > 0) {
-        sessionsProducts.value.push({
-          type: ClassPackageTypeEnum.Trial,
-          title: 'Trial Packages*',
-          products: trialPackages
-        })
-      }
-
-      // Video-on-Demand Packages*
-      const voidPackages = classPackages.filter(
-        (classPackage) => classPackage.type === ClassPackageTypeEnum.Vod
-      )
-
-      if (voidPackages.length > 0) {
-        sessionsProducts.value.push({
-          type: ClassPackageTypeEnum.Vod,
-          title: 'Video-on-Demand Packages*',
-          products: voidPackages
-        })
-      }
-
-      // Regular Packages*
-      const regularPackages = classPackages.filter(
-        (classPackage) => classPackage.type === ClassPackageTypeEnum.Regular
-      )
-
-      if (regularPackages.length > 0) {
-        sessionsProducts.value.push({
-          type: ClassPackageTypeEnum.Regular,
-          title: 'Regular Packages*',
-          products: regularPackages
-        })
-      }
-
-      // Memberships*
-      const membershipsPackages = classPackages.filter(
-        (classPackage) => classPackage.type === ClassPackageTypeEnum.Membership
-      )
-
-      if (membershipsPackages.length > 0) {
-        sessionsProducts.value.push({
-          type: ClassPackageTypeEnum.Membership,
-          title: 'Memberships*',
-          products: membershipsPackages
-        })
-      }
-
-      // Special*
-      const specialPackages = classPackages.filter(
-        (classPackage) => classPackage.type === ClassPackageTypeEnum.Special
-      )
-
-      if (specialPackages.length > 0) {
-        sessionsProducts.value.push({
-          type: ClassPackageTypeEnum.Special,
-          title: 'Special*',
-          products: specialPackages
-        })
-      }
+      allProducts.value = await apiService.getProducts(appStore().site)
     } catch (error) {
+      console.error('Failed to fetch products:', error)
       hasError.value = true
+      allProducts.value = []
     } finally {
       isLoading.value = false
     }
   }
 
-  async function fetchGiftCards(): Promise<void> {
-    hasError.value = false
-    isLoading.value = true
-
-    giftCards.value = []
-
-    try {
-      giftCards.value = (await apiService.getProducts(appStore().site, {
-        type: ProductType.GiftCard
-      })) as SellableProduct[]
-    } catch (error) {
-      hasError.value = true
-    } finally {
-      isLoading.value = false
-    }
-  }
-
-  const setActiveTab = (tab: 'SESSIONS' | 'GIFT CARDS' | 'F&B') => {
+  const setActiveTab = (tab: 'SESSIONS' | 'GIFT_CARDS' | 'FB') => {
     activeTab.value = tab
   }
 
@@ -143,13 +91,15 @@ export const useProducts = (apiService: ApiService) => {
     hasError: hasError,
 
     activeTab: readonly(activeTab),
-    sessionsProducts: readonly(sessionsProducts),
-    filteredSessionsProducts: readonly(filteredSessionsProducts),
+    classPackageSelectType,
+
+    sessionsProductGroups: readonly(sessionsProductGroups),
+    filteredSessionsProductGroups: readonly(filteredSessionsProductGroups),
     giftCards: readonly(giftCards),
-    classPackageSelectType: classPackageSelectType,
 
     // Methods
     setActiveTab,
-    setClassPackageSelectType
+    setClassPackageSelectType,
+    fetchAllProducts
   }
 }

@@ -40,6 +40,8 @@ import type { IsSmsValidationCodeValidResponse } from '@/modules/buy_packages/mo
 import type { ShoppingCartResult } from '@/modules/shop/interfaces/shopping-cart-result'
 import type { ShoppingCart } from '@/modules/shop/interfaces'
 import type { PaymentTransactionResponse } from '@/modules/shop/models/payment-transaction-response'
+import { Product } from '@/modules/shop/models/product'
+import { AppProductType } from '@/modules/shop/models/types'
 
 /**
  * Interface defining the contract for the API service.
@@ -348,12 +350,16 @@ export interface IApiService {
   availableSites(): Promise<Site[]>
 
   /**
-   * Gets the products available for sale on a site.
-   * @param site The site for which to get the products.
-   * @param input Filters for the products.
-   * @returns A promise that resolves with an array of sellable products.
+   * Fetches sellable products for a given site from the API and transforms them
+   * into rich domain models.
+   *
+   * @param site The site enum to fetch products for.
+   * @param options Optional filters to apply to the product query.
+   * @param options.type Filters products by a specific type (e.g., ClassPackage or GiftCard).
+   * @returns A promise that resolves to an array of `Product` domain models.
+   *          Throws an `ApiError` if the fetch fails.
    */
-  getProducts(site: SiteEnum, input: ProductsInput): Promise<SellableProductInterface[]>
+  getProducts(site: SiteEnum, options?: { type?: AppProductType }): Promise<Product[]>
 
   /**
    * Fetches the current user's shopping cart for a specific site.

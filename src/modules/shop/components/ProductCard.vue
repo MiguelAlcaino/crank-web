@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import type { SellableProduct } from '../interfaces'
 import { useRouter } from 'vue-router'
+import { GiftCardProduct, Product } from '../models/product'
 
 const router = useRouter()
 
 const props = defineProps<{
-  product: SellableProduct
+  product: Product
   isInCart: boolean
 }>()
 
 const emits = defineEmits<{
-  (e: 'updateItem', sellableProductId: string, quantity: number): void
+  (e: 'updateItem', productId: string, quantity: number): void
   (e: 'removeItem', shoppingCartItemId: string): void
   (e: 'addToCart', shoppingCartItemId: string): void
 }>()
@@ -27,8 +27,17 @@ const showShoppingCart = () => {
   router.push('/shop/cart')
 }
 
-const addToCart = (sellableProductId: string) => {
-  emits('addToCart', sellableProductId)
+const onAddToCart = () => {
+  emits('addToCart', props.product.id)
+}
+
+const onBuyNow = () => {
+  if (props.product instanceof GiftCardProduct) {
+    window.open(props.product.purchaseUrl, '_blank')
+  } else {
+    onAddToCart()
+    router.push('/shop/cart')
+  }
 }
 </script>
 
@@ -39,19 +48,20 @@ const addToCart = (sellableProductId: string) => {
         <h6 class="font-weight-bold mb-2">{{ product.title }}</h6>
         <p class="mb-1 small">{{ product.subtitle }}</p>
         <p class="text-muted small mb-0">
-          {{ product.alertBeforePurchasing?.title.toUpperCase() }}
+          {{ product.alert?.title.toUpperCase() }}
         </p>
       </div>
       <div class="d-flex flex-column" style="width: 90px; height: 100%">
         <button
           class="btn btn-dark btn-sm font-weight-bold flex-fill rounded-0"
-          @click="addToCart(product.id)"
+          @click="onAddToCart"
         >
           ADD
         </button>
         <button
           class="btn btn-sm font-weight-bold flex-fill rounded-0"
           style="background-color: #ff8a73; color: white"
+          @click="onBuyNow"
         >
           BUY
         </button>

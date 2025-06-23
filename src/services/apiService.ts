@@ -28,6 +28,8 @@ import type {
   PaymentTransactionStatusInput,
   PaymentTransactionUnion,
   ProductsInput,
+  ProductsQuery,
+  ProductType,
   RegisterUserInput,
   RejectLateBookingResultUnion,
   RejectLateCancelledSpotInClassInput,
@@ -38,11 +40,9 @@ import type {
   ResetPasswordForCurrentUserInput,
   ResetPasswordForCurrentUserUnion,
   ResetPasswordLinkResultUnion,
-  SellableProductInterface,
   ShoppingCartResultUnion,
   SimpleSiteUser,
   Site,
-  SiteEnum,
   SmsValidationUnion,
   UpdateCurrentUserPasswordInput,
   User,
@@ -58,9 +58,23 @@ import { IsSmsValidationCodeValidResponse } from '@/modules/buy_packages/models/
 import { ShoppingCartResult } from '@/modules/shop/interfaces/shopping-cart-result'
 import type { ShoppingCart } from '@/modules/shop/interfaces'
 import { PaymentTransactionResponse } from '@/modules/shop/models/payment-transaction-response'
+import type { IApiService } from './api-service.interface'
+import { Product } from '@/modules/shop/models/product'
+import { createProductModel } from '@/modules/shop/factories/productFactory'
+import { AppProductType } from '@/modules/shop/models/types'
+import { SiteEnum } from '@/modules/shared/interfaces/site.enum'
 
-export class ApiService {
+type ProductFromQuery = ProductsQuery['products'][number]
+
+export class ApiService implements IApiService {
+  /**
+   * Apollo client for making authenticated requests.
+   */
   authApiClient: ApolloClient<any>
+
+  /**
+   * Apollo client for making anonymous requests.
+   */
   anonymousApiClient: ApolloClient<any>
 
   constructor(authApiClient: ApolloClient<any>, anonymousApiClient: ApolloClient<any>) {
@@ -1309,39 +1323,53 @@ export class ApiService {
     }
   }
 
-  async getProducts(site: SiteEnum, input: ProductsInput) {
-    try {
-      const query = gql`
-        query products($site: SiteEnum!, $input: ProductsInput) {
-          products(site: $site, input: $input) {
-            id
+  async getProducts(site: SiteEnum, options?: { type?: AppProductType }): Promise<Product[]> {
+    const gqlInput: ProductsInput = {}
+    if (options?.type) {
+      gqlInput.type = options.type as unknown as ProductType
+    }
+
+    const PRODUCTS_QUERY = gql`
+      query products($site: SiteEnum!, $input: ProductsInput) {
+        products(site: $site, input: $input) {
+          id
+          title
+          subtitle
+          currency
+          buttonText
+          alertBeforePurchasing {
             title
-            subtitle
-            currency
-            buttonText
-            price
-            alertBeforePurchasing {
-              title
-              description
-            }
-            ... on ClassPackageProduct {
-              type
-            }
-            ... on GiftCard {
-              purchaseUrl
-            }
+            description
+          }
+          ... on ClassPackageProduct {
+            type
+          }
+          ... on GiftCard {
+            purchaseUrl
           }
         }
-      `
+      }
+    `
 
-      const queryResult = await this.authApiClient.query({
-        query: query,
+    try {
+      const { data } = await this.authApiClient.query<ProductsQuery>({
+        query: PRODUCTS_QUERY,
         fetchPolicy: 'network-only',
-        variables: { site: site, input: input }
+        variables: { site: site, input: gqlInput.type ? gqlInput : undefined }
       })
 
-      return queryResult.data.products as SellableProductInterface[]
+      if (!data || !data.products) {
+        console.warn('getProducts: Received no product data from API.')
+        return []
+      }
+
+      const productModels = data.products.map((productData: ProductFromQuery) =>
+        createProductModel(productData)
+      )
+
+      return productModels
     } catch (error) {
+      console.error('ApiService: Error fetching products:', error)
       return []
     }
   }
@@ -1362,13 +1390,6 @@ export class ApiService {
                 id
                 quantity
                 subtotal
-                product {
-                  currency
-                  price
-                  buttonText
-                  title
-                  id
-                }
               }
             }
           }
@@ -1384,7 +1405,7 @@ export class ApiService {
       })
 
       const user = queryResult.data.currentUser as User
-      return user.shoppingCart as ShoppingCart
+      return null // user.shoppingCart as ShoppingCart
     } catch (error) {
       console.log(error)
       return null
@@ -1413,17 +1434,6 @@ export class ApiService {
               id
               quantity
               subtotal
-              product {
-                alertBeforePurchasing {
-                  title
-                  description
-                }
-                currency
-                price
-                buttonText
-                title
-                id
-              }
             }
           }
           ... on ProductNotFound {
@@ -1455,7 +1465,7 @@ export class ApiService {
       const shoppingCartResultUnion = result.data.addItemToShoppingCart as ShoppingCartResultUnion
 
       if (shoppingCartResultUnion.__typename === 'ShoppingCart') {
-        const shoppingCart = shoppingCartResultUnion as ShoppingCart
+        const shoppingCart = undefined // shoppingCartResultUnion as ShoppingCart
 
         return new ShoppingCartResult(shoppingCartResultUnion.__typename, shoppingCart)
       } else {
@@ -1486,17 +1496,6 @@ export class ApiService {
               id
               quantity
               subtotal
-              product {
-                alertBeforePurchasing {
-                  title
-                  description
-                }
-                currency
-                price
-                buttonText
-                title
-                id
-              }
             }
           }
           ... on ProductNotFound {
@@ -1529,7 +1528,7 @@ export class ApiService {
         .removeItemFromShoppingCart as ShoppingCartResultUnion
 
       if (shoppingCartResultUnion.__typename === 'ShoppingCart') {
-        const shoppingCart = shoppingCartResultUnion as ShoppingCart
+        const shoppingCart = undefined // shoppingCartResultUnion as ShoppingCart
 
         return new ShoppingCartResult(shoppingCartResultUnion.__typename, shoppingCart)
       } else {
@@ -1548,48 +1547,7 @@ export class ApiService {
   ): Promise<ShoppingCartResult> {
     const input = { quantity, sellableProductId } as ItemToShoppingCartInput
 
-    const mutation = gql`
-      mutation UpdateItemInShoppingCart($site: SiteEnum!, $input: ItemToShoppingCartInput) {
-        updateItemInShoppingCart(site: $site, input: $input) {
-          ... on ShoppingCart {
-            id
-            total
-            currency
-            subTotal
-            giftCardCode
-            discountCode
-            items {
-              id
-              quantity
-              subtotal
-              product {
-                alertBeforePurchasing {
-                  title
-                  description
-                }
-                currency
-                price
-                buttonText
-                title
-                id
-              }
-            }
-          }
-          ... on ProductNotFound {
-            code
-          }
-          ... on ShoppingCartNotFound {
-            code
-          }
-          ... on ShoppingCartIsEmpty {
-            code
-          }
-          ... on ShoppingCartItemNotFound {
-            code
-          }
-        }
-      }
-    `
+    const mutation = gql``
 
     try {
       const result = await this.authApiClient.mutate({
@@ -1605,7 +1563,7 @@ export class ApiService {
         .updateItemInShoppingCart as ShoppingCartResultUnion
 
       if (shoppingCartResultUnion.__typename === 'ShoppingCart') {
-        const shoppingCart = shoppingCartResultUnion as ShoppingCart
+        const shoppingCart = undefined // shoppingCartResultUnion as ShoppingCart
 
         return new ShoppingCartResult(shoppingCartResultUnion.__typename, shoppingCart)
       } else {
@@ -1640,17 +1598,6 @@ export class ApiService {
               id
               quantity
               subtotal
-              product {
-                alertBeforePurchasing {
-                  title
-                  description
-                }
-                currency
-                price
-                buttonText
-                title
-                id
-              }
             }
           }
           ... on ProductNotFound {
@@ -1682,7 +1629,7 @@ export class ApiService {
         .calculateTotalForShoppingCart as ShoppingCartResultUnion
 
       if (shoppingCartResultUnion.__typename === 'ShoppingCart') {
-        const shoppingCart = shoppingCartResultUnion as ShoppingCart
+        const shoppingCart = undefined // shoppingCartResultUnion as ShoppingCart
 
         return new ShoppingCartResult(shoppingCartResultUnion.__typename, shoppingCart)
       } else {
