@@ -162,7 +162,7 @@ p {
 }
 
 .active-tab {
-  color: #f8f9fa; /* Color blanco brillante para la pestaña activa */
+  color: #f8f9fa;
   text-decoration: underline;
   font-weight: bolder;
 }
