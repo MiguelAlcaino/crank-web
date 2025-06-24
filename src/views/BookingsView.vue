@@ -17,7 +17,7 @@ import ModalComponent from '@/components/ModalComponent.vue'
 import SiteSelector from '@/components/SiteSelector.vue'
 import PaginationComponent from '@/components/PaginationComponent.vue'
 
-import type { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/ApiService'
 import { appStore } from '@/stores/appStorage'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 

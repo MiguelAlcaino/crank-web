@@ -13,7 +13,7 @@ interface Purchase {
 <script setup lang="ts">
 import { inject, onMounted, ref } from 'vue'
 import dayjs from 'dayjs'
-import type { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/ApiService'
 import { appStore } from '@/stores/appStorage'
 
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
@@ -182,6 +182,7 @@ function afterChangingSite() {
 p {
   font-family: 'Avenir', sans-serif;
 }
+
 td {
   font-family: 'Avenir', sans-serif;
 }

@@ -39,7 +39,7 @@ interface ChartPoint {
 <script setup lang="ts">
 import { inject, onMounted, ref } from 'vue'
 import dayjs from 'dayjs'
-import type { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/ApiService'
 import { useRoute } from 'vue-router'
 
 import { secondsToMMSS } from '@/utils/utility-functions'
@@ -180,6 +180,7 @@ async function currentUserSingleWorkoutStat() {
 p {
   font-family: 'BigJohn', sans-serif;
 }
+
 h4 {
   color: #737373;
 }

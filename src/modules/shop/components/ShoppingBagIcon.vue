@@ -30,7 +30,7 @@
 <script setup lang="ts">
 import { useShoppingCart } from '../composables/userShoppingCart'
 import { inject } from 'vue'
-import type { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/ApiService'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()

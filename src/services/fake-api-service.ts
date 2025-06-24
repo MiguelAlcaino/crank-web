@@ -1,38 +1,37 @@
 import {
-  SiteEnum,
-  SiteSetting,
-  User,
-  ClassStat,
-  EnrollmentInfo,
-  Country,
-  Class,
-  ClassInfo,
-  RegisterUserInput,
-  UserInput,
+  AcceptLateCancelledSpotInClassResultUnion,
   BookClassInput,
   CancelEnrollmentInput,
-  RemoveCurrentUserFromWaitlistInput,
+  Class,
+  ClassInfo,
+  ClassStat,
+  Country,
+  CreateCurrentUserInSiteUnion,
+  CurrentUserEnrollmentsParams,
   EditClassInput,
   EditClassResultUnion,
-  UpdateCurrentUserPasswordInput,
-  ResetPasswordLinkResultUnion,
-  ResetPasswordForCurrentUserUnion,
-  CreateCurrentUserInSiteUnion,
-  RemoveUserFromWaitlistUnion,
   EditEnrollmentInput,
   EditEnrollmentResultUnion,
-  UserInRankingParams,
-  UserInClassRanking,
-  AcceptLateCancelledSpotInClassResultUnion,
-  RejectLateBookingResultUnion,
-  CurrentUserEnrollmentsParams,
-  PaginationInput,
-  PaginatedEnrollments,
+  EnrollmentInfo,
   PaginatedClassStats,
+  PaginatedEnrollments,
   PaginatedPurchases,
-  Site,
+  PaginationInput,
   ProductsInput,
-  SellableProductInterface
+  RegisterUserInput,
+  RejectLateBookingResultUnion,
+  RemoveCurrentUserFromWaitlistInput,
+  RemoveUserFromWaitlistUnion,
+  ResetPasswordForCurrentUserUnion,
+  ResetPasswordLinkResultUnion,
+  Site,
+  SiteEnum,
+  SiteSetting,
+  UpdateCurrentUserPasswordInput,
+  User,
+  UserInClassRanking,
+  UserInput,
+  UserInRankingParams
 } from '@/gql/graphql'
 import { CustomCalendarClasses } from '@/model/CustomCalendarClasses'
 import { IsSmsValidationCodeValidResponse } from '@/modules/buy_packages/models/is-sms-validation-code-valid-response'
@@ -40,8 +39,8 @@ import { SmsValidationResponse } from '@/modules/buy_packages/models/sms-validat
 import { ShoppingCart } from '@/modules/shop/interfaces'
 import { ShoppingCartResult } from '@/modules/shop/interfaces/shopping-cart-result'
 import { PaymentTransactionResponse } from '@/modules/shop/models/payment-transaction-response'
-import type { IApiService } from './api-service.interface'
-import { Product } from '@/modules/shop/models/product'
+import type { IApiService } from './IApiService'
+import { Product } from '@/modules/shop/models/Product'
 
 export class FakeApiService implements IApiService {
   getSiteSettings(site: SiteEnum): Promise<SiteSetting | null> {

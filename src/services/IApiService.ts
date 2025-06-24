@@ -1,6 +1,7 @@
 import type {
   AcceptLateCancelledSpotInClassResultUnion,
   BookClassInput,
+  CancelEnrollmentInput,
   Class,
   ClassInfo,
   ClassStat,
@@ -16,32 +17,30 @@ import type {
   PaginatedEnrollments,
   PaginatedPurchases,
   PaginationInput,
-  ProductsInput,
   RegisterUserInput,
   RejectLateBookingResultUnion,
   RemoveCurrentUserFromWaitlistInput,
   RemoveUserFromWaitlistUnion,
   ResetPasswordForCurrentUserUnion,
   ResetPasswordLinkResultUnion,
-  SellableProductInterface,
   Site,
-  SiteEnum,
+  SiteSetting,
   UpdateCurrentUserPasswordInput,
   User,
-  UserInput,
   UserInClassRanking,
-  UserInRankingParams,
-  CancelEnrollmentInput
+  UserInput,
+  UserInRankingParams
 } from '@/gql/graphql'
-import { type SiteSetting } from '@/gql/graphql'
 import type { CustomCalendarClasses } from '@/model/CustomCalendarClasses'
 import type { SmsValidationResponse } from '@/modules/buy_packages/models/sms-validation-response'
 import type { IsSmsValidationCodeValidResponse } from '@/modules/buy_packages/models/is-sms-validation-code-valid-response'
 import type { ShoppingCartResult } from '@/modules/shop/interfaces/shopping-cart-result'
 import type { ShoppingCart } from '@/modules/shop/interfaces'
 import type { PaymentTransactionResponse } from '@/modules/shop/models/payment-transaction-response'
-import { Product } from '@/modules/shop/models/product'
-import { AppProductType } from '@/modules/shop/models/types'
+import type { Product } from '@/modules/shop/models/Product'
+import type { AppProductType } from '@/modules/shop/models/types'
+import type { SiteEnum } from '@/modules/shared/interfaces/site.enum'
+import type { ShoppingCart as ShoppingCartModel } from '@/modules/shop/models/ShoppingCart'
 
 /**
  * Interface defining the contract for the API service.
@@ -369,17 +368,20 @@ export interface IApiService {
   fetchUserCart(site: SiteEnum): Promise<ShoppingCart | null>
 
   /**
-   * Adds an item to the shopping cart.
-   * @param site The site of the cart.
+   * Adds an item to the user's shopping cart.
+   * On success, it returns a new instance of the domain ShoppingCartModel.
+   * On failure, it throws an ApiError for business logic errors or a generic Error for network issues.
+   *
+   * @param site The site where the purchase is being made.
    * @param sellableProductId The ID of the product to add.
-   * @param quantity The quantity.
-   * @returns A promise that resolves with the result of the cart operation.
+   * @param quantity The number of items to add.
+   * @returns A Promise that resolves with the updated ShoppingCartModel instance.
    */
   addItemToShoppingCart(
     site: SiteEnum,
     sellableProductId: string,
     quantity: number
-  ): Promise<ShoppingCartResult>
+  ): Promise<ShoppingCartModel>
 
   /**
    * Removes an item from the shopping cart.
@@ -460,4 +462,13 @@ export interface IApiService {
    * @returns A promise that resolves with the transaction status response.
    */
   paymentTransactionStatus(merchantReference: string): Promise<PaymentTransactionResponse>
+
+  /**
+   * Fetches the current user's shopping cart for a specific site.
+   *
+   * @param site The site for which to fetch the cart.
+   * @returns A promise that resolves to a `ShoppingCart` model instance,
+   *          or `null` if the user has no cart or an error occurs.
+   */
+  getShoppingCart(site: SiteEnum): Promise<ShoppingCartModel | null>
 }

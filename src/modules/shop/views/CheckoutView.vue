@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { reactive, ref, computed, inject } from 'vue'
+import { computed, inject, reactive, ref } from 'vue'
 
-import type { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/ApiService'
 import type { CardData } from '@/modules/shop/interfaces/card-data'
 import { useCheckout } from '@/modules/shop/composables/useCheckout'
-import { luhnCheck, convertDateFormat } from '@/modules/shop/utils/shop-utils'
+import { convertDateFormat, luhnCheck } from '@/modules/shop/utils/shop-utils'
 import FingerprintHiddenInput from '@/modules/shop/components/FingerprintHiddenInput.vue'
 
 const apiService = inject<ApiService>('gqlApiService')!

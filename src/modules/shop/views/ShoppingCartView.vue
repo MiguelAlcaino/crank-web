@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { inject, ref } from 'vue'
 
-import type { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/ApiService'
 import ShoppingCartItem from '../components/ShoppingCartItem.vue'
 import { useShoppingCart } from '../composables/userShoppingCart'
 import { useRouter } from 'vue-router'

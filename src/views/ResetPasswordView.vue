@@ -11,7 +11,7 @@ interface PasswordsDontMatchError {
 </script>
 
 <script setup lang="ts">
-import type { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/ApiService'
 import useVuelidate from '@vuelidate/core'
 import { helpers, minLength, required, sameAs } from '@vuelidate/validators'
 import { computed, inject, onMounted, reactive, ref } from 'vue'

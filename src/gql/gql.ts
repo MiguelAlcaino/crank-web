@@ -13,6 +13,12 @@ import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-
  * Therefore it is highly recommended to use the babel-plugin for production.
  */
 const documents = {
+  'mutation AddItemToShoppingCart($site: SiteEnum!, $input: ItemToShoppingCartInput!) {\n  addItemToShoppingCart(site: $site, input: $input) {\n    __typename\n    ... on ShoppingCart {\n      ...ShoppingCartFields\n    }\n    ... on ProductNotFound {\n      code\n    }\n    ... on ShoppingCartNotFound {\n      code\n    }\n  }\n}':
+    types.AddItemToShoppingCartDocument,
+  'query GetShoppingCart($site: SiteEnum!) {\n  currentUser {\n    shoppingCart(site: $site) {\n      ...ShoppingCartFields\n    }\n  }\n}':
+    types.GetShoppingCartDocument,
+  'fragment ShoppingCartFields on ShoppingCart {\n  id\n  total\n  subTotal\n  currency\n  giftCardCode\n  discountCode\n  items {\n    id\n    quantity\n    subtotal\n    product {\n      __typename\n      id\n      title\n      subtitle\n      price\n      currency\n      buttonText\n      isVisible\n      alertBeforePurchasing {\n        title\n        description\n      }\n      ... on ClassPackageProduct {\n        type\n      }\n      ... on GiftCard {\n        purchaseUrl\n      }\n    }\n  }\n}':
+    types.ShoppingCartFieldsFragmentDoc,
   '\n      query siteSettings($site: SiteEnum!) {\n        siteSettings(site: $site) {\n          siteDateTimeNow\n          siteTimezone\n        }\n      }\n    ':
     types.SiteSettingsDocument,
   '\n      query currentUser {\n        currentUser {\n          email\n          firstName\n          lastName\n          gender\n          birthdate\n          country {\n            name\n            code\n            states {\n              name\n              code\n            }\n          }\n          state {\n            name\n            code\n          }\n          city\n          address1\n          address2\n          zipCode\n          phone\n          emergencyContactName\n          emergencyContactPhone\n          emergencyContactRelationship\n          hideMetrics\n          weight\n          leaderboardUsername\n        }\n      }\n    ':
@@ -83,12 +89,10 @@ const documents = {
     types.IsSmsValidationCodeValidDocument,
   '\n        query availableSites {\n          availableSites {\n            name\n            code\n          }\n        }\n      ':
     types.AvailableSitesDocument,
-  '\n        query products($site: SiteEnum!, $input: ProductsInput) {\n          products(site: $site, input: $input) {\n            id\n            title\n            subtitle\n            currency\n            buttonText\n            alertBeforePurchasing {\n              title\n              description\n            }\n            ... on ClassPackageProduct {\n              type\n            }\n            ... on GiftCard {\n              purchaseUrl\n            }\n          }\n        }\n      ':
+  '\n      query products($site: SiteEnum!, $input: ProductsInput) {\n        products(site: $site, input: $input) {\n          id\n          title\n          subtitle\n          currency\n          buttonText\n          price\n          alertBeforePurchasing {\n            title\n            description\n          }\n          ... on ClassPackageProduct {\n            type\n          }\n          ... on GiftCard {\n            purchaseUrl\n          }\n        }\n      }\n    ':
     types.ProductsDocument,
   '\n        query currentUserShoppingCart($site: SiteEnum!) {\n          currentUser {\n            shoppingCart(site: $site) {\n              id\n              total\n              currency\n              subTotal\n              giftCardCode\n              discountCode\n              items {\n                id\n                quantity\n                subtotal\n              }\n            }\n          }\n        }\n      ':
     types.CurrentUserShoppingCartDocument,
-  '\n      mutation addItemToShoppingCart($site: SiteEnum!, $input: ItemToShoppingCartInput) {\n        addItemToShoppingCart(site: $site, input: $input) {\n          __typename\n          ... on ShoppingCart {\n            id\n            total\n            currency\n            subTotal\n            giftCardCode\n            discountCode\n            items {\n              id\n              quantity\n              subtotal\n            }\n          }\n          ... on ProductNotFound {\n            code\n          }\n          ... on ShoppingCartNotFound {\n            code\n          }\n          ... on ShoppingCartIsEmpty {\n            code\n          }\n          ... on ShoppingCartItemNotFound {\n            code\n          }\n        }\n      }\n    ':
-    types.AddItemToShoppingCartDocument,
   '\n      mutation RemoveItemFromShoppingCart($site: SiteEnum!, $shoppingCartItemId: ID!) {\n        removeItemFromShoppingCart(site: $site, shoppingCartItemId: $shoppingCartItemId) {\n          __typename\n          ... on ShoppingCart {\n            id\n            total\n            currency\n            subTotal\n            giftCardCode\n            discountCode\n            items {\n              id\n              quantity\n              subtotal\n            }\n          }\n          ... on ProductNotFound {\n            code\n          }\n          ... on ShoppingCartNotFound {\n            code\n          }\n          ... on ShoppingCartIsEmpty {\n            code\n          }\n          ... on ShoppingCartItemNotFound {\n            code\n          }\n        }\n      }\n    ':
     types.RemoveItemFromShoppingCartDocument,
   '\n      query CalculateTotalForShoppingCart($site: SiteEnum!) {\n        calculateTotalForShoppingCart(site: $site) {\n          ... on ShoppingCart {\n            id\n            total\n            currency\n            subTotal\n            giftCardCode\n            discountCode\n            items {\n              id\n              quantity\n              subtotal\n            }\n          }\n          ... on ProductNotFound {\n            code\n          }\n          ... on ShoppingCartNotFound {\n            code\n          }\n          ... on ShoppingCartIsEmpty {\n            code\n          }\n          ... on ShoppingCartItemNotFound {\n            code\n          }\n        }\n      }\n    ':
@@ -117,6 +121,24 @@ const documents = {
  */
 export function graphql(source: string): unknown
 
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: 'mutation AddItemToShoppingCart($site: SiteEnum!, $input: ItemToShoppingCartInput!) {\n  addItemToShoppingCart(site: $site, input: $input) {\n    __typename\n    ... on ShoppingCart {\n      ...ShoppingCartFields\n    }\n    ... on ProductNotFound {\n      code\n    }\n    ... on ShoppingCartNotFound {\n      code\n    }\n  }\n}'
+): (typeof documents)['mutation AddItemToShoppingCart($site: SiteEnum!, $input: ItemToShoppingCartInput!) {\n  addItemToShoppingCart(site: $site, input: $input) {\n    __typename\n    ... on ShoppingCart {\n      ...ShoppingCartFields\n    }\n    ... on ProductNotFound {\n      code\n    }\n    ... on ShoppingCartNotFound {\n      code\n    }\n  }\n}']
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: 'query GetShoppingCart($site: SiteEnum!) {\n  currentUser {\n    shoppingCart(site: $site) {\n      ...ShoppingCartFields\n    }\n  }\n}'
+): (typeof documents)['query GetShoppingCart($site: SiteEnum!) {\n  currentUser {\n    shoppingCart(site: $site) {\n      ...ShoppingCartFields\n    }\n  }\n}']
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: 'fragment ShoppingCartFields on ShoppingCart {\n  id\n  total\n  subTotal\n  currency\n  giftCardCode\n  discountCode\n  items {\n    id\n    quantity\n    subtotal\n    product {\n      __typename\n      id\n      title\n      subtitle\n      price\n      currency\n      buttonText\n      isVisible\n      alertBeforePurchasing {\n        title\n        description\n      }\n      ... on ClassPackageProduct {\n        type\n      }\n      ... on GiftCard {\n        purchaseUrl\n      }\n    }\n  }\n}'
+): (typeof documents)['fragment ShoppingCartFields on ShoppingCart {\n  id\n  total\n  subTotal\n  currency\n  giftCardCode\n  discountCode\n  items {\n    id\n    quantity\n    subtotal\n    product {\n      __typename\n      id\n      title\n      subtitle\n      price\n      currency\n      buttonText\n      isVisible\n      alertBeforePurchasing {\n        title\n        description\n      }\n      ... on ClassPackageProduct {\n        type\n      }\n      ... on GiftCard {\n        purchaseUrl\n      }\n    }\n  }\n}']
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -331,20 +353,14 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: '\n        query products($site: SiteEnum!, $input: ProductsInput) {\n          products(site: $site, input: $input) {\n            id\n            title\n            subtitle\n            currency\n            buttonText\n            alertBeforePurchasing {\n              title\n              description\n            }\n            ... on ClassPackageProduct {\n              type\n            }\n            ... on GiftCard {\n              purchaseUrl\n            }\n          }\n        }\n      '
-): (typeof documents)['\n        query products($site: SiteEnum!, $input: ProductsInput) {\n          products(site: $site, input: $input) {\n            id\n            title\n            subtitle\n            currency\n            buttonText\n            alertBeforePurchasing {\n              title\n              description\n            }\n            ... on ClassPackageProduct {\n              type\n            }\n            ... on GiftCard {\n              purchaseUrl\n            }\n          }\n        }\n      ']
+  source: '\n      query products($site: SiteEnum!, $input: ProductsInput) {\n        products(site: $site, input: $input) {\n          id\n          title\n          subtitle\n          currency\n          buttonText\n          price\n          alertBeforePurchasing {\n            title\n            description\n          }\n          ... on ClassPackageProduct {\n            type\n          }\n          ... on GiftCard {\n            purchaseUrl\n          }\n        }\n      }\n    '
+): (typeof documents)['\n      query products($site: SiteEnum!, $input: ProductsInput) {\n        products(site: $site, input: $input) {\n          id\n          title\n          subtitle\n          currency\n          buttonText\n          price\n          alertBeforePurchasing {\n            title\n            description\n          }\n          ... on ClassPackageProduct {\n            type\n          }\n          ... on GiftCard {\n            purchaseUrl\n          }\n        }\n      }\n    ']
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
   source: '\n        query currentUserShoppingCart($site: SiteEnum!) {\n          currentUser {\n            shoppingCart(site: $site) {\n              id\n              total\n              currency\n              subTotal\n              giftCardCode\n              discountCode\n              items {\n                id\n                quantity\n                subtotal\n              }\n            }\n          }\n        }\n      '
 ): (typeof documents)['\n        query currentUserShoppingCart($site: SiteEnum!) {\n          currentUser {\n            shoppingCart(site: $site) {\n              id\n              total\n              currency\n              subTotal\n              giftCardCode\n              discountCode\n              items {\n                id\n                quantity\n                subtotal\n              }\n            }\n          }\n        }\n      ']
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: '\n      mutation addItemToShoppingCart($site: SiteEnum!, $input: ItemToShoppingCartInput) {\n        addItemToShoppingCart(site: $site, input: $input) {\n          __typename\n          ... on ShoppingCart {\n            id\n            total\n            currency\n            subTotal\n            giftCardCode\n            discountCode\n            items {\n              id\n              quantity\n              subtotal\n            }\n          }\n          ... on ProductNotFound {\n            code\n          }\n          ... on ShoppingCartNotFound {\n            code\n          }\n          ... on ShoppingCartIsEmpty {\n            code\n          }\n          ... on ShoppingCartItemNotFound {\n            code\n          }\n        }\n      }\n    '
-): (typeof documents)['\n      mutation addItemToShoppingCart($site: SiteEnum!, $input: ItemToShoppingCartInput) {\n        addItemToShoppingCart(site: $site, input: $input) {\n          __typename\n          ... on ShoppingCart {\n            id\n            total\n            currency\n            subTotal\n            giftCardCode\n            discountCode\n            items {\n              id\n              quantity\n              subtotal\n            }\n          }\n          ... on ProductNotFound {\n            code\n          }\n          ... on ShoppingCartNotFound {\n            code\n          }\n          ... on ShoppingCartIsEmpty {\n            code\n          }\n          ... on ShoppingCartItemNotFound {\n            code\n          }\n        }\n      }\n    ']
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

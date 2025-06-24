@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { inject } from 'vue'
-import type { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/ApiService'
 import { useAfterCheckout } from '@/modules/shop/composables/useAfterCheckout'
 
 const apiService = inject<ApiService>('gqlApiService')!

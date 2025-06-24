@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, inject, ref, watch } from 'vue'
 import { useShoppingCart } from '../composables/userShoppingCart'
-import type { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/ApiService'
 import ShoppingCartIcon from './ShoppingCartIcon.vue'
 import { formatPrice } from '../utils/shop-utils'
 import { useRouter } from 'vue-router'

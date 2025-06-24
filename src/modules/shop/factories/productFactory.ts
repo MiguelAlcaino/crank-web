@@ -1,5 +1,5 @@
 import type { ProductsQuery } from '@/gql/graphql'
-import { ClassPackage, GiftCardProduct, Product, UnknownProduct } from '../models/product'
+import { ClassPackage, GiftCardProduct, Product, UnknownProduct } from '../models/Product'
 
 type ProductFromQuery = ProductsQuery['products'][number]
 

@@ -1,56 +1,64 @@
 import { gql } from '@apollo/client'
-import type {
-  AcceptLateCancelledSpotInClassInput,
-  AcceptLateCancelledSpotInClassResultUnion,
-  BookClassInput,
-  CalendarClassesParams,
-  CancelEnrollmentInput,
-  Class,
-  ClassInfo,
-  ClassStat,
-  Country,
-  CreateCurrentUserInSiteUnion,
-  CurrentUserEnrollmentsParams,
-  EditClassInput,
-  EditClassResultUnion,
-  EditEnrollmentInput,
-  EditEnrollmentResultUnion,
-  Enrollment,
-  EnrollmentInfo,
-  IsSmsValidationCodeValidUnion,
-  ItemToShoppingCartInput,
-  PaginatedClassStats,
-  PaginatedEnrollments,
-  PaginatedPurchases,
-  PaginationInput,
-  PayfortFormInput,
-  PayfortFormResult,
-  PaymentTransactionStatusInput,
-  PaymentTransactionUnion,
-  ProductsInput,
-  ProductsQuery,
-  ProductType,
-  RegisterUserInput,
-  RejectLateBookingResultUnion,
-  RejectLateCancelledSpotInClassInput,
-  RemoveCurrentUserFromWaitlistInput,
-  RemoveUserFromWaitlistInput,
-  RemoveUserFromWaitlistUnion,
-  RequestPasswordLinkInput,
-  ResetPasswordForCurrentUserInput,
-  ResetPasswordForCurrentUserUnion,
-  ResetPasswordLinkResultUnion,
-  ShoppingCartResultUnion,
-  SimpleSiteUser,
-  Site,
-  SmsValidationUnion,
-  UpdateCurrentUserPasswordInput,
-  User,
-  UserInClassRanking,
-  UserInput,
-  UserInRankingParams
+import {
+  type AcceptLateCancelledSpotInClassInput,
+  type AcceptLateCancelledSpotInClassResultUnion,
+  AddItemToShoppingCartDocument,
+  type AddItemToShoppingCartMutation,
+  type AddItemToShoppingCartMutationVariables,
+  type BookClassInput,
+  type CalendarClassesParams,
+  type CancelEnrollmentInput,
+  type Class,
+  type ClassInfo,
+  type ClassStat,
+  type Country,
+  type CreateCurrentUserInSiteUnion,
+  type CurrentUserEnrollmentsParams,
+  type EditClassInput,
+  type EditClassResultUnion,
+  type EditEnrollmentInput,
+  type EditEnrollmentResultUnion,
+  type Enrollment,
+  type EnrollmentInfo,
+  EnrollmentTypeEnum,
+  GetShoppingCartDocument,
+  type GetShoppingCartQuery,
+  type GetShoppingCartQueryVariables,
+  type IsSmsValidationCodeValidUnion,
+  type ItemToShoppingCartInput,
+  type PaginatedClassStats,
+  type PaginatedEnrollments,
+  type PaginatedPurchases,
+  type PaginationInput,
+  type PayfortFormInput,
+  type PayfortFormResult,
+  type PaymentTransactionStatusInput,
+  type PaymentTransactionUnion,
+  type ProductsInput,
+  type ProductsQuery,
+  type ProductType,
+  type RegisterUserInput,
+  type RejectLateBookingResultUnion,
+  type RejectLateCancelledSpotInClassInput,
+  type RemoveCurrentUserFromWaitlistInput,
+  type RemoveUserFromWaitlistInput,
+  type RemoveUserFromWaitlistUnion,
+  type RequestPasswordLinkInput,
+  type ResetPasswordForCurrentUserInput,
+  type ResetPasswordForCurrentUserUnion,
+  type ResetPasswordLinkResultUnion,
+  type ShoppingCart as GqlShoppingCart,
+  type ShoppingCartResultUnion,
+  type SimpleSiteUser,
+  type Site,
+  type SiteSetting,
+  type SmsValidationUnion,
+  type UpdateCurrentUserPasswordInput,
+  type User,
+  type UserInClassRanking,
+  type UserInput,
+  type UserInRankingParams
 } from '@/gql/graphql'
-import { EnrollmentTypeEnum, type SiteSetting } from '@/gql/graphql'
 import { ApolloClient, ApolloError } from '@apollo/client/core'
 import { CustomCalendarClasses } from '@/model/CustomCalendarClasses'
 import { SmsValidationResponse } from '@/modules/buy_packages/models/sms-validation-response'
@@ -58,13 +66,23 @@ import { IsSmsValidationCodeValidResponse } from '@/modules/buy_packages/models/
 import { ShoppingCartResult } from '@/modules/shop/interfaces/shopping-cart-result'
 import type { ShoppingCart } from '@/modules/shop/interfaces'
 import { PaymentTransactionResponse } from '@/modules/shop/models/payment-transaction-response'
-import type { IApiService } from './api-service.interface'
-import { Product } from '@/modules/shop/models/product'
+import type { IApiService } from './IApiService'
+import type { Product } from '@/modules/shop/models/Product'
 import { createProductModel } from '@/modules/shop/factories/productFactory'
-import { AppProductType } from '@/modules/shop/models/types'
-import { SiteEnum } from '@/modules/shared/interfaces/site.enum'
+import type { AppProductType } from '@/modules/shop/models/types'
+import type { SiteEnum } from '@/modules/shared/interfaces/site.enum'
+import { createShoppingCartModel } from '@/modules/shop/factories/shoppingCartFactory'
+import type { ShoppingCart as ShoppingCartModel } from '@/modules/shop/models/ShoppingCart'
 
 type ProductFromQuery = ProductsQuery['products'][number]
+
+// A custom error class to handle API errors more cleanly.
+export class ApiError extends Error {
+  constructor(message: string, public readonly code?: string) {
+    super(message)
+    this.name = 'ApiError'
+  }
+}
 
 export class ApiService implements IApiService {
   /**
@@ -1337,6 +1355,7 @@ export class ApiService implements IApiService {
           subtitle
           currency
           buttonText
+          price
           alertBeforePurchasing {
             title
             description
@@ -1416,45 +1435,15 @@ export class ApiService implements IApiService {
     site: SiteEnum,
     sellableProductId: string,
     quantity: number
-  ): Promise<ShoppingCartResult> {
-    const input = { quantity, sellableProductId } as ItemToShoppingCartInput
-
-    const mutation = gql`
-      mutation addItemToShoppingCart($site: SiteEnum!, $input: ItemToShoppingCartInput) {
-        addItemToShoppingCart(site: $site, input: $input) {
-          __typename
-          ... on ShoppingCart {
-            id
-            total
-            currency
-            subTotal
-            giftCardCode
-            discountCode
-            items {
-              id
-              quantity
-              subtotal
-            }
-          }
-          ... on ProductNotFound {
-            code
-          }
-          ... on ShoppingCartNotFound {
-            code
-          }
-          ... on ShoppingCartIsEmpty {
-            code
-          }
-          ... on ShoppingCartItemNotFound {
-            code
-          }
-        }
-      }
-    `
+  ): Promise<ShoppingCartModel> {
+    const input: ItemToShoppingCartInput = { sellableProductId, quantity }
 
     try {
-      const result = await this.authApiClient.mutate({
-        mutation: mutation,
+      const { data, errors } = await this.authApiClient.mutate<
+        AddItemToShoppingCartMutation,
+        AddItemToShoppingCartMutationVariables
+      >({
+        mutation: AddItemToShoppingCartDocument,
         variables: {
           site: site,
           input: input
@@ -1462,18 +1451,32 @@ export class ApiService implements IApiService {
         fetchPolicy: 'network-only'
       })
 
-      const shoppingCartResultUnion = result.data.addItemToShoppingCart as ShoppingCartResultUnion
+      if (errors) {
+        throw new Error(`GraphQL error: ${errors.map((e) => e.message).join(', ')}`)
+      }
 
-      if (shoppingCartResultUnion.__typename === 'ShoppingCart') {
-        const shoppingCart = undefined // shoppingCartResultUnion as ShoppingCart
+      const result = data?.addItemToShoppingCart
 
-        return new ShoppingCartResult(shoppingCartResultUnion.__typename, shoppingCart)
+      if (!result) {
+        throw new Error('Did not receive a valid response from the server.')
+      }
+
+      if (result.__typename === 'ShoppingCart') {
+        // Success: The `result` object is fully typed thanks to the fragment.
+        // We can now safely pass it to our model factory.
+        return createShoppingCartModel(result as GqlShoppingCart)
       } else {
-        return new ShoppingCartResult(shoppingCartResultUnion.__typename)
+        // Business logic error (e.g., ProductNotFound)
+        const errorCode = (result as { code?: string }).code ?? 'UnknownBusinessError'
+        throw new ApiError(
+          `Failed to add item. API returned error: ${result.__typename}`,
+          errorCode
+        )
       }
     } catch (error) {
-      console.log(error)
-      return new ShoppingCartResult('UnknownError')
+      console.error('ApiService.addItemToShoppingCart failed:', error)
+      // Re-throw for the UI layer to handle
+      throw error
     }
   }
 
@@ -1764,6 +1767,35 @@ export class ApiService implements IApiService {
       }
     } catch (error) {
       return new PaymentTransactionResponse('UnknownError')
+    }
+  }
+
+  async getShoppingCart(site: SiteEnum): Promise<ShoppingCartModel | null> {
+    try {
+      const { data, errors } = await this.authApiClient.query<
+        GetShoppingCartQuery,
+        GetShoppingCartQueryVariables
+      >({
+        query: GetShoppingCartDocument,
+        variables: { site },
+        fetchPolicy: 'network-only'
+      })
+
+      if (errors) {
+        throw new ApiError(
+          `GraphQL error fetching shopping cart: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      const cartData = data?.currentUser?.shoppingCart
+      if (!cartData) {
+        return null
+      }
+
+      return createShoppingCartModel(cartData as GqlShoppingCart)
+    } catch (error) {
+      console.error('ApiService: Error fetching shopping cart:', error)
+      throw new Error('Failed to fetch shopping cart.')
     }
   }
 }

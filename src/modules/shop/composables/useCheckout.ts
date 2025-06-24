@@ -1,4 +1,4 @@
-import type { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/ApiService'
 import { onMounted, readonly, ref } from 'vue'
 import { appStore } from '@/stores/appStorage'
 

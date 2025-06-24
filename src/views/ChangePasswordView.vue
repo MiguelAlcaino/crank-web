@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { inject, ref, reactive, computed } from 'vue'
-import { required, minLength, sameAs, helpers } from '@vuelidate/validators'
+import { computed, inject, reactive, ref } from 'vue'
+import { helpers, minLength, required, sameAs } from '@vuelidate/validators'
 import useVuelidate from '@vuelidate/core'
 
-import type { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/ApiService'
 import ModalComponent from '@/components/ModalComponent.vue'
 import { appStore } from '@/stores/appStorage'
 import type { UpdateCurrentUserPasswordInput } from '@/gql/graphql'

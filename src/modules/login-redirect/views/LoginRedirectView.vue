@@ -8,7 +8,7 @@ import { appStore } from '@/stores/appStorage'
 
 import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
 
-import type { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/ApiService'
 import { SiteEnum } from '../../shared/interfaces/site.enum'
 
 const apiService = inject<ApiService>('gqlApiService')!

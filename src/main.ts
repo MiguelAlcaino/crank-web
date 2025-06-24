@@ -17,16 +17,11 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 /* import specific icons */
 import { faLeftLong, faStepBackward, faStepForward } from '@fortawesome/free-solid-svg-icons'
-
-/* add icons to the library */
-library.add(faStepBackward, faStepForward, faLeftLong)
-
 //import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 //import './assets/main.css'
-
 import { authService } from '@/services/authService'
-import { ApiService } from '@/services/apiService'
+import { ApiService } from '@/services/ApiService'
 import { newAnonymousClient, newAuthenticatedApolloClient } from '@/services/graphqlClient'
 import { useAuthenticationStore } from '@/stores/authToken'
 
@@ -34,6 +29,9 @@ import { appStore } from './stores/appStorage'
 
 import { hackSquarespaceMenu } from '@/utils/hack-squarespace-menu'
 import { SiteEnum } from './modules/shared/interfaces/site.enum'
+
+/* add icons to the library */
+library.add(faStepBackward, faStepForward, faLeftLong)
 
 startApp()
 

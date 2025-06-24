@@ -4,7 +4,7 @@ import PaymentsIframeView from './views/PaymentsIframeView.vue'
 import '@/assets/main.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
-import { ApiService } from '@/services/apiService'
+import { ApiService } from '@/services/ApiService'
 import { newAnonymousClient, newAuthenticatedApolloClient } from '@/services/graphqlClient'
 import { useAuthenticationStore } from '@/stores/authToken'
 

@@ -6,11 +6,11 @@
 #import "./fragments/ShoppingCartFields.fragment.graphql"
 
 query GetShoppingCart($site: SiteEnum!) {
-    currentUser {
-        # We only need the shopping cart from the currentUser object
-        shoppingCart(site: $site) {
-            # Spread the fragment here to include all the fields defined in it.
-            ...ShoppingCartFields
-        }
+  currentUser {
+    # We only need the shopping cart from the currentUser object
+    shoppingCart(site: $site) {
+      # Spread the fragment here to include all the fields defined in it.
+      ...ShoppingCartFields
     }
+  }
 }

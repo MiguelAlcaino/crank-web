@@ -8,6 +8,7 @@ interface GenderRanking {
   gender?: GenderEnum
   ranking?: UserRanking
 }
+
 interface UserRanking {
   positionInRanking?: number
   totalMembersInRanking?: number
@@ -21,7 +22,7 @@ enum GenderEnum {
 </script>
 
 <script setup lang="ts">
-import type { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/ApiService'
 import { appStore } from '@/stores/appStorage'
 import { inject, ref, watch } from 'vue'
 
@@ -106,6 +107,7 @@ p {
   font-family: 'BigJohn', sans-serif;
   font-size: x-large;
 }
+
 h4 {
   color: #737373;
 }

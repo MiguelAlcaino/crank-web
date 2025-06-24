@@ -22,7 +22,7 @@ import useVuelidate from '@vuelidate/core'
 import { required, email, minLength, sameAs, maxLength, helpers } from '@vuelidate/validators'
 import { GenderEnum, type RegisterUserInput } from '@/gql/graphql'
 
-import type { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/ApiService'
 import { authService } from '@/services/authService'
 import { appStore } from '@/stores/appStorage'
 import ModalComponent from '@/components/ModalComponent.vue'

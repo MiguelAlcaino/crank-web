@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { GiftCardProduct, Product } from '../models/product'
+import { GiftCardProduct, Product } from '../models/Product'
 
 const router = useRouter()
 

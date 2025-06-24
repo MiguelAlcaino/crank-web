@@ -1,5 +1,5 @@
 import { ClassPackageTypeEnum } from '@/gql/graphql'
-import { ClassPackage } from '../models/product'
+import { ClassPackage } from '../models/Product'
 
 export interface SessionsProductGroup {
   type: ClassPackageTypeEnum

@@ -12,7 +12,7 @@ interface TooManyResetPasswordLinkRequestsError {
 </script>
 
 <script setup lang="ts">
-import type { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/ApiService'
 import useVuelidate from '@vuelidate/core'
 import { email, helpers, required } from '@vuelidate/validators'
 import { computed, inject, reactive, ref } from 'vue'

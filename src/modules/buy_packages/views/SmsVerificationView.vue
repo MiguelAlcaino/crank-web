@@ -4,7 +4,7 @@ import { computed, inject, onMounted, reactive, ref } from 'vue'
 import useVuelidate from '@vuelidate/core'
 import { helpers, required } from '@vuelidate/validators'
 import { getFormattedPhoneNumber } from '@/utils/utility-functions'
-import type { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/ApiService'
 import { VueTelInput } from 'vue-tel-input'
 
 import DefaultButtonComponent from '@/components/DefaultButtonComponent.vue'

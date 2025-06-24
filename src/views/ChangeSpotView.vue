@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router'
 
 import dayjs from 'dayjs'
 
-import type { ClassInfo, EnrollmentInfo, BookableSpot } from '@/gql/graphql'
+import type { BookableSpot, ClassInfo, EnrollmentInfo } from '@/gql/graphql'
 
 import ModalComponent from '@/components/ModalComponent.vue'
 
@@ -12,7 +12,7 @@ import SpotMatrix from '@/components/SpotMatrix.vue'
 import YouAreAlreadyEnrolled from '@/components/YouAreAlreadyEnrolled.vue'
 import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
 
-import type { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/ApiService'
 import { appStore } from '@/stores/appStorage'
 import {
   ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW,

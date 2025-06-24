@@ -15,7 +15,7 @@ import YouAreAlreadyEnrolled from '@/components/YouAreAlreadyEnrolled.vue'
 import CancelEnrollment from '@/components/CancelEnrollment.vue'
 import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
 
-import type { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/ApiService'
 import { appStore } from '@/stores/appStorage'
 import {
   ERROR_BOOKING_OVERLAPS_ANOTHER_ONE,

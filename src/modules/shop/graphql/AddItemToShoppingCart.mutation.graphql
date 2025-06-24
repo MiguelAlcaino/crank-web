@@ -2,18 +2,18 @@
 # It returns the updated ShoppingCart on success, or a specific error type on failure.
 
 mutation AddItemToShoppingCart($site: SiteEnum!, $input: ItemToShoppingCartInput!) {
-    addItemToShoppingCart(site: $site, input: $input) {
-        __typename
-        ... on ShoppingCart {
-            # We need a fragment to define the fields we want back for a ShoppingCart
-            ...ShoppingCartFields
-        }
-        ... on ProductNotFound {
-            code
-        }
-        ... on ShoppingCartNotFound {
-            code
-        }
-        # ... include other possible error types from the union if you need to handle them
+  addItemToShoppingCart(site: $site, input: $input) {
+    __typename
+    ... on ShoppingCart {
+      # We need a fragment to define the fields we want back for a ShoppingCart
+      ...ShoppingCartFields
     }
+    ... on ProductNotFound {
+      code
+    }
+    ... on ShoppingCartNotFound {
+      code
+    }
+    # ... include other possible error types from the union if you need to handle them
+  }
 }

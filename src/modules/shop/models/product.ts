@@ -1,23 +1,34 @@
-import { type ProductsQuery, ClassPackageTypeEnum } from '@/gql/graphql'
+import { ClassPackageTypeEnum, type ProductsQuery } from '@/gql/graphql'
+import { formatPrice } from '@/modules/shop/utils/shop-utils'
 
+// Create a reusable utility type for a single product from the API response.
+// This makes the code cleaner and easier to read than repeating ProductsQuery['products'][number].
 type ProductFromQuery = ProductsQuery['products'][number]
 
-// 1. Abstract base class
+/**
+ * An abstract base class representing a generic sellable product.
+ * It encapsulates common properties and logic shared across all product types.
+ * This class is intended to be extended, not instantiated directly.
+ */
 export abstract class Product {
+  // --- Public, immutable properties ---
   public readonly id: string
   public readonly title: string
-  public readonly subtitle: string | null
+  public readonly subtitle: string
   public readonly currency: string
+  public readonly price: number
   public readonly buttonText: string
   public readonly alert?: { title: string; description: string }
 
-  // A property to easily know the type of product
+  // An abstract property that child classes MUST implement.
+  // This is a great way to enforce the product type at the class level.
   public abstract readonly productType: 'class_package' | 'gift_card' | 'unknown'
 
   constructor(data: ProductFromQuery) {
     this.id = data.id
     this.title = data.title
-    this.subtitle = data.subtitle ?? null
+    this.price = data.price ?? 0
+    this.subtitle = data.subtitle ?? ''
     this.currency = data.currency
     this.buttonText = data.buttonText ?? 'Add to Cart'
     this.alert = data.alertBeforePurchasing
@@ -29,14 +40,14 @@ export abstract class Product {
   }
 
   /**
-   * Formats the price to a string in the local currency format.
-   * @param price The price to format.
-   * @returns A formatted string representing the price in the local currency.
+   * Returns the product's price as a formatted currency string by
+   * delegating to the centralized `formatPrice` utility.
+   *
+   * @param locale Optional locale to use for formatting (e.g., 'en-AE').
+   * @returns A formatted string like "AED 150.00".
    */
-  public getFormattedPrice(price: number): string {
-    return new Intl.NumberFormat('en-AE', { style: 'currency', currency: this.currency }).format(
-      price
-    )
+  public getFormattedPrice(locale?: string): string {
+    return formatPrice(this.price, this.currency, locale)
   }
 }
 

@@ -1,10 +1,9 @@
-import type { ApiService } from '@/services/apiService'
 import { computed, onMounted, readonly, ref } from 'vue'
 import { ClassPackageTypeEnum } from '../interfaces'
 import { appStore } from '@/stores/appStorage'
-import { ClassPackage, GiftCardProduct, Product } from '../models/product'
+import { ClassPackage, GiftCardProduct, Product } from '../models/Product'
 import type { SessionsProductGroup } from '../interfaces/sessions-product-group'
-import type { IApiService } from '@/services/api-service.interface'
+import type { IApiService } from '@/services/IApiService'
 
 export const useProducts = (apiService: IApiService) => {
   const isLoading = ref<boolean>(true)

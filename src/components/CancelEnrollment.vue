@@ -9,7 +9,7 @@ enum EnrollmentStatusEnum {
 </script>
 
 <script setup lang="ts">
-import type { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/ApiService'
 import { appStore } from '@/stores/appStorage'
 import { computed, inject, ref } from 'vue'
 

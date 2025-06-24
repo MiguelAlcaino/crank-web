@@ -6,7 +6,7 @@ import ShoppingBagIcon from '@/modules/shop/components/ShoppingBagIcon.vue'
 
 import ProductCard from '../components/ProductCard.vue'
 import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
-import type { IApiService } from '@/services/api-service.interface'
+import type { IApiService } from '@/services/IApiService'
 
 const apiService = inject<IApiService>('gqlApiService')!
 
