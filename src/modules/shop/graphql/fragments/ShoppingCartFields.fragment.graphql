@@ -1,0 +1,35 @@
+# Define a reusable fragment for the ShoppingCart fields.
+# This avoids repetition if other queries/mutations also return a cart.
+fragment ShoppingCartFields on ShoppingCart {
+    id
+    total
+    subTotal
+    currency
+    giftCardCode
+    discountCode
+    items {
+        id
+        quantity
+        subtotal
+        product {
+            __typename
+            id
+            title
+            subtitle
+            price
+            currency
+            buttonText
+            isVisible
+            alertBeforePurchasing {
+                title
+                description
+            }
+            ... on ClassPackageProduct {
+                type
+            }
+            ... on GiftCard {
+                purchaseUrl
+            }
+        }
+    }
+}

@@ -1,0 +1,16 @@
+# This query fetches the complete shopping cart for the currently authenticated user
+# for a given site. It utilizes the ShoppingCartFields fragment to ensure
+# a consistent data shape for the cart across the application.
+
+# Import the fragment from its own file. This is a best practice.
+#import "./fragments/ShoppingCartFields.fragment.graphql"
+
+query GetShoppingCart($site: SiteEnum!) {
+    currentUser {
+        # We only need the shopping cart from the currentUser object
+        shoppingCart(site: $site) {
+            # Spread the fragment here to include all the fields defined in it.
+            ...ShoppingCartFields
+        }
+    }
+}
