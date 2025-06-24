@@ -5,20 +5,21 @@ const env = loadEnv('development', process.cwd(), '')
 const config: CodegenConfig = {
   overwrite: true,
   schema: env.VITE_CRANK_GRAPHQL_SERVER_URL,
-  documents: ['src/**/*.vue', 'src/**/*.ts'],
+  documents: ['src/**/*.vue', 'src/**/*.ts', 'src/**/*.graphql'],
   generates: {
     './src/gql/': {
       preset: 'client',
       plugins: [],
-      config: { 
+      config: {
         nonOptionalTypename: true,
-        useTypeImports: true,    
-        preResolveTypes: true}
+        useTypeImports: true,
+        preResolveTypes: true
+      }
     },
     './graphql.schema.json': {
       plugins: ['introspection']
     }
-  }, 
+  }
 }
 
 export default config
