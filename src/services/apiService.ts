@@ -35,6 +35,9 @@ import {
   type GetShoppingCartQueryVariables,
   type IsSmsValidationCodeValidUnion,
   type ItemToShoppingCartInput,
+  LockShoppingCartDocument,
+  type LockShoppingCartMutation,
+  type LockShoppingCartMutationVariables,
   type PaginatedClassStats,
   type PaginatedEnrollments,
   type PaginatedPurchases,
@@ -1801,6 +1804,40 @@ export class ApiService implements IApiService {
     } catch (error) {
       // Error de red o cualquier otro error. Lo registramos y lo relanzamos.
       console.error('ApiService.clearShoppingCart failed:', error)
+      throw error
+    }
+  }
+
+  public async lockShoppingCart(site: SiteEnum): Promise<boolean> {
+    try {
+      const { data, errors } = await this.authApiClient.mutate<
+        LockShoppingCartMutation,
+        LockShoppingCartMutationVariables
+      >({
+        mutation: LockShoppingCartDocument,
+        variables: { site },
+        fetchPolicy: 'network-only' // Es una acción de estado, siempre ir a la red.
+      })
+
+      if (errors && errors.length > 0) {
+        throw new ApiError(
+          `GraphQL error locking the cart: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      // La respuesta de esta mutación es directamente el booleano.
+      // Si `data` o `data.lockShoppingCart` es null/undefined, es un error del servidor.
+      if (typeof data?.lockShoppingCart !== 'boolean') {
+        throw new Error(
+          'Did not receive a valid boolean response from the server when locking the cart.'
+        )
+      }
+
+      // Devuelve el booleano directamente.
+      return data.lockShoppingCart
+    } catch (error) {
+      // Relanzamos cualquier error para que la capa superior lo maneje.
+      console.error('ApiService.lockShoppingCart failed:', error)
       throw error
     }
   }

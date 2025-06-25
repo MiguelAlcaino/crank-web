@@ -482,4 +482,12 @@ export interface IApiService {
    * @returns A Promise that resolves with the empty ShoppingCartModel instance.
    */
   clearShoppingCart(site: SiteEnum): Promise<ShoppingCartModel>
+
+  /**
+   * Locks the user's shopping cart to prevent modifications during payment.
+   * @param site The site where the cart exists.
+   * @returns A Promise that resolves with `true` on success.
+   * @throws An ApiError if the operation fails.
+   */
+  lockShoppingCart(site: SiteEnum): Promise<boolean>
 }

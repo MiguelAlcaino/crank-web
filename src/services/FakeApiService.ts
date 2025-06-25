@@ -285,7 +285,11 @@ export class FakeApiService implements IApiService {
     throw new Error('Method not implemented.')
   }
 
-  public async clearShoppingCart(site: SiteEnum): Promise<ShoppingCartModel> {
+  clearShoppingCart(site: SiteEnum): Promise<ShoppingCartModel> {
+    throw new Error('Method not implemented.')
+  }
+
+  lockShoppingCart(site: SiteEnum): Promise<boolean> {
     throw new Error('Method not implemented.')
   }
 }

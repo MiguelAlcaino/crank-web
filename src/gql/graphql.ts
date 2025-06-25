@@ -1997,6 +1997,12 @@ export type GetShoppingCartQuery = {
   } | null
 }
 
+export type LockShoppingCartMutationVariables = Exact<{
+  site: SiteEnum
+}>
+
+export type LockShoppingCartMutation = { __typename: 'Mutation'; lockShoppingCart: boolean }
+
 export type PaymentTransactionStatusQueryVariables = Exact<{
   input: PaymentTransactionStatusInput
 }>
@@ -3426,6 +3432,42 @@ export const GetShoppingCartDocument = {
     ...ShoppingCartFieldsFragmentDoc.definitions
   ]
 } as unknown as DocumentNode<GetShoppingCartQuery, GetShoppingCartQueryVariables>
+export const LockShoppingCartDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'LockShoppingCart' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'lockShoppingCart' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<LockShoppingCartMutation, LockShoppingCartMutationVariables>
 export const PaymentTransactionStatusDocument = {
   kind: 'Document',
   definitions: [
