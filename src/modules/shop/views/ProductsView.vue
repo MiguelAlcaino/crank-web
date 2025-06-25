@@ -57,9 +57,12 @@ const { productIdsInCart, addToCart } = useShoppingCart(apiService)
 
     <!-- Main Content -->
     <div class="flex-grow-1 bg-light p-2 overflow-auto">
-      <div class="shopping-bag-icon">
-        <ShoppingBagIcon></ShoppingBagIcon>
+      <div class="d-flex justify-content-end align-items-center mb-4 w-100">
+        <div class="shopping-bag-icon">
+          <ShoppingBagIcon></ShoppingBagIcon>
+        </div>
       </div>
+
       <div class="text-center mb-3">
         <h4 class="font-weight-bold">THE GREAT DEALS</h4>
         <p class="text-muted">XX CREDITS LEFT</p>
@@ -134,7 +137,6 @@ const { productIdsInCart, addToCart } = useShoppingCart(apiService)
 <style lang="css" scoped src="@/assets/main.css"></style>
 <style scoped>
 .shopping-bag-icon {
-  position: fixed;
   top: 20px;
   right: 20px;
   z-index: 1000;
