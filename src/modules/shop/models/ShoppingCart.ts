@@ -28,6 +28,23 @@ export class ShoppingCartItem {
     this.subtotal = gqlItem.subtotal ?? null
     this.product = createProductModel(gqlItem.product as unknown as ProductFromQuery)
   }
+
+  /**
+   * Getter to calculate the total price for this line item.
+   * @returns The total price (product.price * quantity).
+   */
+  public get lineItemTotal(): number {
+    const price = this.product.price || 0
+    return price * this.quantity
+  }
+
+  /**
+   * Returns the total for this line item as a formatted string.
+   * @returns A string representing the formatted price.
+   */
+  public getFormattedLineItemTotal(): string {
+    return formatPrice(this.lineItemTotal, this.product.currency)
+  }
 }
 
 /**
