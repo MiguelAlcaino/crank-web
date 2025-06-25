@@ -278,7 +278,7 @@ export class FakeApiService implements IApiService {
     throw new Error('Method not implemented.')
   }
 
-  paymentTransactionStatus(merchantReference: string): Promise<PaymentTransactionResponse> {
+  checkTransactionStatus(merchantReference: string): Promise<PaymentTransactionResponse> {
     throw new Error('Method not implemented.')
   }
 

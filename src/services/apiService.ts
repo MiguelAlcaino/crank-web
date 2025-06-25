@@ -38,8 +38,11 @@ import {
   type PaginationInput,
   type PayfortFormInput,
   type PayfortFormResult,
+  PaymentTransactionStatusDocument,
+  PaymentTransactionStatusEnum,
   type PaymentTransactionStatusInput,
-  type PaymentTransactionUnion,
+  type PaymentTransactionStatusQuery,
+  type PaymentTransactionStatusQueryVariables,
   type ProductType,
   type RegisterUserInput,
   type RejectLateBookingResultUnion,
@@ -72,7 +75,6 @@ import { ApolloClient, ApolloError } from '@apollo/client/core'
 import { CustomCalendarClasses } from '@/model/CustomCalendarClasses'
 import { SmsValidationResponse } from '@/modules/buy_packages/models/sms-validation-response'
 import { IsSmsValidationCodeValidResponse } from '@/modules/buy_packages/models/is-sms-validation-code-valid-response'
-import { PaymentTransactionResponse } from '@/modules/shop/models/payment-transaction-response'
 import type { IApiService } from './IApiService'
 import type { Product } from '@/modules/shop/models/Product'
 import { createProductModel } from '@/modules/shop/factories/productFactory'
@@ -1682,41 +1684,50 @@ export class ApiService implements IApiService {
     }
   }
 
-  async paymentTransactionStatus(merchantReference: string): Promise<PaymentTransactionResponse> {
-    const input = { merchantReference } as PaymentTransactionStatusInput
-
-    const query = gql`
-      query PaymentTransactionStatus($input: PaymentTransactionStatusInput) {
-        paymentTransactionStatus(input: $input) {
-          ... on PaymentTransactionStatus {
-            status
-          }
-          ... on TemporalTransactionNotFound {
-            code
-          }
-        }
-      }
-    `
+  async checkTransactionStatus(merchantReference: string): Promise<PaymentTransactionStatusEnum> {
+    const input: PaymentTransactionStatusInput = { merchantReference }
 
     try {
-      const result = await this.authApiClient.query({
-        query: query,
+      const { data, errors } = await this.authApiClient.query<
+        PaymentTransactionStatusQuery,
+        PaymentTransactionStatusQueryVariables
+      >({
+        query: PaymentTransactionStatusDocument,
         variables: { input },
         fetchPolicy: 'network-only'
       })
 
-      const paymentTransaction = result.data.PaymentTransactionStatus as PaymentTransactionUnion
-
-      if (paymentTransaction.__typename === 'PaymentTransactionStatus') {
-        return new PaymentTransactionResponse(
-          paymentTransaction.__typename,
-          paymentTransaction.status
+      if (errors && errors.length > 0) {
+        throw new ApiError(
+          `GraphQL error fetching transaction status: ${errors.map((e) => e.message).join(', ')}`
         )
+      }
+
+      const result = data?.paymentTransactionStatus
+
+      if (!result) {
+        throw new Error('Did not receive a valid response from the server for transaction status.')
+      }
+
+      if (result.__typename === 'PaymentTransactionStatus') {
+        // --- Success Path ---
+        // The query was successful, return the status enum directly.
+        return result.status
       } else {
-        return new PaymentTransactionResponse(paymentTransaction.__typename ?? 'UnknownError')
+        // --- Business Logic Error Path ---
+        // The API returned a specific error, like 'TemporalTransactionNotFound'.
+        // We throw a structured error for the UI to handle.
+        const errorCode = (result as { code?: string }).code ?? 'UnknownBusinessError'
+        throw new ApiError(
+          `Could not get transaction status. API returned error: ${result.__typename}`,
+          errorCode
+        )
       }
     } catch (error) {
-      return new PaymentTransactionResponse('UnknownError')
+      // --- Network/GraphQL Error Path ---
+      // Catch and re-throw any error for the calling function to handle.
+      console.error('ApiService.paymentTransactionStatus failed:', error)
+      throw error
     }
   }
 

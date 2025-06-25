@@ -1934,6 +1934,17 @@ export type GetShoppingCartQuery = {
   } | null
 }
 
+export type PaymentTransactionStatusQueryVariables = Exact<{
+  input: PaymentTransactionStatusInput
+}>
+
+export type PaymentTransactionStatusQuery = {
+  __typename: 'Query'
+  paymentTransactionStatus:
+    | { __typename: 'PaymentTransactionStatus'; status: PaymentTransactionStatusEnum }
+    | { __typename: 'TemporalTransactionNotFound'; code: string }
+}
+
 export type RemoveItemFromShoppingCartMutationVariables = Exact<{
   site: SiteEnum
   shoppingCartItemId: Scalars['ID']
@@ -2844,17 +2855,6 @@ export type CurrentUserSitesWithNamesQuery = {
   availableSites?: Array<{ __typename: 'Site'; name: string; code: SiteEnum }> | null
 }
 
-export type PaymentTransactionStatusQueryVariables = Exact<{
-  input?: InputMaybe<PaymentTransactionStatusInput>
-}>
-
-export type PaymentTransactionStatusQuery = {
-  __typename: 'Query'
-  paymentTransactionStatus:
-    | { __typename: 'PaymentTransactionStatus'; status: PaymentTransactionStatusEnum }
-    | { __typename: 'TemporalTransactionNotFound'; code: string }
-}
-
 export const ProductFieldsFragmentDoc = {
   kind: 'Document',
   definitions: [
@@ -3293,6 +3293,73 @@ export const GetShoppingCartDocument = {
     ...ShoppingCartFieldsFragmentDoc.definitions
   ]
 } as unknown as DocumentNode<GetShoppingCartQuery, GetShoppingCartQueryVariables>
+export const PaymentTransactionStatusDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'PaymentTransactionStatus' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'PaymentTransactionStatusInput' }
+            }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'paymentTransactionStatus' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'PaymentTransactionStatus' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'status' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'TemporalTransactionNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<PaymentTransactionStatusQuery, PaymentTransactionStatusQueryVariables>
 export const RemoveItemFromShoppingCartDocument = {
   kind: 'Document',
   definitions: [
@@ -6185,66 +6252,3 @@ export const CurrentUserSitesWithNamesDocument = {
   CurrentUserSitesWithNamesQuery,
   CurrentUserSitesWithNamesQueryVariables
 >
-export const PaymentTransactionStatusDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'PaymentTransactionStatus' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
-          type: {
-            kind: 'NamedType',
-            name: { kind: 'Name', value: 'PaymentTransactionStatusInput' }
-          }
-        }
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'paymentTransactionStatus' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'input' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
-              }
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'InlineFragment',
-                  typeCondition: {
-                    kind: 'NamedType',
-                    name: { kind: 'Name', value: 'PaymentTransactionStatus' }
-                  },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'status' } }]
-                  }
-                },
-                {
-                  kind: 'InlineFragment',
-                  typeCondition: {
-                    kind: 'NamedType',
-                    name: { kind: 'Name', value: 'TemporalTransactionNotFound' }
-                  },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
-    }
-  ]
-} as unknown as DocumentNode<PaymentTransactionStatusQuery, PaymentTransactionStatusQueryVariables>

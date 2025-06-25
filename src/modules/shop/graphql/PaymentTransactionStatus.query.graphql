@@ -1,0 +1,14 @@
+# This query fetches the status of a specific payment transaction by its merchant reference.
+# It returns the status enum on success, or a specific error if the transaction is not found.
+
+query PaymentTransactionStatus($input: PaymentTransactionStatusInput!) {
+  paymentTransactionStatus(input: $input) {
+    __typename
+    ... on PaymentTransactionStatus {
+      status
+    }
+    ... on TemporalTransactionNotFound {
+      code
+    }
+  }
+}

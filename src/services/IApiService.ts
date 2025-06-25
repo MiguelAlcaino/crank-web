@@ -17,6 +17,7 @@ import type {
   PaginatedEnrollments,
   PaginatedPurchases,
   PaginationInput,
+  PaymentTransactionStatusEnum,
   RegisterUserInput,
   RejectLateBookingResultUnion,
   RemoveCurrentUserFromWaitlistInput,
@@ -34,7 +35,6 @@ import type {
 import type { CustomCalendarClasses } from '@/model/CustomCalendarClasses'
 import type { SmsValidationResponse } from '@/modules/buy_packages/models/sms-validation-response'
 import type { IsSmsValidationCodeValidResponse } from '@/modules/buy_packages/models/is-sms-validation-code-valid-response'
-import type { PaymentTransactionResponse } from '@/modules/shop/models/payment-transaction-response'
 import type { Product } from '@/modules/shop/models/Product'
 import type { AppProductType } from '@/modules/shop/models/types'
 import type { SiteEnum } from '@/modules/shared/interfaces/site.enum'
@@ -455,11 +455,14 @@ export interface IApiService {
   getCurrentUserSitesWithNames(): Promise<Site[]>
 
   /**
-   * Queries the status of a payment transaction.
-   * @param merchantReference The merchant reference of the transaction.
-   * @returns A promise that resolves with the transaction status response.
+   * Fetches the status of a specific payment transaction.
+   * On success, it returns the status enum directly.
+   * On failure (e.g., transaction not found), it throws an ApiError.
+   *
+   * @param merchantReference The merchant reference ID of the transaction to check.
+   * @returns A Promise that resolves with the PaymentTransactionStatusEnum.
    */
-  paymentTransactionStatus(merchantReference: string): Promise<PaymentTransactionResponse>
+  checkTransactionStatus(merchantReference: string): Promise<PaymentTransactionStatusEnum>
 
   /**
    * Fetches the current user's shopping cart for a specific site.
