@@ -34,6 +34,23 @@ export const useShoppingCart = (apiService: IApiService) => {
   }
 
   /**
+   * A generic handler for any mutation that returns an updated shopping cart.
+   * It manages the isUpdating and error states automatically.
+   * @param updatePromise The promise returned from an ApiService method.
+   */
+  const handleCartUpdate = async (updatePromise: Promise<ShoppingCart>) => {
+    isUpdating.value = true
+    error.value = null
+    try {
+      shoppingCart.value = await updatePromise
+    } catch (e) {
+      error.value = e as ApiError | Error
+    } finally {
+      isUpdating.value = false
+    }
+  }
+
+  /**
    * Adds an item to the shopping cart and updates the local state.
    * Manages loading and error states for the operation.
    * @param sellableProductId The ID of the product to add.
@@ -76,49 +93,29 @@ export const useShoppingCart = (apiService: IApiService) => {
     }
   }
 
+  /**
+   * Removes an item from the shopping cart and updates the local state.
+   * @param shoppingCartItemId The ID of the cart item to remove.
+   */
   const removeFromCart = async (shoppingCartItemId: string) => {
-    hasError.value = false
-    isLoading.value = true
-
-    try {
-      const result = await apiService.removeItemFromShoppingCart(
-        appStore().site,
-        shoppingCartItemId
-      )
-
-      if (result.success && result.shoppingCart) {
-        //shoppingCart.value = result.shoppingCart
-      } else {
-        // Handle error case
-        console.error('Failed to remove item from cart:', result.message)
-      }
-    } catch (error) {
-      hasError.value = true
-    } finally {
-      isLoading.value = false
-    }
+    await handleCartUpdate(
+      apiService.removeItemFromShoppingCart(appStore().site, shoppingCartItemId)
+    )
   }
 
-  const updateItemInShoppingCart = async (sellableProductId: string, quantity: number) => {
-    hasError.value = false
-    isLoading.value = true
-
-    try {
-      const result = await apiService.updateItemInShoppingCart(
-        appStore().site,
-        sellableProductId,
-        quantity
-      )
-
-      if (result.success && result.shoppingCart) {
-        // shoppingCart.value = result.shoppingCart
-      } else {
-      }
-    } catch (error) {
-      hasError.value = true
-    } finally {
-      isLoading.value = false
+  /**
+   * Updates the quantity of an item in the shopping cart.
+   * @param payload An object containing the productId and the new quantity.
+   */
+  const updateItemInCart = async (payload: { productId: string; quantity: number }) => {
+    if (payload.quantity <= 0) {
+      console.warn('updateItemInCart: Invalid quantity provided. Must be a number greater than 0.')
+      return
     }
+
+    await handleCartUpdate(
+      apiService.updateItemInShoppingCart(appStore().site, payload.productId, payload.quantity)
+    )
   }
 
   const productIdsInCart = computed(() => {
@@ -154,6 +151,6 @@ export const useShoppingCart = (apiService: IApiService) => {
     // Methods
     addToCart,
     removeFromCart,
-    updateItemInShoppingCart
+    updateItemInCart
   }
 }

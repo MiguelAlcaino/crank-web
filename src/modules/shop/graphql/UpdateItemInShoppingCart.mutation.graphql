@@ -1,0 +1,21 @@
+# Import the shared fragment for a consistent cart data shape.
+#import "./fragments/ShoppingCartFields.fragment.graphql"
+
+# This mutation updates the quantity of an existing item in the shopping cart.
+# It returns the fully updated ShoppingCart on success.
+mutation UpdateItemInShoppingCart($site: SiteEnum!, $input: ItemToShoppingCartInput!) {
+  updateItemInShoppingCart(site: $site, input: $input) {
+    __typename
+    # On success, return the updated cart using our consistent fragment.
+    ... on ShoppingCart {
+      ...ShoppingCartFields
+    }
+    # Handle possible business logic errors.
+    ... on ShoppingCartItemNotFound {
+      code
+    }
+    ... on ShoppingCartNotFound {
+      code
+    }
+  }
+}

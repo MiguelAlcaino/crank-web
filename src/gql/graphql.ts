@@ -1740,6 +1740,44 @@ export type GetShoppingCartQuery = {
   } | null
 }
 
+export type RemoveItemFromShoppingCartMutationVariables = Exact<{
+  site: SiteEnum
+  shoppingCartItemId: Scalars['ID']
+}>
+
+export type RemoveItemFromShoppingCartMutation = {
+  __typename: 'Mutation'
+  removeItemFromShoppingCart:
+    | { __typename: 'DiscountCodeIsEmpty' }
+    | { __typename: 'DiscountCodeIsInvalid' }
+    | { __typename: 'ProductNotFound' }
+    | ({ __typename: 'ShoppingCart' } & {
+        ' $fragmentRefs'?: { ShoppingCartFieldsFragment: ShoppingCartFieldsFragment }
+      })
+    | { __typename: 'ShoppingCartIsEmpty'; code: string }
+    | { __typename: 'ShoppingCartItemNotFound'; code: string }
+    | { __typename: 'ShoppingCartNotFound'; code: string }
+}
+
+export type UpdateItemInShoppingCartMutationVariables = Exact<{
+  site: SiteEnum
+  input: ItemToShoppingCartInput
+}>
+
+export type UpdateItemInShoppingCartMutation = {
+  __typename: 'Mutation'
+  updateItemInShoppingCart:
+    | { __typename: 'DiscountCodeIsEmpty' }
+    | { __typename: 'DiscountCodeIsInvalid' }
+    | { __typename: 'ProductNotFound' }
+    | ({ __typename: 'ShoppingCart' } & {
+        ' $fragmentRefs'?: { ShoppingCartFieldsFragment: ShoppingCartFieldsFragment }
+      })
+    | { __typename: 'ShoppingCartIsEmpty' }
+    | { __typename: 'ShoppingCartItemNotFound'; code: string }
+    | { __typename: 'ShoppingCartNotFound'; code: string }
+}
+
 export type ShoppingCartFieldsFragment = {
   __typename: 'ShoppingCart'
   id: string
@@ -2495,63 +2533,6 @@ export type ProductsQuery = {
   >
 }
 
-export type CurrentUserShoppingCartQueryVariables = Exact<{
-  site: SiteEnum
-}>
-
-export type CurrentUserShoppingCartQuery = {
-  __typename: 'Query'
-  currentUser?: {
-    __typename: 'User'
-    shoppingCart: {
-      __typename: 'ShoppingCart'
-      id: string
-      total?: number | null
-      currency: string
-      subTotal?: number | null
-      giftCardCode?: string | null
-      discountCode?: string | null
-      items: Array<{
-        __typename: 'ShoppingCartItem'
-        id: string
-        quantity: number
-        subtotal?: number | null
-      }>
-    }
-  } | null
-}
-
-export type RemoveItemFromShoppingCartMutationVariables = Exact<{
-  site: SiteEnum
-  shoppingCartItemId: Scalars['ID']
-}>
-
-export type RemoveItemFromShoppingCartMutation = {
-  __typename: 'Mutation'
-  removeItemFromShoppingCart:
-    | { __typename: 'DiscountCodeIsEmpty' }
-    | { __typename: 'DiscountCodeIsInvalid' }
-    | { __typename: 'ProductNotFound'; code: string }
-    | {
-        __typename: 'ShoppingCart'
-        id: string
-        total?: number | null
-        currency: string
-        subTotal?: number | null
-        giftCardCode?: string | null
-        discountCode?: string | null
-        items: Array<{
-          __typename: 'ShoppingCartItem'
-          id: string
-          quantity: number
-          subtotal?: number | null
-        }>
-      }
-    | { __typename: 'ShoppingCartIsEmpty'; code: string }
-    | { __typename: 'ShoppingCartItemNotFound'; code: string }
-    | { __typename: 'ShoppingCartNotFound'; code: string }
-}
-
 export type CalculateTotalForShoppingCartQueryVariables = Exact<{
   site: SiteEnum
 }>
@@ -2857,6 +2838,211 @@ export const GetShoppingCartDocument = {
     ...ShoppingCartFieldsFragmentDoc.definitions
   ]
 } as unknown as DocumentNode<GetShoppingCartQuery, GetShoppingCartQueryVariables>
+export const RemoveItemFromShoppingCartDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'RemoveItemFromShoppingCart' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'shoppingCartItemId' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'removeItemFromShoppingCart' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'shoppingCartItemId' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'shoppingCartItemId' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCart' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'FragmentSpread',
+                        name: { kind: 'Name', value: 'ShoppingCartFields' }
+                      }
+                    ]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartItemNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartIsEmpty' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    ...ShoppingCartFieldsFragmentDoc.definitions
+  ]
+} as unknown as DocumentNode<
+  RemoveItemFromShoppingCartMutation,
+  RemoveItemFromShoppingCartMutationVariables
+>
+export const UpdateItemInShoppingCartDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'UpdateItemInShoppingCart' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ItemToShoppingCartInput' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'updateItemInShoppingCart' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCart' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'FragmentSpread',
+                        name: { kind: 'Name', value: 'ShoppingCartFields' }
+                      }
+                    ]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartItemNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    ...ShoppingCartFieldsFragmentDoc.definitions
+  ]
+} as unknown as DocumentNode<
+  UpdateItemInShoppingCartMutation,
+  UpdateItemInShoppingCartMutationVariables
+>
 export const SiteSettingsDocument = {
   kind: 'Document',
   definitions: [
@@ -5493,206 +5679,6 @@ export const ProductsDocument = {
     }
   ]
 } as unknown as DocumentNode<ProductsQuery, ProductsQueryVariables>
-export const CurrentUserShoppingCartDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'currentUserShoppingCart' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
-          }
-        }
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'currentUser' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'shoppingCart' },
-                  arguments: [
-                    {
-                      kind: 'Argument',
-                      name: { kind: 'Name', value: 'site' },
-                      value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
-                    }
-                  ],
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'total' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'currency' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'subTotal' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'giftCardCode' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'discountCode' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'items' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'quantity' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'subtotal' } }
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
-    }
-  ]
-} as unknown as DocumentNode<CurrentUserShoppingCartQuery, CurrentUserShoppingCartQueryVariables>
-export const RemoveItemFromShoppingCartDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'RemoveItemFromShoppingCart' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
-          }
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'shoppingCartItemId' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } }
-          }
-        }
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'removeItemFromShoppingCart' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'site' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'shoppingCartItemId' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'shoppingCartItemId' } }
-              }
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
-                {
-                  kind: 'InlineFragment',
-                  typeCondition: {
-                    kind: 'NamedType',
-                    name: { kind: 'Name', value: 'ShoppingCart' }
-                  },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'total' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'currency' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'subTotal' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'giftCardCode' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'discountCode' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'items' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'quantity' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'subtotal' } }
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                },
-                {
-                  kind: 'InlineFragment',
-                  typeCondition: {
-                    kind: 'NamedType',
-                    name: { kind: 'Name', value: 'ProductNotFound' }
-                  },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
-                  }
-                },
-                {
-                  kind: 'InlineFragment',
-                  typeCondition: {
-                    kind: 'NamedType',
-                    name: { kind: 'Name', value: 'ShoppingCartNotFound' }
-                  },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
-                  }
-                },
-                {
-                  kind: 'InlineFragment',
-                  typeCondition: {
-                    kind: 'NamedType',
-                    name: { kind: 'Name', value: 'ShoppingCartIsEmpty' }
-                  },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
-                  }
-                },
-                {
-                  kind: 'InlineFragment',
-                  typeCondition: {
-                    kind: 'NamedType',
-                    name: { kind: 'Name', value: 'ShoppingCartItemNotFound' }
-                  },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
-    }
-  ]
-} as unknown as DocumentNode<
-  RemoveItemFromShoppingCartMutation,
-  RemoveItemFromShoppingCartMutationVariables
->
 export const CalculateTotalForShoppingCartDocument = {
   kind: 'Document',
   definitions: [

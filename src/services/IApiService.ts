@@ -35,7 +35,6 @@ import type { CustomCalendarClasses } from '@/model/CustomCalendarClasses'
 import type { SmsValidationResponse } from '@/modules/buy_packages/models/sms-validation-response'
 import type { IsSmsValidationCodeValidResponse } from '@/modules/buy_packages/models/is-sms-validation-code-valid-response'
 import type { ShoppingCartResult } from '@/modules/shop/interfaces/shopping-cart-result'
-import type { ShoppingCart } from '@/modules/shop/interfaces'
 import type { PaymentTransactionResponse } from '@/modules/shop/models/payment-transaction-response'
 import type { Product } from '@/modules/shop/models/Product'
 import type { AppProductType } from '@/modules/shop/models/types'
@@ -361,13 +360,6 @@ export interface IApiService {
   getProducts(site: SiteEnum, options?: { type?: AppProductType }): Promise<Product[]>
 
   /**
-   * Fetches the current user's shopping cart for a specific site.
-   * @param site The site of the cart.
-   * @returns A promise that resolves with the shopping cart or null.
-   */
-  fetchUserCart(site: SiteEnum): Promise<ShoppingCart | null>
-
-  /**
    * Adds an item to the user's shopping cart.
    * On success, it returns a new instance of the domain ShoppingCartModel.
    * On failure, it throws an ApiError for business logic errors or a generic Error for network issues.
@@ -384,28 +376,31 @@ export interface IApiService {
   ): Promise<ShoppingCartModel>
 
   /**
-   * Removes an item from the shopping cart.
-   * @param site The site of the cart.
+   * Removes an item from the user's shopping cart.
+   * On success, it returns the updated ShoppingCartModel instance.
+   * On failure, it throws an ApiError for business logic errors or a generic Error for network issues.
+   *
+   * @param site The site where the cart exists.
    * @param shoppingCartItemId The ID of the cart item to remove.
-   * @returns A promise that resolves with the result of the cart operation.
+   * @returns A Promise that resolves with the updated ShoppingCartModel instance.
    */
-  removeItemFromShoppingCart(
-    site: SiteEnum,
-    shoppingCartItemId: string
-  ): Promise<ShoppingCartResult>
+  removeItemFromShoppingCart(site: SiteEnum, shoppingCartItemId: string): Promise<ShoppingCartModel>
 
   /**
-   * Updates the quantity of an item in the shopping cart.
-   * @param site The site of the cart.
+   * Updates the quantity of an item in the user's shopping cart.
+   * On success, it returns the updated ShoppingCartModel instance.
+   * On failure, it throws an ApiError for business logic errors or a generic Error for network issues.
+   *
+   * @param site The site where the cart exists.
    * @param sellableProductId The ID of the product to update.
-   * @param quantity The new quantity.
-   * @returns A promise that resolves with the result of the cart operation.
+   * @param quantity The new quantity for the item.
+   * @returns A Promise that resolves with the updated ShoppingCartModel instance.
    */
   updateItemInShoppingCart(
     site: SiteEnum,
     sellableProductId: string,
     quantity: number
-  ): Promise<ShoppingCartResult>
+  ): Promise<ShoppingCartModel>
 
   /**
    * Adds a gift card code to the shopping cart.

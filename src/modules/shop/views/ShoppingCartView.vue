@@ -9,7 +9,7 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const apiService = inject<ApiService>('gqlApiService')!
 
-const { shoppingCart, removeFromCart, updateItemInShoppingCart, calculatedSubtotal } =
+const { shoppingCart, removeFromCart, updateItemInCart, calculatedSubtotal } =
   useShoppingCart(apiService)
 
 const emit = defineEmits(['update:modelValue', 'removeItem'])
@@ -27,11 +27,10 @@ const handleRemoveItem = (shoppingCartItemId: string) => {
   }
 }
 
-const handleUpdateItem = (sellableProductId: string, quantity: number) => {
-  console.log(sellableProductId, quantity)
-  const item = shoppingCart.value?.items.find((item) => item.product.id === sellableProductId)
+const handleUpdateQuantity = (payload: { productId: string; quantity: number }) => {
+  const item = shoppingCart.value?.items.find((item) => item.product.id === payload.productId)
   if (item) {
-    updateItemInShoppingCart(sellableProductId, quantity)
+    updateItemInCart(payload)
   }
 }
 
@@ -49,7 +48,7 @@ const checkout = () => {
           <ShoppingCartItem
             :shopping-cart-item="shoppingCartItem"
             @remove-item="handleRemoveItem"
-            @update-item="handleUpdateItem"
+            @update-item="handleUpdateQuantity"
           >
           </ShoppingCartItem>
           <hr />

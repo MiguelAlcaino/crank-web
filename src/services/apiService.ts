@@ -41,6 +41,9 @@ import {
   type RejectLateBookingResultUnion,
   type RejectLateCancelledSpotInClassInput,
   type RemoveCurrentUserFromWaitlistInput,
+  RemoveItemFromShoppingCartDocument,
+  type RemoveItemFromShoppingCartMutation,
+  type RemoveItemFromShoppingCartMutationVariables,
   type RemoveUserFromWaitlistInput,
   type RemoveUserFromWaitlistUnion,
   type RequestPasswordLinkInput,
@@ -54,6 +57,9 @@ import {
   type SiteSetting,
   type SmsValidationUnion,
   type UpdateCurrentUserPasswordInput,
+  UpdateItemInShoppingCartDocument,
+  type UpdateItemInShoppingCartMutation,
+  type UpdateItemInShoppingCartMutationVariables,
   type User,
   type UserInClassRanking,
   type UserInput,
@@ -64,7 +70,6 @@ import { CustomCalendarClasses } from '@/model/CustomCalendarClasses'
 import { SmsValidationResponse } from '@/modules/buy_packages/models/sms-validation-response'
 import { IsSmsValidationCodeValidResponse } from '@/modules/buy_packages/models/is-sms-validation-code-valid-response'
 import { ShoppingCartResult } from '@/modules/shop/interfaces/shopping-cart-result'
-import type { ShoppingCart } from '@/modules/shop/interfaces'
 import { PaymentTransactionResponse } from '@/modules/shop/models/payment-transaction-response'
 import type { IApiService } from './IApiService'
 import type { Product } from '@/modules/shop/models/Product'
@@ -1393,44 +1398,6 @@ export class ApiService implements IApiService {
     }
   }
 
-  async fetchUserCart(site: SiteEnum): Promise<ShoppingCart | null> {
-    try {
-      const query = gql`
-        query currentUserShoppingCart($site: SiteEnum!) {
-          currentUser {
-            shoppingCart(site: $site) {
-              id
-              total
-              currency
-              subTotal
-              giftCardCode
-              discountCode
-              items {
-                id
-                quantity
-                subtotal
-              }
-            }
-          }
-        }
-      `
-
-      const queryResult = await this.authApiClient.query({
-        query: query,
-        fetchPolicy: 'network-only',
-        variables: {
-          site: site
-        }
-      })
-
-      const user = queryResult.data.currentUser as User
-      return null // user.shoppingCart as ShoppingCart
-    } catch (error) {
-      console.log(error)
-      return null
-    }
-  }
-
   async addItemToShoppingCart(
     site: SiteEnum,
     sellableProductId: string,
@@ -1483,63 +1450,49 @@ export class ApiService implements IApiService {
   async removeItemFromShoppingCart(
     site: SiteEnum,
     shoppingCartItemId: string
-  ): Promise<ShoppingCartResult> {
-    const mutation = gql`
-      mutation RemoveItemFromShoppingCart($site: SiteEnum!, $shoppingCartItemId: ID!) {
-        removeItemFromShoppingCart(site: $site, shoppingCartItemId: $shoppingCartItemId) {
-          __typename
-          ... on ShoppingCart {
-            id
-            total
-            currency
-            subTotal
-            giftCardCode
-            discountCode
-            items {
-              id
-              quantity
-              subtotal
-            }
-          }
-          ... on ProductNotFound {
-            code
-          }
-          ... on ShoppingCartNotFound {
-            code
-          }
-          ... on ShoppingCartIsEmpty {
-            code
-          }
-          ... on ShoppingCartItemNotFound {
-            code
-          }
-        }
-      }
-    `
-
+  ): Promise<ShoppingCartModel> {
     try {
-      const result = await this.authApiClient.mutate({
-        mutation: mutation,
+      const { data, errors } = await this.authApiClient.mutate<
+        RemoveItemFromShoppingCartMutation,
+        RemoveItemFromShoppingCartMutationVariables
+      >({
+        mutation: RemoveItemFromShoppingCartDocument,
         variables: {
-          site: site,
-          shoppingCartItemId: shoppingCartItemId
+          site,
+          shoppingCartItemId
         },
         fetchPolicy: 'network-only'
       })
 
-      const shoppingCartResultUnion = result.data
-        .removeItemFromShoppingCart as ShoppingCartResultUnion
+      if (errors) {
+        throw new ApiError(
+          `GraphQL error removing item from cart: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
 
-      if (shoppingCartResultUnion.__typename === 'ShoppingCart') {
-        const shoppingCart = undefined // shoppingCartResultUnion as ShoppingCart
+      const result = data?.removeItemFromShoppingCart
 
-        return new ShoppingCartResult(shoppingCartResultUnion.__typename, shoppingCart)
+      if (!result) {
+        throw new Error('Did not receive a valid response from the server.')
+      }
+
+      if (result.__typename === 'ShoppingCart') {
+        // Success: The API returned the updated cart.
+        // We map the raw DTO to our rich domain model.
+        return createShoppingCartModel(result as GqlShoppingCart)
       } else {
-        return new ShoppingCartResult(shoppingCartResultUnion.__typename)
+        // Business logic error (e.g., ShoppingCartItemNotFound).
+        // We throw a structured error for the UI layer to handle.
+        const errorCode = (result as { code?: string }).code ?? 'UnknownBusinessError'
+        throw new ApiError(
+          `Failed to remove item. API returned error: ${result.__typename}`,
+          errorCode
+        )
       }
     } catch (error) {
-      console.log(error)
-      return new ShoppingCartResult('UnknownError')
+      // Catch and re-throw any error for the calling function to handle.
+      console.error('ApiService.removeItemFromShoppingCart failed:', error)
+      throw error
     }
   }
 
@@ -1547,34 +1500,49 @@ export class ApiService implements IApiService {
     site: SiteEnum,
     sellableProductId: string,
     quantity: number
-  ): Promise<ShoppingCartResult> {
-    const input = { quantity, sellableProductId } as ItemToShoppingCartInput
-
-    const mutation = gql``
+  ): Promise<ShoppingCartModel> {
+    const input: ItemToShoppingCartInput = { sellableProductId, quantity }
 
     try {
-      const result = await this.authApiClient.mutate({
-        mutation: mutation,
+      const { data, errors } = await this.authApiClient.mutate<
+        UpdateItemInShoppingCartMutation,
+        UpdateItemInShoppingCartMutationVariables
+      >({
+        mutation: UpdateItemInShoppingCartDocument,
         variables: {
-          site: site,
-          input: input
+          site,
+          input
         },
         fetchPolicy: 'network-only'
       })
 
-      const shoppingCartResultUnion = result.data
-        .updateItemInShoppingCart as ShoppingCartResultUnion
+      if (errors) {
+        throw new ApiError(
+          `GraphQL error updating item in cart: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
 
-      if (shoppingCartResultUnion.__typename === 'ShoppingCart') {
-        const shoppingCart = undefined // shoppingCartResultUnion as ShoppingCart
+      const result = data?.updateItemInShoppingCart
 
-        return new ShoppingCartResult(shoppingCartResultUnion.__typename, shoppingCart)
+      if (!result) {
+        throw new Error('Did not receive a valid response from the server.')
+      }
+
+      if (result.__typename === 'ShoppingCart') {
+        // Success: Map the raw DTO to our rich domain model.
+        return createShoppingCartModel(result as GqlShoppingCart)
       } else {
-        return new ShoppingCartResult(shoppingCartResultUnion.__typename)
+        // Business logic error: Throw a structured error for the UI to handle.
+        const errorCode = (result as { code?: string }).code ?? 'UnknownBusinessError'
+        throw new ApiError(
+          `Failed to update item. API returned error: ${result.__typename}`,
+          errorCode
+        )
       }
     } catch (error) {
-      console.log(error)
-      return new ShoppingCartResult('UnknownError')
+      // Catch and re-throw any error for the calling function to handle.
+      console.error('ApiService.updateItemInShoppingCart failed:', error)
+      throw error
     }
   }
 

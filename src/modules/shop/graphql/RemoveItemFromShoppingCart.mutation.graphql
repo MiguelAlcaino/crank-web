@@ -1,0 +1,24 @@
+# Import the shared fragment to define the shape of the returned shopping cart.
+#import "./fragments/ShoppingCartFields.fragment.graphql"
+
+# This mutation removes a specific item from the shopping cart.
+# It returns the updated ShoppingCart on success, or an error if the item/cart is not found.
+mutation RemoveItemFromShoppingCart($site: SiteEnum!, $shoppingCartItemId: ID!) {
+  removeItemFromShoppingCart(site: $site, shoppingCartItemId: $shoppingCartItemId) {
+    __typename
+    # On success, return the full, updated shopping cart object.
+    ... on ShoppingCart {
+      ...ShoppingCartFields
+    }
+    # Include possible business logic errors.
+    ... on ShoppingCartItemNotFound {
+      code
+    }
+    ... on ShoppingCartNotFound {
+      code
+    }
+    ... on ShoppingCartIsEmpty {
+      code
+    }
+  }
+}
