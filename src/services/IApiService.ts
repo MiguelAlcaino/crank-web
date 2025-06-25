@@ -34,7 +34,6 @@ import type {
 import type { CustomCalendarClasses } from '@/model/CustomCalendarClasses'
 import type { SmsValidationResponse } from '@/modules/buy_packages/models/sms-validation-response'
 import type { IsSmsValidationCodeValidResponse } from '@/modules/buy_packages/models/is-sms-validation-code-valid-response'
-import type { ShoppingCartResult } from '@/modules/shop/interfaces/shopping-cart-result'
 import type { PaymentTransactionResponse } from '@/modules/shop/models/payment-transaction-response'
 import type { Product } from '@/modules/shop/models/Product'
 import type { AppProductType } from '@/modules/shop/models/types'
@@ -417,11 +416,15 @@ export interface IApiService {
   addDiscountCodeToShoppingCart(discountCode: string): Promise<boolean>
 
   /**
-   * Recalculates the total for the current user's shopping cart.
-   * @param site The site of the cart.
-   * @returns A promise that resolves with the result of the cart operation.
+   * Recalculates the totals for the user's shopping cart and fetches the updated state.
+   * This is typically used after applying discounts or gift cards.
+   * On success, it returns the updated ShoppingCartModel instance.
+   * On failure, it throws an ApiError for business logic errors or a generic Error for network issues.
+   *
+   * @param site The site where the cart exists.
+   * @returns A Promise that resolves with the updated ShoppingCartModel instance.
    */
-  calculateTotalForShoppingCart(site: SiteEnum): Promise<ShoppingCartResult>
+  calculateTotalForShoppingCart(site: SiteEnum): Promise<ShoppingCartModel>
 
   /**
    * Gets the Payfort HTML form to process a payment.

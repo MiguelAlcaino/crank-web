@@ -6,6 +6,9 @@ import {
   type AddItemToShoppingCartMutation,
   type AddItemToShoppingCartMutationVariables,
   type BookClassInput,
+  CalculateTotalForShoppingCartDocument,
+  type CalculateTotalForShoppingCartQuery,
+  type CalculateTotalForShoppingCartQueryVariables,
   type CalendarClassesParams,
   type CancelEnrollmentInput,
   type Class,
@@ -51,7 +54,6 @@ import {
   type ResetPasswordForCurrentUserUnion,
   type ResetPasswordLinkResultUnion,
   type ShoppingCart as GqlShoppingCart,
-  type ShoppingCartResultUnion,
   type SimpleSiteUser,
   type Site,
   type SiteSetting,
@@ -69,7 +71,6 @@ import { ApolloClient, ApolloError } from '@apollo/client/core'
 import { CustomCalendarClasses } from '@/model/CustomCalendarClasses'
 import { SmsValidationResponse } from '@/modules/buy_packages/models/sms-validation-response'
 import { IsSmsValidationCodeValidResponse } from '@/modules/buy_packages/models/is-sms-validation-code-valid-response'
-import { ShoppingCartResult } from '@/modules/shop/interfaces/shopping-cart-result'
 import { PaymentTransactionResponse } from '@/modules/shop/models/payment-transaction-response'
 import type { IApiService } from './IApiService'
 import type { Product } from '@/modules/shop/models/Product'
@@ -1554,61 +1555,48 @@ export class ApiService implements IApiService {
     throw new Error('Method not implemented.')
   }
 
-  async calculateTotalForShoppingCart(site: SiteEnum): Promise<ShoppingCartResult> {
-    const query = gql`
-      query CalculateTotalForShoppingCart($site: SiteEnum!) {
-        calculateTotalForShoppingCart(site: $site) {
-          ... on ShoppingCart {
-            id
-            total
-            currency
-            subTotal
-            giftCardCode
-            discountCode
-            items {
-              id
-              quantity
-              subtotal
-            }
-          }
-          ... on ProductNotFound {
-            code
-          }
-          ... on ShoppingCartNotFound {
-            code
-          }
-          ... on ShoppingCartIsEmpty {
-            code
-          }
-          ... on ShoppingCartItemNotFound {
-            code
-          }
-        }
-      }
-    `
-
+  async calculateTotalForShoppingCart(site: SiteEnum): Promise<ShoppingCartModel> {
     try {
-      const result = await this.authApiClient.query({
-        query: query,
+      const { data, errors } = await this.authApiClient.query<
+        CalculateTotalForShoppingCartQuery,
+        CalculateTotalForShoppingCartQueryVariables
+      >({
+        query: CalculateTotalForShoppingCartDocument,
         variables: {
           site: site
         },
         fetchPolicy: 'network-only'
       })
 
-      const shoppingCartResultUnion = result.data
-        .calculateTotalForShoppingCart as ShoppingCartResultUnion
+      if (errors) {
+        throw new ApiError(
+          `GraphQL error calculating cart total: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
 
-      if (shoppingCartResultUnion.__typename === 'ShoppingCart') {
-        const shoppingCart = undefined // shoppingCartResultUnion as ShoppingCart
+      const result = data?.calculateTotalForShoppingCart
 
-        return new ShoppingCartResult(shoppingCartResultUnion.__typename, shoppingCart)
+      if (!result) {
+        throw new Error('Did not receive a valid response from the server when calculating total.')
+      }
+
+      if (result.__typename === 'ShoppingCart') {
+        // Success: The API returned the cart with updated totals.
+        // We map the raw DTO to our rich domain model.
+        return createShoppingCartModel(result as GqlShoppingCart)
       } else {
-        return new ShoppingCartResult(shoppingCartResultUnion.__typename)
+        // Business logic error (e.g., ShoppingCartIsEmpty, DiscountCodeIsInvalid).
+        // We throw a structured error for the UI layer to handle.
+        const errorCode = (result as { code?: string }).code ?? 'UnknownBusinessError'
+        throw new ApiError(
+          `Could not calculate total. API returned error: ${result.__typename}`,
+          errorCode
+        )
       }
     } catch (error) {
-      console.log(error)
-      return new ShoppingCartResult('UnknownError')
+      // Catch and re-throw any error for the calling function to handle.
+      console.error('ApiService.calculateTotalForShoppingCart failed:', error)
+      throw error
     }
   }
 
