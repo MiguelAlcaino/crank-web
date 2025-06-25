@@ -490,4 +490,14 @@ export interface IApiService {
    * @throws An ApiError if the operation fails.
    */
   lockShoppingCart(site: SiteEnum): Promise<boolean>
+
+  /**
+   * Removes the currently applied discount code from the shopping cart.
+   * On success, it returns the updated ShoppingCartModel instance with recalculated totals.
+   * On failure, it throws an ApiError.
+   *
+   * @param site The site where the cart exists.
+   * @returns A Promise that resolves with the updated ShoppingCartModel instance.
+   */
+  removeDiscountCode(site: SiteEnum): Promise<ShoppingCartModel>
 }

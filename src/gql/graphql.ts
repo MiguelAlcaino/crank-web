@@ -2014,6 +2014,69 @@ export type PaymentTransactionStatusQuery = {
     | { __typename: 'TemporalTransactionNotFound'; code: string }
 }
 
+export type RemoveDiscountCodeMutationVariables = Exact<{
+  site: SiteEnum
+}>
+
+export type RemoveDiscountCodeMutation = {
+  __typename: 'Mutation'
+  removeDiscountCodeForCurrentShoppingCart:
+    | { __typename: 'DiscountCodeIsEmpty' }
+    | { __typename: 'DiscountCodeIsInvalid' }
+    | { __typename: 'ProductNotFound' }
+    | {
+        __typename: 'ShoppingCart'
+        id: string
+        total?: number | null
+        subTotal?: number | null
+        currency: string
+        giftCardCode?: string | null
+        discountCode?: string | null
+        items: Array<{
+          __typename: 'ShoppingCartItem'
+          id: string
+          quantity: number
+          subtotal?: number | null
+          product:
+            | {
+                __typename: 'ClassPackageProduct'
+                type?: ClassPackageTypeEnum | null
+                id: string
+                title: string
+                subtitle?: string | null
+                price: number
+                currency: string
+                buttonText?: string | null
+                isVisible: boolean
+                alertBeforePurchasing?: {
+                  __typename: 'ProductAlertBeforePurchasing'
+                  title: string
+                  description: string
+                } | null
+              }
+            | {
+                __typename: 'GiftCard'
+                purchaseUrl: string
+                id: string
+                title: string
+                subtitle?: string | null
+                price: number
+                currency: string
+                buttonText?: string | null
+                isVisible: boolean
+                alertBeforePurchasing?: {
+                  __typename: 'ProductAlertBeforePurchasing'
+                  title: string
+                  description: string
+                } | null
+              }
+        }>
+      }
+    | { __typename: 'ShoppingCartIsEmpty'; code: string }
+    | { __typename: 'ShoppingCartItemNotFound' }
+    | { __typename: 'ShoppingCartNotFound'; code: string }
+}
+
 export type RemoveItemFromShoppingCartMutationVariables = Exact<{
   site: SiteEnum
   shoppingCartItemId: Scalars['ID']
@@ -3535,6 +3598,87 @@ export const PaymentTransactionStatusDocument = {
     }
   ]
 } as unknown as DocumentNode<PaymentTransactionStatusQuery, PaymentTransactionStatusQueryVariables>
+export const RemoveDiscountCodeDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'RemoveDiscountCode' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'removeDiscountCodeForCurrentShoppingCart' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCart' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'FragmentSpread',
+                        name: { kind: 'Name', value: 'ShoppingCartFields' }
+                      }
+                    ]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartIsEmpty' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    ...ShoppingCartFieldsFragmentDoc.definitions
+  ]
+} as unknown as DocumentNode<RemoveDiscountCodeMutation, RemoveDiscountCodeMutationVariables>
 export const RemoveItemFromShoppingCartDocument = {
   kind: 'Document',
   definitions: [

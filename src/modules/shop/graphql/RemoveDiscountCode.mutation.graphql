@@ -1,0 +1,21 @@
+# Import the fragment to receive a consistent cart response.
+#import "./fragments/ShoppingCartFields.fragment.graphql"
+
+# This mutation removes the currently applied discount code from the cart.
+# It returns the complete cart state with recalculated totals.
+mutation RemoveDiscountCode($site: SiteEnum!) {
+  removeDiscountCodeForCurrentShoppingCart(site: $site) {
+    __typename
+    # On success, return the updated ShoppingCart object.
+    ... on ShoppingCart {
+      ...ShoppingCartFields
+    }
+    # Include possible business logic errors that the API can return.
+    ... on ShoppingCartNotFound {
+      code
+    }
+    ... on ShoppingCartIsEmpty {
+      code
+    }
+  }
+}

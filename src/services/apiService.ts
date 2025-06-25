@@ -54,6 +54,9 @@ import {
   type RejectLateBookingResultUnion,
   type RejectLateCancelledSpotInClassInput,
   type RemoveCurrentUserFromWaitlistInput,
+  RemoveDiscountCodeDocument,
+  type RemoveDiscountCodeMutation,
+  type RemoveDiscountCodeMutationVariables,
   RemoveItemFromShoppingCartDocument,
   type RemoveItemFromShoppingCartMutation,
   type RemoveItemFromShoppingCartMutationVariables,
@@ -1790,11 +1793,9 @@ export class ApiService implements IApiService {
       }
 
       if (result.__typename === 'ShoppingCart') {
-        // Éxito: La API devolvió el carrito vacío.
-        // Lo mapeamos a nuestro modelo de dominio.
+        // Success: The API returned the empty cart.
         return createShoppingCartModel(result as GqlShoppingCart)
       } else {
-        // Error de negocio: El carrito no se encontró, por ejemplo.
         const errorCode = (result as { code?: string }).code ?? 'UnknownBusinessError'
         throw new ApiError(
           `Could not clear cart. API returned error: ${result.__typename}`,
@@ -1802,7 +1803,8 @@ export class ApiService implements IApiService {
         )
       }
     } catch (error) {
-      // Error de red o cualquier otro error. Lo registramos y lo relanzamos.
+      // --- Network/GraphQL Error Path ---
+      // Catch and re-throw any error for the calling function to handle.
       console.error('ApiService.clearShoppingCart failed:', error)
       throw error
     }
@@ -1825,19 +1827,62 @@ export class ApiService implements IApiService {
         )
       }
 
-      // La respuesta de esta mutación es directamente el booleano.
-      // Si `data` o `data.lockShoppingCart` es null/undefined, es un error del servidor.
       if (typeof data?.lockShoppingCart !== 'boolean') {
         throw new Error(
           'Did not receive a valid boolean response from the server when locking the cart.'
         )
       }
 
-      // Devuelve el booleano directamente.
       return data.lockShoppingCart
     } catch (error) {
-      // Relanzamos cualquier error para que la capa superior lo maneje.
+      // --- Network/GraphQL Error Path ---
+      // Catch and re-throw any error for the calling function to handle.
       console.error('ApiService.lockShoppingCart failed:', error)
+      throw error
+    }
+  }
+
+  public async removeDiscountCode(site: SiteEnum): Promise<ShoppingCartModel> {
+    try {
+      const { data, errors } = await this.authApiClient.mutate<
+        RemoveDiscountCodeMutation,
+        RemoveDiscountCodeMutationVariables
+      >({
+        mutation: RemoveDiscountCodeDocument,
+        variables: { site },
+        fetchPolicy: 'network-only'
+      })
+
+      if (errors && errors.length > 0) {
+        throw new ApiError(
+          `GraphQL error removing discount code: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      const result = data?.removeDiscountCodeForCurrentShoppingCart
+
+      if (!result) {
+        throw new Error(
+          'Did not receive a valid response from the server when removing discount code.'
+        )
+      }
+
+      if (result.__typename === 'ShoppingCart') {
+        // Success: The API returned the updated cart.
+        // We mapped the DTO to our domain model.
+        return createShoppingCartModel(result as GqlShoppingCart)
+      } else {
+        // Business Error: Cart not found, for example.
+        const errorCode = (result as { code?: string }).code ?? 'UnknownBusinessError'
+        throw new ApiError(
+          `Could not remove discount code. API returned error: ${result.__typename}`,
+          errorCode
+        )
+      }
+    } catch (error) {
+      // --- Network/GraphQL Error Path ---
+      // Catch and re-throw any error for the calling function to handle.
+      console.error('ApiService.removeDiscountCode failed:', error)
       throw error
     }
   }

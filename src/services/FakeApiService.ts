@@ -292,4 +292,8 @@ export class FakeApiService implements IApiService {
   lockShoppingCart(site: SiteEnum): Promise<boolean> {
     throw new Error('Method not implemented.')
   }
+
+  removeDiscountCode(site: SiteEnum): Promise<ShoppingCartModel> {
+    throw new Error('Method not implemented.')
+  }
 }
