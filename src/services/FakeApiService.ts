@@ -35,7 +35,6 @@ import type {
 import type { CustomCalendarClasses } from '@/model/CustomCalendarClasses'
 import type { IsSmsValidationCodeValidResponse } from '@/modules/buy_packages/models/is-sms-validation-code-valid-response'
 import type { SmsValidationResponse } from '@/modules/buy_packages/models/sms-validation-response'
-import type { ShoppingCart } from '@/modules/shop/interfaces'
 import type { PaymentTransactionResponse } from '@/modules/shop/models/payment-transaction-response'
 import type { IApiService } from './IApiService'
 import type { Product } from '@/modules/shop/models/Product'
@@ -227,10 +226,6 @@ export class FakeApiService implements IApiService {
     throw new Error('Method not implemented.')
   }
 
-  fetchUserCart(site: SiteEnum): Promise<ShoppingCart | null> {
-    throw new Error('Method not implemented.')
-  }
-
   addItemToShoppingCart(
     site: SiteEnum,
     sellableProductId: string,
@@ -287,7 +282,7 @@ export class FakeApiService implements IApiService {
     throw new Error('Method not implemented.')
   }
 
-  getShoppingCart(site: SiteEnum): Promise<ShoppingCart | null> {
+  getShoppingCart(site: SiteEnum): Promise<ShoppingCartModel | null> {
     throw new Error('Method not implemented.')
   }
 }
