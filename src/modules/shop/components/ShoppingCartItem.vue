@@ -7,13 +7,13 @@ const props = defineProps<{
 }>()
 
 const emits = defineEmits<{
-  (e: 'updateItem', sellableProductId: string, quantity: number): void
+  (e: 'updateItem', payload: { productId: string; quantity: number }): void
   (e: 'removeItem', shoppingCartItemId: string): void
 }>()
 
 const updateQuantity = (newQuantity: number) => {
   if (newQuantity !== props.shoppingCartItem.quantity) {
-    emits('updateItem', props.shoppingCartItem.product.id, newQuantity)
+    emits('updateItem', { productId: props.shoppingCartItem.product.id, quantity: newQuantity })
   }
 }
 

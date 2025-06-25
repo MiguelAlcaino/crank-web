@@ -1,5 +1,5 @@
 import type {
-  ProductsQuery,
+  GetProductsQuery,
   ShoppingCart as GqlShoppingCart,
   ShoppingCartItem as GqlShoppingCartItem
 } from '@/gql/graphql'
@@ -7,7 +7,7 @@ import { createProductModel } from '../factories/productFactory'
 import type { Product } from './Product'
 import { formatPrice } from '@/modules/shop/utils/shop-utils'
 
-type ProductFromQuery = ProductsQuery['products'][number]
+type ProductFromQuery = NonNullable<GetProductsQuery['products']>[number]
 
 /**
  * Represents a single item within the shopping cart.
@@ -26,7 +26,7 @@ export class ShoppingCartItem {
     this.id = gqlItem.id
     this.quantity = gqlItem.quantity
     this.subtotal = gqlItem.subtotal ?? null
-    this.product = createProductModel(gqlItem.product as unknown as ProductFromQuery)
+    this.product = createProductModel(gqlItem.product as ProductFromQuery)
   }
 
   /**

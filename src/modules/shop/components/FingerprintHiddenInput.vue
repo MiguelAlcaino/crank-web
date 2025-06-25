@@ -1,10 +1,4 @@
-<script setup lang="ts">
-import { onMounted } from 'vue'
-
-const props = defineProps<{
-  inputId: string
-}>()
-
+<script lang="ts">
 declare global {
   interface Window {
     io_install_stm: boolean
@@ -14,6 +8,14 @@ declare global {
     io_bbout_element_id: string
   }
 }
+</script>
+
+<script setup lang="ts">
+import { onMounted } from 'vue'
+
+const props = defineProps<{
+  inputId: string
+}>()
 
 // Function to load external script
 const loadScript = (url: string): Promise<void> => {

@@ -24,6 +24,9 @@ import {
   type Enrollment,
   type EnrollmentInfo,
   EnrollmentTypeEnum,
+  GetProductsDocument,
+  type GetProductsQuery,
+  type GetProductsQueryVariables,
   GetShoppingCartDocument,
   type GetShoppingCartQuery,
   type GetShoppingCartQueryVariables,
@@ -37,8 +40,6 @@ import {
   type PayfortFormResult,
   type PaymentTransactionStatusInput,
   type PaymentTransactionUnion,
-  type ProductsInput,
-  type ProductsQuery,
   type ProductType,
   type RegisterUserInput,
   type RejectLateBookingResultUnion,
@@ -80,7 +81,8 @@ import type { SiteEnum } from '@/modules/shared/interfaces/site.enum'
 import { createShoppingCartModel } from '@/modules/shop/factories/shoppingCartFactory'
 import type { ShoppingCart as ShoppingCartModel } from '@/modules/shop/models/ShoppingCart'
 
-type ProductFromQuery = ProductsQuery['products'][number]
+// A utility type to correctly infer the type of a single product from the API response
+type ProductFromQuery = NonNullable<GetProductsQuery['products']>[number]
 
 // A custom error class to handle API errors more cleanly.
 export class ApiError extends Error {
@@ -1283,7 +1285,7 @@ export class ApiService implements IApiService {
 
       const smsValidation = result.data.requestSMSValidation as SmsValidationUnion
 
-      return new SmsValidationResponse(smsValidation.__typename)
+      return new SmsValidationResponse(smsValidation.__typename ?? 'UnknownError')
     } catch (error) {
       return new SmsValidationResponse('UnknownError')
     }
@@ -1319,7 +1321,7 @@ export class ApiService implements IApiService {
       })
 
       const response = queryResult.data.isSMSValidationCodeValid as IsSmsValidationCodeValidUnion
-      return new IsSmsValidationCodeValidResponse(response.__typename)
+      return new IsSmsValidationCodeValidResponse(response.__typename ?? 'UnknownError')
     } catch (error) {
       return new IsSmsValidationCodeValidResponse('UnknownError')
     }
@@ -1348,54 +1350,46 @@ export class ApiService implements IApiService {
   }
 
   async getProducts(site: SiteEnum, options?: { type?: AppProductType }): Promise<Product[]> {
-    const gqlInput: ProductsInput = {}
+    // Create the variables object for the query in a type-safe way.
+    const variables: GetProductsQueryVariables = { site }
     if (options?.type) {
-      gqlInput.type = options.type as unknown as ProductType
+      // The `input` variable itself is optional in the GraphQL query.
+      // We only add it to the variables object if the type is specified.
+      variables.input = { type: options.type as unknown as ProductType }
     }
 
-    const PRODUCTS_QUERY = gql`
-      query products($site: SiteEnum!, $input: ProductsInput) {
-        products(site: $site, input: $input) {
-          id
-          title
-          subtitle
-          currency
-          buttonText
-          price
-          alertBeforePurchasing {
-            title
-            description
-          }
-          ... on ClassPackageProduct {
-            type
-          }
-          ... on GiftCard {
-            purchaseUrl
-          }
-        }
-      }
-    `
-
     try {
-      const { data } = await this.authApiClient.query<ProductsQuery>({
-        query: PRODUCTS_QUERY,
-        fetchPolicy: 'network-only',
-        variables: { site: site, input: gqlInput.type ? gqlInput : undefined }
+      const { data, errors } = await this.authApiClient.query<
+        GetProductsQuery,
+        GetProductsQueryVariables
+      >({
+        // Use the strongly-typed DocumentNode from our generated file.
+        query: GetProductsDocument,
+        variables,
+        fetchPolicy: 'network-only'
       })
 
+      // It's best practice to check for the `errors` array returned by GraphQL.
+      if (errors && errors.length > 0) {
+        throw new ApiError(
+          `GraphQL error fetching products: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      // If the API returns null or an empty array for products, we simply return an empty array.
+      // This is expected behavior, not an error.
       if (!data || !data.products) {
-        console.warn('getProducts: Received no product data from API.')
         return []
       }
 
-      const productModels = data.products.map((productData: ProductFromQuery) =>
-        createProductModel(productData)
-      )
-
-      return productModels
+      // Map the raw DTOs from the API to our rich domain models using the factory.
+      return data.products.map((productData) => createProductModel(productData as ProductFromQuery))
     } catch (error) {
-      console.error('ApiService: Error fetching products:', error)
-      return []
+      // Any exception (our ApiError, a network error, etc.) is caught here.
+      // We log it and then re-throw it. This allows the calling code (e.g., a composable)
+      // to catch the error and update the UI state (e.g., show an error message).
+      console.error('ApiService: Failed to fetch products.', error)
+      throw error
     }
   }
 
@@ -1719,7 +1713,7 @@ export class ApiService implements IApiService {
           paymentTransaction.status
         )
       } else {
-        return new PaymentTransactionResponse(paymentTransaction.__typename)
+        return new PaymentTransactionResponse(paymentTransaction.__typename ?? 'UnknownError')
       }
     } catch (error) {
       return new PaymentTransactionResponse('UnknownError')

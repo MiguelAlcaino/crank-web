@@ -1,4 +1,3 @@
-/* eslint-disable */
 import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core'
 export type Maybe<T> = T | null
 export type InputMaybe<T> = Maybe<T>
@@ -12,7 +11,6 @@ export type Scalars = {
   Boolean: boolean
   Int: number
   Float: number
-  /** Format: Y-m-d */
   Date: any
   DateTime: any
   DateTimeWithoutTimeZone: any
@@ -31,17 +29,17 @@ export type AcceptLateCancelledSpotInClassResultUnion =
   | UnknownError
 
 export type AcceptLateCancelledSpotInClassSuccess = {
-  __typename: 'AcceptLateCancelledSpotInClassSuccess'
+  __typename?: 'AcceptLateCancelledSpotInClassSuccess'
   success: Scalars['Boolean']
 }
 
 export type AddedToWaitlistSuccess = {
-  __typename: 'AddedToWaitlistSuccess'
+  __typename?: 'AddedToWaitlistSuccess'
   status: Scalars['Boolean']
 }
 
 export type AdminUser = {
-  __typename: 'AdminUser'
+  __typename?: 'AdminUser'
   email: Scalars['String']
   favoriteSite: Site
   id: Scalars['ID']
@@ -85,7 +83,7 @@ export type BookClassResultUnion =
   | WaitlistFullError
 
 export type BookClassSuccess = {
-  __typename: 'BookClassSuccess'
+  __typename?: 'BookClassSuccess'
   status: Scalars['Boolean']
 }
 
@@ -98,7 +96,7 @@ export type BookUserIntoClassInput = {
 }
 
 export type BookableSpot = ClassPositionInterface & {
-  __typename: 'BookableSpot'
+  __typename?: 'BookableSpot'
   enabled?: Maybe<Scalars['Boolean']>
   icon: PositionIconEnum
   /** @deprecated isBooked should be moved somewhere else and spotNumber has been moved to the root. */
@@ -109,19 +107,19 @@ export type BookableSpot = ClassPositionInterface & {
 }
 
 export type BookedButInOtherSpotError = Error & {
-  __typename: 'BookedButInOtherSpotError'
+  __typename?: 'BookedButInOtherSpotError'
   code: Scalars['String']
   givenSpot: Scalars['Int']
   requiredSpot: Scalars['Int']
 }
 
 export type BookingOverlapsAnotherOneError = Error & {
-  __typename: 'BookingOverlapsAnotherOneError'
+  __typename?: 'BookingOverlapsAnotherOneError'
   code: Scalars['String']
 }
 
 export type BookingWindow = {
-  __typename: 'BookingWindow'
+  __typename?: 'BookingWindow'
   endDateTime: Scalars['DateTime']
   startDateTime: Scalars['DateTime']
 }
@@ -142,12 +140,12 @@ export type CancelEnrollmentResultUnion =
   | UnknownError
 
 export type CancelUserEnrollmentSuccess = {
-  __typename: 'CancelUserEnrollmentSuccess'
+  __typename?: 'CancelUserEnrollmentSuccess'
   status?: Maybe<Scalars['Boolean']>
 }
 
 export type ChallengeDisplay = {
-  __typename: 'ChallengeDisplay'
+  __typename?: 'ChallengeDisplay'
   firstLine?: Maybe<Scalars['String']>
   secondLine?: Maybe<Scalars['String']>
   thirdLine?: Maybe<Scalars['String']>
@@ -159,7 +157,7 @@ export type ChallengeInterface = {
 }
 
 export type ChartPoint = {
-  __typename: 'ChartPoint'
+  __typename?: 'ChartPoint'
   power?: Maybe<Scalars['Int']>
   rpm?: Maybe<Scalars['Int']>
   time?: Maybe<Scalars['Int']>
@@ -168,7 +166,7 @@ export type ChartPoint = {
 export type CheckinResultUnion = CheckinSuccess | EnrollmentNotFoundError
 
 export type CheckinSuccess = {
-  __typename: 'CheckinSuccess'
+  __typename?: 'CheckinSuccess'
   success: Scalars['Boolean']
 }
 
@@ -179,7 +177,7 @@ export type CheckinUserInClass = {
 export type CheckoutResultUnion = CheckoutSuccess | EnrollmentNotFoundError
 
 export type CheckoutSuccess = {
-  __typename: 'CheckoutSuccess'
+  __typename?: 'CheckoutSuccess'
   success: Scalars['Boolean']
 }
 
@@ -188,7 +186,7 @@ export type CheckoutUserInClass = {
 }
 
 export type Class = {
-  __typename: 'Class'
+  __typename?: 'Class'
   bookingWindow: BookingWindow
   description: Scalars['String']
   duration: Scalars['Int']
@@ -209,7 +207,7 @@ export type Class = {
 }
 
 export type ClassInfo = {
-  __typename: 'ClassInfo'
+  __typename?: 'ClassInfo'
   class: Class
   enrollments: Array<EnrollmentInfoInterface>
   onHoldSpots: Scalars['Int']
@@ -223,12 +221,12 @@ export type ClassInfoEnrollmentsArgs = {
 }
 
 export type ClassIsFullError = Error & {
-  __typename: 'ClassIsFullError'
+  __typename?: 'ClassIsFullError'
   code: Scalars['String']
 }
 
 export type ClassPackageProduct = SellableProductInterface & {
-  __typename: 'ClassPackageProduct'
+  __typename?: 'ClassPackageProduct'
   alertBeforePurchasing?: Maybe<ProductAlertBeforePurchasing>
   buttonText?: Maybe<Scalars['String']>
   currency: Scalars['String']
@@ -255,7 +253,7 @@ export type ClassPositionInterface = {
 }
 
 export type ClassSchedule = {
-  __typename: 'ClassSchedule'
+  __typename?: 'ClassSchedule'
   capacity: Scalars['Int']
   dayOfWeek: Scalars['String']
   end: Scalars['DateTime']
@@ -269,7 +267,7 @@ export type ClassSchedule = {
 }
 
 export type ClassStat = {
-  __typename: 'ClassStat'
+  __typename?: 'ClassStat'
   /** Amount of chart points adjusted to the amount of the requested ones. Values for each points are the average of each interval */
   adjustedChartPoints: Array<ChartPoint>
   averagePower?: Maybe<Scalars['Float']>
@@ -290,30 +288,30 @@ export type ClassStatAdjustedChartPointsArgs = {
 
 /** Error returned when a client is already booked in a class */
 export type ClientIsAlreadyBookedError = Error & {
-  __typename: 'ClientIsAlreadyBookedError'
+  __typename?: 'ClientIsAlreadyBookedError'
   code: Scalars['String']
 }
 
 export type ClientIsAlreadyOnWaitlistError = Error & {
-  __typename: 'ClientIsAlreadyOnWaitlistError'
+  __typename?: 'ClientIsAlreadyOnWaitlistError'
   code: Scalars['String']
 }
 
 /** Error returned when a client tries to book a class which is not permitted to book any longer. The booking window has passed. */
 export type ClientIsOutsideSchedulingWindowError = Error & {
-  __typename: 'ClientIsOutsideSchedulingWindowError'
+  __typename?: 'ClientIsOutsideSchedulingWindowError'
   code: Scalars['String']
 }
 
 export type Country = {
-  __typename: 'Country'
+  __typename?: 'Country'
   code: Scalars['String']
   name: Scalars['String']
   states?: Maybe<Array<Maybe<State>>>
 }
 
 export type CreateCurrentUserInSiteSuccess = {
-  __typename: 'CreateCurrentUserInSiteSuccess'
+  __typename?: 'CreateCurrentUserInSiteSuccess'
   result: Scalars['Boolean']
 }
 
@@ -326,7 +324,7 @@ export type CurrentUserEnrollmentsParams = {
 }
 
 export type DeleteCurrentUserAccountSuccess = {
-  __typename: 'DeleteCurrentUserAccountSuccess'
+  __typename?: 'DeleteCurrentUserAccountSuccess'
   success: Scalars['Boolean']
 }
 
@@ -344,24 +342,24 @@ export type DisableEnableSpotInput = {
 }
 
 export type DisableEnableSpotResult = {
-  __typename: 'DisableEnableSpotResult'
+  __typename?: 'DisableEnableSpotResult'
   result?: Maybe<Scalars['Boolean']>
 }
 
 export type DisableEnableSpotResultUnion = DisableEnableSpotResult | SpotNotFoundError
 
 export type DiscountCodeIsEmpty = Error & {
-  __typename: 'DiscountCodeIsEmpty'
+  __typename?: 'DiscountCodeIsEmpty'
   code: Scalars['String']
 }
 
 export type DiscountCodeIsInvalid = Error & {
-  __typename: 'DiscountCodeIsInvalid'
+  __typename?: 'DiscountCodeIsInvalid'
   code: Scalars['String']
 }
 
 export type DistanceChallenge = ChallengeInterface & {
-  __typename: 'DistanceChallenge'
+  __typename?: 'DistanceChallenge'
   challengeDisplay: ChallengeDisplay
   goalInKM: Scalars['Int']
   id: Scalars['ID']
@@ -369,13 +367,13 @@ export type DistanceChallenge = ChallengeInterface & {
 }
 
 export type DistanceChallengeRankingPosition = {
-  __typename: 'DistanceChallengeRankingPosition'
+  __typename?: 'DistanceChallengeRankingPosition'
   totalKm: Scalars['Float']
   userPositionInRanking: UserPositionInRanking
 }
 
 export type DistanceRanking = {
-  __typename: 'DistanceRanking'
+  __typename?: 'DistanceRanking'
   amountOfUsersInRanking: Scalars['Int']
   rankingPositions: Array<DistanceChallengeRankingPosition>
 }
@@ -389,7 +387,7 @@ export type EditClassInput = {
 export type EditClassResultUnion = EditClassSuccessResult
 
 export type EditClassSuccessResult = {
-  __typename: 'EditClassSuccessResult'
+  __typename?: 'EditClassSuccessResult'
   /** Whether the class was updated or not */
   updated: Scalars['Boolean']
 }
@@ -420,18 +418,18 @@ export type EditUserInput = {
 export type EditUserResultUnion = IdentifiableUser | OtherUserHasThisExternalIdError
 
 export type EmailAlreadyUsedError = Error & {
-  __typename: 'EmailAlreadyUsedError'
+  __typename?: 'EmailAlreadyUsedError'
   code: Scalars['String']
 }
 
 export type Enrollment = {
-  __typename: 'Enrollment'
+  __typename?: 'Enrollment'
   class: Class
   enrollmentInfo: EnrollmentInfoInterface
 }
 
 export type EnrollmentInfo = EnrollmentInfoInterface & {
-  __typename: 'EnrollmentInfo'
+  __typename?: 'EnrollmentInfo'
   /** Returns true if the user was booked via ClassPass */
   bookedViaClassPass: Scalars['Boolean']
   enrollmentDateTime: Scalars['DateTime']
@@ -468,7 +466,7 @@ export type EnrollmentInfoInterface = {
 }
 
 export type EnrollmentNotFoundError = Error & {
-  __typename: 'EnrollmentNotFoundError'
+  __typename?: 'EnrollmentNotFoundError'
   code: Scalars['String']
 }
 
@@ -501,13 +499,13 @@ export enum GenderEnum {
 }
 
 export type GenderRanking = {
-  __typename: 'GenderRanking'
+  __typename?: 'GenderRanking'
   gender?: Maybe<GenderEnum>
   ranking?: Maybe<UserRanking>
 }
 
 export type GiftCard = SellableProductInterface & {
-  __typename: 'GiftCard'
+  __typename?: 'GiftCard'
   alertBeforePurchasing?: Maybe<ProductAlertBeforePurchasing>
   buttonText?: Maybe<Scalars['String']>
   currency: Scalars['String']
@@ -529,7 +527,7 @@ export type GiftCard = SellableProductInterface & {
 }
 
 export type IconPosition = ClassPositionInterface & {
-  __typename: 'IconPosition'
+  __typename?: 'IconPosition'
   icon: PositionIconEnum
   x: Scalars['Int']
   y: Scalars['Int']
@@ -543,20 +541,20 @@ export type IconPositionInput = {
 }
 
 export type IdentifiableSiteUser = {
-  __typename: 'IdentifiableSiteUser'
+  __typename?: 'IdentifiableSiteUser'
   id?: Maybe<Scalars['ID']>
   identifiableUser?: Maybe<IdentifiableUser>
   siteUserInfo?: Maybe<SimpleSiteUser>
 }
 
 export type IdentifiableUser = {
-  __typename: 'IdentifiableUser'
+  __typename?: 'IdentifiableUser'
   id?: Maybe<Scalars['ID']>
   user?: Maybe<User>
 }
 
 export type Instructor = {
-  __typename: 'Instructor'
+  __typename?: 'Instructor'
   id: Scalars['ID']
   name: Scalars['String']
   site: Site
@@ -574,22 +572,22 @@ export type ItemToShoppingCartInput = {
 }
 
 export type LateCancellationRequiredError = Error & {
-  __typename: 'LateCancellationRequiredError'
+  __typename?: 'LateCancellationRequiredError'
   code: Scalars['String']
 }
 
 export type MobilePhoneAlreadyVerifiedError = Error & {
-  __typename: 'MobilePhoneAlreadyVerifiedError'
+  __typename?: 'MobilePhoneAlreadyVerifiedError'
   code: Scalars['String']
 }
 
 export type MobilePhoneNotValidError = Error & {
-  __typename: 'MobilePhoneNotValidError'
+  __typename?: 'MobilePhoneNotValidError'
   code: Scalars['String']
 }
 
 export type Mutation = {
-  __typename: 'Mutation'
+  __typename?: 'Mutation'
   /** Accepts a late-cancelled spot in a class */
   acceptLateCancelledSpotInClass?: Maybe<AcceptLateCancelledSpotInClassResultUnion>
   /** Creates a new admin user */
@@ -949,25 +947,25 @@ export type MutationUpdateUserPasswordArgs = {
 }
 
 export type OtherUserHasThisExternalIdError = Error & {
-  __typename: 'OtherUserHasThisExternalIdError'
+  __typename?: 'OtherUserHasThisExternalIdError'
   code: Scalars['String']
   siteUser: IdentifiableSiteUser
 }
 
 export type PaginatedClassStats = PaginatedResult & {
-  __typename: 'PaginatedClassStats'
+  __typename?: 'PaginatedClassStats'
   classStats: Array<ClassStat>
   total: Scalars['Int']
 }
 
 export type PaginatedEnrollments = PaginatedResult & {
-  __typename: 'PaginatedEnrollments'
+  __typename?: 'PaginatedEnrollments'
   enrollments: Array<Enrollment>
   total: Scalars['Int']
 }
 
 export type PaginatedPurchases = PaginatedResult & {
-  __typename: 'PaginatedPurchases'
+  __typename?: 'PaginatedPurchases'
   purchases: Array<Purchase>
   total: Scalars['Int']
 }
@@ -982,7 +980,7 @@ export type PaginationInput = {
 }
 
 export type PasswordsDontMatchError = Error & {
-  __typename: 'PasswordsDontMatchError'
+  __typename?: 'PasswordsDontMatchError'
   code: Scalars['String']
 }
 
@@ -993,18 +991,18 @@ export type PayfortFormInput = {
 }
 
 export type PayfortFormResult = {
-  __typename: 'PayfortFormResult'
+  __typename?: 'PayfortFormResult'
   htmlForm: Scalars['String']
 }
 
 /** Error returned when a client does not have enough credit or allowance to book a class */
 export type PaymentRequiredError = Error & {
-  __typename: 'PaymentRequiredError'
+  __typename?: 'PaymentRequiredError'
   code: Scalars['String']
 }
 
 export type PaymentTransactionStatus = {
-  __typename: 'PaymentTransactionStatus'
+  __typename?: 'PaymentTransactionStatus'
   status: PaymentTransactionStatusEnum
 }
 
@@ -1022,7 +1020,7 @@ export type PaymentTransactionStatusInput = {
 export type PaymentTransactionUnion = PaymentTransactionStatus | TemporalTransactionNotFound
 
 export type PositionAlreadyTakenError = Error & {
-  __typename: 'PositionAlreadyTakenError'
+  __typename?: 'PositionAlreadyTakenError'
   code: Scalars['String']
 }
 
@@ -1039,13 +1037,13 @@ export enum PositionIconEnum {
 }
 
 export type ProductAlertBeforePurchasing = {
-  __typename: 'ProductAlertBeforePurchasing'
+  __typename?: 'ProductAlertBeforePurchasing'
   description: Scalars['String']
   title: Scalars['String']
 }
 
 export type ProductNotFound = Error & {
-  __typename: 'ProductNotFound'
+  __typename?: 'ProductNotFound'
   code: Scalars['String']
 }
 
@@ -1059,7 +1057,7 @@ export type ProductsInput = {
 }
 
 export type Purchase = {
-  __typename: 'Purchase'
+  __typename?: 'Purchase'
   activationDateTime: Scalars['DateTime']
   allowanceObtained: Scalars['Int']
   allowanceRemaining: Scalars['Int']
@@ -1071,7 +1069,7 @@ export type Purchase = {
 }
 
 export type Query = {
-  __typename: 'Query'
+  __typename?: 'Query'
   /** Returns a single admin user */
   adminUser?: Maybe<AdminUser>
   /** Lists all the admin users */
@@ -1306,7 +1304,7 @@ export type RejectLateCancelledSpotInClassInput = {
 }
 
 export type RejectLateCancelledSpotInClassSuccess = {
-  __typename: 'RejectLateCancelledSpotInClassSuccess'
+  __typename?: 'RejectLateCancelledSpotInClassSuccess'
   success: Scalars['Boolean']
 }
 
@@ -1319,7 +1317,7 @@ export type RemoveCurrentUserFromWaitlistUnion =
   | WaitlistEntryNotFoundError
 
 export type RemoveFromWaitlistResult = {
-  __typename: 'RemoveFromWaitlistResult'
+  __typename?: 'RemoveFromWaitlistResult'
   success: Scalars['Boolean']
 }
 
@@ -1339,7 +1337,7 @@ export type RequestSmsValidationInput = {
 }
 
 export type RequestSmsValidationNeededError = Error & {
-  __typename: 'RequestSMSValidationNeededError'
+  __typename?: 'RequestSMSValidationNeededError'
   code: Scalars['String']
 }
 
@@ -1355,17 +1353,17 @@ export type ResetPasswordLinkResultUnion =
   | TooManyResetPasswordLinkRequestsError
 
 export type ResetPasswordLinkSentSuccessfully = {
-  __typename: 'ResetPasswordLinkSentSuccessfully'
+  __typename?: 'ResetPasswordLinkSentSuccessfully'
   status: Scalars['Boolean']
 }
 
 export type ResetPasswordSuccess = {
-  __typename: 'ResetPasswordSuccess'
+  __typename?: 'ResetPasswordSuccess'
   status: Scalars['Boolean']
 }
 
 export type RoomLayout = {
-  __typename: 'RoomLayout'
+  __typename?: 'RoomLayout'
   capacity: Scalars['Int']
   columns: Scalars['Int']
   id: Scalars['ID']
@@ -1387,12 +1385,12 @@ export type RoomLayoutsInput = {
 }
 
 export type SmsCodeValidatedSuccessfully = {
-  __typename: 'SMSCodeValidatedSuccessfully'
+  __typename?: 'SMSCodeValidatedSuccessfully'
   success: Scalars['Boolean']
 }
 
 export type SmsValidationCodeError = Error & {
-  __typename: 'SMSValidationCodeError'
+  __typename?: 'SMSValidationCodeError'
   code: Scalars['String']
 }
 
@@ -1423,7 +1421,7 @@ export type SetRoomLayoutForClassSchedulesInput = {
 }
 
 export type ShoppingCart = {
-  __typename: 'ShoppingCart'
+  __typename?: 'ShoppingCart'
   currency: Scalars['String']
   discountCode?: Maybe<Scalars['String']>
   giftCardCode?: Maybe<Scalars['String']>
@@ -1434,12 +1432,12 @@ export type ShoppingCart = {
 }
 
 export type ShoppingCartIsEmpty = Error & {
-  __typename: 'ShoppingCartIsEmpty'
+  __typename?: 'ShoppingCartIsEmpty'
   code: Scalars['String']
 }
 
 export type ShoppingCartItem = {
-  __typename: 'ShoppingCartItem'
+  __typename?: 'ShoppingCartItem'
   id: Scalars['ID']
   product: SellableProductInterface
   quantity: Scalars['Int']
@@ -1447,12 +1445,12 @@ export type ShoppingCartItem = {
 }
 
 export type ShoppingCartItemNotFound = Error & {
-  __typename: 'ShoppingCartItemNotFound'
+  __typename?: 'ShoppingCartItemNotFound'
   code: Scalars['String']
 }
 
 export type ShoppingCartNotFound = Error & {
-  __typename: 'ShoppingCartNotFound'
+  __typename?: 'ShoppingCartNotFound'
   code: Scalars['String']
 }
 
@@ -1466,13 +1464,13 @@ export type ShoppingCartResultUnion =
   | ShoppingCartNotFound
 
 export type SimpleSiteUser = {
-  __typename: 'SimpleSiteUser'
+  __typename?: 'SimpleSiteUser'
   externalUserId: Scalars['ID']
   site: SiteEnum
 }
 
 export type Site = {
-  __typename: 'Site'
+  __typename?: 'Site'
   code: SiteEnum
   name: Scalars['String']
 }
@@ -1484,7 +1482,7 @@ export enum SiteEnum {
 }
 
 export type SiteSetting = {
-  __typename: 'SiteSetting'
+  __typename?: 'SiteSetting'
   isSynchronizingClasses: Scalars['Boolean']
   siteDateTimeNow?: Maybe<Scalars['DateTime']>
   siteTimezone?: Maybe<Scalars['String']>
@@ -1497,64 +1495,64 @@ export type SiteUserInput = {
 
 /** Error returned when trying to book a class with a spot that is already booked */
 export type SpotAlreadyReservedError = Error & {
-  __typename: 'SpotAlreadyReservedError'
+  __typename?: 'SpotAlreadyReservedError'
   code: Scalars['String']
 }
 
 export type SpotInfo = {
-  __typename: 'SpotInfo'
+  __typename?: 'SpotInfo'
   /** @deprecated Array of booked spots should be returned by other query to reduce complexity of creating SpotInfo instances. */
   isBooked: Scalars['Boolean']
   spotNumber: Scalars['Int']
 }
 
 export type SpotIsDisabledError = Error & {
-  __typename: 'SpotIsDisabledError'
+  __typename?: 'SpotIsDisabledError'
   code: Scalars['String']
 }
 
 export type SpotNotFoundError = Error & {
-  __typename: 'SpotNotFoundError'
+  __typename?: 'SpotNotFoundError'
   code: Scalars['String']
 }
 
 export type State = {
-  __typename: 'State'
+  __typename?: 'State'
   code: Scalars['String']
   name: Scalars['String']
 }
 
 export type SuccessfulRequestSmsValidation = {
-  __typename: 'SuccessfulRequestSMSValidation'
+  __typename?: 'SuccessfulRequestSMSValidation'
   success: Scalars['Boolean']
 }
 
 export type SwapSpotResultUnion = SwapSpotSuccess | TryToSwitchToSameSpotError
 
 export type SwapSpotSuccess = {
-  __typename: 'SwapSpotSuccess'
+  __typename?: 'SwapSpotSuccess'
   affectedEnrollment?: Maybe<EnrollmentInfoInterface>
   selectedEnrollment: EnrollmentInfoInterface
 }
 
 export type TemporalTransactionNotFound = Error & {
-  __typename: 'TemporalTransactionNotFound'
+  __typename?: 'TemporalTransactionNotFound'
   code: Scalars['String']
 }
 
 export type TooManyResetPasswordLinkRequestsError = Error & {
-  __typename: 'TooManyResetPasswordLinkRequestsError'
+  __typename?: 'TooManyResetPasswordLinkRequestsError'
   availableAgainAt?: Maybe<Scalars['DateTime']>
   code: Scalars['String']
 }
 
 export type TryToSwitchToSameSpotError = Error & {
-  __typename: 'TryToSwitchToSameSpotError'
+  __typename?: 'TryToSwitchToSameSpotError'
   code: Scalars['String']
 }
 
 export type UnknownError = Error & {
-  __typename: 'UnknownError'
+  __typename?: 'UnknownError'
   code: Scalars['String']
 }
 
@@ -1587,7 +1585,7 @@ export type UpdateUserPasswordInput = {
 }
 
 export type User = {
-  __typename: 'User'
+  __typename?: 'User'
   address1: Scalars['String']
   address2?: Maybe<Scalars['String']>
   birthdate?: Maybe<Scalars['Date']>
@@ -1627,12 +1625,12 @@ export type UserShoppingCartArgs = {
 }
 
 export type UserAlreadyExistsError = Error & {
-  __typename: 'UserAlreadyExistsError'
+  __typename?: 'UserAlreadyExistsError'
   code: Scalars['String']
 }
 
 export type UserInClassRanking = {
-  __typename: 'UserInClassRanking'
+  __typename?: 'UserInClassRanking'
   genderRanking?: Maybe<GenderRanking>
   totalRanking?: Maybe<UserRanking>
 }
@@ -1662,24 +1660,24 @@ export type UserInput = {
 }
 
 export type UserPasswordDoesNotMatchError = Error & {
-  __typename: 'UserPasswordDoesNotMatchError'
+  __typename?: 'UserPasswordDoesNotMatchError'
   code: Scalars['String']
 }
 
 export type UserPositionInRanking = {
-  __typename: 'UserPositionInRanking'
+  __typename?: 'UserPositionInRanking'
   positionInRanking: Scalars['Int']
   user: User
 }
 
 export type UserRanking = {
-  __typename: 'UserRanking'
+  __typename?: 'UserRanking'
   positionInRanking?: Maybe<Scalars['Int']>
   totalMembersInRanking?: Maybe<Scalars['Int']>
 }
 
 export type UsernameAlreadyUsedError = Error & {
-  __typename: 'UsernameAlreadyUsedError'
+  __typename?: 'UsernameAlreadyUsedError'
   code: Scalars['String']
 }
 
@@ -1688,7 +1686,7 @@ export type ValidateResetPasswordTokenInput = {
 }
 
 export type WaitlistEntry = EnrollmentInfoInterface & {
-  __typename: 'WaitlistEntry'
+  __typename?: 'WaitlistEntry'
   canBeTurnedIntoEnrollment: Scalars['Boolean']
   enrollmentDateTime: Scalars['DateTime']
   enrollmentDateTimeWithNoTimeZone: Scalars['DateTimeWithoutTimeZone']
@@ -1698,12 +1696,12 @@ export type WaitlistEntry = EnrollmentInfoInterface & {
 }
 
 export type WaitlistEntryNotFoundError = Error & {
-  __typename: 'WaitlistEntryNotFoundError'
+  __typename?: 'WaitlistEntryNotFoundError'
   code: Scalars['String']
 }
 
 export type WaitlistFullError = Error & {
-  __typename: 'WaitlistFullError'
+  __typename?: 'WaitlistFullError'
   code: Scalars['String']
 }
 
@@ -1718,12 +1716,163 @@ export type AddItemToShoppingCartMutation = {
     | { __typename: 'DiscountCodeIsEmpty' }
     | { __typename: 'DiscountCodeIsInvalid' }
     | { __typename: 'ProductNotFound'; code: string }
-    | ({ __typename: 'ShoppingCart' } & {
-        ' $fragmentRefs'?: { ShoppingCartFieldsFragment: ShoppingCartFieldsFragment }
-      })
+    | {
+        __typename: 'ShoppingCart'
+        id: string
+        total?: number | null
+        subTotal?: number | null
+        currency: string
+        giftCardCode?: string | null
+        discountCode?: string | null
+        items: Array<{
+          __typename: 'ShoppingCartItem'
+          id: string
+          quantity: number
+          subtotal?: number | null
+          product:
+            | {
+                __typename: 'ClassPackageProduct'
+                type?: ClassPackageTypeEnum | null
+                id: string
+                title: string
+                subtitle?: string | null
+                price: number
+                currency: string
+                buttonText?: string | null
+                isVisible: boolean
+                alertBeforePurchasing?: {
+                  __typename: 'ProductAlertBeforePurchasing'
+                  title: string
+                  description: string
+                } | null
+              }
+            | {
+                __typename: 'GiftCard'
+                purchaseUrl: string
+                id: string
+                title: string
+                subtitle?: string | null
+                price: number
+                currency: string
+                buttonText?: string | null
+                isVisible: boolean
+                alertBeforePurchasing?: {
+                  __typename: 'ProductAlertBeforePurchasing'
+                  title: string
+                  description: string
+                } | null
+              }
+        }>
+      }
     | { __typename: 'ShoppingCartIsEmpty' }
     | { __typename: 'ShoppingCartItemNotFound' }
     | { __typename: 'ShoppingCartNotFound'; code: string }
+}
+
+export type CalculateTotalForShoppingCartQueryVariables = Exact<{
+  site: SiteEnum
+}>
+
+export type CalculateTotalForShoppingCartQuery = {
+  __typename: 'Query'
+  calculateTotalForShoppingCart:
+    | { __typename: 'DiscountCodeIsEmpty' }
+    | { __typename: 'DiscountCodeIsInvalid'; code: string }
+    | { __typename: 'ProductNotFound' }
+    | {
+        __typename: 'ShoppingCart'
+        id: string
+        total?: number | null
+        subTotal?: number | null
+        currency: string
+        giftCardCode?: string | null
+        discountCode?: string | null
+        items: Array<{
+          __typename: 'ShoppingCartItem'
+          id: string
+          quantity: number
+          subtotal?: number | null
+          product:
+            | {
+                __typename: 'ClassPackageProduct'
+                type?: ClassPackageTypeEnum | null
+                id: string
+                title: string
+                subtitle?: string | null
+                price: number
+                currency: string
+                buttonText?: string | null
+                isVisible: boolean
+                alertBeforePurchasing?: {
+                  __typename: 'ProductAlertBeforePurchasing'
+                  title: string
+                  description: string
+                } | null
+              }
+            | {
+                __typename: 'GiftCard'
+                purchaseUrl: string
+                id: string
+                title: string
+                subtitle?: string | null
+                price: number
+                currency: string
+                buttonText?: string | null
+                isVisible: boolean
+                alertBeforePurchasing?: {
+                  __typename: 'ProductAlertBeforePurchasing'
+                  title: string
+                  description: string
+                } | null
+              }
+        }>
+      }
+    | { __typename: 'ShoppingCartIsEmpty'; code: string }
+    | { __typename: 'ShoppingCartItemNotFound' }
+    | { __typename: 'ShoppingCartNotFound'; code: string }
+}
+
+export type GetProductsQueryVariables = Exact<{
+  site: SiteEnum
+  input?: InputMaybe<ProductsInput>
+}>
+
+export type GetProductsQuery = {
+  __typename: 'Query'
+  products: Array<
+    | {
+        __typename: 'ClassPackageProduct'
+        type?: ClassPackageTypeEnum | null
+        id: string
+        title: string
+        subtitle?: string | null
+        price: number
+        currency: string
+        buttonText?: string | null
+        isVisible: boolean
+        alertBeforePurchasing?: {
+          __typename: 'ProductAlertBeforePurchasing'
+          title: string
+          description: string
+        } | null
+      }
+    | {
+        __typename: 'GiftCard'
+        purchaseUrl: string
+        id: string
+        title: string
+        subtitle?: string | null
+        price: number
+        currency: string
+        buttonText?: string | null
+        isVisible: boolean
+        alertBeforePurchasing?: {
+          __typename: 'ProductAlertBeforePurchasing'
+          title: string
+          description: string
+        } | null
+      }
+  >
 }
 
 export type GetShoppingCartQueryVariables = Exact<{
@@ -1734,8 +1883,53 @@ export type GetShoppingCartQuery = {
   __typename: 'Query'
   currentUser?: {
     __typename: 'User'
-    shoppingCart: { __typename: 'ShoppingCart' } & {
-      ' $fragmentRefs'?: { ShoppingCartFieldsFragment: ShoppingCartFieldsFragment }
+    shoppingCart: {
+      __typename: 'ShoppingCart'
+      id: string
+      total?: number | null
+      subTotal?: number | null
+      currency: string
+      giftCardCode?: string | null
+      discountCode?: string | null
+      items: Array<{
+        __typename: 'ShoppingCartItem'
+        id: string
+        quantity: number
+        subtotal?: number | null
+        product:
+          | {
+              __typename: 'ClassPackageProduct'
+              type?: ClassPackageTypeEnum | null
+              id: string
+              title: string
+              subtitle?: string | null
+              price: number
+              currency: string
+              buttonText?: string | null
+              isVisible: boolean
+              alertBeforePurchasing?: {
+                __typename: 'ProductAlertBeforePurchasing'
+                title: string
+                description: string
+              } | null
+            }
+          | {
+              __typename: 'GiftCard'
+              purchaseUrl: string
+              id: string
+              title: string
+              subtitle?: string | null
+              price: number
+              currency: string
+              buttonText?: string | null
+              isVisible: boolean
+              alertBeforePurchasing?: {
+                __typename: 'ProductAlertBeforePurchasing'
+                title: string
+                description: string
+              } | null
+            }
+      }>
     }
   } | null
 }
@@ -1751,9 +1945,54 @@ export type RemoveItemFromShoppingCartMutation = {
     | { __typename: 'DiscountCodeIsEmpty' }
     | { __typename: 'DiscountCodeIsInvalid' }
     | { __typename: 'ProductNotFound' }
-    | ({ __typename: 'ShoppingCart' } & {
-        ' $fragmentRefs'?: { ShoppingCartFieldsFragment: ShoppingCartFieldsFragment }
-      })
+    | {
+        __typename: 'ShoppingCart'
+        id: string
+        total?: number | null
+        subTotal?: number | null
+        currency: string
+        giftCardCode?: string | null
+        discountCode?: string | null
+        items: Array<{
+          __typename: 'ShoppingCartItem'
+          id: string
+          quantity: number
+          subtotal?: number | null
+          product:
+            | {
+                __typename: 'ClassPackageProduct'
+                type?: ClassPackageTypeEnum | null
+                id: string
+                title: string
+                subtitle?: string | null
+                price: number
+                currency: string
+                buttonText?: string | null
+                isVisible: boolean
+                alertBeforePurchasing?: {
+                  __typename: 'ProductAlertBeforePurchasing'
+                  title: string
+                  description: string
+                } | null
+              }
+            | {
+                __typename: 'GiftCard'
+                purchaseUrl: string
+                id: string
+                title: string
+                subtitle?: string | null
+                price: number
+                currency: string
+                buttonText?: string | null
+                isVisible: boolean
+                alertBeforePurchasing?: {
+                  __typename: 'ProductAlertBeforePurchasing'
+                  title: string
+                  description: string
+                } | null
+              }
+        }>
+      }
     | { __typename: 'ShoppingCartIsEmpty'; code: string }
     | { __typename: 'ShoppingCartItemNotFound'; code: string }
     | { __typename: 'ShoppingCartNotFound'; code: string }
@@ -1770,13 +2009,96 @@ export type UpdateItemInShoppingCartMutation = {
     | { __typename: 'DiscountCodeIsEmpty' }
     | { __typename: 'DiscountCodeIsInvalid' }
     | { __typename: 'ProductNotFound' }
-    | ({ __typename: 'ShoppingCart' } & {
-        ' $fragmentRefs'?: { ShoppingCartFieldsFragment: ShoppingCartFieldsFragment }
-      })
+    | {
+        __typename: 'ShoppingCart'
+        id: string
+        total?: number | null
+        subTotal?: number | null
+        currency: string
+        giftCardCode?: string | null
+        discountCode?: string | null
+        items: Array<{
+          __typename: 'ShoppingCartItem'
+          id: string
+          quantity: number
+          subtotal?: number | null
+          product:
+            | {
+                __typename: 'ClassPackageProduct'
+                type?: ClassPackageTypeEnum | null
+                id: string
+                title: string
+                subtitle?: string | null
+                price: number
+                currency: string
+                buttonText?: string | null
+                isVisible: boolean
+                alertBeforePurchasing?: {
+                  __typename: 'ProductAlertBeforePurchasing'
+                  title: string
+                  description: string
+                } | null
+              }
+            | {
+                __typename: 'GiftCard'
+                purchaseUrl: string
+                id: string
+                title: string
+                subtitle?: string | null
+                price: number
+                currency: string
+                buttonText?: string | null
+                isVisible: boolean
+                alertBeforePurchasing?: {
+                  __typename: 'ProductAlertBeforePurchasing'
+                  title: string
+                  description: string
+                } | null
+              }
+        }>
+      }
     | { __typename: 'ShoppingCartIsEmpty' }
     | { __typename: 'ShoppingCartItemNotFound'; code: string }
     | { __typename: 'ShoppingCartNotFound'; code: string }
 }
+
+type ProductFields_ClassPackageProduct_Fragment = {
+  __typename: 'ClassPackageProduct'
+  type?: ClassPackageTypeEnum | null
+  id: string
+  title: string
+  subtitle?: string | null
+  price: number
+  currency: string
+  buttonText?: string | null
+  isVisible: boolean
+  alertBeforePurchasing?: {
+    __typename: 'ProductAlertBeforePurchasing'
+    title: string
+    description: string
+  } | null
+}
+
+type ProductFields_GiftCard_Fragment = {
+  __typename: 'GiftCard'
+  purchaseUrl: string
+  id: string
+  title: string
+  subtitle?: string | null
+  price: number
+  currency: string
+  buttonText?: string | null
+  isVisible: boolean
+  alertBeforePurchasing?: {
+    __typename: 'ProductAlertBeforePurchasing'
+    title: string
+    description: string
+  } | null
+}
+
+export type ProductFieldsFragment =
+  | ProductFields_ClassPackageProduct_Fragment
+  | ProductFields_GiftCard_Fragment
 
 export type ShoppingCartFieldsFragment = {
   __typename: 'ShoppingCart'
@@ -1825,7 +2147,7 @@ export type ShoppingCartFieldsFragment = {
           } | null
         }
   }>
-} & { ' $fragmentName'?: 'ShoppingCartFieldsFragment' }
+}
 
 export type SiteSettingsQueryVariables = Exact<{
   site: SiteEnum
@@ -2492,77 +2814,6 @@ export type AvailableSitesQuery = {
   availableSites?: Array<{ __typename: 'Site'; name: string; code: SiteEnum }> | null
 }
 
-export type ProductsQueryVariables = Exact<{
-  site: SiteEnum
-  input?: InputMaybe<ProductsInput>
-}>
-
-export type ProductsQuery = {
-  __typename: 'Query'
-  products: Array<
-    | {
-        __typename: 'ClassPackageProduct'
-        type?: ClassPackageTypeEnum | null
-        id: string
-        title: string
-        subtitle?: string | null
-        currency: string
-        buttonText?: string | null
-        price: number
-        alertBeforePurchasing?: {
-          __typename: 'ProductAlertBeforePurchasing'
-          title: string
-          description: string
-        } | null
-      }
-    | {
-        __typename: 'GiftCard'
-        purchaseUrl: string
-        id: string
-        title: string
-        subtitle?: string | null
-        currency: string
-        buttonText?: string | null
-        price: number
-        alertBeforePurchasing?: {
-          __typename: 'ProductAlertBeforePurchasing'
-          title: string
-          description: string
-        } | null
-      }
-  >
-}
-
-export type CalculateTotalForShoppingCartQueryVariables = Exact<{
-  site: SiteEnum
-}>
-
-export type CalculateTotalForShoppingCartQuery = {
-  __typename: 'Query'
-  calculateTotalForShoppingCart:
-    | { __typename: 'DiscountCodeIsEmpty' }
-    | { __typename: 'DiscountCodeIsInvalid' }
-    | { __typename: 'ProductNotFound'; code: string }
-    | {
-        __typename: 'ShoppingCart'
-        id: string
-        total?: number | null
-        currency: string
-        subTotal?: number | null
-        giftCardCode?: string | null
-        discountCode?: string | null
-        items: Array<{
-          __typename: 'ShoppingCartItem'
-          id: string
-          quantity: number
-          subtotal?: number | null
-        }>
-      }
-    | { __typename: 'ShoppingCartIsEmpty'; code: string }
-    | { __typename: 'ShoppingCartItemNotFound'; code: string }
-    | { __typename: 'ShoppingCartNotFound'; code: string }
-}
-
 export type PayfortFormMutationVariables = Exact<{
   site: SiteEnum
   input: PayfortFormInput
@@ -2604,6 +2855,62 @@ export type PaymentTransactionStatusQuery = {
     | { __typename: 'TemporalTransactionNotFound'; code: string }
 }
 
+export const ProductFieldsFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'ProductFields' },
+      typeCondition: {
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'SellableProductInterface' }
+      },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'subtitle' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'price' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'currency' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'buttonText' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'isVisible' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'alertBeforePurchasing' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'description' } }
+              ]
+            }
+          },
+          {
+            kind: 'InlineFragment',
+            typeCondition: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'ClassPackageProduct' }
+            },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'Field', name: { kind: 'Name', value: 'type' } }]
+            }
+          },
+          {
+            kind: 'InlineFragment',
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'GiftCard' } },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'Field', name: { kind: 'Name', value: 'purchaseUrl' } }]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<ProductFieldsFragment, unknown>
 export const ShoppingCartFieldsFragmentDoc = {
   kind: 'Document',
   definitions: [
@@ -2783,6 +3090,154 @@ export const AddItemToShoppingCartDocument = {
     ...ShoppingCartFieldsFragmentDoc.definitions
   ]
 } as unknown as DocumentNode<AddItemToShoppingCartMutation, AddItemToShoppingCartMutationVariables>
+export const CalculateTotalForShoppingCartDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'CalculateTotalForShoppingCart' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'calculateTotalForShoppingCart' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCart' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'FragmentSpread',
+                        name: { kind: 'Name', value: 'ShoppingCartFields' }
+                      }
+                    ]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartIsEmpty' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'DiscountCodeIsInvalid' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    ...ShoppingCartFieldsFragmentDoc.definitions
+  ]
+} as unknown as DocumentNode<
+  CalculateTotalForShoppingCartQuery,
+  CalculateTotalForShoppingCartQueryVariables
+>
+export const GetProductsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetProducts' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'ProductsInput' } }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'products' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'FragmentSpread', name: { kind: 'Name', value: 'ProductFields' } }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    ...ProductFieldsFragmentDoc.definitions
+  ]
+} as unknown as DocumentNode<GetProductsQuery, GetProductsQueryVariables>
 export const GetShoppingCartDocument = {
   kind: 'Document',
   definitions: [
@@ -5592,211 +6047,6 @@ export const AvailableSitesDocument = {
     }
   ]
 } as unknown as DocumentNode<AvailableSitesQuery, AvailableSitesQueryVariables>
-export const ProductsDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'products' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
-          }
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'ProductsInput' } }
-        }
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'products' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'site' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'input' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
-              }
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'title' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'subtitle' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'currency' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'buttonText' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'price' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'alertBeforePurchasing' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'title' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'description' } }
-                    ]
-                  }
-                },
-                {
-                  kind: 'InlineFragment',
-                  typeCondition: {
-                    kind: 'NamedType',
-                    name: { kind: 'Name', value: 'ClassPackageProduct' }
-                  },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'type' } }]
-                  }
-                },
-                {
-                  kind: 'InlineFragment',
-                  typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'GiftCard' } },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'purchaseUrl' } }]
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
-    }
-  ]
-} as unknown as DocumentNode<ProductsQuery, ProductsQueryVariables>
-export const CalculateTotalForShoppingCartDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'CalculateTotalForShoppingCart' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
-          }
-        }
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'calculateTotalForShoppingCart' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'site' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
-              }
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'InlineFragment',
-                  typeCondition: {
-                    kind: 'NamedType',
-                    name: { kind: 'Name', value: 'ShoppingCart' }
-                  },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'total' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'currency' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'subTotal' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'giftCardCode' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'discountCode' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'items' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'quantity' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'subtotal' } }
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                },
-                {
-                  kind: 'InlineFragment',
-                  typeCondition: {
-                    kind: 'NamedType',
-                    name: { kind: 'Name', value: 'ProductNotFound' }
-                  },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
-                  }
-                },
-                {
-                  kind: 'InlineFragment',
-                  typeCondition: {
-                    kind: 'NamedType',
-                    name: { kind: 'Name', value: 'ShoppingCartNotFound' }
-                  },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
-                  }
-                },
-                {
-                  kind: 'InlineFragment',
-                  typeCondition: {
-                    kind: 'NamedType',
-                    name: { kind: 'Name', value: 'ShoppingCartIsEmpty' }
-                  },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
-                  }
-                },
-                {
-                  kind: 'InlineFragment',
-                  typeCondition: {
-                    kind: 'NamedType',
-                    name: { kind: 'Name', value: 'ShoppingCartItemNotFound' }
-                  },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
-    }
-  ]
-} as unknown as DocumentNode<
-  CalculateTotalForShoppingCartQuery,
-  CalculateTotalForShoppingCartQueryVariables
->
 export const PayfortFormDocument = {
   kind: 'Document',
   definitions: [

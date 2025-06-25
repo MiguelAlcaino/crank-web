@@ -1,9 +1,9 @@
-import { ClassPackageTypeEnum, type ProductsQuery } from '@/gql/graphql'
+import { ClassPackageTypeEnum, type GetProductsQuery } from '@/gql/graphql'
 import { formatPrice } from '@/modules/shop/utils/shop-utils'
 
 // Create a reusable utility type for a single product from the API response.
 // This makes the code cleaner and easier to read than repeating ProductsQuery['products'][number].
-type ProductFromQuery = ProductsQuery['products'][number]
+type ProductFromQuery = NonNullable<GetProductsQuery['products']>[number]
 
 /**
  * An abstract base class representing a generic sellable product.
@@ -24,7 +24,7 @@ export abstract class Product {
   // This is a great way to enforce the product type at the class level.
   public abstract readonly productType: 'class_package' | 'gift_card' | 'unknown'
 
-  constructor(data: ProductFromQuery) {
+  protected constructor(data: ProductFromQuery) {
     this.id = data.id
     this.title = data.title
     this.price = data.price ?? 0
@@ -58,6 +58,7 @@ export class ClassPackage extends Product {
 
   constructor(data: ProductFromQuery) {
     super(data)
+
     if (data.__typename === 'ClassPackageProduct') {
       this.classPackageType = data.type ?? 'unknown'
     } else {

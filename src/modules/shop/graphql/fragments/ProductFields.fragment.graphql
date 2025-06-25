@@ -1,0 +1,24 @@
+# This fragment defines the standard shape for any sellable product.
+# Using a fragment ensures consistency anywhere a product is queried.
+# It includes __typename so our factory can differentiate between product types.
+
+fragment ProductFields on SellableProductInterface {
+  __typename
+  id
+  title
+  subtitle
+  price
+  currency
+  buttonText
+  isVisible
+  alertBeforePurchasing {
+    title
+    description
+  }
+  ... on ClassPackageProduct {
+    type
+  }
+  ... on GiftCard {
+    purchaseUrl
+  }
+}

@@ -20,6 +20,7 @@ import PaginationComponent from '@/components/PaginationComponent.vue'
 import type { ApiService } from '@/services/ApiService'
 import { appStore } from '@/stores/appStorage'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
+import { useRouter } from 'vue-router'
 
 const router = useRouter()
 

@@ -4,7 +4,7 @@ import type { ApiService } from '@/services/ApiService'
 import { useAfterCheckout } from '@/modules/shop/composables/useAfterCheckout'
 
 const apiService = inject<ApiService>('gqlApiService')!
-const { isLoading } = useAfterCheckout(apiService)
+const { isLoading, purchaseStatus } = useAfterCheckout(apiService)
 </script>
 
 <template>

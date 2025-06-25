@@ -89,7 +89,9 @@ const totalItems = computed(() => {
               </button>
               <p>{{ item.product.title }}</p>
             </div>
-            <p>{{ item.quantity }} x {{ formatPrice(item.product.price) }}</p>
+            <p>
+              {{ item.quantity }} x {{ formatPrice(item.product.price, item.product.currency) }}
+            </p>
           </div>
 
           <div v-if="shoppingCart?.items.length === 0">Your cart is empty.</div>

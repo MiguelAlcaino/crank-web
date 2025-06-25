@@ -5,6 +5,7 @@ import { useAuthenticationStore } from '@/stores/authToken'
 import { onError } from '@apollo/client/link/error'
 import { authService } from '@/services/authService'
 import { AxiosError } from 'axios'
+import introspectionResult from '@/gql/fragment-types.json'
 
 function newAnonymousClient(gqlUrl: string): ApolloClient<any> {
   const httpLink2 = createHttpLink({
@@ -71,19 +72,23 @@ function newAuthenticatedApolloClient(gqlUrl: string): ApolloClient<any> {
   const httpLink2 = createHttpLink({
     uri: gqlUrl
   })
-  return new ApolloClient({
-    link: authLink.concat(errorLink).concat(httpLink2),
-    cache: new InMemoryCache({
-      typePolicies: {
-        Query: {
-          fields: {
-            currentUserEnrollments: {
-              merge: false
-            }
+
+  const cache = new InMemoryCache({
+    possibleTypes: introspectionResult.possibleTypes,
+    typePolicies: {
+      Query: {
+        fields: {
+          currentUserEnrollments: {
+            merge: false
           }
         }
       }
-    })
+    }
+  })
+
+  return new ApolloClient({
+    link: authLink.concat(errorLink).concat(httpLink2),
+    cache: cache
   })
 }
 
