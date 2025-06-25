@@ -1,0 +1,18 @@
+# Importamos el fragmento para asegurar una respuesta consistente.
+#import "./fragments/ShoppingCartFields.fragment.graphql"
+
+# Esta mutación vacía todos los artículos del carrito para un sitio específico.
+# Devuelve el estado del carrito (ahora vacío) en caso de éxito.
+mutation EmptyShoppingCart($site: SiteEnum!) {
+  emptyShoppingCart(site: $site) {
+    __typename
+    # En caso de éxito, la API devuelve el objeto ShoppingCart.
+    ... on ShoppingCart {
+      ...ShoppingCartFields
+    }
+    # Incluimos los posibles errores de negocio que la API puede devolver.
+    ... on ShoppingCartNotFound {
+      code
+    }
+  }
+}

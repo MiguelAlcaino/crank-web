@@ -472,4 +472,14 @@ export interface IApiService {
    *          or `null` if the user has no cart or an error occurs.
    */
   getShoppingCart(site: SiteEnum): Promise<ShoppingCartModel | null>
+
+  /**
+   * Removes all items from the user's shopping cart.
+   * On success, it returns the updated (and now empty) ShoppingCartModel instance.
+   * On failure, it throws an ApiError.
+   *
+   * @param site The site where the cart exists.
+   * @returns A Promise that resolves with the empty ShoppingCartModel instance.
+   */
+  clearShoppingCart(site: SiteEnum): Promise<ShoppingCartModel>
 }

@@ -17,6 +17,7 @@ import type {
   PaginatedEnrollments,
   PaginatedPurchases,
   PaginationInput,
+  PaymentTransactionStatusEnum,
   RegisterUserInput,
   RejectLateBookingResultUnion,
   RemoveCurrentUserFromWaitlistInput,
@@ -35,12 +36,10 @@ import type {
 import type { CustomCalendarClasses } from '@/model/CustomCalendarClasses'
 import type { IsSmsValidationCodeValidResponse } from '@/modules/buy_packages/models/is-sms-validation-code-valid-response'
 import type { SmsValidationResponse } from '@/modules/buy_packages/models/sms-validation-response'
-import type { PaymentTransactionResponse } from '@/modules/shop/models/payment-transaction-response'
 import type { IApiService } from './IApiService'
 import type { Product } from '@/modules/shop/models/Product'
 import type { ShoppingCart as ShoppingCartModel } from '@/modules/shop/models/ShoppingCart'
 import type { AppProductType } from '@/modules/shop/models/types'
-import type { Promise } from 'cypress/types/cy-bluebird'
 
 export class FakeApiService implements IApiService {
   getSiteSettings(site: SiteEnum): Promise<SiteSetting | null> {
@@ -278,11 +277,15 @@ export class FakeApiService implements IApiService {
     throw new Error('Method not implemented.')
   }
 
-  checkTransactionStatus(merchantReference: string): Promise<PaymentTransactionResponse> {
+  checkTransactionStatus(merchantReference: string): Promise<PaymentTransactionStatusEnum> {
     throw new Error('Method not implemented.')
   }
 
   getShoppingCart(site: SiteEnum): Promise<ShoppingCartModel | null> {
+    throw new Error('Method not implemented.')
+  }
+
+  public async clearShoppingCart(site: SiteEnum): Promise<ShoppingCartModel> {
     throw new Error('Method not implemented.')
   }
 }

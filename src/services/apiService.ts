@@ -21,6 +21,9 @@ import {
   type EditClassResultUnion,
   type EditEnrollmentInput,
   type EditEnrollmentResultUnion,
+  EmptyShoppingCartDocument,
+  type EmptyShoppingCartMutation,
+  type EmptyShoppingCartMutationVariables,
   type Enrollment,
   type EnrollmentInfo,
   EnrollmentTypeEnum,
@@ -1757,6 +1760,48 @@ export class ApiService implements IApiService {
     } catch (error) {
       console.error('ApiService: Error fetching shopping cart:', error)
       throw new Error('Failed to fetch shopping cart.')
+    }
+  }
+
+  public async clearShoppingCart(site: SiteEnum): Promise<ShoppingCartModel> {
+    try {
+      const { data, errors } = await this.authApiClient.mutate<
+        EmptyShoppingCartMutation,
+        EmptyShoppingCartMutationVariables
+      >({
+        mutation: EmptyShoppingCartDocument,
+        variables: { site },
+        fetchPolicy: 'network-only'
+      })
+
+      if (errors && errors.length > 0) {
+        throw new ApiError(
+          `GraphQL error clearing the cart: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      const result = data?.emptyShoppingCart
+
+      if (!result) {
+        throw new Error('Did not receive a valid response from the server when clearing the cart.')
+      }
+
+      if (result.__typename === 'ShoppingCart') {
+        // Éxito: La API devolvió el carrito vacío.
+        // Lo mapeamos a nuestro modelo de dominio.
+        return createShoppingCartModel(result as GqlShoppingCart)
+      } else {
+        // Error de negocio: El carrito no se encontró, por ejemplo.
+        const errorCode = (result as { code?: string }).code ?? 'UnknownBusinessError'
+        throw new ApiError(
+          `Could not clear cart. API returned error: ${result.__typename}`,
+          errorCode
+        )
+      }
+    } catch (error) {
+      // Error de red o cualquier otro error. Lo registramos y lo relanzamos.
+      console.error('ApiService.clearShoppingCart failed:', error)
+      throw error
     }
   }
 }
