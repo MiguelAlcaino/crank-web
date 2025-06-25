@@ -1895,6 +1895,15 @@ export type EmptyShoppingCartMutation = {
     | { __typename: 'ShoppingCartNotFound'; code: string }
 }
 
+export type GenerateMerchantReferenceMutationVariables = Exact<{
+  site: SiteEnum
+}>
+
+export type GenerateMerchantReferenceMutation = {
+  __typename: 'Mutation'
+  generateMerchantReference: string
+}
+
 export type GetProductsQueryVariables = Exact<{
   site: SiteEnum
   input?: InputMaybe<ProductsInput>
@@ -2967,15 +2976,6 @@ export type PayfortFormMutation = {
   payfortForm: { __typename: 'PayfortFormResult'; htmlForm: string }
 }
 
-export type GenerateMerchantReferenceMutationVariables = Exact<{
-  site: SiteEnum
-}>
-
-export type GenerateMerchantReferenceMutation = {
-  __typename: 'Mutation'
-  generateMerchantReference: string
-}
-
 export type CurrentUserSitesWithNamesQueryVariables = Exact<{ [key: string]: never }>
 
 export type CurrentUserSitesWithNamesQuery = {
@@ -3387,6 +3387,45 @@ export const EmptyShoppingCartDocument = {
     ...ShoppingCartFieldsFragmentDoc.definitions
   ]
 } as unknown as DocumentNode<EmptyShoppingCartMutation, EmptyShoppingCartMutationVariables>
+export const GenerateMerchantReferenceDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'GenerateMerchantReference' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'generateMerchantReference' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  GenerateMerchantReferenceMutation,
+  GenerateMerchantReferenceMutationVariables
+>
 export const GetProductsDocument = {
   kind: 'Document',
   definitions: [
@@ -6486,45 +6525,6 @@ export const PayfortFormDocument = {
     }
   ]
 } as unknown as DocumentNode<PayfortFormMutation, PayfortFormMutationVariables>
-export const GenerateMerchantReferenceDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'GenerateMerchantReference' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
-          }
-        }
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'generateMerchantReference' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'site' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
-              }
-            ]
-          }
-        ]
-      }
-    }
-  ]
-} as unknown as DocumentNode<
-  GenerateMerchantReferenceMutation,
-  GenerateMerchantReferenceMutationVariables
->
 export const CurrentUserSitesWithNamesDocument = {
   kind: 'Document',
   definitions: [

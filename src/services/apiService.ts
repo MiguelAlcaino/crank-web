@@ -27,6 +27,9 @@ import {
   type Enrollment,
   type EnrollmentInfo,
   EnrollmentTypeEnum,
+  GenerateMerchantReferenceDocument,
+  type GenerateMerchantReferenceMutation,
+  type GenerateMerchantReferenceMutationVariables,
   GetProductsDocument,
   type GetProductsQuery,
   type GetProductsQueryVariables,
@@ -1639,22 +1642,34 @@ export class ApiService implements IApiService {
   }
 
   async generateMerchantReference(site: SiteEnum): Promise<string> {
-    const mutation = gql`
-      mutation GenerateMerchantReference($site: SiteEnum!) {
-        generateMerchantReference(site: $site)
-      }
-    `
-
     try {
-      const { data } = await this.authApiClient.mutate({
-        mutation: mutation,
+      const { data, errors } = await this.authApiClient.mutate<
+        GenerateMerchantReferenceMutation,
+        GenerateMerchantReferenceMutationVariables
+      >({
+        mutation: GenerateMerchantReferenceDocument,
         variables: { site },
         fetchPolicy: 'network-only'
       })
 
-      return data?.generateMerchantReference || ''
+      if (errors && errors.length > 0) {
+        throw new ApiError(
+          `GraphQL error generating merchant reference: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      // A missing or empty reference is a critical failure.
+      if (!data?.generateMerchantReference) {
+        throw new Error('Did not receive a valid merchant reference from the server.')
+      }
+
+      // On success, return the reference string.
+      return data.generateMerchantReference
     } catch (error) {
-      return ''
+      // Catch any error (our thrown errors or network errors) and re-throw it
+      // so the calling layer can handle the failure.
+      console.error('ApiService.generateMerchantReference failed:', error)
+      throw error
     }
   }
 

@@ -442,9 +442,10 @@ export interface IApiService {
   ): Promise<string>
 
   /**
-   * Generates a unique merchant reference for a transaction.
-   * @param site The site of the transaction.
-   * @returns A promise that resolves with the merchant reference.
+   * Generates a unique merchant reference ID required for a payment transaction.
+   * @param site The site for which to generate the reference.
+   * @returns A Promise that resolves with the unique merchant reference string.
+   * @throws An ApiError or Error if the operation fails.
    */
   generateMerchantReference(site: SiteEnum): Promise<string>
 
