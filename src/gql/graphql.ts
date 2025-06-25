@@ -1904,6 +1904,16 @@ export type GenerateMerchantReferenceMutation = {
   generateMerchantReference: string
 }
 
+export type GeneratePayfortFormMutationVariables = Exact<{
+  site: SiteEnum
+  input: PayfortFormInput
+}>
+
+export type GeneratePayfortFormMutation = {
+  __typename: 'Mutation'
+  payfortForm: { __typename: 'PayfortFormResult'; htmlForm: string }
+}
+
 export type GetProductsQueryVariables = Exact<{
   site: SiteEnum
   input?: InputMaybe<ProductsInput>
@@ -2966,16 +2976,6 @@ export type AvailableSitesQuery = {
   availableSites?: Array<{ __typename: 'Site'; name: string; code: SiteEnum }> | null
 }
 
-export type PayfortFormMutationVariables = Exact<{
-  site: SiteEnum
-  input: PayfortFormInput
-}>
-
-export type PayfortFormMutation = {
-  __typename: 'Mutation'
-  payfortForm: { __typename: 'PayfortFormResult'; htmlForm: string }
-}
-
 export type CurrentUserSitesWithNamesQueryVariables = Exact<{ [key: string]: never }>
 
 export type CurrentUserSitesWithNamesQuery = {
@@ -3426,6 +3426,59 @@ export const GenerateMerchantReferenceDocument = {
   GenerateMerchantReferenceMutation,
   GenerateMerchantReferenceMutationVariables
 >
+export const GeneratePayfortFormDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'GeneratePayfortForm' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'PayfortFormInput' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'payfortForm' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'Field', name: { kind: 'Name', value: 'htmlForm' } }]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<GeneratePayfortFormMutation, GeneratePayfortFormMutationVariables>
 export const GetProductsDocument = {
   kind: 'Document',
   definitions: [
@@ -6472,59 +6525,6 @@ export const AvailableSitesDocument = {
     }
   ]
 } as unknown as DocumentNode<AvailableSitesQuery, AvailableSitesQueryVariables>
-export const PayfortFormDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'PayfortForm' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
-          }
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'PayfortFormInput' } }
-          }
-        }
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'payfortForm' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'site' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'input' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
-              }
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [{ kind: 'Field', name: { kind: 'Name', value: 'htmlForm' } }]
-            }
-          }
-        ]
-      }
-    }
-  ]
-} as unknown as DocumentNode<PayfortFormMutation, PayfortFormMutationVariables>
 export const CurrentUserSitesWithNamesDocument = {
   kind: 'Document',
   definitions: [

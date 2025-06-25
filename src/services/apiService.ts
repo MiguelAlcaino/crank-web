@@ -30,6 +30,9 @@ import {
   GenerateMerchantReferenceDocument,
   type GenerateMerchantReferenceMutation,
   type GenerateMerchantReferenceMutationVariables,
+  GeneratePayfortFormDocument,
+  type GeneratePayfortFormMutation,
+  type GeneratePayfortFormMutationVariables,
   GetProductsDocument,
   type GetProductsQuery,
   type GetProductsQueryVariables,
@@ -46,7 +49,6 @@ import {
   type PaginatedPurchases,
   type PaginationInput,
   type PayfortFormInput,
-  type PayfortFormResult,
   PaymentTransactionStatusDocument,
   PaymentTransactionStatusEnum,
   type PaymentTransactionStatusInput,
@@ -1608,36 +1610,36 @@ export class ApiService implements IApiService {
     }
   }
 
-  async getPayfortForm(
-    site: SiteEnum,
-    savePaymentCard: boolean,
-    deviceFingerprint: string,
-    merchantReference: string
-  ): Promise<string> {
-    const input = { savePaymentCard, deviceFingerprint, merchantReference } as PayfortFormInput
-
-    const mutation = gql`
-      mutation PayfortForm($site: SiteEnum!, $input: PayfortFormInput!) {
-        payfortForm(site: $site, input: $input) {
-          htmlForm
-        }
-      }
-    `
-
+  async generatePayfortForm(site: SiteEnum, input: PayfortFormInput): Promise<string> {
     try {
-      const result = await this.authApiClient.mutate({
-        mutation: mutation,
-        variables: {
-          site: site,
-          input: input
-        },
-        fetchPolicy: 'network-only'
+      const { data, errors } = await this.authApiClient.mutate<
+        GeneratePayfortFormMutation,
+        GeneratePayfortFormMutationVariables
+      >({
+        // Use the generated DocumentNode for type safety.
+        mutation: GeneratePayfortFormDocument,
+        variables: { site, input },
+        fetchPolicy: 'network-only' // This is a one-time action.
       })
 
-      const payfortForm = result.data.payfortForm as PayfortFormResult
-      return payfortForm.htmlForm
+      if (errors && errors.length > 0) {
+        throw new ApiError(
+          `GraphQL error generating Payfort form: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      // A missing or empty HTML form is a critical failure.
+      const htmlForm = data?.payfortForm?.htmlForm
+      if (!htmlForm) {
+        throw new Error('Did not receive a valid HTML form from the server.')
+      }
+
+      // On success, return the HTML string.
+      return htmlForm
     } catch (error) {
-      return ''
+      // Catch and re-throw any error so the calling layer can handle the failure.
+      console.error('ApiService.generatePayfortForm failed:', error)
+      throw error
     }
   }
 

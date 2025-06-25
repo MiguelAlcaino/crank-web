@@ -17,6 +17,7 @@ import type {
   PaginatedEnrollments,
   PaginatedPurchases,
   PaginationInput,
+  PayfortFormInput,
   PaymentTransactionStatusEnum,
   RegisterUserInput,
   RejectLateBookingResultUnion,
@@ -260,12 +261,7 @@ export class FakeApiService implements IApiService {
     throw new Error('Method not implemented.')
   }
 
-  getPayfortForm(
-    site: SiteEnum,
-    savePaymentCard: boolean,
-    deviceFingerprint: string,
-    merchantReference: string
-  ): Promise<string> {
+  generatePayfortForm(site: SiteEnum, input: PayfortFormInput): Promise<string> {
     throw new Error('Method not implemented.')
   }
 

@@ -1,6 +1,7 @@
 import type { ApiService } from '@/services/ApiService'
 import { onMounted, readonly, ref } from 'vue'
 import { appStore } from '@/stores/appStorage'
+import type { PayfortFormInput } from '@/gql/graphql'
 
 export const useCheckout = (apiService: ApiService) => {
   const hasError = ref<boolean>(false)
@@ -12,14 +13,15 @@ export const useCheckout = (apiService: ApiService) => {
 
   async function payNow(deviceFingerprint: string): Promise<void> {
     try {
-      const merchantReference = await apiService.generateMerchantReference(appStore().site)
+      const merchantRef = await apiService.generateMerchantReference(appStore().site)
 
-      hiddenPayForm.value = await apiService.getPayfortForm(
-        appStore().site,
-        false,
+      const formInput: PayfortFormInput = {
+        merchantReference: merchantRef,
         deviceFingerprint,
-        merchantReference
-      )
+        savePaymentCard: false // Or get this from a user checkbox
+      }
+
+      hiddenPayForm.value = await apiService.generatePayfortForm(appStore().site, formInput)
 
       console.log(hiddenPayForm.value)
     } catch (e) {
@@ -29,14 +31,15 @@ export const useCheckout = (apiService: ApiService) => {
 
   async function getPayfortForm(deviceFingerprint: string): Promise<string> {
     try {
-      const merchantReference = await apiService.generateMerchantReference(appStore().site)
+      const merchantRef = await apiService.generateMerchantReference(appStore().site)
 
-      return await apiService.getPayfortForm(
-        appStore().site,
-        false,
+      const formInput: PayfortFormInput = {
+        merchantReference: merchantRef,
         deviceFingerprint,
-        merchantReference
-      )
+        savePaymentCard: false // Or get this from a user checkbox
+      }
+
+      return await apiService.generatePayfortForm(appStore().site, formInput)
     } catch (e) {
       return ''
     } finally {

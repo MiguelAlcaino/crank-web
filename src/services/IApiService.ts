@@ -17,6 +17,7 @@ import type {
   PaginatedEnrollments,
   PaginatedPurchases,
   PaginationInput,
+  PayfortFormInput,
   PaymentTransactionStatusEnum,
   RegisterUserInput,
   RejectLateBookingResultUnion,
@@ -427,19 +428,13 @@ export interface IApiService {
   calculateTotalForShoppingCart(site: SiteEnum): Promise<ShoppingCartModel>
 
   /**
-   * Gets the Payfort HTML form to process a payment.
-   * @param site The site of the transaction.
-   * @param savePaymentCard Whether the card should be saved for future purchases.
-   * @param deviceFingerprint A unique device identifier.
-   * @param merchantReference A unique merchant reference for the transaction.
-   * @returns A promise that resolves with the payment form HTML.
+   * Generates the HTML payment form from the Payfort payment gateway.
+   * @param site The site for which the payment is being made.
+   * @param input The necessary input data, including the merchant reference.
+   * @returns A Promise that resolves with the raw HTML string for the payment form.
+   * @throws An ApiError or Error if the operation fails.
    */
-  getPayfortForm(
-    site: SiteEnum,
-    savePaymentCard: boolean,
-    deviceFingerprint: string,
-    merchantReference: string
-  ): Promise<string>
+  generatePayfortForm(site: SiteEnum, input: PayfortFormInput): Promise<string>
 
   /**
    * Generates a unique merchant reference ID required for a payment transaction.
