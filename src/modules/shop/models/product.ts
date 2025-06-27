@@ -1,5 +1,6 @@
 import { ClassPackageTypeEnum, type GetProductsQuery } from '@/gql/graphql'
 import { formatPrice } from '@/modules/shop/utils/shop-utils'
+import type { IconName } from '@/modules/shop/models/types'
 
 // Create a reusable utility type for a single product from the API response.
 // This makes the code cleaner and easier to read than repeating ProductsQuery['products'][number].
@@ -49,6 +50,16 @@ export abstract class Product {
   public getFormattedPrice(locale?: string): string {
     return formatPrice(this.price, this.currency, locale)
   }
+
+  public get iconName(): IconName {
+    if (this.productType == 'class_package') {
+      return 'bag'
+    } else if (this.productType == 'gift_card') {
+      return 'gift'
+    }
+
+    return 'bag'
+  }
 }
 
 // 2. Class for Class Packages
@@ -72,6 +83,14 @@ export class ClassPackage extends Product {
 
   public get isMembershipPackage(): boolean {
     return this.classPackageType === ClassPackageTypeEnum.Membership
+  }
+
+  public get isRegularPackage(): boolean {
+    return this.classPackageType === ClassPackageTypeEnum.Regular
+  }
+
+  public get isSpecialPackage(): boolean {
+    return this.classPackageType === ClassPackageTypeEnum.Special
   }
 }
 

@@ -1,20 +1,16 @@
 import { computed, onMounted, readonly, ref } from 'vue'
 import { appStore } from '@/stores/appStorage'
 import type { IApiService } from '@/services/IApiService'
-import type { ShoppingCart } from '@/modules/shop/models/ShoppingCart'
+import type { ShoppingCart, ShoppingCartItem } from '@/modules/shop/models/ShoppingCart'
 import { ApiError } from '@/services/ApiService'
 
 const shoppingCart = ref<ShoppingCart | null>(null)
-const isUpdating = ref<boolean>(false)
 const error = ref<Error | null>(null)
-
-const totalItemsInCart = computed(() => {
-  return shoppingCart.value?.items.reduce((total, item) => total + item.quantity, 0) || 0
-})
 
 export const useShoppingCart = (apiService: IApiService) => {
   const hasError = ref<boolean>(false)
   const isLoading = ref<boolean>(false)
+  const updatingItemIds = ref<Set<string>>(new Set())
 
   onMounted(() => {
     getShoppingCart()
@@ -36,17 +32,18 @@ export const useShoppingCart = (apiService: IApiService) => {
   /**
    * A generic handler for any mutation that returns an updated shopping cart.
    * It manages the isUpdating and error states automatically.
+   * @param itemId
    * @param updatePromise The promise returned from an ApiService method.
    */
-  const handleCartUpdate = async (updatePromise: Promise<ShoppingCart>) => {
-    isUpdating.value = true
+  const handleCartUpdate = async (itemId: string, updatePromise: Promise<ShoppingCart>) => {
+    updatingItemIds.value.add(itemId)
     error.value = null
     try {
       shoppingCart.value = await updatePromise
     } catch (e) {
       error.value = e as ApiError | Error
     } finally {
-      isUpdating.value = false
+      updatingItemIds.value.delete(itemId)
     }
   }
 
@@ -58,7 +55,7 @@ export const useShoppingCart = (apiService: IApiService) => {
   const addToCart = async (sellableProductId: string) => {
     // 1. Set loading state to true and clear previous errors
     //    This provides immediate feedback to the UI.
-    isUpdating.value = true
+
     error.value = null
 
     try {
@@ -89,7 +86,6 @@ export const useShoppingCart = (apiService: IApiService) => {
     } finally {
       // 5. Always set loading state to false when the operation is complete,
       //    regardless of success or failure.
-      isUpdating.value = false
     }
   }
 
@@ -99,22 +95,24 @@ export const useShoppingCart = (apiService: IApiService) => {
    */
   const removeFromCart = async (shoppingCartItemId: string) => {
     await handleCartUpdate(
+      shoppingCartItemId,
       apiService.removeItemFromShoppingCart(appStore().site, shoppingCartItemId)
     )
   }
 
   /**
    * Updates the quantity of an item in the shopping cart.
-   * @param payload An object containing the productId and the new quantity.
+   *
    */
-  const updateItemInCart = async (payload: { productId: string; quantity: number }) => {
-    if (payload.quantity <= 0) {
-      console.warn('updateItemInCart: Invalid quantity provided. Must be a number greater than 0.')
+  const updateItemInCart = async (item: ShoppingCartItem, newQuantity: number) => {
+    if (newQuantity <= 0) {
+      await removeFromCart(item.id)
       return
     }
 
     await handleCartUpdate(
-      apiService.updateItemInShoppingCart(appStore().site, payload.productId, payload.quantity)
+      item.id,
+      apiService.updateItemInShoppingCart(appStore().site, item.product.id, newQuantity)
     )
   }
 
@@ -147,6 +145,7 @@ export const useShoppingCart = (apiService: IApiService) => {
     productIdsInCart: readonly(productIdsInCart),
     calculatedSubtotal: readonly(calculatedSubtotal),
     totalItemsInCart: readonly(totalItemsInCart),
+    formattedSubtotal: readonly(formattedSubtotal),
 
     // Methods
     addToCart,
