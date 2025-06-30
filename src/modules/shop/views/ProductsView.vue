@@ -7,7 +7,9 @@ import ShoppingBagIcon from '@/modules/shop/components/ShoppingBagIcon.vue'
 import ProductCard from '../components/ProductCard.vue'
 import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
 import type { IApiService } from '@/services/IApiService'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const apiService = inject<IApiService>('gqlApiService')!
 
 const {
@@ -18,11 +20,14 @@ const {
   filteredSessionsProductGroups,
   giftCards,
   classPackageSelectType,
-  setActiveTab,
-  setClassPackageSelectType
+  setActiveTab
 } = useProducts(apiService)
 
 const { productIdsInCart, addToCart } = useShoppingCart(apiService)
+
+const goToCart = () => {
+  router.push('/shop/cart')
+}
 </script>
 
 <template>
@@ -59,7 +64,7 @@ const { productIdsInCart, addToCart } = useShoppingCart(apiService)
     <div class="flex-grow-1 bg-light p-2 overflow-auto">
       <div class="d-flex justify-content-end align-items-center mb-4 w-100">
         <div class="shopping-bag-icon">
-          <ShoppingBagIcon></ShoppingBagIcon>
+          <ShoppingBagIcon @click="goToCart"></ShoppingBagIcon>
         </div>
       </div>
 

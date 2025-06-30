@@ -1,7 +1,26 @@
+<script setup lang="ts">
+import { useShoppingCart } from '../composables/userShoppingCart'
+import { inject } from 'vue'
+import type { IApiService } from '@/services/IApiService'
+
+const apiService = inject<IApiService>('gqlApiService')!
+const { totalItemsInCart } = useShoppingCart(apiService)
+
+const scale = 0.4
+
+const emit = defineEmits<{
+  (e: 'click'): void
+}>()
+
+const handleClick = () => {
+  emit('click')
+}
+</script>
+
 <template>
   <div
     class="icon-wrapper d-flex justify-content-center align-items-center"
-    @click="open"
+    @click="handleClick"
     aria-label="Open shopping cart"
   >
     <div
@@ -26,24 +45,6 @@
     <span class="number">{{ totalItemsInCart }}</span>
   </div>
 </template>
-
-<script setup lang="ts">
-import { useShoppingCart } from '../composables/userShoppingCart'
-import { inject } from 'vue'
-import type { ApiService } from '@/services/ApiService'
-import { useRouter } from 'vue-router'
-
-const router = useRouter()
-
-const apiService = inject<ApiService>('gqlApiService')!
-const { totalItemsInCart } = useShoppingCart(apiService)
-
-const scale = 0.4
-
-const open = () => {
-  router.push('/shop/cart')
-}
-</script>
 
 <style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
 <style lang="css" scoped src="@/assets/main.css"></style>
