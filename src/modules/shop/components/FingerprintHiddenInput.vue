@@ -1,15 +1,3 @@
-<script lang="ts">
-declare global {
-  interface Window {
-    io_install_stm: boolean
-    io_exclude_stm: number
-    io_install_flash: boolean
-    io_enable_rip: boolean
-    io_bbout_element_id: string
-  }
-}
-</script>
-
 <script setup lang="ts">
 import { onMounted } from 'vue'
 
