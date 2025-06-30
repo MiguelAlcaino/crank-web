@@ -10,6 +10,7 @@ import IconSmoothie from '@/modules/shop/components/icons/IconSmoothie.vue'
 import type { IconName } from '@/modules/shop/models/types'
 import ShoppingCartItem from '@/modules/shop/components/ShoppingCartItem.vue'
 import type { IApiService } from '@/services/IApiService'
+import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
 
 const router = useRouter()
 const apiService = inject<IApiService>('gqlApiService')!
@@ -18,6 +19,7 @@ const {
   shoppingCart,
   totalItemsInCart,
   formattedSubtotal,
+  isLoading,
   removeFromCart,
   updateItemInCart,
   isItemUpdating
@@ -51,6 +53,9 @@ const handleUpdateInParent = (payload: { itemId: string; newQuantity: number }) 
 
     <!-- List of Items (with scroll) -->
     <div class="cart-items-list flex-grow-1 overflow-auto px-2">
+      <div v-if="isLoading" class="loading-overlay">
+        <CrankCircularProgressIndicator text="Loading your basket..." />
+      </div>
       <div v-if="shoppingCart?.isEmpty" class="text-center p-5">
         <p>Your basket is empty.</p>
       </div>
@@ -139,5 +144,12 @@ h1,
 .btn-checkout:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 15px rgba(255, 140, 105, 0.6);
+}
+
+.loading-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
 }
 </style>
