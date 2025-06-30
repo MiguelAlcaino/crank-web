@@ -1,7 +1,7 @@
 import { computed, onMounted, readonly, ref } from 'vue'
 import { appStore } from '@/stores/appStorage'
 import type { IApiService } from '@/services/IApiService'
-import type { ShoppingCart, ShoppingCartItem } from '@/modules/shop/models/ShoppingCart'
+import type { ShoppingCart } from '@/modules/shop/models/ShoppingCart'
 import { ApiError } from '@/services/ApiService'
 
 const shoppingCart = ref<ShoppingCart | null>(null)
@@ -104,15 +104,24 @@ export const useShoppingCart = (apiService: IApiService) => {
    * Updates the quantity of an item in the shopping cart.
    *
    */
-  const updateItemInCart = async (item: ShoppingCartItem, newQuantity: number) => {
-    if (newQuantity <= 0) {
-      await removeFromCart(item.id)
+  const updateItemInCart = async (payload: { itemId: string; newQuantity: number }) => {
+    const newQuantity = Math.max(0, payload.newQuantity || 0)
+
+    if (newQuantity === 0) {
+      await removeFromCart(payload.itemId)
+      return
+    }
+
+    const itemToUpdate = shoppingCart.value?.items.find((item) => item.id === payload.itemId)
+
+    if (!itemToUpdate) {
+      console.error(`Item with ID ${payload.itemId} not found in cart. Cannot update.`)
       return
     }
 
     await handleCartUpdate(
-      item.id,
-      apiService.updateItemInShoppingCart(appStore().site, item.product.id, newQuantity)
+      payload.itemId,
+      apiService.updateItemInShoppingCart(appStore().site, itemToUpdate.product.id, newQuantity)
     )
   }
 
@@ -137,6 +146,15 @@ export const useShoppingCart = (apiService: IApiService) => {
 
   const formattedSubtotal = computed(() => shoppingCart.value?.getFormattedSubtotal() ?? '')
 
+  /**
+   * Checks if a specific shopping cart item is currently being updated.
+   * @param itemId The ID of the shopping cart item.
+   * @returns True if the item is being updated, false otherwise.
+   */
+  const isItemUpdating = (itemId: string): boolean => {
+    return updatingItemIds.value.has(itemId)
+  }
+
   return {
     // Properties
     isLoading: readonly(isLoading),
@@ -150,6 +168,7 @@ export const useShoppingCart = (apiService: IApiService) => {
     // Methods
     addToCart,
     removeFromCart,
-    updateItemInCart
+    updateItemInCart,
+    isItemUpdating
   }
 }

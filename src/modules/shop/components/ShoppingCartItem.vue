@@ -1,28 +1,34 @@
 <script setup lang="ts">
 import type { ShoppingCartItem } from '@/modules/shop/models/ShoppingCart'
 import { defineEmits, defineProps } from 'vue'
+import QuantityStepper from '@/modules/shop/components/QuantityStepper.vue'
 
 const props = defineProps<{
   item: ShoppingCartItem
   iconComponent: any
+  isUpdating: boolean
 }>()
 
 const emit = defineEmits<{
   (e: 'removeItem', itemId: string): void
-  (e: 'updateQuantity', newQuantity: number): void
+  (e: 'updateQuantity', payload: { itemId: string; newQuantity: number }): void
 }>()
 
 const onRemove = () => {
   emit('removeItem', props.item.id)
 }
 
-const onUpdateQuantity = (newQuantity: number) => {
-  emit('updateQuantity', newQuantity)
+const handleQuantityUpdate = (newQuantity: number) => {
+  if (newQuantity <= 0) {
+    emit('removeItem', props.item.id)
+  } else {
+    emit('updateQuantity', { itemId: props.item.id, newQuantity })
+  }
 }
 </script>
 
 <template>
-  <div class="cart-item d-flex align-items-stretch">
+  <div class="cart-item d-flex align-items-stretch" :class="{ 'is-updating': isUpdating }">
     <!-- Icon on the left -->
     <div class="cart-item-icon d-flex justify-content-center align-items-center">
       <component :is="iconComponent" class="cart-icon-svg" />
@@ -39,13 +45,16 @@ const onUpdateQuantity = (newQuantity: number) => {
 
       <!-- Controls -->
       <div class="item-controls d-flex flex-column justify-content-between text-center">
-        <div class="quantity-stepper d-flex justify-content-around align-items-center p-2">
-          <!-- We call our local handlers who emit the events -->
-          <button class="btn-stepper" @click="onUpdateQuantity(item.quantity - 1)">-</button>
-          <span class="font-weight-bold">{{ item.quantity }}</span>
-          <button class="btn-stepper" @click="onUpdateQuantity(item.quantity + 1)">+</button>
+        <div class="quantity-stepper-container">
+          <QuantityStepper
+            :model-value="item.quantity"
+            :min="0"
+            :disabled="isUpdating"
+            @update-item="handleQuantityUpdate"
+          />
         </div>
-        <button class="btn btn-remove" @click="onRemove">REMOVE</button>
+
+        <button class="btn btn-remove" @click="onRemove" :disabled="isUpdating">REMOVE</button>
       </div>
     </div>
   </div>
@@ -78,17 +87,13 @@ const onUpdateQuantity = (newQuantity: number) => {
   background-color: #f7f7f7;
 }
 
-.quantity-stepper {
+.quantity-stepper-container {
+  width: 100%;
   border-bottom: 1px solid #e0e0e0;
-}
-
-.btn-stepper {
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  font-weight: bold;
-  cursor: pointer;
-  color: #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0;
 }
 
 .btn-remove {
@@ -99,7 +104,7 @@ const onUpdateQuantity = (newQuantity: number) => {
   font-weight: bold;
   font-size: 0.8rem;
   letter-spacing: 1px;
-  flex-grow: 1;
+  padding: 0.75rem 0;
   transition: background-color 0.2s;
 }
 
@@ -111,5 +116,11 @@ const onUpdateQuantity = (newQuantity: number) => {
 
 .font-weight-bold {
   font-family: 'BigJohn', 'Arial Black', sans-serif;
+}
+
+.cart-item.is-updating {
+  opacity: 0.6;
+  pointer-events: none; /* Previene cualquier clic en el item */
+  transition: opacity 0.2s ease-in-out;
 }
 </style>

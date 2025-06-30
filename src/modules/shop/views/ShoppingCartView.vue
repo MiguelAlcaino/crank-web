@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { inject, ref } from 'vue'
-
-import type { ApiService } from '@/services/ApiService'
+import { inject } from 'vue'
 import { useShoppingCart } from '../composables/userShoppingCart'
 import { useRouter } from 'vue-router'
 import IconBag from '@/modules/shop/components/icons/IconBag.vue'
@@ -10,24 +8,22 @@ import IconMerch from '@/modules/shop/components/icons/IconMerch.vue'
 import IconSmoothie from '@/modules/shop/components/icons/IconSmoothie.vue'
 import type { IconName } from '@/modules/shop/models/types'
 import ShoppingCartItem from '@/modules/shop/components/ShoppingCartItem.vue'
+import type { IApiService } from '@/services/IApiService'
 
 const router = useRouter()
-const apiService = inject<ApiService>('gqlApiService')!
+const apiService = inject<IApiService>('gqlApiService')!
 
-const { shoppingCart, removeFromCart, updateItemInCart, totalItemsInCart, formattedSubtotal } =
-  useShoppingCart(apiService)
-
-const emit = defineEmits(['update:modelValue', 'removeItem'])
-
-const modelValue = ref(true)
-const closeDrawer = () => {
-  modelValue.value = false
-  //  emit('update:modelValue', false);
-}
+const {
+  shoppingCart,
+  totalItemsInCart,
+  formattedSubtotal,
+  removeFromCart,
+  updateItemInCart,
+  isItemUpdating
+} = useShoppingCart(apiService)
 
 const handleCheckout = () => {
   router.push('/shop/checkout')
-  closeDrawer()
 }
 
 const iconComponents: Record<IconName | 'default', any> = {
@@ -37,6 +33,10 @@ const iconComponents: Record<IconName | 'default', any> = {
   smoothie: IconSmoothie,
   default: IconBag,
   unknown: IconBag
+}
+
+const handleUpdateInParent = (payload: { itemId: string; newQuantity: number }) => {
+  updateItemInCart(payload)
 }
 </script>
 
@@ -59,8 +59,9 @@ const iconComponents: Record<IconName | 'default', any> = {
           :key="item.id"
           :item="item"
           :icon-component="iconComponents[item.product.iconName] || iconComponents.default"
+          :is-updating="isItemUpdating(item.id)"
           @remove-item="removeFromCart"
-          @update-quantity="(newQuantity: number) => updateItemInCart(item, newQuantity)"
+          @update-quantity="handleUpdateInParent"
         />
       </div>
     </div>
