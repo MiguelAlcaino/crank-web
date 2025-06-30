@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Component } from 'vue'
 import { inject } from 'vue'
 import { useShoppingCart } from '../composables/userShoppingCart'
 import { useRouter } from 'vue-router'
@@ -26,7 +27,7 @@ const handleCheckout = () => {
   router.push('/shop/checkout')
 }
 
-const iconComponents: Record<IconName | 'default', any> = {
+const iconComponents: Record<IconName | 'default', Component> = {
   bag: IconBag,
   gift: IconGift,
   merch: IconMerch,
@@ -50,7 +51,7 @@ const handleUpdateInParent = (payload: { itemId: string; newQuantity: number }) 
 
     <!-- List of Items (with scroll) -->
     <div class="cart-items-list flex-grow-1 overflow-auto px-2">
-      <div v-if="shoppingCart?.items.length === 0" class="text-center p-5">
+      <div v-if="shoppingCart?.isEmpty" class="text-center p-5">
         <p>Your basket is empty.</p>
       </div>
       <div v-else>
