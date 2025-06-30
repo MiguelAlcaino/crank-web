@@ -1,45 +1,51 @@
 <script setup lang="ts">
-import ProductNumberInput from './ProductNumberInput.vue'
 import type { ShoppingCartItem } from '@/modules/shop/models/ShoppingCart'
+import { defineEmits, defineProps } from 'vue'
 
 const props = defineProps<{
-  shoppingCartItem: ShoppingCartItem
+  item: ShoppingCartItem
+  iconComponent: any
 }>()
 
-const emits = defineEmits<{
-  (e: 'updateItem', payload: { productId: string; quantity: number }): void
-  (e: 'removeItem', shoppingCartItemId: string): void
+const emit = defineEmits<{
+  (e: 'removeItem', itemId: string): void
+  (e: 'updateQuantity', newQuantity: number): void
 }>()
 
-const updateQuantity = (newQuantity: number) => {
-  if (newQuantity !== props.shoppingCartItem.quantity) {
-    emits('updateItem', { productId: props.shoppingCartItem.product.id, quantity: newQuantity })
-  }
+const onRemove = () => {
+  emit('removeItem', props.item.id)
 }
 
-const removeItem = () => {
-  emits('removeItem', props.shoppingCartItem.id)
+const onUpdateQuantity = (newQuantity: number) => {
+  emit('updateQuantity', newQuantity)
 }
 </script>
 
 <template>
-  <div>
-    <div class="row">
-      <div class="col-6">
-        <p class="fw-bold mb-1">{{ shoppingCartItem.product.title }}</p>
-        <p class="text-muted mb-2">{{ shoppingCartItem.product.getFormattedPrice() }}</p>
-        <ProductNumberInput
-          :model-value="shoppingCartItem.quantity"
-          @update-item="updateQuantity"
-          :min="1"
-          :max="1000"
-          :step="1"
-        >
-        </ProductNumberInput>
-        <button type="button" class="btn btn-link avenir-font" @click="removeItem">Remove</button>
+  <div class="cart-item d-flex align-items-stretch">
+    <!-- Icon on the left -->
+    <div class="cart-item-icon d-flex justify-content-center align-items-center">
+      <component :is="iconComponent" class="cart-icon-svg" />
+    </div>
+
+    <!-- Info and Actions -->
+    <div class="cart-item-details flex-grow-1 d-flex">
+      <!-- Product info -->
+      <div class="product-info p-3 flex-grow-1">
+        <div class="font-weight-bold">{{ item.product.title }}</div>
+        <div class="font-weight-bold">AED {{ item.product.price }}</div>
+        <div class="item-subtitle small mt-2">{{ item.product.subtitle }}</div>
       </div>
-      <div class="col-md-6 text-end">
-        <p class="fw-bold">{{ shoppingCartItem.getFormattedLineItemTotal() }}</p>
+
+      <!-- Controls -->
+      <div class="item-controls d-flex flex-column justify-content-between text-center">
+        <div class="quantity-stepper d-flex justify-content-around align-items-center p-2">
+          <!-- We call our local handlers who emit the events -->
+          <button class="btn-stepper" @click="onUpdateQuantity(item.quantity - 1)">-</button>
+          <span class="font-weight-bold">{{ item.quantity }}</span>
+          <button class="btn-stepper" @click="onUpdateQuantity(item.quantity + 1)">+</button>
+        </div>
+        <button class="btn btn-remove" @click="onRemove">REMOVE</button>
       </div>
     </div>
   </div>
@@ -48,20 +54,62 @@ const removeItem = () => {
 <style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
 <style lang="css" scoped src="@/assets/main.css"></style>
 <style scoped>
-.avenir-font {
-  font-family: 'Avenir', sans-serif;
+.cart-item {
+  background-color: #fdfdfd;
+  border-bottom: 1px solid #e0e0e0;
 }
 
-.btn-link.text-danger {
-  font-family: 'Avenir', sans-serif;
-  text-decoration: none;
+.cart-item-icon {
+  background-color: black;
+  color: white;
+  min-width: 90px;
+  width: 90px;
 }
 
-.fw-bold {
+.item-subtitle {
+  color: #ff8c69;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.5px;
+}
+
+.item-controls {
+  min-width: 100px;
+  background-color: #f7f7f7;
+}
+
+.quantity-stepper {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.btn-stepper {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
   font-weight: bold;
+  cursor: pointer;
+  color: #555;
 }
 
-.text-muted {
-  color: #6c757d;
+.btn-remove {
+  background-color: #ff8c69;
+  color: white;
+  border: none;
+  border-radius: 0;
+  font-weight: bold;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  flex-grow: 1;
+  transition: background-color 0.2s;
+}
+
+.cart-icon-svg {
+  width: 40px;
+  height: 40px;
+  color: white;
+}
+
+.font-weight-bold {
+  font-family: 'BigJohn', 'Arial Black', sans-serif;
 }
 </style>
