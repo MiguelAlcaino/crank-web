@@ -1,24 +1,29 @@
 <script setup lang="ts">
 import { computed, inject, reactive, ref } from 'vue'
 
-import type { ApiService } from '@/services/ApiService'
-import type { CardData } from '@/modules/shop/interfaces/card-data'
+// Components
+import DeviceFingerprint from '@/modules/shop/components/DeviceFingerprint.vue'
+
+// Composables, Services & Utilities
 import { useCheckout } from '@/modules/shop/composables/useCheckout'
-import { convertDateFormat, luhnCheck } from '@/modules/shop/utils/shop-utils'
-import FingerprintHiddenInput from '@/modules/shop/components/FingerprintHiddenInput.vue'
+import { createPayfortFormManager } from '@/modules/shop/services/PayfortFormManager'
+import type { IApiService } from '@/services/ApiService'
+import type { CardData } from '@/modules/shop/interfaces/card-data'
+import { luhnCheck } from '@/modules/shop/utils/shop-utils'
 
-const apiService = inject<ApiService>('gqlApiService')!
-const { getPayfortForm } = useCheckout(apiService)
+// --- Dependencies & State from Composables ---
+const apiService = inject<IApiService>('gqlApiService')!
+const { error: checkoutError, payfortFormHtml, initiatePayment } = useCheckout(apiService)
 
-const fingerprintInputId = 'device_fingerprint'
+// --- Component-Specific State ---
+const isSubmitting = ref(false)
 
-interface FormErrors {
-  cardNumber: string
-  expiryDate: string
-  cvv: string
-  cardholderName: string
-}
+// State for the Device Fingerprint, controlled by the child component's events.
+const fingerprintSessionId = ref('')
+const fingerprintError = ref<Error | null>(null)
+const isFingerprintReady = computed(() => !!fingerprintSessionId.value && !fingerprintError.value)
 
+// State for the credit card form.
 const cardData = reactive<CardData>({
   cardNumber: '',
   expiryDate: '',
@@ -27,214 +32,189 @@ const cardData = reactive<CardData>({
   saveForFuture: false
 })
 
-const errors = reactive<FormErrors>({
+const formErrors = reactive({
   cardNumber: '',
   expiryDate: '',
   cvv: '',
   cardholderName: ''
 })
 
-const isSubmitting = ref(false)
+// --- Event Handlers for Child Component ---
 
-const cardType = computed(() => {
-  const number = cardData.cardNumber.replace(/\s/g, '')
-  if (number.startsWith('4')) {
-    return 'Visa'
-  } else if (/^5[1-5]/.test(number)) {
-    return 'MasterCard'
-  } else if (/^3[47]/.test(number)) {
-    return 'American Express'
-  } else if (/^6(?:011|5)/.test(number)) {
-    return 'Discover'
-  } else {
-    return ''
-  }
-})
-
-const formatCardNumber = (event: Event) => {
-  const input = event.target as HTMLInputElement
-  let value = input.value.replace(/\D/g, '')
-
-  // Add spaces every 4 digits
-  if (value.length > 0) {
-    value = value.match(new RegExp('.{1,4}', 'g'))?.join(' ') || ''
-  }
-
-  cardData.cardNumber = value
+/**
+ * Handles the 'ready' event from the DeviceFingerprint component.
+ * It stores the session ID and enables the UI for submission.
+ */
+const onFingerprintReady = (sessionId: string) => {
+  fingerprintSessionId.value = sessionId
+  fingerprintError.value = null
 }
 
-const formatExpiryDate = (event: Event) => {
-  const input = event.target as HTMLInputElement
-  let value = input.value.replace(/\D/g, '')
-
-  if (value.length > 2) {
-    value = value.substring(0, 2) + '/' + value.substring(2)
-  }
-
-  cardData.expiryDate = value
+/**
+ * Handles the 'error' event from the DeviceFingerprint component.
+ * It stores the error to display a message to the user.
+ */
+const onFingerprintError = (error: Error) => {
+  fingerprintError.value = error
 }
 
-const validateForm = (): boolean => {
-  let isValid = true
+// --- Form Submission Logic ---
 
-  // Reset errors
-  errors.cardNumber = ''
-  errors.expiryDate = ''
-  errors.cvv = ''
-  errors.cardholderName = ''
-
-  // Validate card number - allow masked numbers for saved cards
-  const cardNumberClean = cardData.cardNumber.replace(/\s/g, '')
-  if (!cardNumberClean) {
-    errors.cardNumber = 'Card number is required'
-    isValid = false
-  } else if (!cardNumberClean.startsWith('****') && !/^\d{13,19}$/.test(cardNumberClean)) {
-    errors.cardNumber = 'The card number must be between 13 and 19 digits'
-    isValid = false
-  } else if (!cardNumberClean.startsWith('****') && !luhnCheck(cardNumberClean)) {
-    errors.cardNumber = 'Invalid card number'
-    isValid = false
-  }
-
-  // Validate expiry date
-  if (!cardData.expiryDate) {
-    errors.expiryDate = 'Expiration date is required'
-    isValid = false
-  } else {
-    const [month, year] = cardData.expiryDate.split('/')
-    const currentDate = new Date()
-    const currentYear = currentDate.getFullYear() % 100
-    const currentMonth = currentDate.getMonth() + 1
-
-    if (!/^\d{2}\/\d{2}$/.test(cardData.expiryDate)) {
-      errors.expiryDate = 'Invalid format (MM/YY)'
-      isValid = false
-    } else if (parseInt(month) < 1 || parseInt(month) > 12) {
-      errors.expiryDate = 'Invalid month'
-      isValid = false
-    } else if (
-      parseInt(year) < currentYear ||
-      (parseInt(year) === currentYear && parseInt(month) < currentMonth)
-    ) {
-      errors.expiryDate = 'Card has expired'
-      isValid = false
-    }
-  }
-
-  // Validate CVV
-  if (!cardData.cvv) {
-    errors.cvv = 'CVV is required'
-    isValid = false
-  } else if (!/^\d{3,4}$/.test(cardData.cvv)) {
-    errors.cvv = 'The CVV must be 3 or 4 digits long.'
-    isValid = false
-  }
-
-  // Validate cardholder name
-  if (!cardData.cardholderName.trim()) {
-    errors.cardholderName = "Holder's name is required"
-    isValid = false
-  }
-
-  return isValid
-}
-
+/**
+ * Orchestrates the entire payment process on form submission.
+ */
 const handleSubmit = async () => {
-  if (!validateForm()) {
+  if (!validateForm()) return
+
+  // Guard clause to ensure the security fingerprint is ready before proceeding.
+  if (!isFingerprintReady.value) {
+    alert('Security session is not yet ready. Please wait a moment.')
     return
   }
 
   isSubmitting.value = true
 
   try {
-    const fingerprintElement = document.getElementById(fingerprintInputId) as HTMLInputElement
+    // 1. Call the composable to get the base Payfort form HTML from the backend.
+    await initiatePayment(fingerprintSessionId.value)
 
-    // Get HTML form as string
-    let hiddenPayFormHtml = await getPayfortForm(fingerprintElement.value)
+    // 2. Stop if the composable reported an error.
+    if (checkoutError.value) throw checkoutError.value
 
-    // Create a temporary container and assign the HTML
-    const tempDiv = document.createElement('div')
-    tempDiv.innerHTML = hiddenPayFormHtml
-
-    // Get the form from the inserted HTML
-    const formElement = tempDiv.querySelector('form') as HTMLFormElement
-
-    if (formElement) {
-      // card_holder_name
-      const cardholderNameInput = document.createElement('input')
-      cardholderNameInput.type = 'hidden'
-      cardholderNameInput.name = 'card_holder_name'
-      cardholderNameInput.value = cardData.cardholderName
-
-      // card_number
-      const cardNumberInput = document.createElement('input')
-      cardNumberInput.type = 'hidden'
-      cardNumberInput.name = 'card_number'
-      cardNumberInput.value = cardData.cardNumber.replace(/\s/g, '')
-
-      // expiry_date
-      const expiryDateInput = document.createElement('input')
-      expiryDateInput.type = 'hidden'
-      expiryDateInput.name = 'expiry_date'
-      expiryDateInput.value = convertDateFormat(cardData.expiryDate)
-
-      // card_security_code
-      const cardSecurityCodeInput = document.createElement('input')
-      cardSecurityCodeInput.type = 'hidden'
-      cardSecurityCodeInput.name = 'card_security_code'
-      cardSecurityCodeInput.value = cardData.cvv
-
-      // remember_me
-      const rememberMeInput = document.createElement('input')
-      rememberMeInput.type = 'hidden'
-      rememberMeInput.name = 'remember_me'
-      rememberMeInput.value = cardData.saveForFuture ? 'YES' : 'NO'
-
-      // Find the submit button
-      const submitButton = formElement.querySelector('input[type="submit"]')
-
-      if (submitButton) {
-        submitButton.id = 'submitButton'
-
-        // Insert new inputs after the submit button
-        submitButton.insertAdjacentElement('beforebegin', cardholderNameInput)
-        submitButton.insertAdjacentElement('beforebegin', cardNumberInput)
-        submitButton.insertAdjacentElement('beforebegin', expiryDateInput)
-        submitButton.insertAdjacentElement('beforebegin', cardSecurityCodeInput)
-        submitButton.insertAdjacentElement('beforebegin', rememberMeInput)
-      }
-
-      formElement.style.cssText = 'visibility: hidden;'
-
-      document.body.appendChild(formElement)
-      formElement.submit()
+    // 3. Use a dedicated service to handle DOM manipulation and form submission.
+    if (payfortFormHtml.value) {
+      const formManager = createPayfortFormManager(payfortFormHtml.value)
+      formManager.addCardData(cardData)
+      formManager.submit()
+      // The user will be redirected by the form submission.
     } else {
-      console.error('Form not found in generated HTML')
+      throw new Error('Failed to generate the payment form.')
     }
   } catch (error) {
-    // TODO: Handle error
+    // TODO: Implement a user-friendly error display (e.g., a toast notification).
+    console.error('Submission failed:', error)
+    alert('An error occurred during payment. Please check your details and try again.')
   } finally {
     isSubmitting.value = false
   }
 }
+
+// --- Formatting and Validation Helpers ---
+
+const formatCardNumber = (event: Event) => {
+  const input = event.target as HTMLInputElement
+  let value = input.value.replace(/\D/g, '') // Remove all non-digits
+  if (value.length > 0) {
+    // Add a space every 4 digits
+    value = value.match(new RegExp('.{1,4}', 'g'))?.join(' ') || ''
+  }
+  cardData.cardNumber = value
+}
+
+const formatExpiryDate = (event: Event) => {
+  const input = event.target as HTMLInputElement
+  let value = input.value.replace(/\D/g, '') // Remove all non-digits
+  if (value.length > 2) {
+    // Add a slash after the first two digits (month)
+    value = value.substring(0, 2) + '/' + value.substring(2, 4)
+  }
+  cardData.expiryDate = value
+}
+
+const validateForm = (): boolean => {
+  // Reset previous errors before validating again.
+  Object.assign(formErrors, { cardNumber: '', expiryDate: '', cvv: '', cardholderName: '' })
+  let isValid = true
+
+  // Card Number Validation
+  const cardNumberClean = cardData.cardNumber.replace(/\s/g, '')
+  if (!cardNumberClean) {
+    formErrors.cardNumber = 'Card number is required'
+    isValid = false
+  } else if (!/^\d{13,19}$/.test(cardNumberClean)) {
+    formErrors.cardNumber = 'Card number must be between 13 and 19 digits'
+    isValid = false
+  } else if (!luhnCheck(cardNumberClean)) {
+    formErrors.cardNumber = 'Invalid card number'
+    isValid = false
+  }
+
+  // Expiry Date Validation
+  if (!cardData.expiryDate) {
+    formErrors.expiryDate = 'Expiration date is required'
+    isValid = false
+  } else if (!/^\d{2}\/\d{2}$/.test(cardData.expiryDate)) {
+    formErrors.expiryDate = 'Invalid format (must be MM/YY)'
+    isValid = false
+  } else {
+    const [month, year] = cardData.expiryDate.split('/')
+    const currentYear = new Date().getFullYear() % 100
+    const currentMonth = new Date().getMonth() + 1
+    if (
+      parseInt(year) < currentYear ||
+      (parseInt(year) === currentYear && parseInt(month) < currentMonth)
+    ) {
+      formErrors.expiryDate = 'Card has expired'
+      isValid = false
+    }
+  }
+
+  // CVV Validation
+  if (!cardData.cvv) {
+    formErrors.cvv = 'CVV is required'
+    isValid = false
+  } else if (!/^\d{3,4}$/.test(cardData.cvv)) {
+    formErrors.cvv = 'CVV must be 3 or 4 digits'
+    isValid = false
+  }
+
+  // Cardholder Name Validation
+  if (!cardData.cardholderName.trim()) {
+    formErrors.cardholderName = "Cardholder's name is required"
+    isValid = false
+  }
+
+  return isValid
+}
+
+const cardType = computed(() => {
+  const number = cardData.cardNumber.replace(/\s/g, '')
+  if (number.startsWith('4')) return 'Visa'
+  if (/^5[1-5]/.test(number)) return 'MasterCard'
+  if (/^3[47]/.test(number)) return 'American Express'
+  return ''
+})
 </script>
 
 <template>
   <div class="payment-form-container mt-3">
-    <h2>Payment Form</h2>
-    <form @submit.prevent="handleSubmit" class="payment-form">
+    <h2>Secure Payment</h2>
+
+    <!--
+      The DeviceFingerprint component is invisible to the user but essential for the payment flow.
+      It handles the loading of the third-party security script and reports its status.
+    -->
+    <DeviceFingerprint
+      session-id-input-id="fingerprint_session_id"
+      @ready="onFingerprintReady"
+      @error="onFingerprintError"
+    />
+
+    <form @submit.prevent="handleSubmit" class="payment-form" novalidate>
       <div class="form-group">
         <label for="cardNumber">Card Number</label>
         <input
           id="cardNumber"
           v-model="cardData.cardNumber"
-          type="text"
+          type="tel"
+          inputmode="numeric"
           placeholder="XXXX XXXX XXXX XXXX"
           @input="formatCardNumber"
           maxlength="19"
-          :class="{ error: errors.cardNumber }"
+          :class="{ error: formErrors.cardNumber }"
+          required
         />
-        <span v-if="errors.cardNumber" class="error-message">{{ errors.cardNumber }}</span>
+        <span v-if="formErrors.cardNumber" class="error-message">{{ formErrors.cardNumber }}</span>
       </div>
 
       <div class="form-row">
@@ -243,13 +223,17 @@ const handleSubmit = async () => {
           <input
             id="expiryDate"
             v-model="cardData.expiryDate"
-            type="text"
-            placeholder="MM/AA"
+            type="tel"
+            inputmode="numeric"
+            placeholder="MM/YY"
             @input="formatExpiryDate"
             maxlength="5"
-            :class="{ error: errors.expiryDate }"
+            :class="{ error: formErrors.expiryDate }"
+            required
           />
-          <span v-if="errors.expiryDate" class="error-message">{{ errors.expiryDate }}</span>
+          <span v-if="formErrors.expiryDate" class="error-message">{{
+            formErrors.expiryDate
+          }}</span>
         </div>
 
         <div class="form-group">
@@ -257,12 +241,14 @@ const handleSubmit = async () => {
           <input
             id="cvv"
             v-model="cardData.cvv"
-            type="text"
+            type="tel"
+            inputmode="numeric"
             placeholder="XXX"
             maxlength="4"
-            :class="{ error: errors.cvv }"
+            :class="{ error: formErrors.cvv }"
+            required
           />
-          <span v-if="errors.cvv" class="error-message">{{ errors.cvv }}</span>
+          <span v-if="formErrors.cvv" class="error-message">{{ formErrors.cvv }}</span>
         </div>
       </div>
 
@@ -272,11 +258,14 @@ const handleSubmit = async () => {
           id="cardholderName"
           v-model="cardData.cardholderName"
           type="text"
-          placeholder="Full name"
-          @input="cardData.cardholderName = cardData.cardholderName.toUpperCase()"
-          :class="{ error: errors.cardholderName }"
+          placeholder="Full name as it appears on card"
+          @input="cardData.cardholderName = ($event.target as HTMLInputElement).value.toUpperCase()"
+          :class="{ error: formErrors.cardholderName }"
+          required
         />
-        <span v-if="errors.cardholderName" class="error-message">{{ errors.cardholderName }}</span>
+        <span v-if="formErrors.cardholderName" class="error-message">{{
+          formErrors.cardholderName
+        }}</span>
       </div>
 
       <div class="checkbox-group">
@@ -284,18 +273,23 @@ const handleSubmit = async () => {
         <label for="saveCard" class="checkbox-label">Save this card for future payments</label>
       </div>
 
-      <div class="card-type" v-if="cardType">
-        <span>Card type: {{ cardType }}</span>
+      <!-- Display a critical error if the security initialization fails. -->
+      <div v-if="fingerprintError" class="error-message">
+        Security initialization failed: {{ fingerprintError.message }}. Please refresh the page.
       </div>
 
-      <button type="submit" class="submit-button" :disabled="isSubmitting">
-        {{ isSubmitting ? 'Processing...' : 'Pay' }}
+      <!--
+        The submit button's state is dynamically controlled, providing clear feedback to the user.
+        It's disabled until the fingerprint is ready and during submission.
+      -->
+      <button type="submit" class="submit-button" :disabled="isSubmitting || !isFingerprintReady">
+        <span v-if="isSubmitting">Processing...</span>
+        <span v-else-if="!isFingerprintReady">Initializing Secure Payment...</span>
+        <span v-else>Pay Now</span>
       </button>
     </form>
-    <FingerprintHiddenInput :input-id="fingerprintInputId" />
   </div>
 </template>
-
 <style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
 <style lang="css" scoped src="@/assets/main.css"></style>
 <style scoped>
@@ -308,8 +302,7 @@ const handleSubmit = async () => {
   background-color: #fff;
 }
 
-h2,
-h3 {
+h2 {
   text-align: center;
   margin-bottom: 20px;
   color: #333;
@@ -339,6 +332,7 @@ label {
   font-size: 14px;
   margin-bottom: 5px;
   color: #555;
+  font-weight: 500;
 }
 
 input {
@@ -352,6 +346,7 @@ input {
 input:focus {
   outline: none;
   border-color: #3f51b5;
+  box-shadow: 0 0 0 2px rgba(63, 81, 181, 0.2);
 }
 
 input.error {
@@ -372,20 +367,14 @@ input.error {
 
 .checkbox-group input[type='checkbox'] {
   margin-right: 8px;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
 }
 
 .checkbox-label {
   font-size: 14px;
   color: #555;
   margin-bottom: 0;
-}
-
-.card-type {
-  margin-top: 8px;
-  font-size: 14px;
-  color: #666;
 }
 
 .submit-button {
@@ -396,71 +385,18 @@ input.error {
   border: none;
   border-radius: 4px;
   font-size: 16px;
+  font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, opacity 0.3s;
 }
 
-.submit-button:hover {
-  background-color: #2f2f2f;
+.submit-button:hover:not(:disabled) {
+  background-color: #333;
 }
 
 .submit-button:disabled {
   background-color: #9e9e9e;
   cursor: not-allowed;
-}
-
-.saved-cards-section {
-  margin-top: 30px;
-  border-top: 1px solid #eee;
-  padding-top: 20px;
-}
-
-.saved-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  margin-bottom: 10px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.saved-card:hover {
-  background-color: #f5f5f5;
-}
-
-.saved-card-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.saved-card-type {
-  font-weight: bold;
-  color: #333;
-}
-
-.saved-card-number {
-  font-size: 14px;
-  color: #555;
-}
-
-.saved-card-expiry {
-  font-size: 12px;
-  color: #777;
-}
-
-.remove-card-btn {
-  background: none;
-  border: none;
-  color: #f44336;
-  font-size: 20px;
-  cursor: pointer;
-  padding: 0 8px;
-}
-
-.remove-card-btn:hover {
-  color: #d32f2f;
+  opacity: 0.7;
 }
 </style>
