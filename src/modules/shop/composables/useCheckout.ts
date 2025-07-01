@@ -1,4 +1,4 @@
-import type { IApiService } from '@/services/ApiService'
+import type { IApiService } from '@/services/IApiService'
 import { readonly, ref } from 'vue'
 import { appStore } from '@/stores/appStorage'
 import type { PayfortFormInput } from '@/gql/graphql'

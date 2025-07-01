@@ -7,7 +7,7 @@ import DeviceFingerprint from '@/modules/shop/components/DeviceFingerprint.vue'
 // Composables, Services & Utilities
 import { useCheckout } from '@/modules/shop/composables/useCheckout'
 import { createPayfortFormManager } from '@/modules/shop/services/PayfortFormManager'
-import type { IApiService } from '@/services/ApiService'
+import type { IApiService } from '@/services/IApiService'
 import type { CardData } from '@/modules/shop/interfaces/card-data'
 import { luhnCheck } from '@/modules/shop/utils/shop-utils'
 
