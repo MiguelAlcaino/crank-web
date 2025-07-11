@@ -1,10 +1,10 @@
 import { ClassPackageTypeEnum, type GetProductsQuery } from '@/gql/graphql'
-import { formatPrice } from '@/modules/shop/utils/shop-utils'
 import type { IconName } from '@/modules/shop/models/types'
+import { VariantBasic, type VariantFromProductQuery } from '@/modules/shop/models/VariantBasic'
 
 // Create a reusable utility type for a single product from the API response.
 // This makes the code cleaner and easier to read than repeating ProductsQuery['products'][number].
-type ProductFromQuery = NonNullable<GetProductsQuery['products']>[number]
+export type ProductFromQuery = NonNullable<GetProductsQuery['products']>[number]
 
 /**
  * An abstract base class representing a generic sellable product.
@@ -12,23 +12,22 @@ type ProductFromQuery = NonNullable<GetProductsQuery['products']>[number]
  * This class is intended to be extended, not instantiated directly.
  */
 export abstract class Product {
-  // --- Public, immutable properties ---
   public readonly id: string
   public readonly title: string
+  public readonly variants: readonly VariantBasic[]
   public readonly subtitle: string
   public readonly currency: string
-  public readonly price: number
   public readonly buttonText: string
   public readonly alert?: { title: string; description: string }
 
-  // An abstract property that child classes MUST implement.
-  // This is a great way to enforce the product type at the class level.
   public abstract readonly productType: 'class_package' | 'gift_card' | 'unknown'
 
   protected constructor(data: ProductFromQuery) {
     this.id = data.id
     this.title = data.title
-    this.price = data.price ?? 0
+    this.variants = data.variants
+      ? data.variants.map((v) => new VariantBasic(v as VariantFromProductQuery))
+      : []
     this.subtitle = data.subtitle ?? ''
     this.currency = data.currency
     this.buttonText = data.buttonText ?? 'Add to Cart'
@@ -48,7 +47,7 @@ export abstract class Product {
    * @returns A formatted string like "AED 150.00".
    */
   public getFormattedPrice(locale?: string): string {
-    return formatPrice(this.price, this.currency, locale)
+    return '0' //formatPrice(this.price, this.currency, locale)
   }
 
   public get iconName(): IconName {

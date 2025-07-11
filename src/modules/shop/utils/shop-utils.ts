@@ -32,7 +32,7 @@ export const luhnCheck = (cardNumber: string): boolean => {
  */
 export const formatPrice = (
   price: number | null | undefined,
-  currency: string,
+  currency: string = 'AED',
   locale: string = 'en-AE'
 ): string => {
   // 1. Handle invalid input gracefully.

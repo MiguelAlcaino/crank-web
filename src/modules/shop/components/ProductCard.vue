@@ -28,7 +28,10 @@ const showShoppingCart = () => {
 }
 
 const onAddToCart = () => {
-  emits('addToCart', props.product.id)
+  if (props.product.variants && props.product.variants.length > 0) {
+    const variantId = props.product.variants[0].id
+    emits('addToCart', variantId)
+  }
 }
 
 const onBuyNow = () => {
@@ -39,6 +42,14 @@ const onBuyNow = () => {
     router.push('/shop/cart')
   }
 }
+
+const handleProductClick = () => {
+  if (props.product.variants.length === 1) {
+    emits('addToCart', props.product.variants[0].id)
+  } else {
+    console.log('Múltiples variantes, se necesita un selector.')
+  }
+}
 </script>
 
 <template>
@@ -46,6 +57,9 @@ const onBuyNow = () => {
     <div class="d-flex h-100">
       <div class="p-2 flex-grow-1 text-center d-flex flex-column justify-content-center">
         <h6 class="font-weight-bold mb-2">{{ product.title }}</h6>
+        <p v-if="product.variants.length === 1" class="font-weight-bold mb-2">
+          {{ product.variants[0].getFormattedPrice(null, product.currency) }}
+        </p>
         <p class="mb-1 small">{{ product.subtitle }}</p>
         <p class="text-muted small mb-0">
           {{ product.alert?.title.toUpperCase() }}
@@ -54,9 +68,10 @@ const onBuyNow = () => {
       <div class="d-flex flex-column" style="width: 90px; height: 100%">
         <button
           class="btn btn-dark btn-sm font-weight-bold flex-fill rounded-0"
-          @click="onAddToCart"
+          @click="handleProductClick"
+          :disabled="!product.variants || product.variants.length === 0"
         >
-          ADD
+          {{ product.variants.length === 1 ? 'ADD' : 'SELECT' }}
         </button>
         <button
           class="btn btn-sm font-weight-bold flex-fill rounded-0"

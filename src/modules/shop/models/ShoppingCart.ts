@@ -1,51 +1,6 @@
-import type {
-  GetProductsQuery,
-  ShoppingCart as GqlShoppingCart,
-  ShoppingCartItem as GqlShoppingCartItem
-} from '@/gql/graphql'
-import { createProductModel } from '../factories/productFactory'
-import type { Product } from './Product'
+import type { ShoppingCart as GqlShoppingCart } from '@/gql/graphql'
+import { ShoppingCartItem } from './ShoppingCartItem'
 import { formatPrice } from '@/modules/shop/utils/shop-utils'
-
-type ProductFromQuery = NonNullable<GetProductsQuery['products']>[number]
-
-/**
- * Represents a single item within the shopping cart.
- */
-export class ShoppingCartItem {
-  public readonly id: string
-  public readonly quantity: number
-  public readonly subtotal: number | null
-  public readonly product: Product
-
-  /**
-   * Constructs a ShoppingCartItem instance from its GraphQL counterpart.
-   * @param gqlItem The raw ShoppingCartItem object received from the GraphQL API.
-   */
-  constructor(gqlItem: GqlShoppingCartItem) {
-    this.id = gqlItem.id
-    this.quantity = gqlItem.quantity
-    this.subtotal = gqlItem.subtotal ?? null
-    this.product = createProductModel(gqlItem.product as ProductFromQuery)
-  }
-
-  /**
-   * Getter to calculate the total price for this line item.
-   * @returns The total price (product.price * quantity).
-   */
-  public get lineItemTotal(): number {
-    const price = this.product.price || 0
-    return price * this.quantity
-  }
-
-  /**
-   * Returns the total for this line item as a formatted string.
-   * @returns A string representing the formatted price.
-   */
-  public getFormattedLineItemTotal(): string {
-    return formatPrice(this.lineItemTotal, this.product.currency)
-  }
-}
 
 /**
  * Represents the user's shopping cart.
@@ -91,9 +46,8 @@ export class ShoppingCart {
    */
   public get calculatedSubtotal(): number {
     return this.items.reduce((acc, item) => {
-      // Ensure product price is available, otherwise treat as 0
-      const price = item.product.price || 0
-      return acc + price * item.quantity
+      // The price is now accessed through the variant
+      return acc + item.variant.price * item.quantity
     }, 0)
   }
 

@@ -121,12 +121,12 @@ export const useShoppingCart = (apiService: IApiService) => {
 
     await handleCartUpdate(
       payload.itemId,
-      apiService.updateItemInShoppingCart(appStore().site, itemToUpdate.product.id, newQuantity)
+      apiService.updateItemInShoppingCart(appStore().site, itemToUpdate.id, newQuantity)
     )
   }
 
   const productIdsInCart = computed(() => {
-    return shoppingCart.value?.items.map((item) => item.product.id) || []
+    return shoppingCart.value?.items.map((item) => item.variant.id) || []
   })
 
   const calculatedSubtotal = computed(() => {

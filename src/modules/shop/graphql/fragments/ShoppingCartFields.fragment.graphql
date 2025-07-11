@@ -11,24 +11,12 @@ fragment ShoppingCartFields on ShoppingCart {
     id
     quantity
     subtotal
-    product {
-      __typename
+    variant {
       id
-      title
-      subtitle
+      name
       price
-      currency
-      buttonText
-      isVisible
-      alertBeforePurchasing {
-        title
-        description
-      }
-      ... on ClassPackageProduct {
-        type
-      }
-      ... on GiftCard {
-        purchaseUrl
+      product {
+        ...ProductBasicFields
       }
     }
   }

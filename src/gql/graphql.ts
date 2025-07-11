@@ -232,10 +232,10 @@ export type ClassPackageProduct = SellableProductInterface & {
   currency: Scalars['String']
   id: Scalars['ID']
   isVisible: Scalars['Boolean']
-  price: Scalars['Float']
   subtitle?: Maybe<Scalars['String']>
   title: Scalars['String']
   type?: Maybe<ClassPackageTypeEnum>
+  variants: Array<Variant>
 }
 
 export enum ClassPackageTypeEnum {
@@ -515,7 +515,6 @@ export type GiftCard = SellableProductInterface & {
   grandTotal: Scalars['Float']
   id: Scalars['ID']
   isVisible: Scalars['Boolean']
-  price: Scalars['Float']
   purchaseUrl: Scalars['String']
   /** @deprecated Use price instead */
   salePrice: Scalars['Float']
@@ -524,6 +523,7 @@ export type GiftCard = SellableProductInterface & {
   /** @deprecated Use alertBeforePurchasing instead */
   terms: Scalars['String']
   title: Scalars['String']
+  variants: Array<Variant>
 }
 
 export type IconPosition = ClassPositionInterface & {
@@ -938,7 +938,8 @@ export type MutationUpdateGiftCardArgs = {
 }
 
 export type MutationUpdateItemInShoppingCartArgs = {
-  input?: InputMaybe<ItemToShoppingCartInput>
+  quantity?: InputMaybe<Scalars['Int']>
+  shoppingCartItemId: Scalars['ID']
   site: SiteEnum
 }
 
@@ -1405,9 +1406,9 @@ export type SellableProductInterface = {
   currency: Scalars['String']
   id: Scalars['ID']
   isVisible: Scalars['Boolean']
-  price: Scalars['Float']
   subtitle?: Maybe<Scalars['String']>
   title: Scalars['String']
+  variants: Array<Variant>
 }
 
 export type SendClassStatsToEmailInput = {
@@ -1439,9 +1440,9 @@ export type ShoppingCartIsEmpty = Error & {
 export type ShoppingCartItem = {
   __typename?: 'ShoppingCartItem'
   id: Scalars['ID']
-  product: SellableProductInterface
   quantity: Scalars['Int']
   subtotal?: Maybe<Scalars['Float']>
+  variant: Variant
 }
 
 export type ShoppingCartItemNotFound = Error & {
@@ -1685,6 +1686,15 @@ export type ValidateResetPasswordTokenInput = {
   token: Scalars['String']
 }
 
+export type Variant = {
+  __typename?: 'Variant'
+  id: Scalars['String']
+  name?: Maybe<Scalars['String']>
+  position: Scalars['Int']
+  price: Scalars['Float']
+  product: SellableProductInterface
+}
+
 export type WaitlistEntry = EnrollmentInfoInterface & {
   __typename?: 'WaitlistEntry'
   canBeTurnedIntoEnrollment: Scalars['Boolean']
@@ -1729,39 +1739,39 @@ export type AddItemToShoppingCartMutation = {
           id: string
           quantity: number
           subtotal?: number | null
-          product:
-            | {
-                __typename: 'ClassPackageProduct'
-                type?: ClassPackageTypeEnum | null
-                id: string
-                title: string
-                subtitle?: string | null
-                price: number
-                currency: string
-                buttonText?: string | null
-                isVisible: boolean
-                alertBeforePurchasing?: {
-                  __typename: 'ProductAlertBeforePurchasing'
+          variant: {
+            __typename: 'Variant'
+            id: string
+            name?: string | null
+            price: number
+            product:
+              | {
+                  __typename: 'ClassPackageProduct'
+                  type?: ClassPackageTypeEnum | null
+                  id: string
                   title: string
-                  description: string
-                } | null
-              }
-            | {
-                __typename: 'GiftCard'
-                purchaseUrl: string
-                id: string
-                title: string
-                subtitle?: string | null
-                price: number
-                currency: string
-                buttonText?: string | null
-                isVisible: boolean
-                alertBeforePurchasing?: {
-                  __typename: 'ProductAlertBeforePurchasing'
+                  subtitle?: string | null
+                  currency: string
+                  alertBeforePurchasing?: {
+                    __typename: 'ProductAlertBeforePurchasing'
+                    title: string
+                    description: string
+                  } | null
+                }
+              | {
+                  __typename: 'GiftCard'
+                  purchaseUrl: string
+                  id: string
                   title: string
-                  description: string
-                } | null
-              }
+                  subtitle?: string | null
+                  currency: string
+                  alertBeforePurchasing?: {
+                    __typename: 'ProductAlertBeforePurchasing'
+                    title: string
+                    description: string
+                  } | null
+                }
+          }
         }>
       }
     | { __typename: 'ShoppingCartIsEmpty' }
@@ -1792,39 +1802,39 @@ export type CalculateTotalForShoppingCartQuery = {
           id: string
           quantity: number
           subtotal?: number | null
-          product:
-            | {
-                __typename: 'ClassPackageProduct'
-                type?: ClassPackageTypeEnum | null
-                id: string
-                title: string
-                subtitle?: string | null
-                price: number
-                currency: string
-                buttonText?: string | null
-                isVisible: boolean
-                alertBeforePurchasing?: {
-                  __typename: 'ProductAlertBeforePurchasing'
+          variant: {
+            __typename: 'Variant'
+            id: string
+            name?: string | null
+            price: number
+            product:
+              | {
+                  __typename: 'ClassPackageProduct'
+                  type?: ClassPackageTypeEnum | null
+                  id: string
                   title: string
-                  description: string
-                } | null
-              }
-            | {
-                __typename: 'GiftCard'
-                purchaseUrl: string
-                id: string
-                title: string
-                subtitle?: string | null
-                price: number
-                currency: string
-                buttonText?: string | null
-                isVisible: boolean
-                alertBeforePurchasing?: {
-                  __typename: 'ProductAlertBeforePurchasing'
+                  subtitle?: string | null
+                  currency: string
+                  alertBeforePurchasing?: {
+                    __typename: 'ProductAlertBeforePurchasing'
+                    title: string
+                    description: string
+                  } | null
+                }
+              | {
+                  __typename: 'GiftCard'
+                  purchaseUrl: string
+                  id: string
                   title: string
-                  description: string
-                } | null
-              }
+                  subtitle?: string | null
+                  currency: string
+                  alertBeforePurchasing?: {
+                    __typename: 'ProductAlertBeforePurchasing'
+                    title: string
+                    description: string
+                  } | null
+                }
+          }
         }>
       }
     | { __typename: 'ShoppingCartIsEmpty'; code: string }
@@ -1855,39 +1865,39 @@ export type EmptyShoppingCartMutation = {
           id: string
           quantity: number
           subtotal?: number | null
-          product:
-            | {
-                __typename: 'ClassPackageProduct'
-                type?: ClassPackageTypeEnum | null
-                id: string
-                title: string
-                subtitle?: string | null
-                price: number
-                currency: string
-                buttonText?: string | null
-                isVisible: boolean
-                alertBeforePurchasing?: {
-                  __typename: 'ProductAlertBeforePurchasing'
+          variant: {
+            __typename: 'Variant'
+            id: string
+            name?: string | null
+            price: number
+            product:
+              | {
+                  __typename: 'ClassPackageProduct'
+                  type?: ClassPackageTypeEnum | null
+                  id: string
                   title: string
-                  description: string
-                } | null
-              }
-            | {
-                __typename: 'GiftCard'
-                purchaseUrl: string
-                id: string
-                title: string
-                subtitle?: string | null
-                price: number
-                currency: string
-                buttonText?: string | null
-                isVisible: boolean
-                alertBeforePurchasing?: {
-                  __typename: 'ProductAlertBeforePurchasing'
+                  subtitle?: string | null
+                  currency: string
+                  alertBeforePurchasing?: {
+                    __typename: 'ProductAlertBeforePurchasing'
+                    title: string
+                    description: string
+                  } | null
+                }
+              | {
+                  __typename: 'GiftCard'
+                  purchaseUrl: string
+                  id: string
                   title: string
-                  description: string
-                } | null
-              }
+                  subtitle?: string | null
+                  currency: string
+                  alertBeforePurchasing?: {
+                    __typename: 'ProductAlertBeforePurchasing'
+                    title: string
+                    description: string
+                  } | null
+                }
+          }
         }>
       }
     | { __typename: 'ShoppingCartIsEmpty' }
@@ -1928,7 +1938,6 @@ export type GetProductsQuery = {
         id: string
         title: string
         subtitle?: string | null
-        price: number
         currency: string
         buttonText?: string | null
         isVisible: boolean
@@ -1937,6 +1946,13 @@ export type GetProductsQuery = {
           title: string
           description: string
         } | null
+        variants: Array<{
+          __typename: 'Variant'
+          id: string
+          name?: string | null
+          price: number
+          position: number
+        }>
       }
     | {
         __typename: 'GiftCard'
@@ -1944,7 +1960,6 @@ export type GetProductsQuery = {
         id: string
         title: string
         subtitle?: string | null
-        price: number
         currency: string
         buttonText?: string | null
         isVisible: boolean
@@ -1953,6 +1968,13 @@ export type GetProductsQuery = {
           title: string
           description: string
         } | null
+        variants: Array<{
+          __typename: 'Variant'
+          id: string
+          name?: string | null
+          price: number
+          position: number
+        }>
       }
   >
 }
@@ -1978,39 +2000,39 @@ export type GetShoppingCartQuery = {
         id: string
         quantity: number
         subtotal?: number | null
-        product:
-          | {
-              __typename: 'ClassPackageProduct'
-              type?: ClassPackageTypeEnum | null
-              id: string
-              title: string
-              subtitle?: string | null
-              price: number
-              currency: string
-              buttonText?: string | null
-              isVisible: boolean
-              alertBeforePurchasing?: {
-                __typename: 'ProductAlertBeforePurchasing'
+        variant: {
+          __typename: 'Variant'
+          id: string
+          name?: string | null
+          price: number
+          product:
+            | {
+                __typename: 'ClassPackageProduct'
+                type?: ClassPackageTypeEnum | null
+                id: string
                 title: string
-                description: string
-              } | null
-            }
-          | {
-              __typename: 'GiftCard'
-              purchaseUrl: string
-              id: string
-              title: string
-              subtitle?: string | null
-              price: number
-              currency: string
-              buttonText?: string | null
-              isVisible: boolean
-              alertBeforePurchasing?: {
-                __typename: 'ProductAlertBeforePurchasing'
+                subtitle?: string | null
+                currency: string
+                alertBeforePurchasing?: {
+                  __typename: 'ProductAlertBeforePurchasing'
+                  title: string
+                  description: string
+                } | null
+              }
+            | {
+                __typename: 'GiftCard'
+                purchaseUrl: string
+                id: string
                 title: string
-                description: string
-              } | null
-            }
+                subtitle?: string | null
+                currency: string
+                alertBeforePurchasing?: {
+                  __typename: 'ProductAlertBeforePurchasing'
+                  title: string
+                  description: string
+                } | null
+              }
+        }
       }>
     }
   } | null
@@ -2056,39 +2078,39 @@ export type RemoveDiscountCodeMutation = {
           id: string
           quantity: number
           subtotal?: number | null
-          product:
-            | {
-                __typename: 'ClassPackageProduct'
-                type?: ClassPackageTypeEnum | null
-                id: string
-                title: string
-                subtitle?: string | null
-                price: number
-                currency: string
-                buttonText?: string | null
-                isVisible: boolean
-                alertBeforePurchasing?: {
-                  __typename: 'ProductAlertBeforePurchasing'
+          variant: {
+            __typename: 'Variant'
+            id: string
+            name?: string | null
+            price: number
+            product:
+              | {
+                  __typename: 'ClassPackageProduct'
+                  type?: ClassPackageTypeEnum | null
+                  id: string
                   title: string
-                  description: string
-                } | null
-              }
-            | {
-                __typename: 'GiftCard'
-                purchaseUrl: string
-                id: string
-                title: string
-                subtitle?: string | null
-                price: number
-                currency: string
-                buttonText?: string | null
-                isVisible: boolean
-                alertBeforePurchasing?: {
-                  __typename: 'ProductAlertBeforePurchasing'
+                  subtitle?: string | null
+                  currency: string
+                  alertBeforePurchasing?: {
+                    __typename: 'ProductAlertBeforePurchasing'
+                    title: string
+                    description: string
+                  } | null
+                }
+              | {
+                  __typename: 'GiftCard'
+                  purchaseUrl: string
+                  id: string
                   title: string
-                  description: string
-                } | null
-              }
+                  subtitle?: string | null
+                  currency: string
+                  alertBeforePurchasing?: {
+                    __typename: 'ProductAlertBeforePurchasing'
+                    title: string
+                    description: string
+                  } | null
+                }
+          }
         }>
       }
     | { __typename: 'ShoppingCartIsEmpty'; code: string }
@@ -2120,39 +2142,39 @@ export type RemoveItemFromShoppingCartMutation = {
           id: string
           quantity: number
           subtotal?: number | null
-          product:
-            | {
-                __typename: 'ClassPackageProduct'
-                type?: ClassPackageTypeEnum | null
-                id: string
-                title: string
-                subtitle?: string | null
-                price: number
-                currency: string
-                buttonText?: string | null
-                isVisible: boolean
-                alertBeforePurchasing?: {
-                  __typename: 'ProductAlertBeforePurchasing'
+          variant: {
+            __typename: 'Variant'
+            id: string
+            name?: string | null
+            price: number
+            product:
+              | {
+                  __typename: 'ClassPackageProduct'
+                  type?: ClassPackageTypeEnum | null
+                  id: string
                   title: string
-                  description: string
-                } | null
-              }
-            | {
-                __typename: 'GiftCard'
-                purchaseUrl: string
-                id: string
-                title: string
-                subtitle?: string | null
-                price: number
-                currency: string
-                buttonText?: string | null
-                isVisible: boolean
-                alertBeforePurchasing?: {
-                  __typename: 'ProductAlertBeforePurchasing'
+                  subtitle?: string | null
+                  currency: string
+                  alertBeforePurchasing?: {
+                    __typename: 'ProductAlertBeforePurchasing'
+                    title: string
+                    description: string
+                  } | null
+                }
+              | {
+                  __typename: 'GiftCard'
+                  purchaseUrl: string
+                  id: string
                   title: string
-                  description: string
-                } | null
-              }
+                  subtitle?: string | null
+                  currency: string
+                  alertBeforePurchasing?: {
+                    __typename: 'ProductAlertBeforePurchasing'
+                    title: string
+                    description: string
+                  } | null
+                }
+          }
         }>
       }
     | { __typename: 'ShoppingCartIsEmpty'; code: string }
@@ -2162,7 +2184,8 @@ export type RemoveItemFromShoppingCartMutation = {
 
 export type UpdateItemInShoppingCartMutationVariables = Exact<{
   site: SiteEnum
-  input: ItemToShoppingCartInput
+  shoppingCartItemId: Scalars['ID']
+  quantity: Scalars['Int']
 }>
 
 export type UpdateItemInShoppingCartMutation = {
@@ -2184,39 +2207,39 @@ export type UpdateItemInShoppingCartMutation = {
           id: string
           quantity: number
           subtotal?: number | null
-          product:
-            | {
-                __typename: 'ClassPackageProduct'
-                type?: ClassPackageTypeEnum | null
-                id: string
-                title: string
-                subtitle?: string | null
-                price: number
-                currency: string
-                buttonText?: string | null
-                isVisible: boolean
-                alertBeforePurchasing?: {
-                  __typename: 'ProductAlertBeforePurchasing'
+          variant: {
+            __typename: 'Variant'
+            id: string
+            name?: string | null
+            price: number
+            product:
+              | {
+                  __typename: 'ClassPackageProduct'
+                  type?: ClassPackageTypeEnum | null
+                  id: string
                   title: string
-                  description: string
-                } | null
-              }
-            | {
-                __typename: 'GiftCard'
-                purchaseUrl: string
-                id: string
-                title: string
-                subtitle?: string | null
-                price: number
-                currency: string
-                buttonText?: string | null
-                isVisible: boolean
-                alertBeforePurchasing?: {
-                  __typename: 'ProductAlertBeforePurchasing'
+                  subtitle?: string | null
+                  currency: string
+                  alertBeforePurchasing?: {
+                    __typename: 'ProductAlertBeforePurchasing'
+                    title: string
+                    description: string
+                  } | null
+                }
+              | {
+                  __typename: 'GiftCard'
+                  purchaseUrl: string
+                  id: string
                   title: string
-                  description: string
-                } | null
-              }
+                  subtitle?: string | null
+                  currency: string
+                  alertBeforePurchasing?: {
+                    __typename: 'ProductAlertBeforePurchasing'
+                    title: string
+                    description: string
+                  } | null
+                }
+          }
         }>
       }
     | { __typename: 'ShoppingCartIsEmpty' }
@@ -2224,13 +2247,44 @@ export type UpdateItemInShoppingCartMutation = {
     | { __typename: 'ShoppingCartNotFound'; code: string }
 }
 
+type ProductBasicFields_ClassPackageProduct_Fragment = {
+  __typename: 'ClassPackageProduct'
+  type?: ClassPackageTypeEnum | null
+  id: string
+  title: string
+  subtitle?: string | null
+  currency: string
+  alertBeforePurchasing?: {
+    __typename: 'ProductAlertBeforePurchasing'
+    title: string
+    description: string
+  } | null
+}
+
+type ProductBasicFields_GiftCard_Fragment = {
+  __typename: 'GiftCard'
+  purchaseUrl: string
+  id: string
+  title: string
+  subtitle?: string | null
+  currency: string
+  alertBeforePurchasing?: {
+    __typename: 'ProductAlertBeforePurchasing'
+    title: string
+    description: string
+  } | null
+}
+
+export type ProductBasicFieldsFragment =
+  | ProductBasicFields_ClassPackageProduct_Fragment
+  | ProductBasicFields_GiftCard_Fragment
+
 type ProductFields_ClassPackageProduct_Fragment = {
   __typename: 'ClassPackageProduct'
   type?: ClassPackageTypeEnum | null
   id: string
   title: string
   subtitle?: string | null
-  price: number
   currency: string
   buttonText?: string | null
   isVisible: boolean
@@ -2239,6 +2293,13 @@ type ProductFields_ClassPackageProduct_Fragment = {
     title: string
     description: string
   } | null
+  variants: Array<{
+    __typename: 'Variant'
+    id: string
+    name?: string | null
+    price: number
+    position: number
+  }>
 }
 
 type ProductFields_GiftCard_Fragment = {
@@ -2247,7 +2308,6 @@ type ProductFields_GiftCard_Fragment = {
   id: string
   title: string
   subtitle?: string | null
-  price: number
   currency: string
   buttonText?: string | null
   isVisible: boolean
@@ -2256,6 +2316,13 @@ type ProductFields_GiftCard_Fragment = {
     title: string
     description: string
   } | null
+  variants: Array<{
+    __typename: 'Variant'
+    id: string
+    name?: string | null
+    price: number
+    position: number
+  }>
 }
 
 export type ProductFieldsFragment =
@@ -2275,39 +2342,39 @@ export type ShoppingCartFieldsFragment = {
     id: string
     quantity: number
     subtotal?: number | null
-    product:
-      | {
-          __typename: 'ClassPackageProduct'
-          type?: ClassPackageTypeEnum | null
-          id: string
-          title: string
-          subtitle?: string | null
-          price: number
-          currency: string
-          buttonText?: string | null
-          isVisible: boolean
-          alertBeforePurchasing?: {
-            __typename: 'ProductAlertBeforePurchasing'
+    variant: {
+      __typename: 'Variant'
+      id: string
+      name?: string | null
+      price: number
+      product:
+        | {
+            __typename: 'ClassPackageProduct'
+            type?: ClassPackageTypeEnum | null
+            id: string
             title: string
-            description: string
-          } | null
-        }
-      | {
-          __typename: 'GiftCard'
-          purchaseUrl: string
-          id: string
-          title: string
-          subtitle?: string | null
-          price: number
-          currency: string
-          buttonText?: string | null
-          isVisible: boolean
-          alertBeforePurchasing?: {
-            __typename: 'ProductAlertBeforePurchasing'
+            subtitle?: string | null
+            currency: string
+            alertBeforePurchasing?: {
+              __typename: 'ProductAlertBeforePurchasing'
+              title: string
+              description: string
+            } | null
+          }
+        | {
+            __typename: 'GiftCard'
+            purchaseUrl: string
+            id: string
             title: string
-            description: string
-          } | null
-        }
+            subtitle?: string | null
+            currency: string
+            alertBeforePurchasing?: {
+              __typename: 'ProductAlertBeforePurchasing'
+              title: string
+              description: string
+            } | null
+          }
+    }
   }>
 }
 
@@ -3004,10 +3071,75 @@ export const ProductFieldsFragmentDoc = {
           { kind: 'Field', name: { kind: 'Name', value: 'id' } },
           { kind: 'Field', name: { kind: 'Name', value: 'title' } },
           { kind: 'Field', name: { kind: 'Name', value: 'subtitle' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'price' } },
           { kind: 'Field', name: { kind: 'Name', value: 'currency' } },
           { kind: 'Field', name: { kind: 'Name', value: 'buttonText' } },
           { kind: 'Field', name: { kind: 'Name', value: 'isVisible' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'alertBeforePurchasing' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'description' } }
+              ]
+            }
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'variants' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'price' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'position' } }
+              ]
+            }
+          },
+          {
+            kind: 'InlineFragment',
+            typeCondition: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'ClassPackageProduct' }
+            },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'Field', name: { kind: 'Name', value: 'type' } }]
+            }
+          },
+          {
+            kind: 'InlineFragment',
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'GiftCard' } },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'Field', name: { kind: 'Name', value: 'purchaseUrl' } }]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<ProductFieldsFragment, unknown>
+export const ProductBasicFieldsFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'ProductBasicFields' },
+      typeCondition: {
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'SellableProductInterface' }
+      },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'subtitle' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'currency' } },
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'alertBeforePurchasing' },
@@ -3042,7 +3174,7 @@ export const ProductFieldsFragmentDoc = {
       }
     }
   ]
-} as unknown as DocumentNode<ProductFieldsFragment, unknown>
+} as unknown as DocumentNode<ProductBasicFieldsFragment, unknown>
 export const ShoppingCartFieldsFragmentDoc = {
   kind: 'Document',
   definitions: [
@@ -3070,50 +3202,23 @@ export const ShoppingCartFieldsFragmentDoc = {
                 { kind: 'Field', name: { kind: 'Name', value: 'subtotal' } },
                 {
                   kind: 'Field',
-                  name: { kind: 'Name', value: 'product' },
+                  name: { kind: 'Name', value: 'variant' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'title' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'subtitle' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'price' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'currency' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'buttonText' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'isVisible' } },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'alertBeforePurchasing' },
+                        name: { kind: 'Name', value: 'product' },
                         selectionSet: {
                           kind: 'SelectionSet',
                           selections: [
-                            { kind: 'Field', name: { kind: 'Name', value: 'title' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'description' } }
-                          ]
-                        }
-                      },
-                      {
-                        kind: 'InlineFragment',
-                        typeCondition: {
-                          kind: 'NamedType',
-                          name: { kind: 'Name', value: 'ClassPackageProduct' }
-                        },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [{ kind: 'Field', name: { kind: 'Name', value: 'type' } }]
-                        }
-                      },
-                      {
-                        kind: 'InlineFragment',
-                        typeCondition: {
-                          kind: 'NamedType',
-                          name: { kind: 'Name', value: 'GiftCard' }
-                        },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            { kind: 'Field', name: { kind: 'Name', value: 'purchaseUrl' } }
+                            {
+                              kind: 'FragmentSpread',
+                              name: { kind: 'Name', value: 'ProductBasicFields' }
+                            }
                           ]
                         }
                       }
@@ -3125,7 +3230,8 @@ export const ShoppingCartFieldsFragmentDoc = {
           }
         ]
       }
-    }
+    },
+    ...ProductBasicFieldsFragmentDoc.definitions
   ]
 } as unknown as DocumentNode<ShoppingCartFieldsFragment, unknown>
 export const AddItemToShoppingCartDocument = {
@@ -3897,10 +4003,18 @@ export const UpdateItemInShoppingCartDocument = {
         },
         {
           kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'shoppingCartItemId' } },
           type: {
             kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ItemToShoppingCartInput' } }
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'quantity' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } }
           }
         }
       ],
@@ -3918,8 +4032,13 @@ export const UpdateItemInShoppingCartDocument = {
               },
               {
                 kind: 'Argument',
-                name: { kind: 'Name', value: 'input' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+                name: { kind: 'Name', value: 'shoppingCartItemId' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'shoppingCartItemId' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'quantity' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'quantity' } }
               }
             ],
             selectionSet: {

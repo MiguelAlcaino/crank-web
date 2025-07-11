@@ -3,8 +3,12 @@
 
 # This mutation updates the quantity of an existing item in the shopping cart.
 # It returns the fully updated ShoppingCart on success.
-mutation UpdateItemInShoppingCart($site: SiteEnum!, $input: ItemToShoppingCartInput!) {
-  updateItemInShoppingCart(site: $site, input: $input) {
+mutation UpdateItemInShoppingCart($site: SiteEnum!, $shoppingCartItemId: ID!, $quantity: Int!) {
+  updateItemInShoppingCart(
+    site: $site
+    shoppingCartItemId: $shoppingCartItemId
+    quantity: $quantity
+  ) {
     __typename
     # On success, return the updated cart using our consistent fragment.
     ... on ShoppingCart {

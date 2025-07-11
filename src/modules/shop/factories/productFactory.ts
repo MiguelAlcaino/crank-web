@@ -1,8 +1,10 @@
-import type { GetProductsQuery } from '@/gql/graphql'
-import { ClassPackage, GiftCardProduct, Product, UnknownProduct } from '../models/Product'
-
-// A utility type to correctly infer the type of a single product from the API response
-type ProductFromQuery = NonNullable<GetProductsQuery['products']>[number]
+import {
+  ClassPackage,
+  GiftCardProduct,
+  Product,
+  type ProductFromQuery,
+  UnknownProduct
+} from '../models/Product'
 
 export function createProductModel(productData: ProductFromQuery): Product {
   switch (productData.__typename) {

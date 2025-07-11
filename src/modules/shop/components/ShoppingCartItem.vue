@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ShoppingCartItem } from '@/modules/shop/models/ShoppingCart'
+import type { ShoppingCartItem } from '@/modules/shop/models/ShoppingCartItem'
 import { defineEmits, defineProps } from 'vue'
 import QuantityStepper from '@/modules/shop/components/QuantityStepper.vue'
 
@@ -38,9 +38,9 @@ const handleQuantityUpdate = (newQuantity: number) => {
     <div class="cart-item-details flex-grow-1 d-flex">
       <!-- Product info -->
       <div class="product-info p-3 flex-grow-1">
-        <div class="font-weight-bold">{{ item.product.title }}</div>
-        <div class="font-weight-bold">AED {{ item.product.price }}</div>
-        <div class="item-subtitle small mt-2">{{ item.product.subtitle }}</div>
+        <div class="font-weight-bold">{{ item.variant.product.title }}</div>
+        <div class="font-weight-bold">{{ item.variant.getFormattedPrice() }}</div>
+        <div class="item-subtitle small mt-2">{{ item.variant.product.subtitle }}</div>
       </div>
 
       <!-- Controls -->

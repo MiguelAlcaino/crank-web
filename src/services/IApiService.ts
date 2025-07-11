@@ -365,13 +365,13 @@ export interface IApiService {
    * On failure, it throws an ApiError for business logic errors or a generic Error for network issues.
    *
    * @param site The site where the purchase is being made.
-   * @param sellableProductId The ID of the product to add.
+   * @param variantId The ID of the product to add.
    * @param quantity The number of items to add.
    * @returns A Promise that resolves with the updated ShoppingCartModel instance.
    */
   addItemToShoppingCart(
     site: SiteEnum,
-    sellableProductId: string,
+    variantId: string,
     quantity: number
   ): Promise<ShoppingCartModel>
 

@@ -7,13 +7,18 @@ fragment ProductFields on SellableProductInterface {
   id
   title
   subtitle
-  price
   currency
   buttonText
   isVisible
   alertBeforePurchasing {
     title
     description
+  }
+  variants {
+    id
+    name # e.g., "Small", "Red"
+    price
+    position
   }
   ... on ClassPackageProduct {
     type

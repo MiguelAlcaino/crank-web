@@ -90,15 +90,12 @@ import { CustomCalendarClasses } from '@/model/CustomCalendarClasses'
 import { SmsValidationResponse } from '@/modules/buy_packages/models/sms-validation-response'
 import { IsSmsValidationCodeValidResponse } from '@/modules/buy_packages/models/is-sms-validation-code-valid-response'
 import type { IApiService } from './IApiService'
-import type { Product } from '@/modules/shop/models/Product'
+import type { Product, ProductFromQuery } from '@/modules/shop/models/Product'
 import { createProductModel } from '@/modules/shop/factories/productFactory'
 import type { AppProductType } from '@/modules/shop/models/types'
 import type { SiteEnum } from '@/modules/shared/interfaces/site.enum'
-import { createShoppingCartModel } from '@/modules/shop/factories/shoppingCartFactory'
 import type { ShoppingCart as ShoppingCartModel } from '@/modules/shop/models/ShoppingCart'
-
-// A utility type to correctly infer the type of a single product from the API response
-type ProductFromQuery = NonNullable<GetProductsQuery['products']>[number]
+import { createShoppingCartModel } from '@/modules/shop/factories/shoppingCartFactory'
 
 // A custom error class to handle API errors more cleanly.
 export class ApiError extends Error {
@@ -1442,7 +1439,7 @@ export class ApiService implements IApiService {
       if (result.__typename === 'ShoppingCart') {
         // Success: The `result` object is fully typed thanks to the fragment.
         // We can now safely pass it to our model factory.
-        return createShoppingCartModel(result as GqlShoppingCart)
+        return createShoppingCartModel(result as unknown as GqlShoppingCart)
       } else {
         // Business logic error (e.g., ProductNotFound)
         const errorCode = (result as { code?: string }).code ?? 'UnknownBusinessError'
@@ -1490,7 +1487,7 @@ export class ApiService implements IApiService {
       if (result.__typename === 'ShoppingCart') {
         // Success: The API returned the updated cart.
         // We map the raw DTO to our rich domain model.
-        return createShoppingCartModel(result as GqlShoppingCart)
+        return createShoppingCartModel(result as unknown as GqlShoppingCart)
       } else {
         // Business logic error (e.g., ShoppingCartItemNotFound).
         // We throw a structured error for the UI layer to handle.
@@ -1512,8 +1509,6 @@ export class ApiService implements IApiService {
     sellableProductId: string,
     quantity: number
   ): Promise<ShoppingCartModel> {
-    const input: ItemToShoppingCartInput = { sellableProductId, quantity }
-
     try {
       const { data, errors } = await this.authApiClient.mutate<
         UpdateItemInShoppingCartMutation,
@@ -1522,7 +1517,8 @@ export class ApiService implements IApiService {
         mutation: UpdateItemInShoppingCartDocument,
         variables: {
           site,
-          input
+          shoppingCartItemId: sellableProductId,
+          quantity: quantity
         },
         fetchPolicy: 'network-only'
       })
@@ -1541,7 +1537,7 @@ export class ApiService implements IApiService {
 
       if (result.__typename === 'ShoppingCart') {
         // Success: Map the raw DTO to our rich domain model.
-        return createShoppingCartModel(result as GqlShoppingCart)
+        return createShoppingCartModel(result as unknown as GqlShoppingCart)
       } else {
         // Business logic error: Throw a structured error for the UI to handle.
         const errorCode = (result as { code?: string }).code ?? 'UnknownBusinessError'
@@ -1593,7 +1589,7 @@ export class ApiService implements IApiService {
       if (result.__typename === 'ShoppingCart') {
         // Success: The API returned the cart with updated totals.
         // We map the raw DTO to our rich domain model.
-        return createShoppingCartModel(result as GqlShoppingCart)
+        return createShoppingCartModel(result as unknown as GqlShoppingCart)
       } else {
         // Business logic error (e.g., ShoppingCartIsEmpty, DiscountCodeIsInvalid).
         // We throw a structured error for the UI layer to handle.
@@ -1779,7 +1775,7 @@ export class ApiService implements IApiService {
         return null
       }
 
-      return createShoppingCartModel(cartData as GqlShoppingCart)
+      return createShoppingCartModel(cartData as unknown as GqlShoppingCart)
     } catch (error) {
       console.error('ApiService: Error fetching shopping cart:', error)
       throw new Error('Failed to fetch shopping cart.')
@@ -1811,7 +1807,7 @@ export class ApiService implements IApiService {
 
       if (result.__typename === 'ShoppingCart') {
         // Success: The API returned the empty cart.
-        return createShoppingCartModel(result as GqlShoppingCart)
+        return createShoppingCartModel(result as unknown as GqlShoppingCart)
       } else {
         const errorCode = (result as { code?: string }).code ?? 'UnknownBusinessError'
         throw new ApiError(
@@ -1887,7 +1883,7 @@ export class ApiService implements IApiService {
       if (result.__typename === 'ShoppingCart') {
         // Success: The API returned the updated cart.
         // We mapped the DTO to our domain model.
-        return createShoppingCartModel(result as GqlShoppingCart)
+        return createShoppingCartModel(result as unknown as GqlShoppingCart)
       } else {
         // Business Error: Cart not found, for example.
         const errorCode = (result as { code?: string }).code ?? 'UnknownBusinessError'
