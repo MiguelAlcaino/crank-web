@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { ShoppingCartItem } from '@/modules/shop/models/ShoppingCartItem'
-import { defineEmits, defineProps } from 'vue'
 import QuantityStepper from '@/modules/shop/components/QuantityStepper.vue'
 
 const props = defineProps<{
