@@ -39,7 +39,7 @@ const formData = reactive({
   saveForFuture: false
 })
 
-const selectedPaymentMethod = ref('newCard')
+const selectedPaymentMethod = ref<'newCard' | 'digitalWallet' | ''>('')
 
 const luhnValidator = helpers.withMessage('Invalid card number', (value: string) => {
   const clean = value.replace(/\s/g, '')
@@ -173,122 +173,130 @@ const formatCVV = (event: Event) => {
                 />
                 <label for="newCard">PAY WITH A NEW CARD</label>
               </div>
-              <div class="form-row">
-                <div class="form-group col-12">
+              <div v-if="selectedPaymentMethod === 'newCard'">
+                <div class="form-row">
+                  <div class="form-group col-12">
+                    <input
+                      id="cardholderName"
+                      v-model="formData.cardholderName"
+                      type="text"
+                      class="form-control"
+                      placeholder="CARDHOLDER NAME"
+                      maxlength="26"
+                      @input="
+                        formData.cardholderName = (
+                          $event.target as HTMLInputElement
+                        ).value.toUpperCase()
+                      "
+                      required
+                    />
+                    <small
+                      v-for="error in v$.cardholderName.$errors"
+                      :key="error.$uid"
+                      class="form-text"
+                      style="color: red"
+                    >
+                      {{ error.$message }}
+                    </small>
+                  </div>
+                </div>
+                <div class="form-group">
                   <input
-                    id="cardholderName"
-                    v-model="formData.cardholderName"
-                    type="text"
-                    class="form-control"
-                    placeholder="CARDHOLDER NAME"
-                    maxlength="26"
-                    @input="
-                      formData.cardholderName = (
-                        $event.target as HTMLInputElement
-                      ).value.toUpperCase()
-                    "
-                    required
-                  />
-                  <small
-                    v-for="error in v$.cardholderName.$errors"
-                    :key="error.$uid"
-                    class="form-text"
-                    style="color: red"
-                  >
-                    {{ error.$message }}
-                  </small>
-                </div>
-              </div>
-              <div class="form-group">
-                <input
-                  id="cardNumber"
-                  v-model="formData.cardNumber"
-                  type="tel"
-                  inputmode="numeric"
-                  class="form-control"
-                  placeholder="CARD NUMBER"
-                  maxlength="19"
-                  @input="formatCardNumber"
-                  required
-                />
-                <small
-                  v-for="error in v$.cardNumber.$errors"
-                  :key="error.$uid"
-                  class="form-text"
-                  style="color: red"
-                >
-                  {{ error.$message }}
-                </small>
-              </div>
-              <div class="form-row">
-                <div class="form-group col-4">
-                  <select
-                    id="expiryMonth"
-                    class="custom-select form-control"
-                    v-model="formData.expiryMonth"
-                    required
-                  >
-                    <option value="" disabled>MONTH</option>
-                    <option v-for="m in 12" :key="m" :value="m.toString().padStart(2, '0')">
-                      {{ m.toString().padStart(2, '0') }}
-                    </option>
-                  </select>
-                  <small
-                    v-for="error in v$.expiryMonth.$errors"
-                    :key="error.$uid"
-                    class="form-text"
-                    style="color: red"
-                  >
-                    {{ error.$message }}
-                  </small>
-                </div>
-                <div class="form-group col-4">
-                  <select
-                    id="expiryYear"
-                    class="custom-select form-control"
-                    v-model="formData.expiryYear"
-                    required
-                  >
-                    <option value="" disabled>YEAR</option>
-                    <option v-for="y in years" :key="y" :value="y">
-                      {{ y }}
-                    </option>
-                  </select>
-                  <small
-                    v-for="error in v$.expiryYear.$errors"
-                    :key="error.$uid"
-                    class="form-text"
-                    style="color: red"
-                  >
-                    {{ error.$message }}
-                  </small>
-                </div>
-                <div class="form-group col-4">
-                  <input
-                    id="cvv"
-                    class="form-control"
-                    placeholder="CVV"
-                    v-model="formData.cvv"
+                    id="cardNumber"
+                    v-model="formData.cardNumber"
                     type="tel"
                     inputmode="numeric"
-                    maxlength="4"
+                    class="form-control"
+                    placeholder="CARD NUMBER"
+                    maxlength="19"
+                    @input="formatCardNumber"
                     required
-                    @input="formatCVV"
                   />
                   <small
-                    v-for="error in v$.cvv.$errors"
+                    v-for="error in v$.cardNumber.$errors"
                     :key="error.$uid"
                     class="form-text"
                     style="color: red"
                   >
                     {{ error.$message }}
                   </small>
+                </div>
+                <div class="form-row">
+                  <div class="form-group col-4">
+                    <select
+                      id="expiryMonth"
+                      class="custom-select form-control"
+                      v-model="formData.expiryMonth"
+                      required
+                    >
+                      <option value="" disabled>MONTH</option>
+                      <option v-for="m in 12" :key="m" :value="m.toString().padStart(2, '0')">
+                        {{ m.toString().padStart(2, '0') }}
+                      </option>
+                    </select>
+                    <small
+                      v-for="error in v$.expiryMonth.$errors"
+                      :key="error.$uid"
+                      class="form-text"
+                      style="color: red"
+                    >
+                      {{ error.$message }}
+                    </small>
+                  </div>
+                  <div class="form-group col-4">
+                    <select
+                      id="expiryYear"
+                      class="custom-select form-control"
+                      v-model="formData.expiryYear"
+                      required
+                    >
+                      <option value="" disabled>YEAR</option>
+                      <option v-for="y in years" :key="y" :value="y">
+                        {{ y }}
+                      </option>
+                    </select>
+                    <small
+                      v-for="error in v$.expiryYear.$errors"
+                      :key="error.$uid"
+                      class="form-text"
+                      style="color: red"
+                    >
+                      {{ error.$message }}
+                    </small>
+                  </div>
+                  <div class="form-group col-4">
+                    <input
+                      id="cvv"
+                      class="form-control"
+                      placeholder="CVV"
+                      v-model="formData.cvv"
+                      type="tel"
+                      inputmode="numeric"
+                      maxlength="4"
+                      required
+                      @input="formatCVV"
+                    />
+                    <small
+                      v-for="error in v$.cvv.$errors"
+                      :key="error.$uid"
+                      class="form-text"
+                      style="color: red"
+                    >
+                      {{ error.$message }}
+                    </small>
+                  </div>
                 </div>
               </div>
             </div>
             <p class="section-title mt-4">PAY WITH YOUR DIGITAL WALLET</p>
             <div class="digital-wallet-container">
-              <input type="radio" id="digitalWallet" name="paymentMethod" />
+              <input
+                type="radio"
+                id="digitalWallet"
+                value="digitalWallet"
+                name="paymentMethod"
+                v-model="selectedPaymentMethod"
+              />
               <label for="digitalWallet">PAY WITH</label>
               <img :src="applePay" alt="Apple Pay" class="apple-pay-logo" />
             </div>
@@ -324,6 +332,13 @@ body {
 <style scoped>
 .main-container {
   padding: 1.5rem 1.5rem 250px;
+}
+
+@media (max-width: 576px) {
+  .main-container {
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
 
 .back-arrow {
