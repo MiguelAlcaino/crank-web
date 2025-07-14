@@ -3,6 +3,7 @@ import { computed, inject, reactive, ref } from 'vue'
 import { helpers, maxLength, minLength, required } from '@vuelidate/validators'
 
 // Components
+import BaseModal from '@/modules/shop/components/BaseModal.vue'
 import DeviceFingerprint from '@/modules/shop/components/DeviceFingerprint.vue'
 
 // Composables, Services & Utilities
@@ -14,6 +15,9 @@ import cardsAccepted from '../assets/images/cards_accepted.png'
 import protectedByPayfort from '../assets/images/protected_by_payfort.png'
 import applePay from '../assets/images/apple_pay_button_pay.png'
 import useVuelidate from '@vuelidate/core'
+import { createPayfortFormManager } from '@/modules/shop/services/PayfortFormManager'
+import type { CardData } from '@/modules/shop/interfaces'
+import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 
 // --- Dependencies & State from Composables ---
 const apiService = inject<IApiService>('gqlApiService')!
@@ -37,6 +41,12 @@ const formData = reactive({
   expiryYear: '',
   cvv: '',
   saveForFuture: false
+})
+
+const modalState = reactive({
+  show: false,
+  title: '',
+  message: ''
 })
 
 const selectedPaymentMethod = ref<'newCard' | 'digitalWallet' | ''>('')
@@ -108,14 +118,55 @@ const onFingerprintError = (error: Error) => {
 const handleSubmit = async () => {
   if (selectedPaymentMethod.value === 'newCard') {
     const isValid = await v$.value.$validate()
-    if (isValid) {
-      if (!isFingerprintReady.value) {
-        alert('Security session is not yet ready. Please wait a moment.')
-        return
+    if (!isValid) return
+
+    if (!isFingerprintReady.value) {
+      modalState.title = 'Security Check'
+      modalState.message =
+        'The security session is not yet ready. Please wait a moment and try again.'
+      modalState.show = true
+
+      return
+    }
+
+    isSubmitting.value = true
+
+    try {
+      // 1. Call the composable to get the base Payfort form HTML from the backend.
+      await initiatePayment(fingerprintSessionId.value)
+
+      // 2. Stop if the composable reported an error.
+      if (checkoutError.value) throw checkoutError.value
+
+      // 3. Use a dedicated service to handle DOM manipulation and form submission.
+      if (payfortFormHtml.value) {
+        const formManager = createPayfortFormManager(payfortFormHtml.value)
+
+        const cardData = {
+          cardNumber: formData.cardNumber.replace(/\s/g, ''),
+          expiryDate: `${formData.expiryMonth}/${formData.expiryYear}`,
+          cvv: formData.cvv,
+          cardholderName: formData.cardholderName,
+          saveForFuture: formData.saveForFuture
+        } as CardData
+
+        formManager.addCardData(cardData)
+        formManager.submit()
+        // The user will be redirected by the form submission.
+      } else {
+        showErrorModal('Payment Error', ERROR_UNKNOWN)
       }
+    } catch (error: any) {
+      showErrorModal(
+        'Payment Error',
+        error?.message ||
+          'An error occurred during payment. Please check your details and try again.'
+      )
+    } finally {
+      isSubmitting.value = false
     }
   } else if (selectedPaymentMethod.value === 'digitalWallet') {
-    // Visa Checkout
+    // Apple Pay
   }
 }
 
@@ -135,6 +186,12 @@ const formatCVV = (event: Event) => {
   let value = input.value.replace(/\D/g, '').slice(0, 4)
   input.value = value
   formData.cvv = value
+}
+
+function showErrorModal(title: string, message: string) {
+  modalState.title = title
+  modalState.message = message
+  modalState.show = true
 }
 </script>
 
@@ -306,7 +363,20 @@ const formatCVV = (event: Event) => {
     </div>
 
     <footer class="payment-footer">
-      <button class="pay-now-btn" @click="handleSubmit">PAY NOW</button>
+      <button
+        class="pay-now-btn"
+        @click="handleSubmit"
+        :disabled="isSubmitting || selectedPaymentMethod === ''"
+      >
+        <span
+          v-if="isSubmitting"
+          class="spinner-border spinner-border-sm"
+          role="status"
+          aria-hidden="true"
+        ></span>
+        <span v-if="!isSubmitting">PAY NOW</span>
+        <span v-else style="margin-left: 0.5rem">PROCESSING...</span>
+      </button>
       <div class="footer-disclaimer">
         <span>WE ACCEPT PAYMENTS ONLINE USING VISA AND MASTERCARD CREDIT/DEBIT CARD IN AED</span>
       </div>
@@ -315,6 +385,8 @@ const formatCVV = (event: Event) => {
         <img :src="protectedByPayfort" alt="Protected by Payfort" />
       </div>
     </footer>
+
+    <BaseModal v-model="modalState.show" :title="modalState.title" :message="modalState.message" />
   </div>
 </template>
 <style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
@@ -509,6 +581,16 @@ body {
   font-weight: bold;
   cursor: pointer;
   margin-bottom: 1rem;
+  font-family: 'BigJohn', sans-serif;
+}
+
+.pay-now-btn span {
+  font-family: inherit;
+}
+
+.pay-now-btn:disabled {
+  background-color: #e0e0e0;
+  cursor: not-allowed;
 }
 
 .footer-disclaimer {
