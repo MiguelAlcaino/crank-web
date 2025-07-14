@@ -4,7 +4,7 @@ import { inject } from 'vue'
 import type { IApiService } from '@/services/IApiService'
 
 const apiService = inject<IApiService>('gqlApiService')!
-const { totalItemsInCart } = useShoppingCart(apiService)
+const { totalItemsInCart, isLoading } = useShoppingCart(apiService)
 
 const scale = 0.4
 
@@ -42,7 +42,14 @@ const handleClick = () => {
       </svg>
     </div>
 
-    <span class="number">{{ totalItemsInCart }}</span>
+    <span class="number">
+      <template v-if="isLoading">
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      </template>
+      <template v-else>
+        {{ totalItemsInCart }}
+      </template>
+    </span>
   </div>
 </template>
 
