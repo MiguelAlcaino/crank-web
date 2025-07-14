@@ -1,14 +1,26 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { computed, inject, reactive, ref } from 'vue'
 import { helpers, maxLength, minLength, required } from '@vuelidate/validators'
 
 // Components
 import DeviceFingerprint from '@/modules/shop/components/DeviceFingerprint.vue'
 
+// Composables, Services & Utilities
+import { useCheckout } from '@/modules/shop/composables/useCheckout'
+import type { IApiService } from '@/services/IApiService'
+import { luhnCheck } from '@/modules/shop/utils/shop-utils'
+
 import cardsAccepted from '../assets/images/cards_accepted.png'
 import protectedByPayfort from '../assets/images/protected_by_payfort.png'
-import { luhnCheck } from '@/modules/shop/utils/shop-utils'
+import applePay from '../assets/images/apple_pay_button_pay.png'
 import useVuelidate from '@vuelidate/core'
+
+// --- Dependencies & State from Composables ---
+const apiService = inject<IApiService>('gqlApiService')!
+const { error: checkoutError, payfortFormHtml, initiatePayment } = useCheckout(apiService)
+
+// --- Component-Specific State ---
+const isSubmitting = ref(false)
 
 // State for the Device Fingerprint, controlled by the child component's events.
 const fingerprintSessionId = ref('')
@@ -274,6 +286,12 @@ const formatCVV = (event: Event) => {
                 </div>
               </div>
             </div>
+            <p class="section-title mt-4">PAY WITH YOUR DIGITAL WALLET</p>
+            <div class="digital-wallet-container">
+              <input type="radio" id="digitalWallet" name="paymentMethod" />
+              <label for="digitalWallet">PAY WITH</label>
+              <img :src="applePay" alt="Apple Pay" class="apple-pay-logo" />
+            </div>
           </div>
         </div>
       </div>
@@ -448,8 +466,8 @@ body {
   transform: translateX(-100%);
 }
 
-.visa-checkout-logo {
-  height: 30px;
+.apple-pay-logo {
+  height: 40px;
   margin-left: 0.5rem;
 }
 
