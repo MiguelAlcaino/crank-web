@@ -7,7 +7,6 @@
 
 // Libs & Frameworks
 import { inject, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 
 // Local Components
 import ProductCard from '@/modules/shop/components/ProductCard.vue'
@@ -24,7 +23,6 @@ import type { IApiService } from '@/services/IApiService'
 // DEPENDENCIES & COMPOSABLES
 // -----------------
 //
-const router = useRouter()
 const apiService = inject<IApiService>('gqlApiService')!
 
 const {
@@ -60,19 +58,6 @@ const {
 onMounted(() => {
   fetchAllProducts()
 })
-
-//
-// -----------------
-// METHODS
-// -----------------
-//
-
-/**
- * @description Navigates the user to the shopping cart page.
- */
-const goToCart = () => {
-  router.push('/shop/cart')
-}
 </script>
 
 <template>
@@ -109,7 +94,7 @@ const goToCart = () => {
     <div class="flex-grow-1 bg-light p-2 overflow-auto">
       <div class="d-flex justify-content-end align-items-center mb-4 w-100">
         <div class="shopping-bag-icon">
-          <ShoppingBagIcon @click="goToCart"></ShoppingBagIcon>
+          <ShoppingBagIcon></ShoppingBagIcon>
         </div>
       </div>
 

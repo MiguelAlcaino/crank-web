@@ -1,32 +1,72 @@
 <script setup lang="ts">
-import { useShoppingCart } from '../composables/userShoppingCart'
+//
+// -----------------
+// IMPORTS
+// -----------------
+//
+
+// Libs & Framework
 import { inject } from 'vue'
+import { useRouter } from 'vue-router'
+
+// Composables, Services & Utilities
+import { useShoppingCart } from '../composables/userShoppingCart'
 import type { IApiService } from '@/services/IApiService'
 
+//
+// -----------------
+// PROPS & EMITS
+// -----------------
+//
+
+const props = withDefaults(
+  defineProps<{
+    /**
+     * @description The scaling factor to adjust the size of the SVG icon.
+     */
+    scale?: number
+  }>(),
+  {
+    scale: 0.4
+  }
+)
+
+//
+// -----------------
+// DEPENDENCIES & COMPOSABLES
+// -----------------
+//
+
+const router = useRouter()
 const apiService = inject<IApiService>('gqlApiService')!
 const { totalItemsInCart, isLoading } = useShoppingCart(apiService)
 
-const scale = 0.4
+//
+// -----------------
+// METHODS
+// -----------------
+//
 
-const emit = defineEmits<{
-  (e: 'click'): void
-}>()
-
-const handleClick = () => {
-  emit('click')
+/**
+ * @description Navigates the user to the shopping cart page when the icon is clicked.
+ */
+const goToCart = () => {
+  router.push('/shop/cart')
 }
 </script>
 
 <template>
   <div
     class="icon-wrapper d-flex justify-content-center align-items-center"
-    @click="handleClick"
+    @click="goToCart"
+    role="button"
     aria-label="Open shopping cart"
+    tabindex="0"
   >
     <div
       :style="{
-        width: `${64 * scale}px`,
-        height: `${80 * scale}px`
+        width: `${64 * props.scale}px`,
+        height: `${80 * props.scale}px`
       }"
     >
       <svg
@@ -59,11 +99,11 @@ const handleClick = () => {
 .icon-wrapper {
   cursor: pointer;
   position: relative;
-
   width: 50px;
   height: 50px;
   background-color: transparent;
   border-radius: 50%;
+  transition: background-color 0.2s ease-in-out;
 }
 
 .icon-wrapper .number {
@@ -79,5 +119,10 @@ const handleClick = () => {
 
 .icon-wrapper:hover {
   background-color: #f0f0f0;
+}
+
+.icon-wrapper:focus {
+  outline: 2px solid #fb7185;
+  outline-offset: 2px;
 }
 </style>
