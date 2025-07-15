@@ -1,18 +1,34 @@
 <script setup lang="ts">
-import { useProducts } from '../composables/useProducts'
-import { inject } from 'vue'
-import { useShoppingCart } from '../composables/userShoppingCart'
-import ShoppingBagIcon from '@/modules/shop/components/ShoppingBagIcon.vue'
+//
+// -----------------
+// IMPORTS
+// -----------------
+//
 
-import ProductCard from '../components/ProductCard.vue'
-import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
-import type { IApiService } from '@/services/IApiService'
+// Libs & Frameworks
+import { inject, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
+// Local Components
+import ProductCard from '@/modules/shop/components/ProductCard.vue'
+import ShoppingBagIcon from '@/modules/shop/components/ShoppingBagIcon.vue'
+import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
+
+// Composables, Services & Utilities
+import { useProducts } from '../composables/useProducts'
+import { useShoppingCart } from '../composables/userShoppingCart'
+import type { IApiService } from '@/services/IApiService'
+
+//
+// -----------------
+// DEPENDENCIES & COMPOSABLES
+// -----------------
+//
 const router = useRouter()
 const apiService = inject<IApiService>('gqlApiService')!
 
 const {
+  // State
   isLoading,
   hasError,
   activeTab,
@@ -20,11 +36,40 @@ const {
   filteredSessionsProductGroups,
   giftCards,
   classPackageSelectType,
-  setActiveTab
+  // Methods
+  setActiveTab,
+  fetchAllProducts
 } = useProducts(apiService)
 
-const { productIdsInCart, addToCart } = useShoppingCart(apiService)
+const {
+  // State
+  productIdsInCart,
+  // Methods
+  addToCart
+} = useShoppingCart(apiService)
 
+//
+// -----------------
+// LIFECYCLE HOOKS
+// -----------------
+//
+
+/**
+ * @description When the component is mounted, fetch the initial product data.
+ */
+onMounted(() => {
+  fetchAllProducts()
+})
+
+//
+// -----------------
+// METHODS
+// -----------------
+//
+
+/**
+ * @description Navigates the user to the shopping cart page.
+ */
 const goToCart = () => {
   router.push('/shop/cart')
 }
@@ -86,18 +131,18 @@ const goToCart = () => {
           </select>
         </div>
 
-        <div class="row">
-          <div class="col-12" style="text-align: center">
-            <CrankCircularProgressIndicator
-              text="Loading..."
-              v-if="isLoading"
-            ></CrankCircularProgressIndicator>
-          </div>
+        <div v-if="isLoading" class="text-center">
+          <CrankCircularProgressIndicator
+            text="Loading..."
+            v-if="isLoading"
+          ></CrankCircularProgressIndicator>
         </div>
 
-        <div v-if="hasError">Error loading products.</div>
+        <div v-else-if="hasError" class="text-centerr">
+          <p>Sorry, we couldn't load the products. Please try again later.</p>
+        </div>
 
-        <div v-if="!isLoading && !hasError">
+        <div v-else>
           <div class="row mt-3" v-for="group in filteredSessionsProductGroups" :key="group.type">
             <div class="col-12">
               <h4>{{ group.title }}</h4>
