@@ -40,6 +40,7 @@ import type { Product } from '@/modules/shop/models/Product'
 import type { AppProductType } from '@/modules/shop/models/types'
 import type { SiteEnum } from '@/modules/shared/interfaces/site.enum'
 import type { ShoppingCart as ShoppingCartModel } from '@/modules/shop/models/ShoppingCart'
+import type { BasicUser } from '@/modules/auth/types'
 
 /**
  * Interface defining the contract for the API service.
@@ -496,4 +497,11 @@ export interface IApiService {
    * @returns A Promise that resolves with the updated ShoppingCartModel instance.
    */
   removeDiscountCode(site: SiteEnum): Promise<ShoppingCartModel>
+
+  /**
+   * Fetches a lightweight, essential subset of the current user's data.
+   * Ideal for use in global states (e.g., auth composable) to avoid over-fetching.
+   * @returns A promise that resolves with a partial User object (`firstName`, `lastName`, `email`) or `null` if not authenticated or an error occurs.
+   */
+  getMyselfBasic(): Promise<BasicUser | null>
 }

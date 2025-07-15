@@ -33,6 +33,7 @@ import {
   GeneratePayfortFormDocument,
   type GeneratePayfortFormMutation,
   type GeneratePayfortFormMutationVariables,
+  GetCurrentUserBasicInfoDocument,
   GetProductsDocument,
   type GetProductsQuery,
   type GetProductsQueryVariables,
@@ -96,6 +97,7 @@ import type { AppProductType } from '@/modules/shop/models/types'
 import type { SiteEnum } from '@/modules/shared/interfaces/site.enum'
 import type { ShoppingCart as ShoppingCartModel } from '@/modules/shop/models/ShoppingCart'
 import { createShoppingCartModel } from '@/modules/shop/factories/shoppingCartFactory'
+import type { BasicUser } from '@/modules/auth/types'
 
 // A custom error class to handle API errors more cleanly.
 export class ApiError extends Error {
@@ -1897,6 +1899,18 @@ export class ApiService implements IApiService {
       // Catch and re-throw any error for the calling function to handle.
       console.error('ApiService.removeDiscountCode failed:', error)
       throw error
+    }
+  }
+
+  public async getMyselfBasic(): Promise<BasicUser | null> {
+    try {
+      const queryResult = await this.authApiClient.query({
+        query: GetCurrentUserBasicInfoDocument
+      })
+      return queryResult.data.currentUser ?? null
+    } catch (error) {
+      console.error('ApiService: Failed to fetch basic user info.', error)
+      return null
     }
   }
 }

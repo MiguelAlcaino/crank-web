@@ -1715,6 +1715,13 @@ export type WaitlistFullError = Error & {
   code: Scalars['String']
 }
 
+export type GetCurrentUserBasicInfoQueryVariables = Exact<{ [key: string]: never }>
+
+export type GetCurrentUserBasicInfoQuery = {
+  __typename: 'Query'
+  currentUser?: { __typename: 'User'; firstName: string; lastName: string; email: string } | null
+}
+
 export type AddItemToShoppingCartMutationVariables = Exact<{
   site: SiteEnum
   input: ItemToShoppingCartInput
@@ -3234,6 +3241,33 @@ export const ShoppingCartFieldsFragmentDoc = {
     ...ProductBasicFieldsFragmentDoc.definitions
   ]
 } as unknown as DocumentNode<ShoppingCartFieldsFragment, unknown>
+export const GetCurrentUserBasicInfoDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetCurrentUserBasicInfo' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentUser' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'firstName' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'lastName' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'email' } }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<GetCurrentUserBasicInfoQuery, GetCurrentUserBasicInfoQueryVariables>
 export const AddItemToShoppingCartDocument = {
   kind: 'Document',
   definitions: [

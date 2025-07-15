@@ -6,7 +6,7 @@
 //
 
 // Libs & Frameworks
-import { computed, inject, reactive, ref } from 'vue'
+import { computed, inject, onMounted, reactive, ref } from 'vue'
 
 // Vuelidate Validators
 import useVuelidate from '@vuelidate/core'
@@ -18,6 +18,7 @@ import DeviceFingerprint from '@/modules/shop/components/DeviceFingerprint.vue'
 
 // Composables, Services & Utilities
 import { useCheckout } from '@/modules/shop/composables/useCheckout'
+import { useAuth } from '@/modules/auth/composables/useAuth'
 import { useShoppingCart } from '@/modules/shop/composables/userShoppingCart'
 import { createPayfortFormManager } from '@/modules/shop/services/PayfortFormManager'
 import type { IApiService } from '@/services/IApiService'
@@ -39,6 +40,7 @@ import applePay from '../assets/images/apple_pay_button_pay.png'
 const apiService = inject<IApiService>('gqlApiService')!
 const { error: checkoutError, payfortFormHtml, initiatePayment } = useCheckout(apiService)
 const { totalItemsInCart, shoppingCart } = useShoppingCart(apiService)
+const { user, isAuthenticated, isLoading: isAuthLoading, fetchCurrentUser } = useAuth(apiService)
 
 //
 // -----------------
@@ -270,6 +272,20 @@ const formatCVV = (event: Event) => {
 
 //
 // -----------------
+// LIFECYCLE HOOKS
+// -----------------
+//
+
+/**
+ * @description When the component is mounted, fetch essential data.
+ */
+onMounted(() => {
+  // Fetch the current user's data to display in the header.
+  fetchCurrentUser()
+})
+
+//
+// -----------------
 // EVENT HANDLERS (from Child Components)
 // -----------------
 //
@@ -309,7 +325,11 @@ const onFingerprintError = (error: Error) => {
 
       <!-- Header -->
       <h2 class="header-title">PAYMENT DETAILS</h2>
-      <p class="header-subtitle">LOGGED IN AS CHRISTINA SALIBI</p>
+      <p v-if="isAuthLoading" class="header-subtitle">LOADING USER...</p>
+      <p v-else-if="isAuthenticated" class="header-subtitle">
+        LOGGED IN AS {{ user?.firstName?.toUpperCase() }} {{ user?.lastName?.toUpperCase() }}
+      </p>
+      <p v-else class="header-subtitle">CONTINUING AS GUEST</p>
 
       <!-- Purchase Summary -->
       <div class="purchase-summary">
