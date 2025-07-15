@@ -91,7 +91,7 @@ const rules = computed(() => ({
     maxLength: helpers.withMessage('CVV must be at most 4 digits', maxLength(4))
   },
   cardholderName: {
-    required: helpers.withMessage('Field name is required', required)
+    required: helpers.withMessage('Field is required', required)
   }
 }))
 
