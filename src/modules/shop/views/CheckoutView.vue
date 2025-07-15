@@ -520,15 +520,9 @@ body {
 </style>
 
 <style scoped>
+/* Main Layout */
 .main-container {
   padding: 1.5rem 1.5rem 250px;
-}
-
-@media (max-width: 576px) {
-  .main-container {
-    padding-left: 0;
-    padding-right: 0;
-  }
 }
 
 .back-arrow {
@@ -539,6 +533,7 @@ body {
   color: #000;
 }
 
+/* Header */
 .header-title {
   font-weight: 900;
   color: #000;
@@ -556,6 +551,7 @@ body {
   margin-bottom: 1.5rem;
 }
 
+/* Purchase Summary */
 .purchase-summary {
   background-color: #000;
   color: #fff;
@@ -581,6 +577,7 @@ body {
   color: #adb5bd;
 }
 
+/* Section Title */
 .section-title {
   color: #ff8c69;
   font-weight: bold;
@@ -589,6 +586,7 @@ body {
   margin-bottom: 1rem;
 }
 
+/* Form Containers */
 .payment-form-container,
 .digital-wallet-container {
   background-color: #f7f8fa;
@@ -620,6 +618,11 @@ body {
   accent-color: #ff8c69;
 }
 
+/* Form Inputs */
+.form-group {
+  margin-bottom: 0.75rem;
+}
+
 .form-control {
   background-color: #fff;
   border: 1px solid #e0e0e0;
@@ -629,53 +632,18 @@ body {
   font-weight: bold;
 }
 
-.form-group {
-  margin-bottom: 0.75rem;
+select.form-control {
+  padding: 0.78rem 1rem;
+  height: auto;
 }
 
-.toggle-switch input[type='checkbox'] {
-  height: 0;
-  width: 0;
-  visibility: hidden;
-}
-
-.toggle-switch label {
-  cursor: pointer;
-  width: 50px;
-  height: 28px;
-  background: #e0e0e0;
-  display: block;
-  border-radius: 100px;
-  position: relative;
-  margin: 0;
-}
-
-.toggle-switch label:after {
-  content: '';
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 22px;
-  height: 22px;
-  background: #fff;
-  border-radius: 90px;
-  transition: 0.3s;
-}
-
-.toggle-switch input:checked + label {
-  background: #ff8c69;
-}
-
-.toggle-switch input:checked + label:after {
-  left: calc(100% - 3px);
-  transform: translateX(-100%);
-}
-
+/* Digital Wallet */
 .apple-pay-logo {
   height: 40px;
   margin-left: 0.5rem;
 }
 
+/* Footer */
 .payment-footer {
   position: fixed;
   bottom: 0;
@@ -702,13 +670,13 @@ body {
   font-family: 'BigJohn', sans-serif;
 }
 
-.pay-now-btn span {
-  font-family: inherit;
-}
-
 .pay-now-btn:disabled {
   background-color: #e0e0e0;
   cursor: not-allowed;
+}
+
+.pay-now-btn span {
+  font-family: inherit;
 }
 
 .footer-disclaimer {
@@ -742,12 +710,16 @@ body {
   width: auto;
 }
 
+/* Utility */
 .text-orange {
   color: #ff8c69;
 }
 
-select.form-control {
-  padding: 0.78rem 1rem;
-  height: auto;
+/* Responsive */
+@media (max-width: 576px) {
+  .main-container {
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
 </style>
