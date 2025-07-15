@@ -18,8 +18,8 @@ import { onMounted, onUnmounted } from 'vue'
 
 const props = withDefaults(defineProps<Props>(), {
   modelValue: false,
-  cancelText: 'Cancelar',
-  okText: 'Aceptar',
+  cancelText: 'Cancel',
+  okText: 'OK',
   okLoading: false,
   cancelLoading: false,
   cancelDisabled: false,

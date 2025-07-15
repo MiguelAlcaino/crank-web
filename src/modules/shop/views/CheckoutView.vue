@@ -386,7 +386,13 @@ function showErrorModal(title: string, message: string) {
       </div>
     </footer>
 
-    <BaseModal v-model="modalState.show" :title="modalState.title" :message="modalState.message" />
+    <BaseModal
+      v-model="modalState.show"
+      :title="modalState.title"
+      :message="modalState.message"
+      :okText="null"
+      cancelText="CLOSE"
+    />
   </div>
 </template>
 <style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
