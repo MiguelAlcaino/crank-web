@@ -1,39 +1,80 @@
 <script setup lang="ts">
+//
+// -----------------
+// IMPORTS
+// -----------------
+//
+
+// Libs & Frameworks
 import { computed, inject, reactive, ref } from 'vue'
+
+// Vuelidate Validators
+import useVuelidate from '@vuelidate/core'
 import { helpers, maxLength, minLength, required } from '@vuelidate/validators'
 
-// Components
+// Local Components
 import BaseModal from '@/modules/shop/components/BaseModal.vue'
 import DeviceFingerprint from '@/modules/shop/components/DeviceFingerprint.vue'
 
 // Composables, Services & Utilities
 import { useCheckout } from '@/modules/shop/composables/useCheckout'
+import { useShoppingCart } from '@/modules/shop/composables/userShoppingCart'
+import { createPayfortFormManager } from '@/modules/shop/services/PayfortFormManager'
 import type { IApiService } from '@/services/IApiService'
 import { luhnCheck } from '@/modules/shop/utils/shop-utils'
+import { ERROR_UNKNOWN } from '@/utils/errorMessages'
+import type { CardData } from '@/modules/shop/interfaces'
 
+// Assets
 import cardsAccepted from '../assets/images/cards_accepted.png'
 import protectedByPayfort from '../assets/images/protected_by_payfort.png'
 import applePay from '../assets/images/apple_pay_button_pay.png'
-import useVuelidate from '@vuelidate/core'
-import { createPayfortFormManager } from '@/modules/shop/services/PayfortFormManager'
-import type { CardData } from '@/modules/shop/interfaces'
-import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 
-// --- Dependencies & State from Composables ---
+//
+// -----------------
+// DEPENDENCIES & COMPOSABLES
+// -----------------
+//
+
 const apiService = inject<IApiService>('gqlApiService')!
 const { error: checkoutError, payfortFormHtml, initiatePayment } = useCheckout(apiService)
+const { totalItemsInCart, shoppingCart } = useShoppingCart(apiService)
 
-// --- Component-Specific State ---
+//
+// -----------------
+// CONSTANTS
+// -----------------
+//
+
+const CURRENT_YEAR_SHORT = new Date().getFullYear() % 100
+const EXPIRY_YEARS = Array.from({ length: 15 }, (_, i) =>
+  (CURRENT_YEAR_SHORT + i).toString().padStart(2, '0')
+)
+
+//
+// -----------------
+// COMPONENT STATE
+// -----------------
+//
+
+/**
+ * @description Controls the loading state of the submission process.
+ */
 const isSubmitting = ref(false)
 
-// State for the Device Fingerprint, controlled by the child component's events.
+/**
+ * @description Holds the session ID from the DeviceFingerprint component.
+ */
 const fingerprintSessionId = ref('')
+
+/**
+ * @description Holds any error emitted by the DeviceFingerprint component.
+ */
 const fingerprintError = ref<Error | null>(null)
-const isFingerprintReady = computed(() => !!fingerprintSessionId.value && !fingerprintError.value)
 
-const currentYear = new Date().getFullYear() % 100
-const years = Array.from({ length: 15 }, (_, i) => (currentYear + i).toString().padStart(2, '0'))
-
+/**
+ * @description Represents the payment form data.
+ */
 const formData = reactive({
   cardholderName: '',
   cardNumber: '',
@@ -43,20 +84,43 @@ const formData = reactive({
   saveForFuture: false
 })
 
+/**
+ * @description Controls the state of the modal dialog.
+ */
 const modalState = reactive({
   show: false,
   title: '',
   message: ''
 })
 
+/**
+ * @description Tracks the currently selected payment method.
+ */
 const selectedPaymentMethod = ref<'newCard' | 'digitalWallet' | ''>('')
 
+//
+// -----------------
+// VALIDATION (Vuelidate)
+// -----------------
+//
+
+/**
+ * @description Custom Vuelidate rule for Luhn algorithm check.
+ */
 const luhnValidator = helpers.withMessage('Invalid card number', (value: string) => {
+  // Check only if the value is not empty to avoid conflict with 'required'
+  if (!value) return true
   const clean = value.replace(/\s/g, '')
   return luhnCheck(clean)
 })
 
+/**
+ * @description Vuelidate validation rules for the payment form.
+ */
 const rules = computed(() => ({
+  cardholderName: {
+    required: helpers.withMessage('Field is required', required)
+  },
   cardNumber: {
     required: helpers.withMessage('Field is required', required),
     minLength: helpers.withMessage('Card number must be at least 13 digits', minLength(13)),
@@ -69,38 +133,150 @@ const rules = computed(() => ({
   expiryYear: {
     required: helpers.withMessage('Field is required', required)
   },
-  /*  expiryDate: {
-      required: helpers.withMessage('Expiration date is required', required),
-      validFormat: helpers.withMessage('Invalid format (must be MM/YY)', (value: string) =>
-        /^\d{2}\/\d{2}$/.test(value)
-      ),
-      notExpired: helpers.withMessage('Card has expired', (value: string) => {
-        if (!/^\d{2}\/\d{2}$/.test(value)) return false
-        const [month, year] = value.split('/')
-        const currentYear = new Date().getFullYear() % 100
-        const currentMonth = new Date().getMonth() + 1
-        return (
-          parseInt(year) > currentYear ||
-          (parseInt(year) === currentYear && parseInt(month) >= currentMonth)
-        )
-      })
-    },*/
   cvv: {
     required: helpers.withMessage('Field is required', required),
     minLength: helpers.withMessage('CVV must be at least 3 digits', minLength(3)),
     maxLength: helpers.withMessage('CVV must be at most 4 digits', maxLength(4))
-  },
-  cardholderName: {
-    required: helpers.withMessage('Field is required', required)
   }
 }))
 
 const v$ = useVuelidate(rules, formData)
 
-// --- Event Handlers for Child Component ---
+//
+// -----------------
+// COMPUTED PROPERTIES
+// -----------------
+//
+
 /**
- * Handles the 'ready' event from the DeviceFingerprint component.
- * It stores the session ID and enables the UI for submission.
+ * @description Determines if the device fingerprint is ready for payment submission.
+ */
+const isFingerprintReady = computed(() => !!fingerprintSessionId.value && !fingerprintError.value)
+
+/**
+ * @description Formats cart items for display in the summary.
+ * @returns {string} A formatted string of items, e.g., "1 T-SHIRT / 2 SOCKS".
+ */
+const formattedCartItems = computed(() => {
+  if (!shoppingCart.value) return ''
+  return shoppingCart.value.items
+    .map(
+      (item) =>
+        `${item.quantity} ${
+          item.variant.name?.toUpperCase() ?? item.variant.product.title.toUpperCase()
+        }`
+    )
+    .join(' / ')
+})
+
+//
+// -----------------
+// METHODS
+// -----------------
+//
+
+/**
+ * @description Shows a modal with a given title and message.
+ * @param {string} title - The title for the modal.
+ * @param {string} message - The message content for the modal.
+ */
+function showErrorModal(title: string, message: string) {
+  modalState.title = title
+  modalState.message = message
+  modalState.show = true
+}
+
+/**
+ * @description Handles the main form submission for the selected payment method.
+ */
+const handleSubmit = async () => {
+  if (selectedPaymentMethod.value === 'newCard') {
+    await handleNewCardPayment()
+  } else if (selectedPaymentMethod.value === 'digitalWallet') {
+    // Apple Pay / Digital Wallet logic would go here
+    showErrorModal('Not Implemented', 'Digital wallet payments are not yet supported.')
+  }
+}
+
+/**
+ * @description Handles the logic for validating and submitting a new card payment.
+ */
+const handleNewCardPayment = async () => {
+  // 1. Validate the form
+  const isValid = await v$.value.$validate()
+  if (!isValid) return
+
+  // 2. Check if the device fingerprint session is ready
+  if (!isFingerprintReady.value) {
+    showErrorModal(
+      'Security Check Not Ready',
+      'The security session is not yet ready. Please wait a moment and try again.'
+    )
+    return
+  }
+
+  isSubmitting.value = true
+
+  try {
+    // 3. Initiate payment with the backend to get the Payfort form
+    await initiatePayment(fingerprintSessionId.value)
+
+    // Stop if the composable reported an error (e.g., network issue)
+    if (checkoutError.value) throw checkoutError.value
+
+    // 4. Use a manager to populate and submit the received Payfort form
+    if (payfortFormHtml.value) {
+      const formManager = createPayfortFormManager(payfortFormHtml.value)
+      const cardData = {
+        cardNumber: formData.cardNumber.replace(/\s/g, ''),
+        expiryDate: `${formData.expiryMonth}/${formData.expiryYear}`,
+        cvv: formData.cvv,
+        cardholderName: formData.cardholderName,
+        saveForFuture: formData.saveForFuture
+      } as CardData
+
+      formManager.addCardData(cardData)
+      formManager.submit() // The user will be redirected by the form submission.
+    } else {
+      showErrorModal('Payment Error', ERROR_UNKNOWN)
+    }
+  } catch (error: any) {
+    showErrorModal(
+      'Payment Error',
+      error?.message || 'An unexpected error occurred. Please try again.'
+    )
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
+/**
+ * @description Formats the card number input by adding spaces every 4 digits.
+ */
+const formatCardNumber = (event: Event) => {
+  const input = event.target as HTMLInputElement
+  // Remove all non-digits and group them by 4
+  const value = input.value.replace(/\D/g, '').match(/.{1,4}/g)
+  formData.cardNumber = value ? value.join(' ') : ''
+}
+
+/**
+ * @description Formats the CVV input, ensuring it only contains digits.
+ */
+const formatCVV = (event: Event) => {
+  const input = event.target as HTMLInputElement
+  formData.cvv = input.value.replace(/\D/g, '').slice(0, 4)
+}
+
+//
+// -----------------
+// EVENT HANDLERS (from Child Components)
+// -----------------
+//
+
+/**
+ * @description Handles the 'ready' event from the DeviceFingerprint component.
+ * @param {string} sessionId - The session ID generated by the fingerprint service.
  */
 const onFingerprintReady = (sessionId: string) => {
   fingerprintSessionId.value = sessionId
@@ -108,95 +284,21 @@ const onFingerprintReady = (sessionId: string) => {
 }
 
 /**
- * Handles the 'error' event from the DeviceFingerprint component.
- * It stores the error to display a message to the user.
+ * @description Handles the 'error' event from the DeviceFingerprint component.
+ * @param {Error} error - The error object from the fingerprint service.
  */
 const onFingerprintError = (error: Error) => {
   fingerprintError.value = error
-}
-
-const handleSubmit = async () => {
-  if (selectedPaymentMethod.value === 'newCard') {
-    const isValid = await v$.value.$validate()
-    if (!isValid) return
-
-    if (!isFingerprintReady.value) {
-      modalState.title = 'Security Check'
-      modalState.message =
-        'The security session is not yet ready. Please wait a moment and try again.'
-      modalState.show = true
-
-      return
-    }
-
-    isSubmitting.value = true
-
-    try {
-      // 1. Call the composable to get the base Payfort form HTML from the backend.
-      await initiatePayment(fingerprintSessionId.value)
-
-      // 2. Stop if the composable reported an error.
-      if (checkoutError.value) throw checkoutError.value
-
-      // 3. Use a dedicated service to handle DOM manipulation and form submission.
-      if (payfortFormHtml.value) {
-        const formManager = createPayfortFormManager(payfortFormHtml.value)
-
-        const cardData = {
-          cardNumber: formData.cardNumber.replace(/\s/g, ''),
-          expiryDate: `${formData.expiryMonth}/${formData.expiryYear}`,
-          cvv: formData.cvv,
-          cardholderName: formData.cardholderName,
-          saveForFuture: formData.saveForFuture
-        } as CardData
-
-        formManager.addCardData(cardData)
-        formManager.submit()
-        // The user will be redirected by the form submission.
-      } else {
-        showErrorModal('Payment Error', ERROR_UNKNOWN)
-      }
-    } catch (error: any) {
-      showErrorModal(
-        'Payment Error',
-        error?.message ||
-          'An error occurred during payment. Please check your details and try again.'
-      )
-    } finally {
-      isSubmitting.value = false
-    }
-  } else if (selectedPaymentMethod.value === 'digitalWallet') {
-    // Apple Pay
-  }
-}
-
-// --- Formatting and Validation Helpers ---
-const formatCardNumber = (event: Event) => {
-  const input = event.target as HTMLInputElement
-  let value = input.value.replace(/\D/g, '') // Remove all non-digits
-  if (value.length > 0) {
-    // Add a space every 4 digits
-    value = value.match(new RegExp('.{1,4}', 'g'))?.join(' ') || ''
-  }
-  formData.cardNumber = value
-}
-
-const formatCVV = (event: Event) => {
-  const input = event.target as HTMLInputElement
-  let value = input.value.replace(/\D/g, '').slice(0, 4)
-  input.value = value
-  formData.cvv = value
-}
-
-function showErrorModal(title: string, message: string) {
-  modalState.title = title
-  modalState.message = message
-  modalState.show = true
+  showErrorModal(
+    'Security Error',
+    'A security error occurred while preparing your session. Please refresh the page.'
+  )
 }
 </script>
 
 <template>
   <div>
+    <!-- This component runs in the background to prepare the device fingerprint for Payfort -->
     <DeviceFingerprint
       session-id-input-id="fingerprint_session_id"
       @ready="onFingerprintReady"
@@ -205,19 +307,23 @@ function showErrorModal(title: string, message: string) {
     <div class="main-container">
       <a href="#" class="back-arrow"><i class="fas fa-chevron-left"></i></a>
 
+      <!-- Header -->
       <h2 class="header-title">PAYMENT DETAILS</h2>
       <p class="header-subtitle">LOGGED IN AS CHRISTINA SALIBI</p>
 
+      <!-- Purchase Summary -->
       <div class="purchase-summary">
         <h5 class="text-orange">YOU ARE BUYING:</h5>
-        <h5>1 SESSION / TRIAL PACK / 5 SMOOTHIES</h5>
+        <h5>{{ formattedCartItems }}</h5>
+        <!-- TODO: Replace with dynamic price from cart -->
         <p>AED XXXX</p>
-        <span class="item-count">3 items</span>
+        <span class="item-count">{{ totalItemsInCart }} items</span>
       </div>
 
       <div class="container">
         <div class="row justify-content-center">
           <div class="col-12 col-md-8 col-lg-8">
+            <!-- New Card Payment Option -->
             <p class="section-title">SELECT YOUR PAYMENT OPTION</p>
             <div class="payment-form-container">
               <div class="payment-option-header">
@@ -230,6 +336,8 @@ function showErrorModal(title: string, message: string) {
                 />
                 <label for="newCard">PAY WITH A NEW CARD</label>
               </div>
+
+              <!-- Card Details Form (Conditional) -->
               <div v-if="selectedPaymentMethod === 'newCard'">
                 <div class="form-row">
                   <div class="form-group col-12">
@@ -308,7 +416,7 @@ function showErrorModal(title: string, message: string) {
                       required
                     >
                       <option value="" disabled>YEAR</option>
-                      <option v-for="y in years" :key="y" :value="y">
+                      <option v-for="y in EXPIRY_YEARS" :key="y" :value="y">
                         {{ y }}
                       </option>
                     </select>
@@ -345,6 +453,8 @@ function showErrorModal(title: string, message: string) {
                 </div>
               </div>
             </div>
+
+            <!-- Digital Wallet Payment Option -->
             <p class="section-title mt-4">PAY WITH YOUR DIGITAL WALLET</p>
             <div class="digital-wallet-container">
               <input
@@ -362,6 +472,7 @@ function showErrorModal(title: string, message: string) {
       </div>
     </div>
 
+    <!-- Sticky Footer for Action Button -->
     <footer class="payment-footer">
       <button
         class="pay-now-btn"
@@ -386,6 +497,7 @@ function showErrorModal(title: string, message: string) {
       </div>
     </footer>
 
+    <!-- Modal for showing errors or messages -->
     <BaseModal
       v-model="modalState.show"
       :title="modalState.title"
