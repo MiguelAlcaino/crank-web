@@ -1931,6 +1931,27 @@ export type GeneratePayfortFormMutation = {
   payfortForm: { __typename: 'PayfortFormResult'; htmlForm: string }
 }
 
+export type GetCartSummaryQueryVariables = Exact<{
+  site: SiteEnum
+}>
+
+export type GetCartSummaryQuery = {
+  __typename: 'Query'
+  currentUser?: {
+    __typename: 'User'
+    shoppingCart: {
+      __typename: 'ShoppingCart'
+      id: string
+      items: Array<{
+        __typename: 'ShoppingCartItem'
+        id: string
+        quantity: number
+        variant: { __typename: 'Variant'; id: string }
+      }>
+    }
+  } | null
+}
+
 export type GetProductsQueryVariables = Exact<{
   site: SiteEnum
   input?: InputMaybe<ProductsInput>
@@ -3619,6 +3640,76 @@ export const GeneratePayfortFormDocument = {
     }
   ]
 } as unknown as DocumentNode<GeneratePayfortFormMutation, GeneratePayfortFormMutationVariables>
+export const GetCartSummaryDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetCartSummary' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentUser' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'shoppingCart' },
+                  arguments: [
+                    {
+                      kind: 'Argument',
+                      name: { kind: 'Name', value: 'site' },
+                      value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+                    }
+                  ],
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'items' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'quantity' } },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'variant' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<GetCartSummaryQuery, GetCartSummaryQueryVariables>
 export const GetProductsDocument = {
   kind: 'Document',
   definitions: [

@@ -41,6 +41,7 @@ import type { AppProductType } from '@/modules/shop/models/types'
 import type { SiteEnum } from '@/modules/shared/interfaces/site.enum'
 import type { ShoppingCart as ShoppingCartModel } from '@/modules/shop/models/ShoppingCart'
 import type { BasicUser } from '@/modules/auth/types'
+import type { CartSummary } from '@/modules/shop/interfaces/cart-summary'
 
 /**
  * Interface defining the contract for the API service.
@@ -504,4 +505,12 @@ export interface IApiService {
    * @returns A promise that resolves with a partial User object (`firstName`, `lastName`, `email`) or `null` if not authenticated or an error occurs.
    */
   getMyselfBasic(): Promise<BasicUser | null>
+
+  /**
+   * Fetches a lightweight summary of the current user's shopping cart.
+   * Designed for efficient display in UI elements like the shopping bag icon, where
+   * full totals and detailed calculations are not required. This avoids unnecessary backend overhead.
+   * @returns A promise that resolves with a CartSummary object, or `null` if no cart exists or an error occurs.
+   */
+  getCartSummary(): Promise<CartSummary | null>
 }

@@ -33,6 +33,7 @@ import {
   GeneratePayfortFormDocument,
   type GeneratePayfortFormMutation,
   type GeneratePayfortFormMutationVariables,
+  GetCartSummaryDocument,
   GetCurrentUserBasicInfoDocument,
   GetProductsDocument,
   type GetProductsQuery,
@@ -98,6 +99,7 @@ import type { SiteEnum } from '@/modules/shared/interfaces/site.enum'
 import type { ShoppingCart as ShoppingCartModel } from '@/modules/shop/models/ShoppingCart'
 import { createShoppingCartModel } from '@/modules/shop/factories/shoppingCartFactory'
 import type { BasicUser } from '@/modules/auth/types'
+import type { CartSummary } from '@/modules/shop/interfaces/cart-summary'
 
 // A custom error class to handle API errors more cleanly.
 export class ApiError extends Error {
@@ -1912,5 +1914,10 @@ export class ApiService implements IApiService {
       console.error('ApiService: Failed to fetch basic user info.', error)
       return null
     }
+  }
+
+  public async getCartSummary(): Promise<CartSummary | null> {
+    const { data } = await this.authApiClient.query({ query: GetCartSummaryDocument })
+    return data?.currentUser?.shoppingCart ?? null
   }
 }
