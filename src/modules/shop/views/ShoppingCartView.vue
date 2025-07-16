@@ -18,7 +18,6 @@ const apiService = inject<IApiService>('gqlApiService')!
 const {
   shoppingCart,
   totalItemsInCart,
-  formattedSubtotal,
   isLoading,
   removeFromCart,
   updateItemInCart,
@@ -78,7 +77,7 @@ const handleUpdateInParent = (payload: { itemId: string; newQuantity: number }) 
         class="total-bar d-flex justify-content-between align-items-center text-white font-weight-bold p-3"
       >
         <span>TOTAL AMOUNT</span>
-        <span>{{ formattedSubtotal }}</span>
+        <span>{{ shoppingCart?.formattedTotal }}</span>
       </div>
       <div class="checkout-area p-4">
         <button class="btn btn-checkout btn-block" @click="handleCheckout">LET'S DO THAT!</button>

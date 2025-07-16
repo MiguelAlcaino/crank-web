@@ -40,22 +40,18 @@ export class ShoppingCart {
   }
 
   /**
-   * Getter to calculate and format the subtotal from item prices.
-   * This is more reliable than using the `subTotal` from the API if you
-   * need to recalculate it on the client side for some reason.
-   */
-  public get calculatedSubtotal(): number {
-    return this.items.reduce((acc, item) => {
-      // The price is now accessed through the variant
-      return acc + item.variant.price * item.quantity
-    }, 0)
-  }
-
-  /**
    * Returns the calculated subtotal as a formatted string.
    * @returns A string representing the formatted price.
    */
-  public getFormattedSubtotal(): string {
-    return formatPrice(this.calculatedSubtotal, this.currency)
+  public get formattedSubtotal(): string {
+    return formatPrice(this.subTotal, this.currency)
+  }
+
+  /**
+   * Returns the calculated total as a formatted string.
+   * @returns A string representing the formatted price.
+   */
+  public get formattedTotal(): string {
+    return formatPrice(this.total, this.currency)
   }
 }

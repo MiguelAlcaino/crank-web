@@ -129,22 +129,9 @@ export const useShoppingCart = (apiService: IApiService) => {
     return shoppingCart.value?.items.map((item) => item.variant.id) || []
   })
 
-  const calculatedSubtotal = computed(() => {
-    return 0
-    /*  return formatPrice(
-        shoppingCart.value?.items.reduce((acc, item) => {
-          return acc + item.product.price * item.quantity
-        }, 0) || 0
-      )*/
-  })
-
   // --- Computed Properties ---
   // These are now much cleaner by using the model's getters.
   const totalItemsInCart = computed(() => shoppingCart.value?.itemCount ?? 0)
-
-  // const productIdsInCart = computed(() => shoppingCart.value?.productIds ?? [])
-
-  const formattedSubtotal = computed(() => shoppingCart.value?.getFormattedSubtotal() ?? '')
 
   /**
    * Checks if a specific shopping cart item is currently being updated.
@@ -161,9 +148,7 @@ export const useShoppingCart = (apiService: IApiService) => {
     hasError: hasError,
     shoppingCart: shoppingCart,
     productIdsInCart: readonly(productIdsInCart),
-    calculatedSubtotal: readonly(calculatedSubtotal),
     totalItemsInCart: readonly(totalItemsInCart),
-    formattedSubtotal: readonly(formattedSubtotal),
 
     // Methods
     addToCart,
