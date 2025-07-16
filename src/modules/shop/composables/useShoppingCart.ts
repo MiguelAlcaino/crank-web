@@ -1,27 +1,48 @@
-import { computed, onMounted, readonly, ref } from 'vue'
+import { computed, readonly, ref } from 'vue'
 import { appStore } from '@/stores/appStorage'
 import type { IApiService } from '@/services/IApiService'
-import type { ShoppingCart } from '@/modules/shop/models/ShoppingCart'
+import { ShoppingCart } from '@/modules/shop/models/ShoppingCart'
 import { ApiError } from '@/services/ApiService'
+import type { CartSummary } from '@/modules/shop/interfaces/cart-summary'
 
-const shoppingCart = ref<ShoppingCart | null>(null)
+//
+// -----------------
+// MODULE-LEVEL STATE & LOGIC (SINGLETON)
+// -----------------
+//
+const cartState = ref<CartSummary | ShoppingCart | null>(null)
+const isLoading = ref<boolean>(false)
 const error = ref<Error | null>(null)
+const updatingItemIds = ref<Set<string>>(new Set())
+
+/**
+ * Checks if a specific shopping cart item is currently being updated.
+ * @param {string} itemId - The ID of the item to check.
+ * @returns A computed ref that resolves to a boolean.
+ */
+function isItemUpdating(itemId: string) {
+  return computed(() => updatingItemIds.value.has(itemId))
+}
 
 export const useShoppingCart = (apiService: IApiService) => {
   const hasError = ref<boolean>(false)
-  const isLoading = ref<boolean>(false)
-  const updatingItemIds = ref<Set<string>>(new Set())
 
-  onMounted(() => {
-    getShoppingCart()
-  })
 
-  async function getShoppingCart() {
+  //
+  // -----------------
+  // METHODS - FETCHING
+  // -----------------
+  //
+
+  /**
+   * Fetches the lightweight cart summary. Ideal for global UI elements.
+   */
+  async function fetchCartSummary() {
     hasError.value = false
     isLoading.value = true
 
     try {
-      shoppingCart.value = await apiService.getShoppingCart(appStore().site)
+      cartState.value = await apiService.getCartSummary(appStore().site)
     } catch (error) {
       hasError.value = true
     } finally {
@@ -30,16 +51,39 @@ export const useShoppingCart = (apiService: IApiService) => {
   }
 
   /**
+   * Fetches the full, detailed shopping cart. Ideal for the main cart/checkout pages.
+   */
+  async function fetchCartDetails() {
+    hasError.value = false
+    isLoading.value = true
+
+    try {
+      cartState.value = await apiService.getCartDetails(appStore().site)
+    } catch (error) {
+      hasError.value = true
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  //
+  // -----------------
+  // METHODS - MUTATING
+  // -----------------
+  //
+
+  /**
    * A generic handler for any mutation that returns an updated shopping cart.
    * It manages the isUpdating and error states automatically.
    * @param itemId
    * @param updatePromise The promise returned from an ApiService method.
    */
-  const handleCartUpdate = async (itemId: string, updatePromise: Promise<ShoppingCart>) => {
+  const handleCartUpdate = async (itemId: string, updatePromise: Promise<ShoppingCart | null>) => {
     updatingItemIds.value.add(itemId)
     error.value = null
+
     try {
-      shoppingCart.value = await updatePromise
+      cartState.value = await updatePromise
     } catch (e) {
       error.value = e as ApiError | Error
     } finally {
@@ -53,40 +97,10 @@ export const useShoppingCart = (apiService: IApiService) => {
    * @param sellableProductId The ID of the product to add.
    */
   const addToCart = async (sellableProductId: string) => {
-    // 1. Set loading state to true and clear previous errors
-    //    This provides immediate feedback to the UI.
-
-    error.value = null
-
-    try {
-      // 2. Call the ApiService. It will either return the updated cart or throw.
-      const updatedCart: ShoppingCart = await apiService.addItemToShoppingCart(
-        appStore().site,
-        sellableProductId,
-        1
-      )
-
-      // 3. On success, update the local reactive state with the new cart.
-      //    The UI will automatically update to reflect this change.
-      shoppingCart.value = updatedCart
-    } catch (e) {
-      // 4. If an error is thrown, capture it and store it in the state.
-      //    This allows the UI to display a meaningful error message.
-      const caughtError = e as ApiError | Error
-      error.value = caughtError
-
-      // Optionally, log the full error for debugging purposes
-      console.error('Failed to add item to cart:', caughtError.message)
-
-      // You could also map specific API errors to user-friendly messages here
-      if (caughtError instanceof ApiError && caughtError.code === 'ProductNotFound') {
-        // Here you could trigger a toast notification or a specific UI message
-        console.warn('Attempted to add a product that does not exist.')
-      }
-    } finally {
-      // 5. Always set loading state to false when the operation is complete,
-      //    regardless of success or failure.
-    }
+    await handleCartUpdate(
+      sellableProductId,
+      apiService.addItemToShoppingCart(appStore().site, sellableProductId, 1)
+    )
   }
 
   /**
@@ -102,9 +116,9 @@ export const useShoppingCart = (apiService: IApiService) => {
 
   /**
    * Updates the quantity of an item in the shopping cart.
-   *
+   * @param {object} payload - The item ID and its new quantity.
    */
-  const updateItemInCart = async (payload: { itemId: string; newQuantity: number }) => {
+  const updateItemQuantity = async (payload: { itemId: string; newQuantity: number }) => {
     const newQuantity = Math.max(0, payload.newQuantity || 0)
 
     if (newQuantity === 0) {
@@ -112,48 +126,71 @@ export const useShoppingCart = (apiService: IApiService) => {
       return
     }
 
-    const itemToUpdate = shoppingCart.value?.items.find((item) => item.id === payload.itemId)
-
-    if (!itemToUpdate) {
-      console.error(`Item with ID ${payload.itemId} not found in cart. Cannot update.`)
-      return
-    }
-
     await handleCartUpdate(
       payload.itemId,
-      apiService.updateItemInShoppingCart(appStore().site, itemToUpdate.id, newQuantity)
+      apiService.updateItemInShoppingCart(appStore().site, payload.itemId, newQuantity)
     )
   }
 
-  const productIdsInCart = computed(() => {
-    return shoppingCart.value?.items.map((item) => item.variant.id) || []
-  })
-
-  // --- Computed Properties ---
-  // These are now much cleaner by using the model's getters.
-  const totalItemsInCart = computed(() => shoppingCart.value?.itemCount ?? 0)
+  //
+  // -----------------
+  // GETTERS & COMPUTED PROPERTIES
+  // -----------------
+  //
 
   /**
-   * Checks if a specific shopping cart item is currently being updated.
-   * @param itemId The ID of the shopping cart item.
-   * @returns True if the item is being updated, false otherwise.
+   * @description A computed set of product variant IDs currently in the cart.
+   * Works with both CartSummary and the full ShoppingCart.
    */
-  const isItemUpdating = (itemId: string): boolean => {
-    return updatingItemIds.value.has(itemId)
-  }
+  const productIdsInCart = computed(() => {
+    if (!cartState.value?.items) return new Set<string>()
+
+    if (cartState.value instanceof ShoppingCart) {
+      return new Set(cartState.value.items.map((item) => item.variant.id))
+    }
+
+    return new Set(cartState.value.items.map((item) => item.variant.id))
+  })
+
+  /**
+   * @description The total number of individual units in the cart.
+   * Works with both CartSummary and the full ShoppingCart.
+   */
+  const totalItemsInCart = computed(() => {
+    if (!cartState.value) return 0
+
+    if (cartState.value instanceof ShoppingCart) {
+      return cartState.value.itemCount
+    }
+
+    return cartState.value.items.reduce((total, item) => total + item.quantity, 0)
+  })
+
+  /**
+   * @description Returns the full ShoppingCart class instance if available, otherwise null.
+   * This is what the main cart page should use to display totals.
+   */
+  const detailedCart = computed((): ShoppingCart | null => {
+    if (cartState.value instanceof ShoppingCart) {
+      return cartState.value
+    }
+    return null
+  })
 
   return {
-    // Properties
+    // --- State & Getters ---
     isLoading: readonly(isLoading),
-    hasError: hasError,
-    shoppingCart: shoppingCart,
-    productIdsInCart: readonly(productIdsInCart),
-    totalItemsInCart: readonly(totalItemsInCart),
+    error: readonly(error), 
+    totalItemsInCart,
+    productIdsInCart,
+    detailedCart,
+    isItemUpdating,
 
-    // Methods
+    // --- Methods ---
+    fetchCartSummary,
+    fetchCartDetails,
     addToCart,
     removeFromCart,
-    updateItemInCart,
-    isItemUpdating
+    updateItemQuantity
   }
 }

@@ -1,33 +1,44 @@
 <script setup lang="ts">
+//
+// -----------------
+// IMPORTS
+// -----------------
+//
+
+// Libs & Frameworks
 import type { Component } from 'vue'
-import { inject } from 'vue'
-import { useShoppingCart } from '../composables/useShoppingCart'
+import { inject, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+
+// Local Components
+import ShoppingCartItem from '@/modules/shop/components/ShoppingCartItem.vue'
+import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
 import IconBag from '@/modules/shop/components/icons/IconBag.vue'
 import IconGift from '@/modules/shop/components/icons/IconGift.vue'
 import IconMerch from '@/modules/shop/components/icons/IconMerch.vue'
 import IconSmoothie from '@/modules/shop/components/icons/IconSmoothie.vue'
-import type { IconName } from '@/modules/shop/models/types'
-import ShoppingCartItem from '@/modules/shop/components/ShoppingCartItem.vue'
-import type { IApiService } from '@/services/IApiService'
-import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
 
+// Composables, Services & Utilities
+import { useShoppingCart } from '../composables/useShoppingCart'
+import type { IApiService } from '@/services/IApiService'
+import type { IconName } from '@/modules/shop/models/types'
+
+//
+// -----------------
+// DEPENDENCIES & COMPOSABLES
+// -----------------
+//
 const router = useRouter()
 const apiService = inject<IApiService>('gqlApiService')!
 
-const {
-  shoppingCart,
-  totalItemsInCart,
-  isLoading,
-  removeFromCart,
-  updateItemInCart,
-  isItemUpdating
-} = useShoppingCart(apiService)
+const { detailedCart, totalItemsInCart, isLoading, isItemUpdating, fetchCartDetails } =
+  useShoppingCart(apiService)
 
-const handleCheckout = () => {
-  router.push('/shop/checkout')
-}
-
+//
+// -----------------
+// CONSTANTS
+// -----------------
+//
 const iconComponents: Record<IconName | 'default', Component> = {
   bag: IconBag,
   gift: IconGift,
@@ -37,8 +48,34 @@ const iconComponents: Record<IconName | 'default', Component> = {
   unknown: IconBag
 }
 
-const handleUpdateInParent = (payload: { itemId: string; newQuantity: number }) => {
-  updateItemInCart(payload)
+//
+// -----------------
+// LIFECYCLE HOOKS
+// -----------------
+//
+/**
+ * When the cart page is mounted, it fetches the full, detailed cart data
+ * to ensure all totals and item details are accurate.
+ */
+onMounted(() => {
+  fetchCartDetails()
+})
+
+//
+// -----------------
+// METHODS
+// -----------------
+//
+/**
+ * Navigates the user to the final checkout page.
+ */
+const handleCheckout = () => {
+  if (detailedCart.value?.isEmpty) {
+    //TODO: show a user-friendly message or modal
+    alert('Your cart is empty.')
+    return
+  }
+  router.push('/shop/checkout')
 }
 </script>
 
@@ -55,18 +92,16 @@ const handleUpdateInParent = (payload: { itemId: string; newQuantity: number }) 
       <div v-if="isLoading" class="loading-overlay">
         <CrankCircularProgressIndicator text="Loading your basket..." />
       </div>
-      <div v-if="shoppingCart?.isEmpty" class="text-center p-5">
+      <div v-if="detailedCart?.isEmpty" class="text-center p-5">
         <p>Your basket is empty.</p>
       </div>
       <div v-else>
         <ShoppingCartItem
-          v-for="item in shoppingCart?.items"
+          v-for="item in detailedCart?.items"
           :key="item.id"
           :item="item"
           :icon-component="iconComponents[item.variant.product.iconName] || iconComponents.default"
-          :is-updating="isItemUpdating(item.id)"
-          @remove-item="removeFromCart"
-          @update-quantity="handleUpdateInParent"
+          :is-updating="isItemUpdating(item.id).value"
         />
       </div>
     </div>
@@ -77,7 +112,7 @@ const handleUpdateInParent = (payload: { itemId: string; newQuantity: number }) 
         class="total-bar d-flex justify-content-between align-items-center text-white font-weight-bold p-3"
       >
         <span>TOTAL AMOUNT</span>
-        <span>{{ shoppingCart?.formattedTotal }}</span>
+        <span>{{ detailedCart?.formattedTotal }}</span>
       </div>
       <div class="checkout-area p-4">
         <button class="btn btn-checkout btn-block" @click="handleCheckout">LET'S DO THAT!</button>

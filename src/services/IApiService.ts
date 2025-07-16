@@ -469,7 +469,7 @@ export interface IApiService {
    * @returns A promise that resolves to a `ShoppingCart` model instance,
    *          or `null` if the user has no cart or an error occurs.
    */
-  getShoppingCart(site: SiteEnum): Promise<ShoppingCartModel | null>
+  getCartDetails(site: SiteEnum): Promise<ShoppingCartModel | null>
 
   /**
    * Removes all items from the user's shopping cart.
@@ -510,7 +510,8 @@ export interface IApiService {
    * Fetches a lightweight summary of the current user's shopping cart.
    * Designed for efficient display in UI elements like the shopping bag icon, where
    * full totals and detailed calculations are not required. This avoids unnecessary backend overhead.
+   * @param site The site for which to fetch the cart summary.
    * @returns A promise that resolves with a CartSummary object, or `null` if no cart exists or an error occurs.
    */
-  getCartSummary(): Promise<CartSummary | null>
+  getCartSummary(site: SiteEnum): Promise<CartSummary | null>
 }

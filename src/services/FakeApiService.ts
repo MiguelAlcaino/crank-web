@@ -277,7 +277,7 @@ export class FakeApiService implements IApiService {
     throw new Error('Method not implemented.')
   }
 
-  getShoppingCart(site: SiteEnum): Promise<ShoppingCartModel | null> {
+  getCartDetails(site: SiteEnum): Promise<ShoppingCartModel | null> {
     throw new Error('Method not implemented.')
   }
 

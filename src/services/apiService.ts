@@ -1757,7 +1757,7 @@ export class ApiService implements IApiService {
     }
   }
 
-  async getShoppingCart(site: SiteEnum): Promise<ShoppingCartModel | null> {
+  async getCartDetails(site: SiteEnum): Promise<ShoppingCartModel | null> {
     try {
       const { data, errors } = await this.authApiClient.query<
         GetShoppingCartQuery,
@@ -1916,8 +1916,24 @@ export class ApiService implements IApiService {
     }
   }
 
-  public async getCartSummary(): Promise<CartSummary | null> {
-    const { data } = await this.authApiClient.query({ query: GetCartSummaryDocument })
-    return data?.currentUser?.shoppingCart ?? null
+  public async getCartSummary(site: SiteEnum): Promise<CartSummary | null> {
+    try {
+      const { data, errors } = await this.authApiClient.query({
+        query: GetCartSummaryDocument,
+        variables: { site },
+        fetchPolicy: 'network-only'
+      })
+
+      if (errors && errors.length > 0) {
+        throw new ApiError(
+          `GraphQL error fetching cart summary: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      return data?.currentUser?.shoppingCart ?? null
+    } catch (error) {
+      console.error('ApiService.getCartSummary failed:', error)
+      return null
+    }
   }
 }

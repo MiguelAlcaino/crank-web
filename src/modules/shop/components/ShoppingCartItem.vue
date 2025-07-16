@@ -1,27 +1,64 @@
 <script setup lang="ts">
-import type { ShoppingCartItem } from '@/modules/shop/models/ShoppingCartItem'
+//
+// -----------------
+// IMPORTS
+// -----------------
+//
+
+// Libs & Frameworks
+import { inject } from 'vue'
+
+// Local Components
 import QuantityStepper from '@/modules/shop/components/QuantityStepper.vue'
 
+// Composables, Services & Utilities
+import { useShoppingCart } from '../composables/useShoppingCart'
+import type { IApiService } from '@/services/IApiService'
+import type { ShoppingCartItem } from '@/modules/shop/models/ShoppingCartItem'
+
+//
+// -----------------
+// PROPS
+// -----------------
+//
 const props = defineProps<{
   item: ShoppingCartItem
   iconComponent: any
   isUpdating: boolean
 }>()
 
-const emit = defineEmits<{
-  (e: 'removeItem', itemId: string): void
-  (e: 'updateQuantity', payload: { itemId: string; newQuantity: number }): void
-}>()
+//
+// -----------------
+// DEPENDENCIES & COMPOSABLES
+// -----------------
+//
+const apiService = inject<IApiService>('gqlApiService')!
 
+const { removeFromCart, updateItemQuantity } = useShoppingCart(apiService)
+
+//
+// -----------------
+// METHODS (Event Handlers)
+// -----------------
+//
+/**
+ * Handles the click on the 'REMOVE' button.
+ * It directly calls the composable's action.
+ */
 const onRemove = () => {
-  emit('removeItem', props.item.id)
+  removeFromCart(props.item.id)
 }
 
+/**
+ * Handles the quantity change from the QuantityStepper component.
+ * It directly calls the appropriate composable action based on the new quantity.
+ * @param {number} newQuantity - The new quantity from the stepper.
+ */
 const handleQuantityUpdate = (newQuantity: number) => {
   if (newQuantity <= 0) {
-    emit('removeItem', props.item.id)
+    removeFromCart(props.item.id)
   } else {
-    emit('updateQuantity', { itemId: props.item.id, newQuantity })
+    updateItemQuantity({ itemId: props.item.id, newQuantity })
   }
 }
 </script>

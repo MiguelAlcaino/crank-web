@@ -14,7 +14,7 @@ export class VariantBasic {
     this.price = data.price
   }
 
-  public getFormattedPrice(locale: string = 'en-AE', currency: string = 'AED'): string {
-    return formatPrice(this.price, currency, locale)
+  public get formattedPrice(): string {
+    return formatPrice(this.price, 'AED')
   }
 }

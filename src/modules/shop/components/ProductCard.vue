@@ -58,7 +58,7 @@ const handleProductClick = () => {
       <div class="p-2 flex-grow-1 text-center d-flex flex-column justify-content-center">
         <h6 class="font-weight-bold mb-2">{{ product.title }}</h6>
         <p v-if="product.variants.length === 1" class="font-weight-bold mb-2">
-          {{ product.variants[0].getFormattedPrice(null, product.currency) }}
+          {{ product.variants[0].formattedPrice }}
         </p>
         <p class="mb-1 small">{{ product.subtitle }}</p>
         <p class="text-muted small mb-0">
