@@ -19,7 +19,7 @@ import DeviceFingerprint from '@/modules/shop/components/DeviceFingerprint.vue'
 // Composables, Services & Utilities
 import { useCheckout } from '@/modules/shop/composables/useCheckout'
 import { useAuth } from '@/modules/auth/composables/useAuth'
-import { useShoppingCart } from '@/modules/shop/composables/userShoppingCart'
+import { useShoppingCart } from '@/modules/shop/composables/useShoppingCart'
 import { createPayfortFormManager } from '@/modules/shop/services/PayfortFormManager'
 import type { IApiService } from '@/services/IApiService'
 import { luhnCheck } from '@/modules/shop/utils/shop-utils'

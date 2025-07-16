@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
 import { inject } from 'vue'
-import { useShoppingCart } from '../composables/userShoppingCart'
+import { useShoppingCart } from '../composables/useShoppingCart'
 import { useRouter } from 'vue-router'
 import IconBag from '@/modules/shop/components/icons/IconBag.vue'
 import IconGift from '@/modules/shop/components/icons/IconGift.vue'

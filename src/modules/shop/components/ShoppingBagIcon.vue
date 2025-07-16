@@ -10,7 +10,7 @@ import { inject } from 'vue'
 import { useRouter } from 'vue-router'
 
 // Composables, Services & Utilities
-import { useShoppingCart } from '../composables/userShoppingCart'
+import { useShoppingCart } from '../composables/useShoppingCart'
 import type { IApiService } from '@/services/IApiService'
 
 //

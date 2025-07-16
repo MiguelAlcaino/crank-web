@@ -15,7 +15,7 @@ import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIn
 
 // Composables, Services & Utilities
 import { useProducts } from '../composables/useProducts'
-import { useShoppingCart } from '../composables/userShoppingCart'
+import { useShoppingCart } from '../composables/useShoppingCart'
 import type { IApiService } from '@/services/IApiService'
 
 //
