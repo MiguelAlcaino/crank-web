@@ -40,7 +40,7 @@ import applePay from '../assets/images/apple_pay_button_pay.png'
 
 const apiService = inject<IApiService>('gqlApiService')!
 const { error: checkoutError, payfortFormHtml, initiatePayment } = useCheckout(apiService)
-const { totalItemsInCart, detailedCart } = useShoppingCart(apiService)
+const { totalItemsInCart, detailedCart, fetchCartDetails } = useShoppingCart(apiService)
 const { user, isAuthenticated, isLoading: isAuthLoading, fetchCurrentUser } = useAuth(apiService)
 
 //
@@ -283,6 +283,10 @@ const formatCVV = (event: Event) => {
 onMounted(() => {
   // Fetch the current user's data to display in the header.
   fetchCurrentUser()
+
+  // Fetch the full, detailed cart data to ensure totals and items are correct.
+  // This makes the page resilient to users arriving here directly.
+  fetchCartDetails()
 })
 
 //
@@ -337,10 +341,9 @@ const onFingerprintError = (error: Error) => {
         <div class="summary-header">
           <h5 class="text-orange">YOU ARE BUYING:</h5>
           <router-link to="/shop/cart" class="edit-cart-link"> Edit Cart </router-link>
-        </div>     
+        </div>
         <h5>{{ formattedCartItems }}</h5>
-        <!-- TODO: Replace with dynamic price from cart -->
-        <p>AED XXXX</p>
+        <p>{{ detailedCart?.formattedTotal }}</p>
         <span class="item-count">{{ totalItemsInCart }} items</span>
         <details>
           <summary>Do you have a discount code?</summary>
