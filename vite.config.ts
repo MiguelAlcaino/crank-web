@@ -8,7 +8,11 @@ export default ({mode}) => {
   const env = loadEnv(mode, process.cwd(), "");
   return defineConfig({
     define:{
-      "process.env": env
+      "process.env": env,
+      // Vue feature flags
+      __VUE_OPTIONS_API__: true,
+      __VUE_PROD_DEVTOOLS__: false,
+      __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false
     },
     plugins: [vue()],
     build:{
