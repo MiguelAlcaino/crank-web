@@ -26,7 +26,6 @@ import type {
   ResetPasswordForCurrentUserUnion,
   ResetPasswordLinkResultUnion,
   Site,
-  
   SiteSetting,
   UpdateCurrentUserPasswordInput,
   User,

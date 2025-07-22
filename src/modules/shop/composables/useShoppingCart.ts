@@ -2,7 +2,7 @@ import { computed, readonly, ref } from 'vue'
 import { appStore } from '@/stores/appStorage'
 import type { IApiService } from '@/services/IApiService'
 import { ShoppingCart } from '@/modules/shop/models/ShoppingCart'
-import type { ApiError } from '@/services/ApiService'
+import { ApiError } from '@/services/ApiService'
 import type { CartSummary } from '@/modules/shop/interfaces/cart-summary'
 
 //
@@ -11,8 +11,9 @@ import type { CartSummary } from '@/modules/shop/interfaces/cart-summary'
 // -----------------
 //
 const cartState = ref<CartSummary | ShoppingCart | null>(null)
-const isLoading = ref<boolean>(false)
-const error = ref<Error | null>(null)
+const isSummaryLoading = ref<boolean>(false)
+const isDetailsLoading = ref<boolean>(false)
+const error = ref<string | null>(null)
 const updatingItemIds = ref<Set<string>>(new Set())
 const isApplyingDiscount = ref<boolean>(false)
 
@@ -26,8 +27,6 @@ function isItemUpdating(itemId: string) {
 }
 
 export const useShoppingCart = (apiService: IApiService) => {
-  const hasError = ref<boolean>(false)
-
   //
   // -----------------
   // METHODS - FETCHING
@@ -38,15 +37,17 @@ export const useShoppingCart = (apiService: IApiService) => {
    * Fetches the lightweight cart summary. Ideal for global UI elements.
    */
   async function fetchCartSummary() {
-    hasError.value = false
-    isLoading.value = true
+    if (isSummaryLoading.value) return
+    isSummaryLoading.value = true
+    error.value = null
 
     try {
       cartState.value = await apiService.getCartSummary(appStore().site)
-    } catch (error) {
-      hasError.value = true
+    } catch (e: any) {
+      console.error('Failed to fetch cart summary:', e)
+      error.value = e.message || 'Could not load cart information.'
     } finally {
-      isLoading.value = false
+      isSummaryLoading.value = false
     }
   }
 
@@ -54,15 +55,17 @@ export const useShoppingCart = (apiService: IApiService) => {
    * Fetches the full, detailed shopping cart. Ideal for the main cart/checkout pages.
    */
   async function fetchCartDetails() {
-    hasError.value = false
-    isLoading.value = true
+    if (isDetailsLoading.value) return
+    isDetailsLoading.value = true
+    error.value = null
 
     try {
       cartState.value = await apiService.getCartDetails(appStore().site)
-    } catch (error) {
-      hasError.value = true
+    } catch (e: any) {
+      console.error('Failed to fetch cart details:', e)
+      error.value = e.message || 'Could not load detailed cart information.'
     } finally {
-      isLoading.value = false
+      isDetailsLoading.value = false
     }
   }
 
@@ -73,21 +76,29 @@ export const useShoppingCart = (apiService: IApiService) => {
   //
 
   /**
-   * A generic handler for any mutation that returns an updated shopping cart.
-   * It manages the isUpdating and error states automatically.
-   * @param itemId
-   * @param updatePromise The promise returned from an ApiService method.
+   * A generic handler for any mutation that modifies the cart.
+   * It manages the global error state and updates the cartState upon success.
+   * It also tracks loading states for individual items if an itemId is provided.
+   * @param {string | null} itemId - The ID of the item being modified. Can be null for cart-wide operations like 'clear'.
+   * @param {Promise<ShoppingCart | null>} updatePromise - The promise from the ApiService that resolves with the updated cart.
    */
-  const handleCartUpdate = async (itemId: string, updatePromise: Promise<ShoppingCart | null>) => {
-    updatingItemIds.value.add(itemId)
+  const handleCartUpdate = async (
+    itemId: string | null,
+    updatePromise: Promise<ShoppingCart | null>
+  ) => {
+    if (itemId) updatingItemIds.value.add(itemId)
     error.value = null
 
     try {
-      cartState.value = await updatePromise
-    } catch (e) {
-      error.value = e as ApiError | Error
+      const updatedCart = await updatePromise
+
+      cartState.value = updatedCart
+    } catch (e: any) {
+      console.error('Cart update failed:', e)
+      error.value =
+        e instanceof ApiError ? e.message : 'An error occurred while updating your cart.'
     } finally {
-      updatingItemIds.value.delete(itemId)
+      if (itemId) updatingItemIds.value.delete(itemId)
     }
   }
 
@@ -134,9 +145,8 @@ export const useShoppingCart = (apiService: IApiService) => {
 
   async function applyDiscountCode(code: string) {
     isApplyingDiscount.value = true
-    error.value = null // Limpiar errores anteriores
+    error.value = null
     try {
-      // Llama al método del servicio que ya creaste
       cartState.value = await apiService.addDiscountCodeToShoppingCart(appStore().site, code)
     } catch (e: any) {
       error.value = e.message || 'An error occurred.'
@@ -149,13 +159,16 @@ export const useShoppingCart = (apiService: IApiService) => {
     isApplyingDiscount.value = true
     error.value = null
     try {
-      // Necesitarás un método `removeDiscountCode` en tu ApiService
       cartState.value = await apiService.removeDiscountCode(appStore().site)
     } catch (e: any) {
       error.value = e.message || 'An error occurred.'
     } finally {
       isApplyingDiscount.value = false
     }
+  }
+
+  async function clearCart() {
+    await handleCartUpdate(null, apiService.clearShoppingCart(appStore().site))
   }
 
   //
@@ -208,6 +221,12 @@ export const useShoppingCart = (apiService: IApiService) => {
     }
     return null
   })
+
+  /**
+   * @description A computed property that combines all primary loading states of the cart.
+   * Simplifies logic for components that need a general loading indicator.
+   */
+  const isLoading = computed(() => isSummaryLoading.value || isDetailsLoading.value)
 
   return {
     // --- State & Getters ---
