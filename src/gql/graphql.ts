@@ -1722,6 +1722,71 @@ export type GetCurrentUserBasicInfoQuery = {
   currentUser?: { __typename: 'User'; firstName: string; lastName: string; email: string } | null
 }
 
+export type AddDiscountCodeToShoppingCartMutationVariables = Exact<{
+  site: SiteEnum
+  discountCode: Scalars['String']
+}>
+
+export type AddDiscountCodeToShoppingCartMutation = {
+  __typename: 'Mutation'
+  addDiscountCodeToShoppingCart:
+    | { __typename: 'DiscountCodeIsEmpty' }
+    | { __typename: 'DiscountCodeIsInvalid'; code: string }
+    | { __typename: 'ProductNotFound' }
+    | {
+        __typename: 'ShoppingCart'
+        id: string
+        total?: number | null
+        subTotal?: number | null
+        currency: string
+        giftCardCode?: string | null
+        discountCode?: string | null
+        items: Array<{
+          __typename: 'ShoppingCartItem'
+          id: string
+          quantity: number
+          subtotal?: number | null
+          variant: {
+            __typename: 'Variant'
+            id: string
+            name?: string | null
+            position: number
+            price: number
+            product:
+              | {
+                  __typename: 'ClassPackageProduct'
+                  type?: ClassPackageTypeEnum | null
+                  id: string
+                  title: string
+                  subtitle?: string | null
+                  currency: string
+                  alertBeforePurchasing?: {
+                    __typename: 'ProductAlertBeforePurchasing'
+                    title: string
+                    description: string
+                  } | null
+                }
+              | {
+                  __typename: 'GiftCard'
+                  purchaseUrl: string
+                  id: string
+                  title: string
+                  subtitle?: string | null
+                  currency: string
+                  alertBeforePurchasing?: {
+                    __typename: 'ProductAlertBeforePurchasing'
+                    title: string
+                    description: string
+                  } | null
+                }
+          }
+        }>
+      }
+    | { __typename: 'ShoppingCartIsEmpty'; code: string }
+    | { __typename: 'ShoppingCartItemNotFound' }
+    | { __typename: 'ShoppingCartNotFound' }
+}
+
 export type AddItemToShoppingCartMutationVariables = Exact<{
   site: SiteEnum
   input: ItemToShoppingCartInput
@@ -1750,6 +1815,7 @@ export type AddItemToShoppingCartMutation = {
             __typename: 'Variant'
             id: string
             name?: string | null
+            position: number
             price: number
             product:
               | {
@@ -1813,6 +1879,7 @@ export type CalculateTotalForShoppingCartQuery = {
             __typename: 'Variant'
             id: string
             name?: string | null
+            position: number
             price: number
             product:
               | {
@@ -1876,6 +1943,7 @@ export type EmptyShoppingCartMutation = {
             __typename: 'Variant'
             id: string
             name?: string | null
+            position: number
             price: number
             product:
               | {
@@ -2032,6 +2100,7 @@ export type GetShoppingCartQuery = {
           __typename: 'Variant'
           id: string
           name?: string | null
+          position: number
           price: number
           product:
             | {
@@ -2110,6 +2179,7 @@ export type RemoveDiscountCodeMutation = {
             __typename: 'Variant'
             id: string
             name?: string | null
+            position: number
             price: number
             product:
               | {
@@ -2174,6 +2244,7 @@ export type RemoveItemFromShoppingCartMutation = {
             __typename: 'Variant'
             id: string
             name?: string | null
+            position: number
             price: number
             product:
               | {
@@ -2239,6 +2310,7 @@ export type UpdateItemInShoppingCartMutation = {
             __typename: 'Variant'
             id: string
             name?: string | null
+            position: number
             price: number
             product:
               | {
@@ -2374,6 +2446,7 @@ export type ShoppingCartFieldsFragment = {
       __typename: 'Variant'
       id: string
       name?: string | null
+      position: number
       price: number
       product:
         | {
@@ -3236,6 +3309,7 @@ export const ShoppingCartFieldsFragmentDoc = {
                     selections: [
                       { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'position' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'price' } },
                       {
                         kind: 'Field',
@@ -3289,6 +3363,103 @@ export const GetCurrentUserBasicInfoDocument = {
     }
   ]
 } as unknown as DocumentNode<GetCurrentUserBasicInfoQuery, GetCurrentUserBasicInfoQueryVariables>
+export const AddDiscountCodeToShoppingCartDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'AddDiscountCodeToShoppingCart' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'discountCode' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'addDiscountCodeToShoppingCart' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'discountCode' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'discountCode' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCart' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'FragmentSpread',
+                        name: { kind: 'Name', value: 'ShoppingCartFields' }
+                      }
+                    ]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'DiscountCodeIsInvalid' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartIsEmpty' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    ...ShoppingCartFieldsFragmentDoc.definitions
+  ]
+} as unknown as DocumentNode<
+  AddDiscountCodeToShoppingCartMutation,
+  AddDiscountCodeToShoppingCartMutationVariables
+>
 export const AddItemToShoppingCartDocument = {
   kind: 'Document',
   definitions: [

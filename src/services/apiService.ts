@@ -85,7 +85,10 @@ import {
   type User,
   type UserInClassRanking,
   type UserInput,
-  type UserInRankingParams
+  type UserInRankingParams,
+  type AddDiscountCodeToShoppingCartMutation,
+  type AddDiscountCodeToShoppingCartMutationVariables,
+  AddDiscountCodeToShoppingCartDocument
 } from '@/gql/graphql'
 import { ApolloClient, ApolloError } from '@apollo/client/core'
 import { CustomCalendarClasses } from '@/model/CustomCalendarClasses'
@@ -1561,8 +1564,53 @@ export class ApiService implements IApiService {
     throw new Error('Method not implemented.')
   }
 
-  async addDiscountCodeToShoppingCart(discountCode: string): Promise<boolean> {
-    throw new Error('Method not implemented.')
+  async addDiscountCodeToShoppingCart(
+    site: SiteEnum,
+    discountCode: string
+  ): Promise<ShoppingCartModel> {
+    try {
+      const { data, errors } = await this.authApiClient.mutate<
+        AddDiscountCodeToShoppingCartMutation,
+        AddDiscountCodeToShoppingCartMutationVariables
+      >({
+        mutation: AddDiscountCodeToShoppingCartDocument,
+        variables: {
+          site,
+          discountCode
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      if (errors && errors.length > 0) {
+        throw new ApiError(
+          `GraphQL error applying discount code: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      const result = data?.addDiscountCodeToShoppingCart
+
+      if (!result) {
+        throw new Error('Did not receive a valid response from the server.')
+      }
+
+      if (result.__typename === 'ShoppingCart') {
+        return createShoppingCartModel(result as unknown as GqlShoppingCart)
+      } else {
+        const errorCode = (result as { code?: string }).code ?? 'UnknownBusinessError'
+        let errorMessage = 'Invalid discount code.'
+
+        if (result.__typename === 'DiscountCodeIsInvalid') {
+          errorMessage = 'The provided discount code is not valid.'
+        } else if (result.__typename === 'ShoppingCartIsEmpty') {
+          errorMessage = 'Cannot apply a discount code to an empty cart.'
+        }
+
+        throw new ApiError(errorMessage, errorCode)
+      }
+    } catch (error) {
+      console.error('ApiService.addDiscountCodeToShoppingCart failed:', error)
+      throw error
+    }
   }
 
   async calculateTotalForShoppingCart(site: SiteEnum): Promise<ShoppingCartModel> {

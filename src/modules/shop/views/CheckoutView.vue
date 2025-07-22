@@ -15,6 +15,7 @@ import { helpers, maxLength, minLength, required } from '@vuelidate/validators'
 // Local Components
 import BaseModal from '@/modules/shop/components/BaseModal.vue'
 import DeviceFingerprint from '@/modules/shop/components/DeviceFingerprint.vue'
+import DiscountCodeForm from '@/modules/shop/components/DiscountCodeForm.vue'
 
 // Composables, Services & Utilities
 import { useCheckout } from '@/modules/shop/composables/useCheckout'
@@ -338,6 +339,10 @@ const onFingerprintError = (error: Error) => {
         <!-- TODO: Replace with dynamic price from cart -->
         <p>AED XXXX</p>
         <span class="item-count">{{ totalItemsInCart }} items</span>
+        <details>
+          <summary>Do you have a discount code?</summary>
+          <DiscountCodeForm />
+        </details>
       </div>
 
       <div class="container">

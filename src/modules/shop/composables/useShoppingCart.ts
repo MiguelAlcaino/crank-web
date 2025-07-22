@@ -14,6 +14,7 @@ const cartState = ref<CartSummary | ShoppingCart | null>(null)
 const isLoading = ref<boolean>(false)
 const error = ref<Error | null>(null)
 const updatingItemIds = ref<Set<string>>(new Set())
+const isApplyingDiscount = ref<boolean>(false)
 
 /**
  * Checks if a specific shopping cart item is currently being updated.
@@ -131,6 +132,32 @@ export const useShoppingCart = (apiService: IApiService) => {
     )
   }
 
+  async function applyDiscountCode(code: string) {
+    isApplyingDiscount.value = true
+    error.value = null // Limpiar errores anteriores
+    try {
+      // Llama al método del servicio que ya creaste
+      cartState.value = await apiService.addDiscountCodeToShoppingCart(appStore().site, code)
+    } catch (e: any) {
+      error.value = e.message || 'An error occurred.'
+    } finally {
+      isApplyingDiscount.value = false
+    }
+  }
+
+  async function removeDiscountCode() {
+    isApplyingDiscount.value = true
+    error.value = null
+    try {
+      // Necesitarás un método `removeDiscountCode` en tu ApiService
+      cartState.value = await apiService.removeDiscountCode(appStore().site)
+    } catch (e: any) {
+      error.value = e.message || 'An error occurred.'
+    } finally {
+      isApplyingDiscount.value = false
+    }
+  }
+
   //
   // -----------------
   // GETTERS & COMPUTED PROPERTIES
@@ -180,6 +207,7 @@ export const useShoppingCart = (apiService: IApiService) => {
     // --- State & Getters ---
     isLoading: readonly(isLoading),
     error: readonly(error),
+    isApplyingDiscount: readonly(isApplyingDiscount),
     totalItemsInCart,
     productIdsInCart,
     detailedCart,
@@ -190,6 +218,8 @@ export const useShoppingCart = (apiService: IApiService) => {
     fetchCartDetails,
     addToCart,
     removeFromCart,
-    updateItemQuantity
+    updateItemQuantity,
+    applyDiscountCode,
+    removeDiscountCode
   }
 }

@@ -412,11 +412,15 @@ export interface IApiService {
   addGiftCardCodeToShoppingCart(giftCard: string): Promise<string>
 
   /**
-   * Adds a discount code to the shopping cart.
-   * @param discountCode The discount code.
-   * @returns A promise that resolves with a boolean (method not implemented).
+   * Applies a discount code to the user's shopping cart.
+   * On success, it returns the updated ShoppingCartModel instance with recalculated totals.
+   * On failure, it throws an ApiError with a specific code.
+   *
+   * @param site The site where the cart exists.
+   * @param discountCode The discount code string to apply.
+   * @returns A Promise that resolves with the updated ShoppingCartModel instance.
    */
-  addDiscountCodeToShoppingCart(discountCode: string): Promise<boolean>
+  addDiscountCodeToShoppingCart(site: SiteEnum, discountCode: string): Promise<ShoppingCartModel>
 
   /**
    * Recalculates the totals for the user's shopping cart and fetches the updated state.
