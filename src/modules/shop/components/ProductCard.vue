@@ -128,6 +128,7 @@ const handleBuyNow = () => {
           class="btn btn-sm font-weight-bold flex-fill rounded-0"
           style="background-color: #ff8a73; color: white"
           @click="handleBuyNow"
+          :disabled="isAdding"
         >
           BUY
         </button>
