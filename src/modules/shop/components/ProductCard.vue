@@ -20,7 +20,14 @@ import type { IApiService } from '@/services/IApiService'
 // -----------------
 //
 const props = defineProps<{
+  /**
+   * @description The product object to display.
+   */
   product: Product
+  /**
+   * @description A boolean indicating if the product is already in the cart.
+   * Passed from the parent for initial state display.
+   */
   isInCart: boolean
 }>()
 
@@ -32,19 +39,20 @@ const props = defineProps<{
 const router = useRouter()
 const apiService = inject<IApiService>('gqlApiService')!
 
-const { addToCart, isItemUpdating } = useShoppingCart(apiService)
+const { addToCart, isItemUpdating, buyNow, isProcessingBuyNow } = useShoppingCart(apiService)
 
 //
 // -----------------
 // COMPUTED PROPERTIES
 // -----------------
 //
+
 /**
- * A reactive flag that is true if THIS specific product is being added to the cart.
- * Note: We check against the first variant's ID, as that's what we add.
+ * @description A reactive flag that is true if THIS specific product is being added to the cart.
  */
 const isAdding = computed(() => {
   if (props.product.variants.length === 0) return false
+  // We check against the first variant's ID, as that's what `addToCart` uses for the loading state.
   return isItemUpdating(props.product.variants[0].id).value
 })
 
@@ -53,9 +61,20 @@ const isAdding = computed(() => {
  * This encapsulates all disabling logic in one place for clarity and type safety.
  */
 const isAddButtonDisabled = computed(() => {
-  // Combina todas las condiciones en una sola variable reactiva.
-  // Aquí sí podemos mezclar booleanos y refs sin problemas.
-  return props.product.variants.length === 0 || props.isInCart || isAdding.value
+  return (
+    props.product.variants.length === 0 ||
+    props.isInCart ||
+    isAdding.value ||
+    isProcessingBuyNow.value
+  )
+})
+
+/**
+ * @description A computed property to determine if the "BUY" button should be disabled.
+ * It's disabled if any cart operation ("add" or "buy now") is in progress.
+ */
+const isBuyButtonDisabled = computed(() => {
+  return isAdding.value || isProcessingBuyNow.value
 })
 
 //
@@ -68,31 +87,43 @@ const isAddButtonDisabled = computed(() => {
  * It adds the product's first variant to the cart.
  */
 const handleAddClick = () => {
+  // Guard clause to prevent double clicks or adding a product with no variants.
   if (isAdding.value || props.product.variants.length === 0) {
     return
   }
 
   if (props.product.variants.length === 1) {
+    // Call the composable's action directly.
     addToCart(props.product.variants[0].id)
   } else {
+    // TODO: Show a modal or selector for multiple variants.
     console.log('Multiple variants detected. Modal/selector needed.')
   }
 }
 
 /**
- * Handles the click on the "BUY" button.
- * Redirects to an external URL for Gift Cards or adds to cart and navigates for other products.
+ * @description Handles the click on the "BUY" button.
+ * It initiates the buyNow flow from the composable and navigates on success.
  */
-const handleBuyNow = () => {
+const handleBuyNow = async () => {
+  if (isBuyButtonDisabled.value) return
+
+  // Handle special case for Gift Cards that navigate to an external URL.
   if (props.product instanceof GiftCardProduct) {
-    // Abre la URL de compra en una nueva pestaña
     window.open(props.product.purchaseUrl, '_blank')
-  } else {
-    // Para otros productos, añade al carrito (si no está ya) y navega.
-    if (!props.isInCart) {
-      handleAddClick()
+    return
+  }
+
+  // Proceed with the standard "Buy Now" flow for other products.
+  if (props.product.variants.length > 0) {
+    // Call the orchestrated logic in the composable.
+    const success = await buyNow(props.product.variants[0].id)
+
+    // Only navigate to the checkout page if the entire process was successful.
+    if (success) {
+      router.push('/shop/checkout')
     }
-    router.push('/shop/cart')
+    // If it fails (e.g., user cancels the modal), the user stays on the products page.
   }
 }
 </script>
@@ -128,9 +159,13 @@ const handleBuyNow = () => {
           class="btn btn-sm font-weight-bold flex-fill rounded-0"
           style="background-color: #ff8a73; color: white"
           @click="handleBuyNow"
-          :disabled="isAdding"
+          :disabled="isBuyButtonDisabled"
         >
-          BUY
+          <span
+            v-if="isProcessingBuyNow || isAdding"
+            class="spinner-border spinner-border-sm"
+          ></span>
+          <span v-else>BUY</span>
         </button>
       </div>
     </div>

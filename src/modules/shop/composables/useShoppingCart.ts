@@ -4,6 +4,7 @@ import type { IApiService } from '@/services/IApiService'
 import { ShoppingCart } from '@/modules/shop/models/ShoppingCart'
 import { ApiError } from '@/services/ApiService'
 import type { CartSummary } from '@/modules/shop/interfaces/cart-summary'
+import { useModal } from '@/modules/shared/composables/useModal'
 
 //
 // -----------------
@@ -16,6 +17,7 @@ const isDetailsLoading = ref<boolean>(false)
 const error = ref<string | null>(null)
 const updatingItemIds = ref<Set<string>>(new Set())
 const isApplyingDiscount = ref<boolean>(false)
+const isProcessingBuyNow = ref(false)
 
 /**
  * Checks if a specific shopping cart item is currently being updated.
@@ -27,6 +29,7 @@ function isItemUpdating(itemId: string) {
 }
 
 export const useShoppingCart = (apiService: IApiService) => {
+  const { showConfirmation } = useModal()
   //
   // -----------------
   // METHODS - FETCHING
@@ -171,6 +174,78 @@ export const useShoppingCart = (apiService: IApiService) => {
     await handleCartUpdate(null, apiService.clearShoppingCart(appStore().site))
   }
 
+  /**
+   * Orchestrates the "Buy Now" flow, which clears the existing cart
+   * to add a single new item, as per backend requirements.
+   *
+   * 1. Checks if the action is necessary (e.g., cart is already correct).
+   * 2. Prompts the user for confirmation using a promise-based modal if the cart is not empty.
+   * 3. If confirmed, clears the cart, then adds the new single item.
+   * 4. Returns a success flag for the calling component to act upon (e.g., navigate).
+   *
+   * @param {string} sellableProductId - The ID of the product to buy now.
+   * @returns {Promise<boolean>} - True if the process completed successfully, false if the user cancelled or an error occurred.
+   */
+  async function buyNow(sellableProductId: string): Promise<boolean> {
+    // Edge Case: Check if the product is already the only item in the cart.
+    const isAlreadyTheOnlyItem =
+      cartState.value?.items.length === 1 &&
+      cartState.value.items[0].variant.id === sellableProductId
+
+    // If the cart is already in the desired state, we can consider it a success and allow navigation.
+    if (isAlreadyTheOnlyItem) {
+      return true
+    }
+
+    const isCartEmpty = !cartState.value || cartState.value.items.length === 0
+
+    // Step 1: Get user confirmation if the cart is not empty.
+    if (!isCartEmpty) {
+      try {
+        // `await` will pause execution here until the user interacts with the modal.
+        await showConfirmation(
+          'Confirm Purchase', // Title
+          'To "Buy Now", your existing cart will be cleared. Are you sure you want to remove all other items and proceed with this one?' // Message
+        )
+        // If the code reaches here, it means the promise resolved (user clicked "OK").
+      } catch (e) {
+        // If the promise is rejected (user clicked "Cancel"), the await throws an error.
+        // We catch it, log it for clarity, and stop the entire process.
+        console.log('"Buy Now" process was cancelled by the user.')
+        return false
+      }
+    }
+
+    // Step 2: Perform the cart operations.
+    isProcessingBuyNow.value = true
+    error.value = null
+
+    try {
+      // Action 1: Clear the cart if it wasn't empty.
+      if (!isCartEmpty) {
+        await clearCart()
+      }
+
+      // Action 2: Add the new item to the now-empty cart.
+      await addToCart(sellableProductId)
+
+      // After the operations, check if any of them set an error in our state.
+      if (error.value) {
+        // If so, throw an error to be caught by our own catch block.
+        throw new Error(error.value)
+      }
+
+      return true // Success!
+    } catch (e: any) {
+      // The `error` ref should already be set by the failing internal method.
+      console.error('The "Buy Now" process failed during API calls:', e)
+      return false // Failure.
+    } finally {
+      // Always reset the processing state, regardless of outcome.
+      isProcessingBuyNow.value = false
+    }
+  }
+
   //
   // -----------------
   // GETTERS & COMPUTED PROPERTIES
@@ -233,6 +308,7 @@ export const useShoppingCart = (apiService: IApiService) => {
     isLoading: readonly(isLoading),
     error: readonly(error),
     isApplyingDiscount: readonly(isApplyingDiscount),
+    isProcessingBuyNow: readonly(isProcessingBuyNow),
     totalItemsInCart,
     productIdsInCart,
     detailedCart,
@@ -245,6 +321,8 @@ export const useShoppingCart = (apiService: IApiService) => {
     removeFromCart,
     updateItemQuantity,
     applyDiscountCode,
-    removeDiscountCode
+    removeDiscountCode,
+    buyNow,
+    clearCart
   }
 }
