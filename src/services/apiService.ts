@@ -1907,7 +1907,8 @@ export class ApiService implements IApiService {
   public async getMyselfBasic(): Promise<BasicUser | null> {
     try {
       const queryResult = await this.authApiClient.query({
-        query: GetCurrentUserBasicInfoDocument
+        query: GetCurrentUserBasicInfoDocument,
+        fetchPolicy: 'network-only'
       })
       return queryResult.data.currentUser ?? null
     } catch (error) {

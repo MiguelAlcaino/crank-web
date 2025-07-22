@@ -27,7 +27,6 @@ function isItemUpdating(itemId: string) {
 export const useShoppingCart = (apiService: IApiService) => {
   const hasError = ref<boolean>(false)
 
-
   //
   // -----------------
   // METHODS - FETCHING
@@ -180,7 +179,7 @@ export const useShoppingCart = (apiService: IApiService) => {
   return {
     // --- State & Getters ---
     isLoading: readonly(isLoading),
-    error: readonly(error), 
+    error: readonly(error),
     totalItemsInCart,
     productIdsInCart,
     detailedCart,

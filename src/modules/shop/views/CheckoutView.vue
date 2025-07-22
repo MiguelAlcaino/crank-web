@@ -39,7 +39,7 @@ import applePay from '../assets/images/apple_pay_button_pay.png'
 
 const apiService = inject<IApiService>('gqlApiService')!
 const { error: checkoutError, payfortFormHtml, initiatePayment } = useCheckout(apiService)
-const { totalItemsInCart, shoppingCart } = useShoppingCart(apiService)
+const { totalItemsInCart, detailedCart } = useShoppingCart(apiService)
 const { user, isAuthenticated, isLoading: isAuthLoading, fetchCurrentUser } = useAuth(apiService)
 
 //
@@ -160,8 +160,8 @@ const isFingerprintReady = computed(() => !!fingerprintSessionId.value && !finge
  * @returns {string} A formatted string of items, e.g., "1 T-SHIRT / 2 SOCKS".
  */
 const formattedCartItems = computed(() => {
-  if (!shoppingCart.value) return ''
-  return shoppingCart.value.items
+  if (!detailedCart.value) return ''
+  return detailedCart.value.items
     .map(
       (item) =>
         `${item.quantity} ${
