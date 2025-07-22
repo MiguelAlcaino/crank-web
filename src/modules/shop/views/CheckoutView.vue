@@ -334,7 +334,10 @@ const onFingerprintError = (error: Error) => {
 
       <!-- Purchase Summary -->
       <div class="purchase-summary">
-        <h5 class="text-orange">YOU ARE BUYING:</h5>
+        <div class="summary-header">
+          <h5 class="text-orange">YOU ARE BUYING:</h5>
+          <router-link to="/shop/cart" class="edit-cart-link"> Edit Cart </router-link>
+        </div>     
         <h5>{{ formattedCartItems }}</h5>
         <!-- TODO: Replace with dynamic price from cart -->
         <p>AED XXXX</p>
@@ -737,6 +740,28 @@ select.form-control {
 
 /* Utility */
 .text-orange {
+  color: #ff8c69;
+}
+
+.summary-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.summary-header .text-orange {
+  margin: 0 auto;
+}
+
+.edit-cart-link {
+  color: #fff;
+  text-decoration: underline;
+  font-size: 0.9rem;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+.edit-cart-link:hover {
   color: #ff8c69;
 }
 
