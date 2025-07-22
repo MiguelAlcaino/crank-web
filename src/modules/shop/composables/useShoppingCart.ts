@@ -2,7 +2,7 @@ import { computed, readonly, ref } from 'vue'
 import { appStore } from '@/stores/appStorage'
 import type { IApiService } from '@/services/IApiService'
 import { ShoppingCart } from '@/modules/shop/models/ShoppingCart'
-import { ApiError } from '@/services/ApiService'
+import type { ApiError } from '@/services/ApiService'
 import type { CartSummary } from '@/modules/shop/interfaces/cart-summary'
 
 //
@@ -189,7 +189,13 @@ export const useShoppingCart = (apiService: IApiService) => {
       return cartState.value.itemCount
     }
 
-    return cartState.value.items.reduce((total, item) => total + item.quantity, 0)
+    const items = cartState.value.items as Array<{ quantity: number }>
+
+    if (items && Array.isArray(items)) {
+      return items.reduce((total: number, item) => total + item.quantity, 0)
+    }
+
+    return 0
   })
 
   /**

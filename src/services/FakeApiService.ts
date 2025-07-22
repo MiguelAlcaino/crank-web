@@ -26,7 +26,7 @@ import type {
   ResetPasswordForCurrentUserUnion,
   ResetPasswordLinkResultUnion,
   Site,
-  SiteEnum,
+  
   SiteSetting,
   UpdateCurrentUserPasswordInput,
   User,
@@ -41,8 +41,17 @@ import type { IApiService } from './IApiService'
 import type { Product } from '@/modules/shop/models/Product'
 import type { ShoppingCart as ShoppingCartModel } from '@/modules/shop/models/ShoppingCart'
 import type { AppProductType } from '@/modules/shop/models/types'
+import type { SiteEnum } from '@/modules/shared/interfaces/site.enum'
+import type { BasicUser } from '@/modules/auth/types'
+import type { CartSummary } from '@/modules/shop/interfaces/cart-summary'
 
 export class FakeApiService implements IApiService {
+  getMyselfBasic(): Promise<BasicUser | null> {
+    throw new Error('Method not implemented.')
+  }
+  getCartSummary(site: SiteEnum): Promise<CartSummary | null> {
+    throw new Error('Method not implemented.')
+  }
   getSiteSettings(site: SiteEnum): Promise<SiteSetting | null> {
     throw new Error('Method not implemented.')
   }
@@ -253,7 +262,7 @@ export class FakeApiService implements IApiService {
     throw new Error('Method not implemented.')
   }
 
-  addDiscountCodeToShoppingCart(discountCode: string): Promise<boolean> {
+  addDiscountCodeToShoppingCart(site: SiteEnum, discountCode: string): Promise<ShoppingCartModel> {
     throw new Error('Method not implemented.')
   }
 
