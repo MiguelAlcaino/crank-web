@@ -125,7 +125,7 @@ onMounted(() => {
           ></CrankCircularProgressIndicator>
         </div>
 
-        <div v-else-if="hasError" class="text-centerr">
+        <div v-else-if="hasError" class="text-center">
           <p>Sorry, we couldn't load the products. Please try again later.</p>
         </div>
 
