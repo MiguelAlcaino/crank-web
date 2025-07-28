@@ -151,9 +151,9 @@ const handleBuyNow = async () => {
             <span class="sr-only">Adding...</span>
           </div>
 
-          <span v-else-if="isInCart">ADDED</span>
+          <span v-else-if="isInCart" class="button-text">ADDED</span>
 
-          <span v-else>{{ product.buttonText || 'ADD' }}</span>
+          <span v-else class="button-text">{{ product.buttonText || 'ADD' }}</span>
         </button>
         <button
           class="btn btn-sm font-weight-bold flex-fill rounded-0"
@@ -161,11 +161,7 @@ const handleBuyNow = async () => {
           @click="handleBuyNow"
           :disabled="isBuyButtonDisabled"
         >
-          <span
-            v-if="isProcessingBuyNow || isAdding"
-            class="spinner-border spinner-border-sm"
-          ></span>
-          <span v-else>BUY</span>
+          <span class="button-text">BUY</span>
         </button>
       </div>
     </div>
@@ -179,5 +175,11 @@ const handleBuyNow = async () => {
   background-color: #6c757d;
   opacity: 0.65;
   cursor: not-allowed;
+}
+
+.button-text {
+  font-family: 'BigJohn', sans-serif;
+  font-size: 14px;
+  letter-spacing: 0.5px;
 }
 </style>
