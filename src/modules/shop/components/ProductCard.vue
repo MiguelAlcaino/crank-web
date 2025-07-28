@@ -129,7 +129,10 @@ const handleBuyNow = async () => {
 </script>
 
 <template>
-  <div class="card border-0 rounded-0 mb-2" style="background-color: #f4f4f4; height: 130px">
+  <div
+    class="card border-0 rounded-0 mb-2 product-card"
+    style="background-color: #f4f4f4; height: 130px"
+  >
     <div class="d-flex h-100">
       <div class="p-2 flex-grow-1 text-center d-flex flex-column justify-content-center">
         <h6 class="font-weight-bold mb-2">{{ product.title }}</h6>
@@ -181,5 +184,14 @@ const handleBuyNow = async () => {
   font-family: 'BigJohn', sans-serif;
   font-size: 14px;
   letter-spacing: 0.5px;
+}
+
+.product-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 </style>
