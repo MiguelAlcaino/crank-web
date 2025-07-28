@@ -119,7 +119,13 @@ const handleCheckout = () => {
         <span>{{ detailedCart?.formattedTotal }}</span>
       </div>
       <div class="checkout-area p-4">
-        <button class="btn btn-checkout btn-block" @click="handleCheckout">LET'S DO THAT!</button>
+        <button
+          class="btn btn-checkout btn-block"
+          @click="handleCheckout"
+          :disabled="(detailedCart?.isEmpty ?? true) || isLoading"
+        >
+          LET'S DO THAT!
+        </button>
       </div>
     </div>
   </div>

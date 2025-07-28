@@ -42,7 +42,7 @@ const {
 const {
   // State
   productIdsInCart,
-  // Methods  
+  // Methods
   fetchCartSummary
 } = useShoppingCart(apiService)
 
@@ -138,10 +138,7 @@ onMounted(() => {
               v-for="product in group.products"
               :key="product.id"
             >
-              <ProductCard
-                :product="product"
-                :is-in-cart="productIdsInCart.has(product.id)"           
-              >
+              <ProductCard :product="product" :is-in-cart="productIdsInCart.has(product.id)">
               </ProductCard>
             </div>
           </div>
@@ -154,10 +151,7 @@ onMounted(() => {
             v-for="giftCard in giftCards"
             :key="giftCard.id"
           >
-            <ProductCard
-              :product="giftCard"
-              :is-in-cart="productIdsInCart.has(giftCard.id)"             
-            >
+            <ProductCard :product="giftCard" :is-in-cart="productIdsInCart.has(giftCard.id)">
             </ProductCard>
           </div>
         </div>
