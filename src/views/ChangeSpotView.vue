@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { inject, onMounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 import dayjs from 'dayjs'
 
@@ -24,6 +24,7 @@ import { SUCCESS_CHANGE_SPOT } from '@/utils/successMessages'
 import { PositionIconEnum } from '@/modules/shared/interfaces/position-icon.enum'
 
 const route = useRoute()
+const router = useRouter()
 
 const classId = ref<string>('')
 const newSpotNumber = ref<number | null>(null)
@@ -155,7 +156,7 @@ async function editCurrentUserEnrollment() {
     <div class="col-md-6 col-sm-4">
       <div class="text-right">
         <div class="form-group form-material">
-          <button type="button" class="btn btn-link" @click="$router.go(-1)">
+          <button type="button" class="btn btn-link" @click="router.go(-1)">
             <font-awesome-icon icon="fa-solid fa-left-long" />&nbsp;Back to Bookings
           </button>
         </div>

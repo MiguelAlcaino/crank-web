@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, inject, reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { helpers, minLength, required, sameAs } from '@vuelidate/validators'
 import useVuelidate from '@vuelidate/core'
 
@@ -11,6 +12,7 @@ import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 import { SUCCESS_RESET_PASSWORD } from '@/utils/successMessages'
 
 const apiService = inject<ApiService>('gqlApiService')!
+const router = useRouter()
 const isSaving = ref<boolean>(false)
 
 const successModalIsVisible = ref<boolean>(false)
@@ -236,7 +238,7 @@ const submitForm = async () => {
     title="SUCCESS"
     :message="SUCCESS_RESET_PASSWORD"
     :ok-loading="false"
-    @on-ok="$router.go(-1)"
+    @on-ok="router.go(-1)"
     :cancel-text="null"
     :closable="true"
   >
