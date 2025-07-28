@@ -42,8 +42,7 @@ const {
 const {
   // State
   productIdsInCart,
-  // Methods
-  addToCart,
+  // Methods  
   fetchCartSummary
 } = useShoppingCart(apiService)
 
@@ -141,8 +140,7 @@ onMounted(() => {
             >
               <ProductCard
                 :product="product"
-                :is-in-cart="productIdsInCart.has(product.id)"
-                @add-to-cart="addToCart"
+                :is-in-cart="productIdsInCart.has(product.id)"           
               >
               </ProductCard>
             </div>
@@ -158,8 +156,7 @@ onMounted(() => {
           >
             <ProductCard
               :product="giftCard"
-              :is-in-cart="productIdsInCart.has(giftCard.id)"
-              @add-to-cart="addToCart"
+              :is-in-cart="productIdsInCart.has(giftCard.id)"             
             >
             </ProductCard>
           </div>
