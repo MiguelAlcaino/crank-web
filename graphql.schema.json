@@ -3117,6 +3117,40 @@
         "possibleTypes": null
       },
       {
+        "kind": "OBJECT",
+        "name": "DontNeedMoreGiftCards",
+        "description": null,
+        "isOneOf": null,
+        "fields": [
+          {
+            "name": "code",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "Error",
+            "ofType": null
+          }
+        ],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
         "kind": "INPUT_OBJECT",
         "name": "EditClassInput",
         "description": null,
@@ -4009,12 +4043,27 @@
           },
           {
             "kind": "OBJECT",
+            "name": "DontNeedMoreGiftCards",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
             "name": "EmailAlreadyUsedError",
             "ofType": null
           },
           {
             "kind": "OBJECT",
             "name": "EnrollmentNotFoundError",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "GiftCardAlreadyRegisteredForCurrentShoppingCart",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "GiftCardIsNotUsable",
             "ofType": null
           },
           {
@@ -4453,6 +4502,74 @@
           {
             "kind": "INTERFACE",
             "name": "SellableProductInterface",
+            "ofType": null
+          }
+        ],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "GiftCardAlreadyRegisteredForCurrentShoppingCart",
+        "description": null,
+        "isOneOf": null,
+        "fields": [
+          {
+            "name": "code",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "Error",
+            "ofType": null
+          }
+        ],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "GiftCardIsNotUsable",
+        "description": null,
+        "isOneOf": null,
+        "fields": [
+          {
+            "name": "code",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "Error",
             "ofType": null
           }
         ],
@@ -5126,14 +5243,30 @@
                 "defaultValue": null,
                 "isDeprecated": false,
                 "deprecationReason": null
+              },
+              {
+                "name": "site",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "ENUM",
+                    "name": "SiteEnum",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
               }
             ],
             "type": {
               "kind": "NON_NULL",
               "name": null,
               "ofType": {
-                "kind": "SCALAR",
-                "name": "Boolean",
+                "kind": "UNION",
+                "name": "ShoppingCartResultUnion",
                 "ofType": null
               }
             },
@@ -10581,13 +10714,17 @@
             "deprecationReason": null
           },
           {
-            "name": "giftCardCode",
+            "name": "giftCardsCodes",
             "description": null,
             "args": [],
             "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -10641,16 +10778,16 @@
               "name": "Float",
               "ofType": null
             },
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "Use total instead"
           },
           {
             "name": "total",
             "description": null,
             "args": [],
             "type": {
-              "kind": "SCALAR",
-              "name": "Float",
+              "kind": "UNION",
+              "name": "ShoppingCartTotalResultUnion",
               "ofType": null
             },
             "isDeprecated": false,
@@ -10858,6 +10995,21 @@
           },
           {
             "kind": "OBJECT",
+            "name": "DontNeedMoreGiftCards",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "GiftCardAlreadyRegisteredForCurrentShoppingCart",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "GiftCardIsNotUsable",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
             "name": "ProductNotFound",
             "ofType": null
           },
@@ -10879,6 +11031,88 @@
           {
             "kind": "OBJECT",
             "name": "ShoppingCartNotFound",
+            "ofType": null
+          }
+        ]
+      },
+      {
+        "kind": "OBJECT",
+        "name": "ShoppingCartTotal",
+        "description": null,
+        "isOneOf": null,
+        "fields": [
+          {
+            "name": "amountToPay",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "giftCardAmount",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "subTotal",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "total",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "UNION",
+        "name": "ShoppingCartTotalResultUnion",
+        "description": null,
+        "isOneOf": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "GiftCardIsNotUsable",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "ShoppingCartTotal",
             "ofType": null
           }
         ]

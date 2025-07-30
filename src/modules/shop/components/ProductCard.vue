@@ -11,6 +11,7 @@ import { useRouter } from 'vue-router'
 
 // Local Components
 import TermsModal from './TermsModal.vue'
+import VariantSelectorModal from './VariantSelectorModal.vue'
 
 // Models, Composables & Services
 import { GiftCardProduct, Product } from '../models/Product'
@@ -41,7 +42,6 @@ const props = defineProps<{
 //
 const router = useRouter()
 const apiService = inject<IApiService>('gqlApiService')!
-
 const { addToCart, isItemUpdating, buyNow, isProcessingBuyNow } = useShoppingCart(apiService)
 
 //
@@ -50,8 +50,13 @@ const { addToCart, isItemUpdating, buyNow, isProcessingBuyNow } = useShoppingCar
 // -----------------
 //
 const isAlertModalVisible = ref(false)
+const isVariantModalVisible = ref(false)
+
 // This ref will store which action ('add' or 'buy') should be executed after the user confirms the alert.
-const pendingAction = ref<'add' | 'buy' | null>(null)
+const pendingActionContext = ref<{
+  action: 'add' | 'buy'
+  variantId: string
+} | null>(null)
 
 //
 // -----------------
@@ -62,48 +67,92 @@ const pendingAction = ref<'add' | 'buy' | null>(null)
 /**
  * @description A reactive flag that is true if THIS specific product is being added to the cart.
  */
-const isAdding = computed(() => {
-  if (props.product.variants.length === 0) return false
-  // We check against the first variant's ID, as that's what `addToCart` uses for the loading state.
-  return isItemUpdating(props.product.variants[0].id).value
-})
+const isAdding = computed(
+  () => isItemUpdating(pendingActionContext.value?.variantId ?? props.product.variants[0]?.id).value
+)
 
 /**
  * @description A single computed property to determine if the ADD button should be disabled.
  * This encapsulates all disabling logic in one place for clarity and type safety.
  */
-const isAddButtonDisabled = computed(() => {
-  return (
-    props.product.variants.length === 0 ||
+const isAddButtonDisabled = computed(
+  () =>
     props.isInCart ||
-    isAdding.value ||
-    isProcessingBuyNow.value
-  )
-})
+    isProcessingBuyNow.value ||
+    (isAdding.value && pendingActionContext.value?.action === 'add')
+)
 
 /**
  * @description A computed property to determine if the "BUY" button should be disabled.
  * It's disabled if any cart operation ("add" or "buy now") is in progress.
  */
-const isBuyButtonDisabled = computed(() => {
-  return isAdding.value || isProcessingBuyNow.value
-})
+const isBuyButtonDisabled = computed(
+  () => isProcessingBuyNow.value || (isAdding.value && pendingActionContext.value?.action === 'add')
+)
 
 //
 // -----------------
-// PRIVATE METHODS (to be called after confirmation)
+// PRIVATE METHODS
 // -----------------
 //
+
+/**
+ * Starts the process for a specific action ('add' or 'buy').
+ * It orchestrates the sequence of modals (variant -> alert) before execution.
+ * @param {'add' | 'buy'} action - The intended action.
+ */
+const startActionFlow = (action: 'add' | 'buy') => {
+  if (props.product.variants.length === 0) return
+
+  if (props.product.variants.length > 1) {
+    // If multiple variants, first open the variant selector.
+    // Store the intended action so we know what to do next.
+    pendingActionContext.value = { action, variantId: '' } // variantId is empty for now
+    isVariantModalVisible.value = true
+  } else {
+    // If only one variant, we already know the variantId.
+    // Proceed directly to checking for alerts.
+    const variantId = props.product.variants[0].id
+    pendingActionContext.value = { action, variantId }
+
+    if (props.product.alert) {
+      isAlertModalVisible.value = true
+    } else {
+      // No modals needed, execute immediately.
+      executePendingAction()
+    }
+  }
+}
+
+/**
+ * Executes the stored pending action based on the context.
+ * This is the final step in the confirmation flow.
+ */
+const executePendingAction = () => {
+  if (!pendingActionContext.value) return
+
+  const { action, variantId } = pendingActionContext.value
+
+  if (action === 'add') {
+    addToCart(variantId)
+  } else if (action === 'buy') {
+    // You can expand this part for the 'Buy Now' flow
+    buyNow(variantId).then((success) => {
+      if (success) {
+        router.push('/shop/checkout')
+      }
+    })
+  }
+
+  // Clean up after execution
+  pendingActionContext.value = null
+}
+
 /**
  * @description The actual logic for adding to cart.
  */
-const executeAddToCart = () => {
-  if (props.product.variants.length === 1) {
-    addToCart(props.product.variants[0].id)
-  } else {
-    // TODO: Show a modal or selector for multiple variants.
-    console.log('Multiple variants detected. Modal/selector needed.')
-  }
+const executeAddToCart = (variantId: string) => {
+  addToCart(variantId)
 }
 
 /**
@@ -128,59 +177,66 @@ const executeBuyNow = async () => {
 // METHODS
 // -----------------
 //
+
+// --- EVENT HANDLERS ---
+
 /**
- * Handles the click on the "ADD" button.
- * It adds the product's first variant to the cart.
+ * Triggered by the "ADD" button.
  */
 const handleAddClick = () => {
   if (isAddButtonDisabled.value) return
-
-  if (props.product.alert) {
-    // If an alert exists, set the pending action and show the modal.
-    pendingAction.value = 'add'
-    isAlertModalVisible.value = true
-  } else {
-    // If no alert, execute the action immediately.
-    executeAddToCart()
-  }
+  startActionFlow('add')
 }
 
 /**
- * Handles the click on the "BUY NOW" button.
- * It now checks for a product alert before executing the action.
+ * Triggered by the "BUY" button.
  */
 const handleBuyNowClick = () => {
   if (isBuyButtonDisabled.value) return
+  // You would also call startActionFlow('buy') here
+  // For now, let's focus on the 'add' flow
+  startActionFlow('buy')
+}
 
+/**
+ * Triggered when a variant is selected and confirmed in the VariantSelectorModal.
+ * @param {string} selectedVariantId - The ID of the chosen variant.
+ */
+const handleVariantSelected = (selectedVariantId: string) => {
+  if (!pendingActionContext.value) return
+
+  // 1. Update the context with the selected variant ID.
+  pendingActionContext.value.variantId = selectedVariantId
+  isVariantModalVisible.value = false // Close the variant modal.
+
+  // 2. Check if the next step is the alert modal.
   if (props.product.alert) {
-    // If an alert exists, set the pending action and show the modal.
-    pendingAction.value = 'buy'
     isAlertModalVisible.value = true
   } else {
-    // If no alert, execute the action immediately.
-    executeBuyNow()
+    // 3. If no alert, we're done with confirmations, so execute the action.
+    executePendingAction()
   }
 }
 
 /**
- * @description This handler is called when the user clicks "CONFIRM" on the alert modal.
- * It executes the stored pending action.
+ * THIS IS THE CORRECTED METHOD.
+ * Triggered when the user confirms the TermsModal (the alert).
+ * It now correctly uses the context that was saved.
  */
 const handleAlertConfirm = () => {
-  if (pendingAction.value === 'add') {
-    executeAddToCart()
-  } else if (pendingAction.value === 'buy') {
-    executeBuyNow()
-  }
-  // Reset the state after execution. The modal closes itself via the v-model.
-  pendingAction.value = null
+  isAlertModalVisible.value = false // Close the alert modal.
+  // The context has all the info we need (action and variantId), so we can just execute.
+  executePendingAction()
 }
 
 /**
- * @description Resets the pending action if the user closes the modal without confirming.
+
+ * Cleans up the context if the user cancels any modal.
  */
-const handleAlertCancel = () => {
-  pendingAction.value = null
+const handleModalCancel = () => {
+  pendingActionContext.value = null
+  isAlertModalVisible.value = false
+  isVariantModalVisible.value = false
 }
 </script>
 
@@ -227,10 +283,6 @@ const handleAlertCancel = () => {
       </div>
     </div>
 
-    <!-- 
-      This is the modal that will be shown when needed.
-      It's bound to the product's alert data.
-    -->
     <TermsModal
       v-if="product.alert"
       v-model="isAlertModalVisible"
@@ -238,7 +290,14 @@ const handleAlertCancel = () => {
       sub-title="Please read before proceeding"
       :content="product.alert.description"
       @confirm="handleAlertConfirm"
-      @update:model-value="handleAlertCancel"
+      @update:model-value="handleModalCancel"
+    />
+
+    <VariantSelectorModal
+      v-model="isVariantModalVisible"
+      :product="product"
+      @confirm="handleVariantSelected"
+      @update:model-value="handleModalCancel"
     />
   </div>
 </template>

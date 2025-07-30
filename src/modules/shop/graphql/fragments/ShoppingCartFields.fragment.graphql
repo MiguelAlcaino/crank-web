@@ -2,11 +2,21 @@
 # This avoids repetition if other queries/mutations also return a cart.
 fragment ShoppingCartFields on ShoppingCart {
   id
-  total
-  subTotal
   currency
-  giftCardCode
   discountCode
+  giftCardsCodes
+  total {
+    __typename
+    ... on ShoppingCartTotal {
+      total
+      subTotal
+      giftCardAmount
+      amountToPay
+    }
+    ... on GiftCardIsNotUsable {
+      code
+    }
+  }
   items {
     id
     quantity

@@ -378,6 +378,11 @@ export type DistanceRanking = {
   rankingPositions: Array<DistanceChallengeRankingPosition>
 }
 
+export type DontNeedMoreGiftCards = Error & {
+  __typename?: 'DontNeedMoreGiftCards'
+  code: Scalars['String']
+}
+
 export type EditClassInput = {
   classId: Scalars['ID']
   onHoldSpots?: InputMaybe<Scalars['Int']>
@@ -526,6 +531,16 @@ export type GiftCard = SellableProductInterface & {
   variants: Array<Variant>
 }
 
+export type GiftCardAlreadyRegisteredForCurrentShoppingCart = Error & {
+  __typename?: 'GiftCardAlreadyRegisteredForCurrentShoppingCart'
+  code: Scalars['String']
+}
+
+export type GiftCardIsNotUsable = Error & {
+  __typename?: 'GiftCardIsNotUsable'
+  code: Scalars['String']
+}
+
 export type IconPosition = ClassPositionInterface & {
   __typename?: 'IconPosition'
   icon: PositionIconEnum
@@ -597,7 +612,7 @@ export type Mutation = {
   /** Allows to add a discount code code to a shopping cart for current user */
   addDiscountCodeToShoppingCart: ShoppingCartResultUnion
   /** Allows to add a giftcard code to a shopping cart for current user */
-  addGiftCardCodeToShoppingCart: Scalars['Boolean']
+  addGiftCardCodeToShoppingCart: ShoppingCartResultUnion
   /** Allows to add item to shopping cart */
   addItemToShoppingCart: ShoppingCartResultUnion
   /** Books the current user in a class */
@@ -721,6 +736,7 @@ export type MutationAddDiscountCodeToShoppingCartArgs = {
 
 export type MutationAddGiftCardCodeToShoppingCartArgs = {
   giftcard: Scalars['ID']
+  site: SiteEnum
 }
 
 export type MutationAddItemToShoppingCartArgs = {
@@ -1425,11 +1441,12 @@ export type ShoppingCart = {
   __typename?: 'ShoppingCart'
   currency: Scalars['String']
   discountCode?: Maybe<Scalars['String']>
-  giftCardCode?: Maybe<Scalars['String']>
+  giftCardsCodes?: Maybe<Array<Maybe<Scalars['String']>>>
   id: Scalars['ID']
   items: Array<ShoppingCartItem>
+  /** @deprecated Use total instead */
   subTotal?: Maybe<Scalars['Float']>
-  total?: Maybe<Scalars['Float']>
+  total?: Maybe<ShoppingCartTotalResultUnion>
 }
 
 export type ShoppingCartIsEmpty = Error & {
@@ -1458,11 +1475,24 @@ export type ShoppingCartNotFound = Error & {
 export type ShoppingCartResultUnion =
   | DiscountCodeIsEmpty
   | DiscountCodeIsInvalid
+  | DontNeedMoreGiftCards
+  | GiftCardAlreadyRegisteredForCurrentShoppingCart
+  | GiftCardIsNotUsable
   | ProductNotFound
   | ShoppingCart
   | ShoppingCartIsEmpty
   | ShoppingCartItemNotFound
   | ShoppingCartNotFound
+
+export type ShoppingCartTotal = {
+  __typename?: 'ShoppingCartTotal'
+  amountToPay?: Maybe<Scalars['Float']>
+  giftCardAmount?: Maybe<Scalars['Float']>
+  subTotal?: Maybe<Scalars['Float']>
+  total?: Maybe<Scalars['Float']>
+}
+
+export type ShoppingCartTotalResultUnion = GiftCardIsNotUsable | ShoppingCartTotal
 
 export type SimpleSiteUser = {
   __typename?: 'SimpleSiteUser'
@@ -1732,15 +1762,26 @@ export type AddDiscountCodeToShoppingCartMutation = {
   addDiscountCodeToShoppingCart:
     | { __typename: 'DiscountCodeIsEmpty' }
     | { __typename: 'DiscountCodeIsInvalid'; code: string }
+    | { __typename: 'DontNeedMoreGiftCards' }
+    | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' }
+    | { __typename: 'GiftCardIsNotUsable' }
     | { __typename: 'ProductNotFound' }
     | {
         __typename: 'ShoppingCart'
         id: string
-        total?: number | null
-        subTotal?: number | null
         currency: string
-        giftCardCode?: string | null
         discountCode?: string | null
+        giftCardsCodes?: Array<string | null> | null
+        total?:
+          | { __typename: 'GiftCardIsNotUsable'; code: string }
+          | {
+              __typename: 'ShoppingCartTotal'
+              total?: number | null
+              subTotal?: number | null
+              giftCardAmount?: number | null
+              amountToPay?: number | null
+            }
+          | null
         items: Array<{
           __typename: 'ShoppingCartItem'
           id: string
@@ -1797,15 +1838,26 @@ export type AddItemToShoppingCartMutation = {
   addItemToShoppingCart:
     | { __typename: 'DiscountCodeIsEmpty' }
     | { __typename: 'DiscountCodeIsInvalid' }
+    | { __typename: 'DontNeedMoreGiftCards' }
+    | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' }
+    | { __typename: 'GiftCardIsNotUsable' }
     | { __typename: 'ProductNotFound'; code: string }
     | {
         __typename: 'ShoppingCart'
         id: string
-        total?: number | null
-        subTotal?: number | null
         currency: string
-        giftCardCode?: string | null
         discountCode?: string | null
+        giftCardsCodes?: Array<string | null> | null
+        total?:
+          | { __typename: 'GiftCardIsNotUsable'; code: string }
+          | {
+              __typename: 'ShoppingCartTotal'
+              total?: number | null
+              subTotal?: number | null
+              giftCardAmount?: number | null
+              amountToPay?: number | null
+            }
+          | null
         items: Array<{
           __typename: 'ShoppingCartItem'
           id: string
@@ -1861,15 +1913,26 @@ export type CalculateTotalForShoppingCartQuery = {
   calculateTotalForShoppingCart:
     | { __typename: 'DiscountCodeIsEmpty' }
     | { __typename: 'DiscountCodeIsInvalid'; code: string }
+    | { __typename: 'DontNeedMoreGiftCards' }
+    | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' }
+    | { __typename: 'GiftCardIsNotUsable' }
     | { __typename: 'ProductNotFound' }
     | {
         __typename: 'ShoppingCart'
         id: string
-        total?: number | null
-        subTotal?: number | null
         currency: string
-        giftCardCode?: string | null
         discountCode?: string | null
+        giftCardsCodes?: Array<string | null> | null
+        total?:
+          | { __typename: 'GiftCardIsNotUsable'; code: string }
+          | {
+              __typename: 'ShoppingCartTotal'
+              total?: number | null
+              subTotal?: number | null
+              giftCardAmount?: number | null
+              amountToPay?: number | null
+            }
+          | null
         items: Array<{
           __typename: 'ShoppingCartItem'
           id: string
@@ -1925,15 +1988,26 @@ export type EmptyShoppingCartMutation = {
   emptyShoppingCart:
     | { __typename: 'DiscountCodeIsEmpty' }
     | { __typename: 'DiscountCodeIsInvalid' }
+    | { __typename: 'DontNeedMoreGiftCards' }
+    | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' }
+    | { __typename: 'GiftCardIsNotUsable' }
     | { __typename: 'ProductNotFound' }
     | {
         __typename: 'ShoppingCart'
         id: string
-        total?: number | null
-        subTotal?: number | null
         currency: string
-        giftCardCode?: string | null
         discountCode?: string | null
+        giftCardsCodes?: Array<string | null> | null
+        total?:
+          | { __typename: 'GiftCardIsNotUsable'; code: string }
+          | {
+              __typename: 'ShoppingCartTotal'
+              total?: number | null
+              subTotal?: number | null
+              giftCardAmount?: number | null
+              amountToPay?: number | null
+            }
+          | null
         items: Array<{
           __typename: 'ShoppingCartItem'
           id: string
@@ -2086,11 +2160,19 @@ export type GetShoppingCartQuery = {
     shoppingCart: {
       __typename: 'ShoppingCart'
       id: string
-      total?: number | null
-      subTotal?: number | null
       currency: string
-      giftCardCode?: string | null
       discountCode?: string | null
+      giftCardsCodes?: Array<string | null> | null
+      total?:
+        | { __typename: 'GiftCardIsNotUsable'; code: string }
+        | {
+            __typename: 'ShoppingCartTotal'
+            total?: number | null
+            subTotal?: number | null
+            giftCardAmount?: number | null
+            amountToPay?: number | null
+          }
+        | null
       items: Array<{
         __typename: 'ShoppingCartItem'
         id: string
@@ -2161,15 +2243,26 @@ export type RemoveDiscountCodeMutation = {
   removeDiscountCodeForCurrentShoppingCart:
     | { __typename: 'DiscountCodeIsEmpty' }
     | { __typename: 'DiscountCodeIsInvalid' }
+    | { __typename: 'DontNeedMoreGiftCards' }
+    | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' }
+    | { __typename: 'GiftCardIsNotUsable' }
     | { __typename: 'ProductNotFound' }
     | {
         __typename: 'ShoppingCart'
         id: string
-        total?: number | null
-        subTotal?: number | null
         currency: string
-        giftCardCode?: string | null
         discountCode?: string | null
+        giftCardsCodes?: Array<string | null> | null
+        total?:
+          | { __typename: 'GiftCardIsNotUsable'; code: string }
+          | {
+              __typename: 'ShoppingCartTotal'
+              total?: number | null
+              subTotal?: number | null
+              giftCardAmount?: number | null
+              amountToPay?: number | null
+            }
+          | null
         items: Array<{
           __typename: 'ShoppingCartItem'
           id: string
@@ -2226,15 +2319,26 @@ export type RemoveItemFromShoppingCartMutation = {
   removeItemFromShoppingCart:
     | { __typename: 'DiscountCodeIsEmpty' }
     | { __typename: 'DiscountCodeIsInvalid' }
+    | { __typename: 'DontNeedMoreGiftCards' }
+    | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' }
+    | { __typename: 'GiftCardIsNotUsable' }
     | { __typename: 'ProductNotFound' }
     | {
         __typename: 'ShoppingCart'
         id: string
-        total?: number | null
-        subTotal?: number | null
         currency: string
-        giftCardCode?: string | null
         discountCode?: string | null
+        giftCardsCodes?: Array<string | null> | null
+        total?:
+          | { __typename: 'GiftCardIsNotUsable'; code: string }
+          | {
+              __typename: 'ShoppingCartTotal'
+              total?: number | null
+              subTotal?: number | null
+              giftCardAmount?: number | null
+              amountToPay?: number | null
+            }
+          | null
         items: Array<{
           __typename: 'ShoppingCartItem'
           id: string
@@ -2292,15 +2396,26 @@ export type UpdateItemInShoppingCartMutation = {
   updateItemInShoppingCart:
     | { __typename: 'DiscountCodeIsEmpty' }
     | { __typename: 'DiscountCodeIsInvalid' }
+    | { __typename: 'DontNeedMoreGiftCards' }
+    | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' }
+    | { __typename: 'GiftCardIsNotUsable' }
     | { __typename: 'ProductNotFound' }
     | {
         __typename: 'ShoppingCart'
         id: string
-        total?: number | null
-        subTotal?: number | null
         currency: string
-        giftCardCode?: string | null
         discountCode?: string | null
+        giftCardsCodes?: Array<string | null> | null
+        total?:
+          | { __typename: 'GiftCardIsNotUsable'; code: string }
+          | {
+              __typename: 'ShoppingCartTotal'
+              total?: number | null
+              subTotal?: number | null
+              giftCardAmount?: number | null
+              amountToPay?: number | null
+            }
+          | null
         items: Array<{
           __typename: 'ShoppingCartItem'
           id: string
@@ -2432,11 +2547,19 @@ export type ProductFieldsFragment =
 export type ShoppingCartFieldsFragment = {
   __typename: 'ShoppingCart'
   id: string
-  total?: number | null
-  subTotal?: number | null
   currency: string
-  giftCardCode?: string | null
   discountCode?: string | null
+  giftCardsCodes?: Array<string | null> | null
+  total?:
+    | { __typename: 'GiftCardIsNotUsable'; code: string }
+    | {
+        __typename: 'ShoppingCartTotal'
+        total?: number | null
+        subTotal?: number | null
+        giftCardAmount?: number | null
+        amountToPay?: number | null
+      }
+    | null
   items: Array<{
     __typename: 'ShoppingCartItem'
     id: string
@@ -3287,11 +3410,46 @@ export const ShoppingCartFieldsFragmentDoc = {
         kind: 'SelectionSet',
         selections: [
           { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'total' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'subTotal' } },
           { kind: 'Field', name: { kind: 'Name', value: 'currency' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'giftCardCode' } },
           { kind: 'Field', name: { kind: 'Name', value: 'discountCode' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'giftCardsCodes' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'total' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartTotal' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'total' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'subTotal' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'giftCardAmount' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'amountToPay' } }
+                    ]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'GiftCardIsNotUsable' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          },
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'items' },

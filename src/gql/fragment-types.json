@@ -57,8 +57,11 @@
       "ClientIsOutsideSchedulingWindowError",
       "DiscountCodeIsEmpty",
       "DiscountCodeIsInvalid",
+      "DontNeedMoreGiftCards",
       "EmailAlreadyUsedError",
       "EnrollmentNotFoundError",
+      "GiftCardAlreadyRegisteredForCurrentShoppingCart",
+      "GiftCardIsNotUsable",
       "LateCancellationRequiredError",
       "MobilePhoneAlreadyVerifiedError",
       "MobilePhoneNotValidError",
@@ -116,12 +119,16 @@
     "ShoppingCartResultUnion": [
       "DiscountCodeIsEmpty",
       "DiscountCodeIsInvalid",
+      "DontNeedMoreGiftCards",
+      "GiftCardAlreadyRegisteredForCurrentShoppingCart",
+      "GiftCardIsNotUsable",
       "ProductNotFound",
       "ShoppingCart",
       "ShoppingCartIsEmpty",
       "ShoppingCartItemNotFound",
       "ShoppingCartNotFound"
     ],
+    "ShoppingCartTotalResultUnion": ["GiftCardIsNotUsable", "ShoppingCartTotal"],
     "SwapSpotResultUnion": ["SwapSpotSuccess", "TryToSwitchToSameSpotError"]
   }
 }
