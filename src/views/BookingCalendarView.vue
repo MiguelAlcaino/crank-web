@@ -475,7 +475,7 @@ function smoothScroll(element: HTMLElement, start: number, end: number, duration
           </thead>
           <tbody>
             <tr v-for="(colRow, key) in calendarDays" :key="key">
-              <td style="border-left: 0px !important; min-width: 110px">
+              <td style="border-left: 0 !important; min-width: 110px">
                 <CalendarCard
                   :classInfo="colRow.MON"
                   :isEnrolled="
