@@ -6,9 +6,8 @@ import jwt_decode from 'jwt-decode'
 import { appStore } from '@/stores/appStorage'
 import type { Role } from '@/utils/userRoles'
 import type { SiteEnum } from '@/modules/shared/interfaces/site.enum'
-import { useRouter } from 'vue-router'
 
-const router = useRouter()
+import router from '@/router'
 
 interface JwtTokenPayload {
   exp: number
