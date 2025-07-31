@@ -94,7 +94,7 @@ const startActionFlow = (action: 'add' | 'buy') => {
 const executePendingAction = async () => {
   if (!pendingActionContext.value) return
 
-  const { action, variantId } = pendingActionContext.value  
+  const { action, variantId } = pendingActionContext.value
   pendingActionContext.value = null
 
   if (action === 'add') {
@@ -152,7 +152,7 @@ const handleModalCancel = () => {
 </script>
 
 <template>
-  <div>  
+  <div>
     <div
       class="card border-0 rounded-0 mb-2 product-card"
       style="background-color: #f4f4f4; height: 130px"

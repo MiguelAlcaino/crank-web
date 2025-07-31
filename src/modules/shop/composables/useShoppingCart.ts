@@ -189,8 +189,7 @@ export const useShoppingCart = (apiService: IApiService) => {
   async function buyNow(variantId: string): Promise<boolean> {
     // Edge Case: Check if the product is already the only item in the cart.
     const isAlreadyTheOnlyItem =
-      cartState.value?.items.length === 1 &&
-      cartState.value.items[0].variant.id === variantId
+      cartState.value?.items.length === 1 && cartState.value.items[0].variant.id === variantId
 
     // If the cart is already in the desired state, we can consider it a success and allow navigation.
     if (isAlreadyTheOnlyItem) {
