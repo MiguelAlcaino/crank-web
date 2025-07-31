@@ -108,12 +108,12 @@ export const useShoppingCart = (apiService: IApiService) => {
   /**
    * Adds an item to the shopping cart and updates the local state.
    * Manages loading and error states for the operation.
-   * @param sellableProductId The ID of the product to add.
+   * @param variantId The ID of the product to add.
    */
-  const addToCart = async (sellableProductId: string) => {
+  const addToCart = async (variantId: string) => {
     await handleCartUpdate(
-      sellableProductId,
-      apiService.addItemToShoppingCart(appStore().site, sellableProductId, 1)
+      variantId,
+      apiService.addItemToShoppingCart(appStore().site, variantId, 1)
     )
   }
 
@@ -183,14 +183,14 @@ export const useShoppingCart = (apiService: IApiService) => {
    * 3. If confirmed, clears the cart, then adds the new single item.
    * 4. Returns a success flag for the calling component to act upon (e.g., navigate).
    *
-   * @param {string} sellableProductId - The ID of the product to buy now.
+   * @param {string} variantId - The ID of the product to buy now.
    * @returns {Promise<boolean>} - True if the process completed successfully, false if the user cancelled or an error occurred.
    */
-  async function buyNow(sellableProductId: string): Promise<boolean> {
+  async function buyNow(variantId: string): Promise<boolean> {
     // Edge Case: Check if the product is already the only item in the cart.
     const isAlreadyTheOnlyItem =
       cartState.value?.items.length === 1 &&
-      cartState.value.items[0].variant.id === sellableProductId
+      cartState.value.items[0].variant.id === variantId
 
     // If the cart is already in the desired state, we can consider it a success and allow navigation.
     if (isAlreadyTheOnlyItem) {
@@ -227,7 +227,7 @@ export const useShoppingCart = (apiService: IApiService) => {
       }
 
       // Action 2: Add the new item to the now-empty cart.
-      await addToCart(sellableProductId)
+      await addToCart(variantId)
 
       // After the operations, check if any of them set an error in our state.
       if (error.value) {
