@@ -234,8 +234,8 @@ async function acceptSuccessModal() {
   </div>
 
   <!-- SMS Code Modal -->
-  <transition name="modal" v-if="smsCodeModalIsVisible">
-    <div class="modal-mask">
+  <transition name="modal">
+    <div class="modal-mask" v-if="smsCodeModalIsVisible">
       <div class="modal-wrapper">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
