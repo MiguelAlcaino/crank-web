@@ -159,10 +159,10 @@ const handleModalCancel = () => {
     >
       <div class="d-flex h-100">
         <div class="p-2 flex-grow-1 text-center d-flex flex-column justify-content-center">
-          <h6 class="font-weight-bold mb-2">{{ product.title }}</h6>
-          <p v-if="product.variants.length === 1" class="font-weight-bold mb-2">
-            {{ product.variants[0].formattedPrice }}
-          </p>
+          <h6 class="font-weight-bold mb-2">
+            {{ product.title }}
+            {{ product.variants.length === 1 ? ' / ' + product.variants[0].formattedPrice : '' }}
+          </h6>
           <p class="mb-1 small">{{ product.subtitle }}</p>
           <p class="text-muted small mb-0">
             {{ product.alert?.title.toUpperCase() }}
