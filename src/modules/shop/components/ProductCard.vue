@@ -13,7 +13,7 @@ import TermsModal from './TermsModal.vue'
 import VariantSelectorModal from './VariantSelectorModal.vue'
 
 // Models, Composables & Services
-import { Product } from '../models/Product'
+import type { Product } from '../models/Product'
 import { useShoppingCart } from '../composables/useShoppingCart'
 import type { IApiService } from '@/services/IApiService'
 

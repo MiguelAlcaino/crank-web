@@ -1,4 +1,4 @@
-import { PaymentTransactionStatusEnum } from '@/gql/graphql'
+import type { PaymentTransactionStatusEnum } from '@/gql/graphql'
 import { ApiError } from '@/services/ApiService'
 import type { IApiService } from '@/services/IApiService'
 import { onMounted, readonly, ref } from 'vue'
