@@ -38,7 +38,7 @@
     "@vuelidate/validators": "^2.0.4",
     "@vuepic/vue-datepicker": "^6.1.0",
     "apexcharts": "^3.44.0",
-    "axios": "^1.10.0",
+    "axios": "1.11.0",
     "bootstrap": "^4.6.2",
     "bootstrap-icons": "^1.13.1",
     "dayjs": "^1.11.13",
