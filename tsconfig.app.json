@@ -18,10 +18,11 @@
       ]
     },
     "resolveJsonModule": true,
-     "lib": [
+    "lib": [
       "ES2018",
       "DOM",
       "DOM.Iterable"
-    ]
+    ],
+    "verbatimModuleSyntax": true 
   }
 }
