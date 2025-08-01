@@ -13,7 +13,7 @@ const { isVisible, title, message, handleConfirm, handleCancel } = useModal()
     :title="title"
     :message="message"
     okText="OK"
-    cancelText="CANCELAR"
+    cancelText="CANCEL"
     @ok="handleConfirm"
     @cancel="handleCancel"
   />
