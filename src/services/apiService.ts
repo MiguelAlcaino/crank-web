@@ -1883,7 +1883,7 @@ export class ApiService implements IApiService {
       >({
         mutation: LockShoppingCartDocument,
         variables: { site },
-        fetchPolicy: 'network-only' // Es una acción de estado, siempre ir a la red.
+        fetchPolicy: 'network-only'
       })
 
       if (errors && errors.length > 0) {
