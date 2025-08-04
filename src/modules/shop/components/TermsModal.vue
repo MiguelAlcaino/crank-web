@@ -196,7 +196,7 @@ onUnmounted(() => {
   border: none;
   border-radius: 10px;
   padding: 1rem 3rem;
-  font-family: 'Avenir', sans-serif;
+  font-family: 'BigJohn', sans-serif;
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 1.5px;
