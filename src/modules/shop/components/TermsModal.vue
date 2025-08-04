@@ -129,6 +129,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   max-height: 90vh;
+  overflow: hidden;
 }
 
 .close-button {
