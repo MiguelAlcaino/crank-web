@@ -23,6 +23,7 @@ import { useCheckout } from '@/modules/shop/composables/useCheckout'
 import { useAuth } from '@/modules/auth/composables/useAuth'
 import { useShoppingCart } from '@/modules/shop/composables/useShoppingCart'
 import { createPayfortFormManager } from '@/modules/shop/services/PayfortFormManager'
+import { isFlutterWebView, notifyPaymentSuccess, notifyPaymentFailure } from '@/modules/shop/utils/flutter-communication'
 import type { IApiService } from '@/services/IApiService'
 import { authService } from '@/services/authService'
 import { luhnCheck } from '@/modules/shop/utils/shop-utils'
@@ -200,6 +201,11 @@ function showErrorModal(title: string, message: string) {
   modalState.title = title
   modalState.message = message
   modalState.show = true
+  
+  // If this is an error and we're in Flutter WebView, notify about failure
+  if (isFlutterWebView(isWebviewMode.value) && title.toLowerCase().includes('error')) {
+    notifyPaymentFailure(isWebviewMode.value)
+  }
 }
 
 /**
@@ -257,6 +263,11 @@ const handleNewCardPayment = async () => {
       showErrorModal('Payment Error', ERROR_UNKNOWN)
     }
   } catch (error: any) {
+    // Notify Flutter about payment failure if in webview mode
+    if (isFlutterWebView(isWebviewMode.value)) {
+      notifyPaymentFailure(isWebviewMode.value)
+    }
+    
     showErrorModal(
       'Payment Error',
       error?.message || 'An unexpected error occurred. Please try again.'

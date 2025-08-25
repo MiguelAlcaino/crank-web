@@ -1,21 +1,75 @@
 <script setup lang="ts">
-import { inject } from 'vue'
+import { inject, onMounted, computed, watch } from 'vue'
 import type { ApiService } from '@/services/ApiService'
 import { useAfterCheckout } from '@/modules/shop/composables/useAfterCheckout'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { PaymentTransactionStatusEnum } from '@/gql/graphql'
+import { isFlutterWebView, notifyPaymentSuccess, notifyPaymentFailure } from '@/modules/shop/utils/flutter-communication'
 
 // Local Components
 import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
 
 const router = useRouter()
+const route = useRoute()
 const apiService = inject<ApiService>('gqlApiService')!
 const { isLoading, hasError, errorMessage, purchaseStatus, merchantReference } =
   useAfterCheckout(apiService)
 
+// Computed property to check if we should notify Flutter
+const shouldNotifyFlutter = computed(() => {
+  const hasWebviewToken = !!route.query.token
+  return isFlutterWebView(hasWebviewToken) && !isLoading.value && !hasError.value
+})
+
+// Watch for payment status changes and notify Flutter accordingly
+const handlePaymentResult = () => {
+  if (!shouldNotifyFlutter.value) return
+
+  const hasWebviewToken = !!route.query.token
+
+  switch (purchaseStatus.value) {
+    case PaymentTransactionStatusEnum.Successful:
+      notifyPaymentSuccess(hasWebviewToken)
+      break
+    case PaymentTransactionStatusEnum.Rejected:
+    case PaymentTransactionStatusEnum.Refunded:
+      notifyPaymentFailure(hasWebviewToken)
+      break
+    // For WaitingConfirmation and other statuses, we don't notify immediately
+    // as the final result is still pending
+  }
+}
+
 const goToShop = () => {
+  const hasWebviewToken = !!route.query.token
+  
+  // If in Flutter WebView, send failure message before navigation
+  if (isFlutterWebView(hasWebviewToken) && 
+      (purchaseStatus.value === PaymentTransactionStatusEnum.Rejected ||
+       purchaseStatus.value === PaymentTransactionStatusEnum.Refunded ||
+       hasError.value)) {
+    notifyPaymentFailure(hasWebviewToken)
+  }
   router.push('/shop/products')
 }
+
+// Lifecycle hook to check payment result when component mounts
+onMounted(() => {
+  // Small delay to ensure the payment status has been loaded
+  setTimeout(() => {
+    handlePaymentResult()
+  }, 1000)
+})
+
+// Watch for changes in payment status to notify Flutter in real-time
+watch(
+  () => purchaseStatus.value,
+  (newStatus) => {
+    if (shouldNotifyFlutter.value) {
+      handlePaymentResult()
+    }
+  }
+)
 </script>
 
 <template>
