@@ -42,7 +42,7 @@ import applePay from '../assets/images/apple_pay_button_pay.png'
 
 const apiService = inject<IApiService>('gqlApiService')!
 const { error: checkoutError, payfortFormHtml, initiatePayment } = useCheckout(apiService)
-const { totalItemsInCart, detailedCart, fetchCartDetails } = useShoppingCart(apiService)
+const { totalItemsInCart, detailedCart, fetchCartDetails, isLoading } = useShoppingCart(apiService)
 const { user, isAuthenticated, isLoading: isAuthLoading, fetchCurrentUser } = useAuth(apiService)
 const route = useRoute()
 
@@ -364,9 +364,15 @@ const onFingerprintError = (error: Error) => {
           <h5 class="text-orange">YOU ARE BUYING:</h5>
           <router-link v-if="!isWebviewMode" to="/shop/cart" class="edit-cart-link"> Edit Cart </router-link>
         </div>
-        <h5>{{ formattedCartItems }}</h5>
-        <p>{{ detailedCart?.formattedTotal }}</p>
-        <span class="item-count">{{ totalItemsInCart }} items</span>
+        <div v-if="isLoading" class="loading-state">
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          <span style="margin-left: 0.5rem">Loading items...</span>
+        </div>
+        <div v-else>
+          <h5>{{ formattedCartItems }}</h5>
+          <p>{{ detailedCart?.formattedTotal }}</p>
+          <span class="item-count">{{ totalItemsInCart }} items</span>
+        </div>
         <details>
           <summary>Do you have a discount code?</summary>
           <DiscountCodeForm />
@@ -634,6 +640,14 @@ body {
 .purchase-summary .item-count {
   font-size: 0.8rem;
   color: #adb5bd;
+}
+
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #adb5bd;
+  font-size: 0.9rem;
 }
 
 /* Section Title */
