@@ -107,6 +107,45 @@ export const authService = {
     useAuthenticationStore().setSession(token)
     this.startRefreshTokenTimer()
   },
+  /**
+   * @description Authenticates with a token, handling expiration and refresh automatically
+   * @param {string} token - The JWT token to authenticate with
+   * @returns {Promise<{success: boolean, error?: string}>} Result of authentication
+   */
+  async authenticateWithToken(token: string): Promise<{success: boolean, error?: string}> {
+    try {
+      // First, validate the token format and check if it's expired
+      if (this.isTokenExpired(token)) {
+        console.log('Token is expired, attempting to refresh...')
+        
+        // Set the expired token so refresh endpoint can use it
+        this.setWebviewToken(token)
+        
+        try {
+          // Attempt to refresh the token
+          await this.refreshToken()
+          console.log('Token refreshed successfully')
+          return { success: true }
+        } catch (refreshError) {
+          console.error('Failed to refresh token:', refreshError)
+          return { 
+            success: false, 
+            error: 'Token expired and could not be refreshed' 
+          }
+        }
+      } else {
+        // Token is not expired, set it directly
+        this.setWebviewToken(token)
+        return { success: true }
+      }
+    } catch (tokenValidationError) {
+      console.error('Error validating token:', tokenValidationError)
+      return { 
+        success: false, 
+        error: 'Invalid token format' 
+      }
+    }
+  },
   userHasRole(role: Role): boolean {
     const token = useAuthenticationStore().token
 
