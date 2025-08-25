@@ -99,6 +99,14 @@ export const authService = {
       return 'unknown_error'
     }
   },
+  /**
+   * @description Sets a token directly (useful for webview integration)
+   * @param {string} token - The JWT token to set
+   */
+  setWebviewToken(token: string): void {
+    useAuthenticationStore().setSession(token)
+    this.startRefreshTokenTimer()
+  },
   userHasRole(role: Role): boolean {
     const token = useAuthenticationStore().token
 

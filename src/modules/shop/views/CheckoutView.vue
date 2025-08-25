@@ -7,6 +7,7 @@
 
 // Libs & Frameworks
 import { computed, inject, onMounted, reactive, ref } from 'vue'
+import { useRoute } from 'vue-router'
 
 // Vuelidate Validators
 import useVuelidate from '@vuelidate/core'
@@ -23,6 +24,7 @@ import { useAuth } from '@/modules/auth/composables/useAuth'
 import { useShoppingCart } from '@/modules/shop/composables/useShoppingCart'
 import { createPayfortFormManager } from '@/modules/shop/services/PayfortFormManager'
 import type { IApiService } from '@/services/IApiService'
+import { authService } from '@/services/authService'
 import { luhnCheck } from '@/modules/shop/utils/shop-utils'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 import type { CardData } from '@/modules/shop/interfaces'
@@ -42,6 +44,7 @@ const apiService = inject<IApiService>('gqlApiService')!
 const { error: checkoutError, payfortFormHtml, initiatePayment } = useCheckout(apiService)
 const { totalItemsInCart, detailedCart, fetchCartDetails } = useShoppingCart(apiService)
 const { user, isAuthenticated, isLoading: isAuthLoading, fetchCurrentUser } = useAuth(apiService)
+const route = useRoute()
 
 //
 // -----------------
@@ -100,6 +103,16 @@ const modalState = reactive({
  * @description Tracks the currently selected payment method.
  */
 const selectedPaymentMethod = ref<'newCard' | 'digitalWallet' | ''>('')
+
+/**
+ * @description Tracks if the checkout is being accessed from a webview with a token.
+ */
+const isWebviewMode = ref(false)
+
+/**
+ * @description Stores the authentication token from URL parameters.
+ */
+const webviewToken = ref<string>('')
 
 //
 // -----------------
@@ -281,6 +294,15 @@ const formatCVV = (event: Event) => {
  * @description When the component is mounted, fetch essential data.
  */
 onMounted(() => {
+  // Check if token is provided in URL (webview mode)
+  const token = route.query.token as string
+  if (token) {
+    isWebviewMode.value = true
+    webviewToken.value = token
+    // Set the token in the auth service for webview mode
+    authService.setWebviewToken(token)
+  }
+
   // Fetch the current user's data to display in the header.
   fetchCurrentUser()
 
@@ -333,14 +355,14 @@ const onFingerprintError = (error: Error) => {
       <p v-if="isAuthLoading" class="header-subtitle">LOADING USER...</p>
       <p v-else-if="isAuthenticated" class="header-subtitle">
         LOGGED IN AS {{ user?.firstName?.toUpperCase() }} {{ user?.lastName?.toUpperCase() }}
+        <span v-if="isWebviewMode" class="webview-indicator">(WEBVIEW MODE)</span>
       </p>
-      <p v-else class="header-subtitle">CONTINUING AS GUEST</p>
 
       <!-- Purchase Summary -->
       <div class="purchase-summary">
         <div class="summary-header">
           <h5 class="text-orange">YOU ARE BUYING:</h5>
-          <router-link to="/shop/cart" class="edit-cart-link"> Edit Cart </router-link>
+          <router-link v-if="!isWebviewMode" to="/shop/cart" class="edit-cart-link"> Edit Cart </router-link>
         </div>
         <h5>{{ formattedCartItems }}</h5>
         <p>{{ detailedCart?.formattedTotal }}</p>
@@ -580,6 +602,12 @@ body {
   letter-spacing: 1px;
   text-align: center;
   margin-bottom: 1.5rem;
+}
+
+.webview-indicator {
+  color: #ff8c69;
+  font-weight: bold;
+  font-size: 0.8rem;
 }
 
 /* Purchase Summary */

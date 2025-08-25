@@ -124,11 +124,7 @@ const router = createRouter({
       name: 'sms_verification',
       component: SmsVerificationView
     },
-    {
-      ...shopRoute,
-      path: '/shop',
-      meta: { requiresAuth: true }
-    }
+    shopRoute
   ]
 })
 
@@ -139,7 +135,8 @@ router.beforeEach(async (to, from, next) => {
     '/forgot-password',
     '/reset-password',
     '/calendar',
-    '/login-redirect'
+    '/login-redirect',
+    '/shop/checkout'        // Public to allow access from webview with token
   ]
   const authRequired = !publicPages.includes(to.path)
 

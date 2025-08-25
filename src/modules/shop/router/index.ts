@@ -10,22 +10,26 @@ export const shopRoute: RouteRecordRaw = {
     {
       path: `/${ROUTE_NAME}/products`,
       name: 'products-list',
-      component: () => import('@/modules/shop/views/ProductsView.vue')
+      component: () => import('@/modules/shop/views/ProductsView.vue'),
+      meta: { requiresAuth: true }
     },
     {
       path: `/${ROUTE_NAME}/cart`,
       name: 'shopping-cart',
-      component: () => import('@/modules/shop/views/ShoppingCartView.vue')
+      component: () => import('@/modules/shop/views/ShoppingCartView.vue'),
+      meta: { requiresAuth: true }
     },
     {
       path: `/${ROUTE_NAME}/checkout`,
       name: 'checkout',
       component: () => import('@/modules/shop/views/CheckoutView.vue')
+      // Without requiresAuth to allow access from webview with token
     },
     {
       path: `/${ROUTE_NAME}/after-checkout`,
       name: 'after-checkout',
-      component: () => import('@/modules/shop/views/AfterCheckoutView.vue')
+      component: () => import('@/modules/shop/views/AfterCheckoutView.vue'),
+      meta: { requiresAuth: true }
     }
   ]
 }
