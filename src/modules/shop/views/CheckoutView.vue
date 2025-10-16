@@ -345,7 +345,7 @@ const onFingerprintError = (error: Error) => {
   fingerprintError.value = error
   showErrorModal(
     'Security Error',
-    'A security error occurred while preparing your session. Please refresh the page.'
+    'Please disable your adblocker. Our anti fraud system will not work if your adblocker is running. Add this domain as an exception to you adblocker and payments will be able to run normally.'
   )
 }
 </script>
