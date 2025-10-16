@@ -88,7 +88,7 @@ onMounted(() => {
         class="my-3 text-vertical tab-item"
         :class="{ 'active-tab': activeTab === 'FB' }"
         @click="setActiveTab('FB')"
-        v-if="false" <!-- TODO: Implement F&B tab -->
+        v-if="false"
       >
         F&B
       </div>
