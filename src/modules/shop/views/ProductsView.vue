@@ -12,6 +12,7 @@ import { inject, onMounted } from 'vue'
 import ProductCard from '@/modules/shop/components/ProductCard.vue'
 import ShoppingBagIcon from '@/modules/shop/components/ShoppingBagIcon.vue'
 import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
+import SiteSelector from '@/components/SiteSelector.vue'
 
 // Composables, Services & Utilities
 import { useProducts } from '../composables/useProducts'
@@ -48,6 +49,20 @@ const {
 
 //
 // -----------------
+// METHODS
+// -----------------
+//
+
+/**
+ * @description Loads all the necessary data for the products view
+ */
+function loadData() {
+  fetchAllProducts()
+  fetchCartSummary()
+}
+
+//
+// -----------------
 // LIFECYCLE HOOKS
 // -----------------
 //
@@ -56,8 +71,7 @@ const {
  * @description When the component is mounted, fetch the initial product data.
  */
 onMounted(() => {
-  fetchAllProducts()
-  fetchCartSummary()
+  loadData()
 })
 </script>
 
@@ -102,8 +116,16 @@ onMounted(() => {
         </div>
       </div>
 
+      <div class="text-center">
+        <div class="col-6" style="max-width: 300px; margin: 0 auto">
+          <SiteSelector v-on:after-changing-site="loadData"></SiteSelector>
+        </div>
+      </div>
+      <br />
+ 
+
       <div class="text-center mb-3">
-        <h4 class="font-weight-bold">THE GREAT DEALS</h4>
+        <h1 class="font-weight-bold">THE GREAT DEALS</h1>
         <p class="text-muted">XX CREDITS LEFT</p>
       </div>
       <div v-if="activeTab === 'SESSIONS'">
