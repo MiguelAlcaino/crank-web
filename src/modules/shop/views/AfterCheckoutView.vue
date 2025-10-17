@@ -12,8 +12,16 @@ import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIn
 const router = useRouter()
 const route = useRoute()
 const apiService = inject<ApiService>('gqlApiService')!
-const { isLoading, hasError, errorMessage, purchaseStatus, merchantReference } =
-  useAfterCheckout(apiService)
+const { 
+  isLoading, 
+  hasError, 
+  errorMessage, 
+  purchaseStatus, 
+  merchantReference,
+  retryCount,
+  maxRetries,
+  isRetrying
+} = useAfterCheckout(apiService)
 
 // Computed property to check if we should notify Flutter
 const shouldNotifyFlutter = computed(() => {
@@ -162,6 +170,18 @@ watch(
         You will receive an email as soon as the transaction is complete. Please do not attempt to
         pay again.
       </p>
+      
+      <!-- Retry information -->
+      <div v-if="isRetrying" class="retry-info">
+        <div class="retry-indicator">
+          <div class="spinner"></div>
+          <span>Checking status... ({{ retryCount }}/{{ maxRetries }})</span>
+        </div>
+        <p class="text-muted small">
+          We're automatically checking for updates every 2 seconds.
+        </p>
+      </div>
+      
       <button @click="goToShop" class="btn-primary">Back to Shop</button>
     </div>
 
@@ -270,6 +290,39 @@ watch(
 .status-card.error .icon-wrapper,
 .status-card.failure .icon-wrapper {
   color: #dc3545;
+}
+.status-card.pending .icon-wrapper {
+  color: #ffc107;
+}
+
+.retry-info {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #ffc107;
+}
+
+.retry-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #e3e3e3;
+  border-top: 2px solid #ffc107;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 h2 {

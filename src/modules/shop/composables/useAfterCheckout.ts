@@ -1,7 +1,7 @@
-import type { PaymentTransactionStatusEnum } from '@/gql/graphql'
+import { PaymentTransactionStatusEnum } from '@/gql/graphql'
 import { ApiError } from '@/services/ApiService'
 import type { IApiService } from '@/services/IApiService'
-import { onMounted, readonly, ref } from 'vue'
+import { onMounted, onUnmounted, readonly, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 /**
@@ -20,6 +20,75 @@ export const useAfterCheckout = (apiService: IApiService) => {
   const errorMessage = ref<string | null>(null)
   const purchaseStatus = ref<PaymentTransactionStatusEnum | null>(null)
   const merchantReference = ref<string | null>(null)
+  
+  // --- RETRY LOGIC FOR WAITING CONFIRMATION ---
+  const retryInterval = ref<ReturnType<typeof setTimeout> | null>(null)
+  const retryCount = ref<number>(0)
+  const isRetrying = ref<boolean>(false)
+  const maxRetries = 12 // Maximum number of retries (12 * 2 seconds = 24 seconds)
+  const retryDelayMs = 2000 // 2 seconds between retries
+
+  /**
+   * Clears the retry interval if it exists
+   */
+  const clearRetryInterval = () => {
+    if (retryInterval.value) {
+      clearTimeout(retryInterval.value)
+      retryInterval.value = null
+      isRetrying.value = false
+    }
+  }
+
+  /**
+   * Starts the retry mechanism for WaitingConfirmation status
+   */
+  const startRetryMechanism = () => {
+    // Clear any existing interval
+    clearRetryInterval()
+    
+    isRetrying.value = true
+    retryInterval.value = setTimeout(async () => {
+      if (retryCount.value < maxRetries) {
+        retryCount.value++
+        console.log(`Retry attempt ${retryCount.value}/${maxRetries} for transaction verification`)
+        await verifyTransactionStatus()
+      } else {
+        console.log('Maximum retries reached for transaction verification')
+        clearRetryInterval()
+      }
+    }, retryDelayMs)
+  }
+
+  /**
+   * Verifies the transaction status without resetting the loading state
+   */
+  const verifyTransactionStatus = async () => {
+    if (!merchantReference.value) return
+
+    try {
+      console.log(`Verifying status for reference: ${merchantReference.value}`)
+      const status = await apiService.checkTransactionStatus(merchantReference.value)
+      
+      // Update the purchase status
+      purchaseStatus.value = status
+      
+      // If still waiting confirmation and haven't reached max retries, schedule another retry
+      if (status === PaymentTransactionStatusEnum.WaitingConfirmation && retryCount.value < maxRetries) {
+        startRetryMechanism()
+      } else {
+        // Transaction completed or max retries reached, stop retrying
+        clearRetryInterval()
+      }
+    } catch (e: any) {
+      console.error('Error during retry verification:', e)
+      // Don't set error state during retries, just log and continue
+      if (retryCount.value < maxRetries) {
+        startRetryMechanism()
+      } else {
+        clearRetryInterval()
+      }
+    }
+  }
 
   /**
    * Orchestrates the transaction verification process.
@@ -48,6 +117,12 @@ export const useAfterCheckout = (apiService: IApiService) => {
       console.log(`Verifying status for reference: ${merchantReference.value}`)
       const status = await apiService.checkTransactionStatus(merchantReference.value)
       purchaseStatus.value = status
+      
+      // If status is WaitingConfirmation, start the retry mechanism
+      if (status === PaymentTransactionStatusEnum.WaitingConfirmation) {
+        retryCount.value = 0 // Reset retry count for new verification
+        startRetryMechanism()
+      }
     } catch (e: any) {
       console.error('Error verifying transaction status:', e)
       hasError.value = true
@@ -65,12 +140,21 @@ export const useAfterCheckout = (apiService: IApiService) => {
     verifyTransaction()
   })
 
+  // Cleanup when component is unmounted
+  onUnmounted(() => {
+    clearRetryInterval()
+  })
+
   return {
     // State
     isLoading: readonly(isLoading),
     hasError: readonly(hasError),
     errorMessage: readonly(errorMessage),
     purchaseStatus: readonly(purchaseStatus),
-    merchantReference: readonly(merchantReference)
+    merchantReference: readonly(merchantReference),
+    // Retry state
+    retryCount: readonly(retryCount),
+    maxRetries,
+    isRetrying: readonly(isRetrying)
   }
 }
