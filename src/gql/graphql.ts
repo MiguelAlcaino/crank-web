@@ -232,6 +232,7 @@ export type ClassPackageProduct = SellableProductInterface & {
   currency: Scalars['String']
   id: Scalars['ID']
   isVisible: Scalars['Boolean']
+  position?: Maybe<Scalars['Int']>
   subtitle?: Maybe<Scalars['String']>
   title: Scalars['String']
   type?: Maybe<ClassPackageTypeEnum>
@@ -520,6 +521,7 @@ export type GiftCard = SellableProductInterface & {
   grandTotal: Scalars['Float']
   id: Scalars['ID']
   isVisible: Scalars['Boolean']
+  position?: Maybe<Scalars['Int']>
   purchaseUrl: Scalars['String']
   /** @deprecated Use price instead */
   salePrice: Scalars['Float']
@@ -538,6 +540,11 @@ export type GiftCardAlreadyRegisteredForCurrentShoppingCart = Error & {
 
 export type GiftCardIsNotUsable = Error & {
   __typename?: 'GiftCardIsNotUsable'
+  code: Scalars['String']
+}
+
+export type GiftCardNotRegisteredOnCurrentShoppingCart = Error & {
+  __typename?: 'GiftCardNotRegisteredOnCurrentShoppingCart'
   code: Scalars['String']
 }
 
@@ -667,6 +674,8 @@ export type Mutation = {
   removeCurrentUserFromWaitlist?: Maybe<RemoveCurrentUserFromWaitlistUnion>
   /** Remove discount code from current shopping cart */
   removeDiscountCodeForCurrentShoppingCart: ShoppingCartResultUnion
+  /** Allows to remove a GiftCard by code */
+  removeGiftCardFromCurrentShoppingCart: ShoppingCartResultUnion
   /** Remove Item from shopping cart */
   removeItemFromShoppingCart: ShoppingCartResultUnion
   /** Removes a user from a class */
@@ -861,6 +870,11 @@ export type MutationRemoveCurrentUserFromWaitlistArgs = {
 }
 
 export type MutationRemoveDiscountCodeForCurrentShoppingCartArgs = {
+  site: SiteEnum
+}
+
+export type MutationRemoveGiftCardFromCurrentShoppingCartArgs = {
+  giftCardCode: Scalars['String']
   site: SiteEnum
 }
 
@@ -1422,6 +1436,7 @@ export type SellableProductInterface = {
   currency: Scalars['String']
   id: Scalars['ID']
   isVisible: Scalars['Boolean']
+  position?: Maybe<Scalars['Int']>
   subtitle?: Maybe<Scalars['String']>
   title: Scalars['String']
   variants: Array<Variant>
@@ -1478,6 +1493,7 @@ export type ShoppingCartResultUnion =
   | DontNeedMoreGiftCards
   | GiftCardAlreadyRegisteredForCurrentShoppingCart
   | GiftCardIsNotUsable
+  | GiftCardNotRegisteredOnCurrentShoppingCart
   | ProductNotFound
   | ShoppingCart
   | ShoppingCartIsEmpty
@@ -1765,6 +1781,7 @@ export type AddDiscountCodeToShoppingCartMutation = {
     | { __typename: 'DontNeedMoreGiftCards' }
     | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' }
     | { __typename: 'GiftCardIsNotUsable' }
+    | { __typename: 'GiftCardNotRegisteredOnCurrentShoppingCart' }
     | { __typename: 'ProductNotFound' }
     | {
         __typename: 'ShoppingCart'
@@ -1841,6 +1858,7 @@ export type AddItemToShoppingCartMutation = {
     | { __typename: 'DontNeedMoreGiftCards' }
     | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' }
     | { __typename: 'GiftCardIsNotUsable' }
+    | { __typename: 'GiftCardNotRegisteredOnCurrentShoppingCart' }
     | { __typename: 'ProductNotFound'; code: string }
     | {
         __typename: 'ShoppingCart'
@@ -1916,6 +1934,7 @@ export type CalculateTotalForShoppingCartQuery = {
     | { __typename: 'DontNeedMoreGiftCards' }
     | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' }
     | { __typename: 'GiftCardIsNotUsable' }
+    | { __typename: 'GiftCardNotRegisteredOnCurrentShoppingCart' }
     | { __typename: 'ProductNotFound' }
     | {
         __typename: 'ShoppingCart'
@@ -1991,6 +2010,7 @@ export type EmptyShoppingCartMutation = {
     | { __typename: 'DontNeedMoreGiftCards' }
     | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' }
     | { __typename: 'GiftCardIsNotUsable' }
+    | { __typename: 'GiftCardNotRegisteredOnCurrentShoppingCart' }
     | { __typename: 'ProductNotFound' }
     | {
         __typename: 'ShoppingCart'
@@ -2246,6 +2266,7 @@ export type RemoveDiscountCodeMutation = {
     | { __typename: 'DontNeedMoreGiftCards' }
     | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' }
     | { __typename: 'GiftCardIsNotUsable' }
+    | { __typename: 'GiftCardNotRegisteredOnCurrentShoppingCart' }
     | { __typename: 'ProductNotFound' }
     | {
         __typename: 'ShoppingCart'
@@ -2322,6 +2343,7 @@ export type RemoveItemFromShoppingCartMutation = {
     | { __typename: 'DontNeedMoreGiftCards' }
     | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' }
     | { __typename: 'GiftCardIsNotUsable' }
+    | { __typename: 'GiftCardNotRegisteredOnCurrentShoppingCart' }
     | { __typename: 'ProductNotFound' }
     | {
         __typename: 'ShoppingCart'
@@ -2399,6 +2421,7 @@ export type UpdateItemInShoppingCartMutation = {
     | { __typename: 'DontNeedMoreGiftCards' }
     | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' }
     | { __typename: 'GiftCardIsNotUsable' }
+    | { __typename: 'GiftCardNotRegisteredOnCurrentShoppingCart' }
     | { __typename: 'ProductNotFound' }
     | {
         __typename: 'ShoppingCart'
