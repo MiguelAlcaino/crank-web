@@ -136,7 +136,7 @@ router.beforeEach(async (to, from, next) => {
     '/reset-password',
     '/calendar',
     '/login-redirect',
-    '/shop/checkout'        // Public to allow access from webview with token
+    '/shop/checkout' // Public to allow access from webview with token
   ]
   const authRequired = !publicPages.includes(to.path)
 

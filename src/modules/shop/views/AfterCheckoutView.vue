@@ -4,7 +4,11 @@ import type { ApiService } from '@/services/ApiService'
 import { useAfterCheckout } from '@/modules/shop/composables/useAfterCheckout'
 import { useRouter, useRoute } from 'vue-router'
 import { PaymentTransactionStatusEnum } from '@/gql/graphql'
-import { isFlutterWebView, notifyPaymentSuccess, notifyPaymentFailure } from '@/modules/shop/utils/flutter-communication'
+import {
+  isFlutterWebView,
+  notifyPaymentSuccess,
+  notifyPaymentFailure
+} from '@/modules/shop/utils/flutter-communication'
 
 // Local Components
 import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
@@ -12,11 +16,11 @@ import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIn
 const router = useRouter()
 const route = useRoute()
 const apiService = inject<ApiService>('gqlApiService')!
-const { 
-  isLoading, 
-  hasError, 
-  errorMessage, 
-  purchaseStatus, 
+const {
+  isLoading,
+  hasError,
+  errorMessage,
+  purchaseStatus,
   merchantReference,
   retryCount,
   maxRetries,
@@ -50,12 +54,14 @@ const handlePaymentResult = () => {
 
 const goToShop = () => {
   const hasWebviewToken = !!route.query.token
-  
+
   // If in Flutter WebView, send failure message before navigation
-  if (isFlutterWebView(hasWebviewToken) && 
-      (purchaseStatus.value === PaymentTransactionStatusEnum.Rejected ||
-       purchaseStatus.value === PaymentTransactionStatusEnum.Refunded ||
-       hasError.value)) {
+  if (
+    isFlutterWebView(hasWebviewToken) &&
+    (purchaseStatus.value === PaymentTransactionStatusEnum.Rejected ||
+      purchaseStatus.value === PaymentTransactionStatusEnum.Refunded ||
+      hasError.value)
+  ) {
     notifyPaymentFailure(hasWebviewToken)
   }
   router.push('/shop/products')
@@ -170,18 +176,16 @@ watch(
         You will receive an email as soon as the transaction is complete. Please do not attempt to
         pay again.
       </p>
-      
+
       <!-- Retry information -->
       <div v-if="isRetrying" class="retry-info">
         <div class="retry-indicator">
           <div class="spinner"></div>
           <span>Checking status... ({{ retryCount }}/{{ maxRetries }})</span>
         </div>
-        <p class="text-muted small">
-          We're automatically checking for updates every 2 seconds.
-        </p>
+        <p class="text-muted small">We're automatically checking for updates every 2 seconds.</p>
       </div>
-      
+
       <button @click="goToShop" class="btn-primary">Back to Shop</button>
     </div>
 
@@ -321,8 +325,12 @@ watch(
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 h2 {

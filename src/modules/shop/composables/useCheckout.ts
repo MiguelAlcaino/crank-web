@@ -52,7 +52,7 @@ export const useCheckout = (apiService: IApiService) => {
       // 2. Lock the cart to prevent modifications during payment.
       const lockSuccess = await apiService.lockShoppingCart(appStore().site)
 
-       if (!lockSuccess) {
+      if (!lockSuccess) {
         // If the lock fails, we must stop the process immediately.
         throw new Error('Could not secure the shopping cart for payment. Please try again.')
       }

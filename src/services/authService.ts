@@ -112,15 +112,15 @@ export const authService = {
    * @param {string} token - The JWT token to authenticate with
    * @returns {Promise<{success: boolean, error?: string}>} Result of authentication
    */
-  async authenticateWithToken(token: string): Promise<{success: boolean, error?: string}> {
+  async authenticateWithToken(token: string): Promise<{ success: boolean; error?: string }> {
     try {
       // First, validate the token format and check if it's expired
       if (this.isTokenExpired(token)) {
         console.log('Token is expired, attempting to refresh...')
-        
+
         // Set the expired token so refresh endpoint can use it
         this.setWebviewToken(token)
-        
+
         try {
           // Attempt to refresh the token
           await this.refreshToken()
@@ -128,9 +128,9 @@ export const authService = {
           return { success: true }
         } catch (refreshError) {
           console.error('Failed to refresh token:', refreshError)
-          return { 
-            success: false, 
-            error: 'Token expired and could not be refreshed' 
+          return {
+            success: false,
+            error: 'Token expired and could not be refreshed'
           }
         }
       } else {
@@ -140,9 +140,9 @@ export const authService = {
       }
     } catch (tokenValidationError) {
       console.error('Error validating token:', tokenValidationError)
-      return { 
-        success: false, 
-        error: 'Invalid token format' 
+      return {
+        success: false,
+        error: 'Invalid token format'
       }
     }
   },

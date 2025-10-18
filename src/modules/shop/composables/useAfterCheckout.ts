@@ -20,7 +20,7 @@ export const useAfterCheckout = (apiService: IApiService) => {
   const errorMessage = ref<string | null>(null)
   const purchaseStatus = ref<PaymentTransactionStatusEnum | null>(null)
   const merchantReference = ref<string | null>(null)
-  
+
   // --- RETRY LOGIC FOR WAITING CONFIRMATION ---
   const retryInterval = ref<ReturnType<typeof setTimeout> | null>(null)
   const retryCount = ref<number>(0)
@@ -45,7 +45,7 @@ export const useAfterCheckout = (apiService: IApiService) => {
   const startRetryMechanism = () => {
     // Clear any existing interval
     clearRetryInterval()
-    
+
     isRetrying.value = true
     retryInterval.value = setTimeout(async () => {
       if (retryCount.value < maxRetries) {
@@ -68,12 +68,15 @@ export const useAfterCheckout = (apiService: IApiService) => {
     try {
       console.log(`Verifying status for reference: ${merchantReference.value}`)
       const status = await apiService.checkTransactionStatus(merchantReference.value)
-      
+
       // Update the purchase status
       purchaseStatus.value = status
-      
+
       // If still waiting confirmation and haven't reached max retries, schedule another retry
-      if (status === PaymentTransactionStatusEnum.WaitingConfirmation && retryCount.value < maxRetries) {
+      if (
+        status === PaymentTransactionStatusEnum.WaitingConfirmation &&
+        retryCount.value < maxRetries
+      ) {
         startRetryMechanism()
       } else {
         // Transaction completed or max retries reached, stop retrying
@@ -117,7 +120,7 @@ export const useAfterCheckout = (apiService: IApiService) => {
       console.log(`Verifying status for reference: ${merchantReference.value}`)
       const status = await apiService.checkTransactionStatus(merchantReference.value)
       purchaseStatus.value = status
-      
+
       // If status is WaitingConfirmation, start the retry mechanism
       if (status === PaymentTransactionStatusEnum.WaitingConfirmation) {
         retryCount.value = 0 // Reset retry count for new verification

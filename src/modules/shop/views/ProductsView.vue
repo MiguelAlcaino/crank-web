@@ -122,7 +122,6 @@ onMounted(() => {
         </div>
       </div>
       <br />
- 
 
       <div class="text-center mb-3">
         <h1 class="font-weight-bold">THE GREAT DEALS</h1>

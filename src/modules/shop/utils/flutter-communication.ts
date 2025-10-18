@@ -6,8 +6,8 @@
 declare global {
   interface Window {
     FlutterChannel?: {
-      postMessage: (message: string) => void;
-    };
+      postMessage: (message: string) => void
+    }
   }
 }
 
