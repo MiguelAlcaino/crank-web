@@ -218,6 +218,17 @@ p {
 .active-tab {
   color: #f8f9fa;
   text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 4px;
   font-weight: bolder;
+}
+
+/* Fallback for browsers that do not support text-decoration-thickness */
+@supports not (text-decoration-thickness: 1px) {
+  .active-tab {
+    text-decoration: none;
+    box-shadow: inset 0 -3px 0 #f8f9fa;
+    padding-bottom: 2px;
+  }
 }
 </style>
