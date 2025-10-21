@@ -127,32 +127,27 @@ onMounted(() => {
         <h1 class="font-weight-bold">THE GREAT DEALS</h1>
         <p class="text-muted">XX CREDITS LEFT</p>
       </div>
-      <div v-if="activeTab === 'SESSIONS'">
-        <div class="text-center mb-3">
-          <select
-            v-model="classPackageSelectType"
-            class="custom-select text-uppercase font-weight-bold small"
-            style="max-width: 300px; margin: 0 auto"
-          >
-            <option :value="null">All</option>
-            <option v-for="group in sessionsProductGroups" :key="group.type" :value="group.type">
-              {{ group.title }}
-            </option>
-          </select>
-        </div>
 
-        <div v-if="isLoading" class="text-center">
-          <CrankCircularProgressIndicator
-            text="Loading..."
-            v-if="isLoading"
-          ></CrankCircularProgressIndicator>
-        </div>
-
-        <div v-else-if="hasError" class="text-center">
-          <p>Sorry, we couldn't load the products. Please try again later.</p>
-        </div>
-
-        <div v-else>
+      <div v-if="isLoading" class="text-center mt-5">
+        <CrankCircularProgressIndicator text="Loading..."></CrankCircularProgressIndicator>
+      </div>
+      <div v-else-if="hasError" class="text-center mt-5">
+        <p>Sorry, we couldn't load the products. Please try again later.</p>
+      </div>
+      <div v-else>
+        <div v-if="activeTab === 'SESSIONS'">
+          <div class="text-center mb-3">
+            <select
+              v-model="classPackageSelectType"
+              class="custom-select text-uppercase font-weight-bold small"
+              style="max-width: 300px; margin: 0 auto"
+            >
+              <option :value="null">All</option>
+              <option v-for="group in sessionsProductGroups" :key="group.type" :value="group.type">
+                {{ group.title }}
+              </option>
+            </select>
+          </div>
           <div class="row mt-3" v-for="group in filteredSessionsProductGroups" :key="group.type">
             <div class="col-12">
               <h4>{{ group.title }}</h4>
@@ -167,20 +162,20 @@ onMounted(() => {
             </div>
           </div>
         </div>
-      </div>
-      <div v-else-if="activeTab === 'GIFT_CARDS'">
-        <div class="row mt-3">
-          <div
-            class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3"
-            v-for="giftCard in giftCards"
-            :key="giftCard.id"
-          >
-            <ProductCard :product="giftCard" :is-in-cart="productIdsInCart.has(giftCard.id)">
-            </ProductCard>
+        <div v-else-if="activeTab === 'GIFT_CARDS'">
+          <div class="row mt-3">
+            <div
+              class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3"
+              v-for="giftCard in giftCards"
+              :key="giftCard.id"
+            >
+              <ProductCard :product="giftCard" :is-in-cart="productIdsInCart.has(giftCard.id)">
+              </ProductCard>
+            </div>
           </div>
         </div>
+        <div v-else-if="activeTab === 'FB'"></div>
       </div>
-      <div v-else-if="activeTab === 'FB'"></div>
     </div>
   </div>
 </template>
