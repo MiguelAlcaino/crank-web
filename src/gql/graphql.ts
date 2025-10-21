@@ -1459,8 +1459,6 @@ export type ShoppingCart = {
   giftCardsCodes?: Maybe<Array<Maybe<Scalars['String']>>>
   id: Scalars['ID']
   items: Array<ShoppingCartItem>
-  /** @deprecated Use total instead */
-  subTotal?: Maybe<Scalars['Float']>
   total?: Maybe<ShoppingCartTotalResultUnion>
 }
 
@@ -1508,7 +1506,11 @@ export type ShoppingCartTotal = {
   total?: Maybe<Scalars['Float']>
 }
 
-export type ShoppingCartTotalResultUnion = GiftCardIsNotUsable | ShoppingCartTotal
+export type ShoppingCartTotalResultUnion =
+  | GiftCardIsNotUsable
+  | ShoppingCartTotal
+  | UserAlreadyHaveFirstTimerPackage
+  | UserCanNotBuyFirstTimerPackage
 
 export type SimpleSiteUser = {
   __typename?: 'SimpleSiteUser'
@@ -1676,6 +1678,16 @@ export type UserAlreadyExistsError = Error & {
   code: Scalars['String']
 }
 
+export type UserAlreadyHaveFirstTimerPackage = Error & {
+  __typename?: 'UserAlreadyHaveFirstTimerPackage'
+  code: Scalars['String']
+}
+
+export type UserCanNotBuyFirstTimerPackage = Error & {
+  __typename?: 'UserCanNotBuyFirstTimerPackage'
+  code: Scalars['String']
+}
+
 export type UserInClassRanking = {
   __typename?: 'UserInClassRanking'
   genderRanking?: Maybe<GenderRanking>
@@ -1798,6 +1810,8 @@ export type AddDiscountCodeToShoppingCartMutation = {
               giftCardAmount?: number | null
               amountToPay?: number | null
             }
+          | { __typename: 'UserAlreadyHaveFirstTimerPackage' }
+          | { __typename: 'UserCanNotBuyFirstTimerPackage' }
           | null
         items: Array<{
           __typename: 'ShoppingCartItem'
@@ -1875,6 +1889,8 @@ export type AddItemToShoppingCartMutation = {
               giftCardAmount?: number | null
               amountToPay?: number | null
             }
+          | { __typename: 'UserAlreadyHaveFirstTimerPackage' }
+          | { __typename: 'UserCanNotBuyFirstTimerPackage' }
           | null
         items: Array<{
           __typename: 'ShoppingCartItem'
@@ -1951,6 +1967,8 @@ export type CalculateTotalForShoppingCartQuery = {
               giftCardAmount?: number | null
               amountToPay?: number | null
             }
+          | { __typename: 'UserAlreadyHaveFirstTimerPackage' }
+          | { __typename: 'UserCanNotBuyFirstTimerPackage' }
           | null
         items: Array<{
           __typename: 'ShoppingCartItem'
@@ -2027,6 +2045,8 @@ export type EmptyShoppingCartMutation = {
               giftCardAmount?: number | null
               amountToPay?: number | null
             }
+          | { __typename: 'UserAlreadyHaveFirstTimerPackage' }
+          | { __typename: 'UserCanNotBuyFirstTimerPackage' }
           | null
         items: Array<{
           __typename: 'ShoppingCartItem'
@@ -2192,6 +2212,8 @@ export type GetShoppingCartQuery = {
             giftCardAmount?: number | null
             amountToPay?: number | null
           }
+        | { __typename: 'UserAlreadyHaveFirstTimerPackage' }
+        | { __typename: 'UserCanNotBuyFirstTimerPackage' }
         | null
       items: Array<{
         __typename: 'ShoppingCartItem'
@@ -2283,6 +2305,8 @@ export type RemoveDiscountCodeMutation = {
               giftCardAmount?: number | null
               amountToPay?: number | null
             }
+          | { __typename: 'UserAlreadyHaveFirstTimerPackage' }
+          | { __typename: 'UserCanNotBuyFirstTimerPackage' }
           | null
         items: Array<{
           __typename: 'ShoppingCartItem'
@@ -2360,6 +2384,8 @@ export type RemoveItemFromShoppingCartMutation = {
               giftCardAmount?: number | null
               amountToPay?: number | null
             }
+          | { __typename: 'UserAlreadyHaveFirstTimerPackage' }
+          | { __typename: 'UserCanNotBuyFirstTimerPackage' }
           | null
         items: Array<{
           __typename: 'ShoppingCartItem'
@@ -2438,6 +2464,8 @@ export type UpdateItemInShoppingCartMutation = {
               giftCardAmount?: number | null
               amountToPay?: number | null
             }
+          | { __typename: 'UserAlreadyHaveFirstTimerPackage' }
+          | { __typename: 'UserCanNotBuyFirstTimerPackage' }
           | null
         items: Array<{
           __typename: 'ShoppingCartItem'
@@ -2582,6 +2610,8 @@ export type ShoppingCartFieldsFragment = {
         giftCardAmount?: number | null
         amountToPay?: number | null
       }
+    | { __typename: 'UserAlreadyHaveFirstTimerPackage' }
+    | { __typename: 'UserCanNotBuyFirstTimerPackage' }
     | null
   items: Array<{
     __typename: 'ShoppingCartItem'

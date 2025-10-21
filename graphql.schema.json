@@ -4190,6 +4190,16 @@
           },
           {
             "kind": "OBJECT",
+            "name": "UserAlreadyHaveFirstTimerPackage",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "UserCanNotBuyFirstTimerPackage",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
             "name": "UserPasswordDoesNotMatchError",
             "ofType": null
           },
@@ -10894,18 +10904,6 @@
             "deprecationReason": null
           },
           {
-            "name": "subTotal",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "isDeprecated": true,
-            "deprecationReason": "Use total instead"
-          },
-          {
             "name": "total",
             "description": null,
             "args": [],
@@ -11242,6 +11240,16 @@
           {
             "kind": "OBJECT",
             "name": "ShoppingCartTotal",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "UserAlreadyHaveFirstTimerPackage",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "UserCanNotBuyFirstTimerPackage",
             "ofType": null
           }
         ]
@@ -12533,6 +12541,74 @@
       {
         "kind": "OBJECT",
         "name": "UserAlreadyExistsError",
+        "description": null,
+        "isOneOf": null,
+        "fields": [
+          {
+            "name": "code",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "Error",
+            "ofType": null
+          }
+        ],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "UserAlreadyHaveFirstTimerPackage",
+        "description": null,
+        "isOneOf": null,
+        "fields": [
+          {
+            "name": "code",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "Error",
+            "ofType": null
+          }
+        ],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "UserCanNotBuyFirstTimerPackage",
         "description": null,
         "isOneOf": null,
         "fields": [

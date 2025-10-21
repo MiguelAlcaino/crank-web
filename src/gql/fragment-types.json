@@ -84,6 +84,8 @@
       "TryToSwitchToSameSpotError",
       "UnknownError",
       "UserAlreadyExistsError",
+      "UserAlreadyHaveFirstTimerPackage",
+      "UserCanNotBuyFirstTimerPackage",
       "UserPasswordDoesNotMatchError",
       "UsernameAlreadyUsedError",
       "WaitlistEntryNotFoundError",
@@ -130,7 +132,12 @@
       "ShoppingCartItemNotFound",
       "ShoppingCartNotFound"
     ],
-    "ShoppingCartTotalResultUnion": ["GiftCardIsNotUsable", "ShoppingCartTotal"],
+    "ShoppingCartTotalResultUnion": [
+      "GiftCardIsNotUsable",
+      "ShoppingCartTotal",
+      "UserAlreadyHaveFirstTimerPackage",
+      "UserCanNotBuyFirstTimerPackage"
+    ],
     "SwapSpotResultUnion": ["SwapSpotSuccess", "TryToSwitchToSameSpotError"]
   }
 }
