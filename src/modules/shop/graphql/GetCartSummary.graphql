@@ -1,0 +1,14 @@
+query GetCartSummary($site: SiteEnum!) {
+  currentUser {
+    shoppingCart(site: $site) {
+      id
+      items {
+        id
+        quantity
+        variant {
+          id
+        }
+      }
+    }
+  }
+}

@@ -57,7 +57,7 @@ import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIn
 import IconCalendarCard from '@/components/icons/IconCalendarCard.vue'
 import ModalComponent from '@/components/ModalComponent.vue'
 import { appStore } from '@/stores/appStorage'
-import type { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/ApiService'
 import { authService } from '@/services/authService'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 
@@ -475,7 +475,7 @@ function smoothScroll(element: HTMLElement, start: number, end: number, duration
           </thead>
           <tbody>
             <tr v-for="(colRow, key) in calendarDays" :key="key">
-              <td style="border-left: 0px !important; min-width: 110px">
+              <td style="border-left: 0 !important; min-width: 110px">
                 <CalendarCard
                   :classInfo="colRow.MON"
                   :isEnrolled="
@@ -509,8 +509,8 @@ function smoothScroll(element: HTMLElement, start: number, end: number, duration
                     colRow.THU != null && enrollmentClassIds.indexOf(colRow.THU?.id) !== -1
                   "
                   :disabled="calendarCardIsDisabled(colRow.THU)"
-                  >></CalendarCard
-                >
+                  >>
+                </CalendarCard>
               </td>
               <td style="min-width: 110px">
                 <CalendarCard
@@ -548,10 +548,17 @@ function smoothScroll(element: HTMLElement, start: number, end: number, duration
   <!-- icons -->
   <div class="row gy-5 mt-5">
     <div class="offset-3"></div>
-    <div class="col-md-2 avenir-font"><IconCalendarCard letter="E"></IconCalendarCard>Enrolled</div>
-    <div class="col-md-2 avenir-font"><IconCalendarCard letter="W"></IconCalendarCard>Waitlist</div>
     <div class="col-md-2 avenir-font">
-      <IconCalendarCard letter="S"></IconCalendarCard>Substitute
+      <IconCalendarCard letter="E"></IconCalendarCard>
+      Enrolled
+    </div>
+    <div class="col-md-2 avenir-font">
+      <IconCalendarCard letter="W"></IconCalendarCard>
+      Waitlist
+    </div>
+    <div class="col-md-2 avenir-font">
+      <IconCalendarCard letter="S"></IconCalendarCard>
+      Substitute
     </div>
     <div class="offset-3"></div>
   </div>

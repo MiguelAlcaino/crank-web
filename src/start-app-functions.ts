@@ -1,13 +1,11 @@
 import { createApp, h, provide } from 'vue'
 import { newAnonymousClient, newAuthenticatedApolloClient } from './services/graphqlClient'
-import { ApiService } from './services/apiService'
+import { ApiService } from './services/ApiService'
 import { createPinia } from 'pinia'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faLeftLong, faStepBackward, faStepForward } from '@fortawesome/free-solid-svg-icons'
-library.add(faStepBackward, faStepForward, faLeftLong)
-
 import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
 
@@ -24,6 +22,8 @@ import { appStore } from './stores/appStorage'
 import App from '@/App.vue'
 import { authService } from './services/authService'
 import { SiteEnum } from './modules/shared/interfaces/site.enum'
+
+library.add(faStepBackward, faStepForward, faLeftLong)
 
 const defaultGqlUrl = import.meta.env.VITE_CRANK_GRAPHQL_SERVER_URL
 const defaultAppDiv = '#app'

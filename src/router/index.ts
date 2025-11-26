@@ -18,6 +18,7 @@ import MenuLayout from '@/layouts/MenuLayout.vue'
 import PaymentsIframeView from '@/views/PaymentsIframeView.vue'
 import LoginRedirectView from '@/modules/login-redirect/views/LoginRedirectView.vue'
 import SmsVerificationView from '@/modules/buy_packages/views/SmsVerificationView.vue'
+import { shopRoute } from '@/modules/shop/router'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -122,7 +123,8 @@ const router = createRouter({
       path: '/sms-verification',
       name: 'sms_verification',
       component: SmsVerificationView
-    }
+    },
+    shopRoute
   ]
 })
 
@@ -133,7 +135,8 @@ router.beforeEach(async (to, from, next) => {
     '/forgot-password',
     '/reset-password',
     '/calendar',
-    '/login-redirect'
+    '/login-redirect',
+    '/shop/checkout' // Public to allow access from webview with token
   ]
   const authRequired = !publicPages.includes(to.path)
 

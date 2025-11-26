@@ -14,7 +14,9 @@ interface ClassInfo {
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import IconCalendarCard from '@/components/icons/IconCalendarCard.vue'
-import router from '@/router'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const props = defineProps<{
   classInfo?: ClassInfo
@@ -84,6 +86,7 @@ async function selectClass() {
   background-color: #f5f5f5 !important;
   cursor: not-allowed;
 }
+
 .classCard {
   cursor: pointer;
   min-height: 100px;

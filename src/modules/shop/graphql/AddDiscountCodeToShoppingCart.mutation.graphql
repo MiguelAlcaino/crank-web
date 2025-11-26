@@ -1,0 +1,14 @@
+mutation AddDiscountCodeToShoppingCart($site: SiteEnum!, $discountCode: String!) {
+  addDiscountCodeToShoppingCart(site: $site, discountCode: $discountCode) {
+    __typename
+    ... on ShoppingCart {
+      ...ShoppingCartFields
+    }
+    ... on DiscountCodeIsInvalid {
+      code
+    }
+    ... on ShoppingCartIsEmpty {
+      code
+    }
+  }
+}

@@ -1,0 +1,145 @@
+{
+  "possibleTypes": {
+    "AcceptLateCancelledSpotInClassResultUnion": [
+      "AcceptLateCancelledSpotInClassSuccess",
+      "ClassIsFullError",
+      "ClientIsAlreadyBookedError",
+      "ClientIsOutsideSchedulingWindowError",
+      "PaymentRequiredError",
+      "UnknownError"
+    ],
+    "AdminUserResultUnion": ["AdminUser", "EmailAlreadyUsedError", "UsernameAlreadyUsedError"],
+    "BookClassResultUnion": [
+      "AddedToWaitlistSuccess",
+      "BookClassSuccess",
+      "BookedButInOtherSpotError",
+      "BookingOverlapsAnotherOneError",
+      "ClassIsFullError",
+      "ClientIsAlreadyBookedError",
+      "ClientIsAlreadyOnWaitlistError",
+      "ClientIsOutsideSchedulingWindowError",
+      "PaymentRequiredError",
+      "SpotAlreadyReservedError",
+      "SpotIsDisabledError",
+      "UnknownError",
+      "WaitlistFullError"
+    ],
+    "CancelEnrollmentResultUnion": [
+      "CancelUserEnrollmentSuccess",
+      "LateCancellationRequiredError",
+      "UnknownError"
+    ],
+    "ChallengeInterface": ["DistanceChallenge"],
+    "CheckinResultUnion": ["CheckinSuccess", "EnrollmentNotFoundError"],
+    "CheckoutResultUnion": ["CheckoutSuccess", "EnrollmentNotFoundError"],
+    "ClassPositionInterface": ["BookableSpot", "IconPosition"],
+    "CreateCurrentUserInSiteUnion": ["CreateCurrentUserInSiteSuccess", "UserAlreadyExistsError"],
+    "DeleteCurrentUserAccountUnion": [
+      "DeleteCurrentUserAccountSuccess",
+      "UserPasswordDoesNotMatchError"
+    ],
+    "DisableEnableSpotResultUnion": ["DisableEnableSpotResult", "SpotNotFoundError"],
+    "EditClassResultUnion": ["EditClassSuccessResult"],
+    "EditEnrollmentResultUnion": [
+      "ClientIsOutsideSchedulingWindowError",
+      "Enrollment",
+      "SpotAlreadyReservedError",
+      "TryToSwitchToSameSpotError"
+    ],
+    "EditUserResultUnion": ["IdentifiableUser", "OtherUserHasThisExternalIdError"],
+    "EnrollmentInfoInterface": ["EnrollmentInfo", "WaitlistEntry"],
+    "Error": [
+      "BookedButInOtherSpotError",
+      "BookingOverlapsAnotherOneError",
+      "ClassIsFullError",
+      "ClientIsAlreadyBookedError",
+      "ClientIsAlreadyOnWaitlistError",
+      "ClientIsOutsideSchedulingWindowError",
+      "ClientNotFoundInMindbody",
+      "DiscountCodeIsEmpty",
+      "DiscountCodeIsInvalid",
+      "DontNeedMoreGiftCards",
+      "EmailAlreadyUsedError",
+      "EnrollmentNotFoundError",
+      "GiftCardAlreadyRegisteredForCurrentShoppingCart",
+      "GiftCardIsNotUsable",
+      "GiftCardNotRegisteredOnCurrentShoppingCart",
+      "LateCancellationRequiredError",
+      "MobilePhoneAlreadyVerifiedError",
+      "MobilePhoneNotValidError",
+      "OtherUserHasThisExternalIdError",
+      "PasswordsDontMatchError",
+      "PaymentRequiredError",
+      "PositionAlreadyTakenError",
+      "ProductNotFound",
+      "RequestSMSValidationNeededError",
+      "SMSValidationCodeError",
+      "ShoppingCartIsEmpty",
+      "ShoppingCartItemNotFound",
+      "ShoppingCartNotFound",
+      "SpotAlreadyReservedError",
+      "SpotIsDisabledError",
+      "SpotNotFoundError",
+      "TemporalTransactionNotFound",
+      "TooManyResetPasswordLinkRequestsError",
+      "TryToSwitchToSameSpotError",
+      "UnknownError",
+      "UserAlreadyExistsError",
+      "UserAlreadyHaveFirstTimerPackage",
+      "UserCanNotBuyFirstTimerPackage",
+      "UserPasswordDoesNotMatchError",
+      "UsernameAlreadyUsedError",
+      "WaitlistEntryNotFoundError",
+      "WaitlistFullError"
+    ],
+    "IsSmsValidationCodeValidUnion": [
+      "MobilePhoneAlreadyVerifiedError",
+      "RequestSMSValidationNeededError",
+      "SMSCodeValidatedSuccessfully",
+      "SMSValidationCodeError"
+    ],
+    "PaginatedResult": ["PaginatedClassStats", "PaginatedEnrollments", "PaginatedPurchases"],
+    "PaymentTransactionUnion": ["PaymentTransactionStatus", "TemporalTransactionNotFound"],
+    "RejectLateBookingResultUnion": [
+      "PositionAlreadyTakenError",
+      "RejectLateCancelledSpotInClassSuccess"
+    ],
+    "RemainingCreditsResultUnion": ["ClientNotFoundInMindbody", "RemainingCreditsSuccess"],
+    "RemoveCurrentUserFromWaitlistUnion": [
+      "RemoveFromWaitlistResult",
+      "WaitlistEntryNotFoundError"
+    ],
+    "RemoveUserFromWaitlistUnion": ["RemoveFromWaitlistResult", "WaitlistEntryNotFoundError"],
+    "ResetPasswordForCurrentUserUnion": ["PasswordsDontMatchError", "ResetPasswordSuccess"],
+    "ResetPasswordLinkResultUnion": [
+      "ResetPasswordLinkSentSuccessfully",
+      "TooManyResetPasswordLinkRequestsError"
+    ],
+    "SMSValidationUnion": [
+      "MobilePhoneAlreadyVerifiedError",
+      "MobilePhoneNotValidError",
+      "SuccessfulRequestSMSValidation"
+    ],
+    "SellableProductInterface": ["ClassPackageProduct", "GiftCard"],
+    "ShoppingCartResultUnion": [
+      "DiscountCodeIsEmpty",
+      "DiscountCodeIsInvalid",
+      "DontNeedMoreGiftCards",
+      "GiftCardAlreadyRegisteredForCurrentShoppingCart",
+      "GiftCardIsNotUsable",
+      "GiftCardNotRegisteredOnCurrentShoppingCart",
+      "ProductNotFound",
+      "ShoppingCart",
+      "ShoppingCartIsEmpty",
+      "ShoppingCartItemNotFound",
+      "ShoppingCartNotFound"
+    ],
+    "ShoppingCartTotalResultUnion": [
+      "GiftCardIsNotUsable",
+      "ShoppingCartTotal",
+      "UserAlreadyHaveFirstTimerPackage",
+      "UserCanNotBuyFirstTimerPackage"
+    ],
+    "SwapSpotResultUnion": ["SwapSpotSuccess", "TryToSwitchToSameSpotError"]
+  }
+}

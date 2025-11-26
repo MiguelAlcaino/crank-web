@@ -12,7 +12,7 @@ interface TooManyResetPasswordLinkRequestsError {
 </script>
 
 <script setup lang="ts">
-import type { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/ApiService'
 import useVuelidate from '@vuelidate/core'
 import { email, helpers, required } from '@vuelidate/validators'
 import { computed, inject, reactive, ref } from 'vue'
@@ -22,8 +22,9 @@ import ModalComponent from '@/components/ModalComponent.vue'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 import { SUCCESS_RESET_PASSWORD_LINK_SENT } from '@/utils/successMessages'
 import dayjs from 'dayjs'
-import router from '@/router'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const apiService = inject<ApiService>('gqlApiService')!
 
 const sendingEmail = ref<boolean>(false)

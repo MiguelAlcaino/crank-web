@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { inject, onMounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 import dayjs from 'dayjs'
 
-import type { ClassInfo, EnrollmentInfo, BookableSpot } from '@/gql/graphql'
+import type { BookableSpot, ClassInfo, EnrollmentInfo } from '@/gql/graphql'
 
 import ModalComponent from '@/components/ModalComponent.vue'
 
@@ -12,7 +12,7 @@ import SpotMatrix from '@/components/SpotMatrix.vue'
 import YouAreAlreadyEnrolled from '@/components/YouAreAlreadyEnrolled.vue'
 import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
 
-import type { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/ApiService'
 import { appStore } from '@/stores/appStorage'
 import {
   ERROR_CLIENT_IS_OUTSIDE_SCHEDULING_WINDOW,
@@ -24,6 +24,7 @@ import { SUCCESS_CHANGE_SPOT } from '@/utils/successMessages'
 import { PositionIconEnum } from '@/modules/shared/interfaces/position-icon.enum'
 
 const route = useRoute()
+const router = useRouter()
 
 const classId = ref<string>('')
 const newSpotNumber = ref<number | null>(null)
@@ -155,7 +156,7 @@ async function editCurrentUserEnrollment() {
     <div class="col-md-6 col-sm-4">
       <div class="text-right">
         <div class="form-group form-material">
-          <button type="button" class="btn btn-link" @click="$router.go(-1)">
+          <button type="button" class="btn btn-link" @click="router.go(-1)">
             <font-awesome-icon icon="fa-solid fa-left-long" />&nbsp;Back to Bookings
           </button>
         </div>

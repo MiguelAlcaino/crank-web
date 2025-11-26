@@ -1,0 +1,7 @@
+query GetCurrentUserBasicInfo {
+  currentUser {
+    firstName
+    lastName
+    email
+  }
+}

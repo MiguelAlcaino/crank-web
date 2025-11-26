@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Site } from '@/modules/shared/interfaces/site'
 import type { SiteEnum } from '@/modules/shared/interfaces/site.enum'
-import type { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/ApiService'
 import { appStore } from '@/stores/appStorage'
 import { inject, onMounted, ref } from 'vue'
 

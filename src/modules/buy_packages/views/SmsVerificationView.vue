@@ -4,15 +4,16 @@ import { computed, inject, onMounted, reactive, ref } from 'vue'
 import useVuelidate from '@vuelidate/core'
 import { helpers, required } from '@vuelidate/validators'
 import { getFormattedPhoneNumber } from '@/utils/utility-functions'
-import type { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/ApiService'
 import { VueTelInput } from 'vue-tel-input'
 
 import DefaultButtonComponent from '@/components/DefaultButtonComponent.vue'
 import ModalComponent from '@/components/ModalComponent.vue'
 import type { PhoneObject } from '../interfaces/phone-object.interface'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
-import { useRoute } from 'vue-router'
-import router from '@/router'
+import { useRoute, useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const apiService = inject<ApiService>('gqlApiService')!
 
@@ -233,8 +234,8 @@ async function acceptSuccessModal() {
   </div>
 
   <!-- SMS Code Modal -->
-  <transition name="modal" v-if="smsCodeModalIsVisible">
-    <div class="modal-mask">
+  <transition name="modal">
+    <div class="modal-mask" v-if="smsCodeModalIsVisible">
       <div class="modal-wrapper">
         <div class="modal-dialog" role="document">
           <div class="modal-content">

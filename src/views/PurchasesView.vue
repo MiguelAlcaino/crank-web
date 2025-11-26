@@ -13,7 +13,7 @@ interface Purchase {
 <script setup lang="ts">
 import { inject, onMounted, ref } from 'vue'
 import dayjs from 'dayjs'
-import type { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/ApiService'
 import { appStore } from '@/stores/appStorage'
 
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
@@ -44,10 +44,14 @@ async function currentUserPurchasesPaginated() {
   try {
     await getSiteDateTimeNow()
 
-    const paginatedPurchases = await apiService.currentUserPurchasesPaginated(appStore().site, {
-      limit: pageLimit,
-      page: currentPage.value
-    })
+    const paginatedPurchases = await apiService.currentUserPurchasesPaginated(
+      appStore().site,
+      {
+        limit: pageLimit,
+        page: currentPage.value
+      },
+      {}
+    )
 
     total.value = paginatedPurchases.total
     purchases.value = paginatedPurchases.purchases as Purchase[]
@@ -182,6 +186,7 @@ function afterChangingSite() {
 p {
   font-family: 'Avenir', sans-serif;
 }
+
 td {
   font-family: 'Avenir', sans-serif;
 }

@@ -1,0 +1,13 @@
+query PaymentLink($id: ID!) {
+  paymentLink(id: $id) {
+    id
+    title
+    amount
+    currency
+    url
+    site {
+      name
+      code
+    }
+  }
+}

@@ -1,0 +1,8 @@
+# This mutation generates the necessary HTML form from the Payfort gateway
+# to process a payment transaction.
+# It requires the site and a PayfortFormInput object.
+mutation GeneratePayfortForm($site: SiteEnum!, $input: PayfortFormInput!) {
+  payfortForm(site: $site, input: $input) {
+    htmlForm
+  }
+}

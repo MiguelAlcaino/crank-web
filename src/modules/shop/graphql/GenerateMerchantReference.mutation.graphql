@@ -1,0 +1,6 @@
+# This mutation generates a unique merchant reference ID
+# required to initiate a payment transaction with the payment gateway.
+# It returns a unique ID string on success.
+mutation GenerateMerchantReference($site: SiteEnum!) {
+  generateMerchantReference(site: $site)
+}

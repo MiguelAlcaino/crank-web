@@ -1,56 +1,129 @@
 import { gql } from '@apollo/client'
-import type {
-  BookClassInput,
-  CalendarClassesParams,
-  CancelEnrollmentInput,
-  Class,
-  ClassInfo,
-  ClassStat,
-  Country,
-  CreateCurrentUserInSiteUnion,
-  CurrentUserEnrollmentsParams,
-  EditClassInput,
-  EditClassResultUnion,
-  EditEnrollmentInput,
-  EditEnrollmentResultUnion,
-  Enrollment,
-  EnrollmentInfo,
-  Purchase,
-  RegisterUserInput,
-  RemoveCurrentUserFromWaitlistInput,
-  RemoveUserFromWaitlistInput,
-  RemoveUserFromWaitlistUnion,
-  RequestPasswordLinkInput,
-  ResetPasswordForCurrentUserInput,
-  ResetPasswordForCurrentUserUnion,
-  ResetPasswordLinkResultUnion,
-  SiteEnum,
-  UpdateCurrentUserPasswordInput,
-  User,
-  UserInClassRanking,
-  UserInRankingParams,
-  UserInput,
-  AcceptLateCancelledSpotInClassInput,
-  AcceptLateCancelledSpotInClassResultUnion,
-  RejectLateCancelledSpotInClassInput,
-  RejectLateBookingResultUnion,
-  SimpleSiteUser,
-  PaginationInput,
-  PaginatedEnrollments,
-  PaginatedClassStats,
-  PaginatedPurchases,
-  SmsValidationUnion,
-  IsSmsValidationCodeValidUnion,
-  Site
+import {
+  type AcceptLateCancelledSpotInClassInput,
+  type AcceptLateCancelledSpotInClassResultUnion,
+  AddItemToShoppingCartDocument,
+  type AddItemToShoppingCartMutation,
+  type AddItemToShoppingCartMutationVariables,
+  type BookClassInput,
+  CalculateTotalForShoppingCartDocument,
+  type CalculateTotalForShoppingCartQuery,
+  type CalculateTotalForShoppingCartQueryVariables,
+  type CalendarClassesParams,
+  type CancelEnrollmentInput,
+  type Class,
+  type ClassInfo,
+  type ClassStat,
+  type Country,
+  type CreateCurrentUserInSiteUnion,
+  type CurrentUserEnrollmentsParams,
+  type EditClassInput,
+  type EditClassResultUnion,
+  type EditEnrollmentInput,
+  type EditEnrollmentResultUnion,
+  EmptyShoppingCartDocument,
+  type EmptyShoppingCartMutation,
+  type EmptyShoppingCartMutationVariables,
+  type Enrollment,
+  type EnrollmentInfo,
+  EnrollmentTypeEnum,
+  GenerateMerchantReferenceDocument,
+  type GenerateMerchantReferenceMutation,
+  type GenerateMerchantReferenceMutationVariables,
+  GeneratePayfortFormDocument,
+  type GeneratePayfortFormMutation,
+  type GeneratePayfortFormMutationVariables,
+  GetCartSummaryDocument,
+  GetCurrentUserBasicInfoDocument,
+  GetProductsDocument,
+  type GetProductsQuery,
+  type GetProductsQueryVariables,
+  GetShoppingCartDocument,
+  type GetShoppingCartQuery,
+  type GetShoppingCartQueryVariables,
+  type IsSmsValidationCodeValidUnion,
+  type ItemToShoppingCartInput,
+  LockShoppingCartDocument,
+  type LockShoppingCartMutation,
+  type LockShoppingCartMutationVariables,
+  type PaginatedClassStats,
+  type PaginatedEnrollments,
+  type PaginatedPurchases,
+  type PaginationInput,
+  type PayfortFormInput,
+  PaymentTransactionStatusDocument,
+  PaymentTransactionStatusEnum,
+  type PaymentTransactionStatusInput,
+  type PaymentTransactionStatusQuery,
+  type PaymentTransactionStatusQueryVariables,
+  type ProductType,
+  type RegisterUserInput,
+  type RejectLateBookingResultUnion,
+  type RejectLateCancelledSpotInClassInput,
+  type RemoveCurrentUserFromWaitlistInput,
+  RemoveDiscountCodeDocument,
+  type RemoveDiscountCodeMutation,
+  type RemoveDiscountCodeMutationVariables,
+  RemoveItemFromShoppingCartDocument,
+  type RemoveItemFromShoppingCartMutation,
+  type RemoveItemFromShoppingCartMutationVariables,
+  type RemoveUserFromWaitlistInput,
+  type RemoveUserFromWaitlistUnion,
+  type RequestPasswordLinkInput,
+  type ResetPasswordForCurrentUserInput,
+  type ResetPasswordForCurrentUserUnion,
+  type ResetPasswordLinkResultUnion,
+  type ShoppingCart as GqlShoppingCart,
+  type SimpleSiteUser,
+  type Site,
+  type SiteSetting,
+  type SmsValidationUnion,
+  type UpdateCurrentUserPasswordInput,
+  UpdateItemInShoppingCartDocument,
+  type UpdateItemInShoppingCartMutation,
+  type UpdateItemInShoppingCartMutationVariables,
+  type User,
+  type UserInClassRanking,
+  type UserInput,
+  type UserInRankingParams,
+  type AddDiscountCodeToShoppingCartMutation,
+  type AddDiscountCodeToShoppingCartMutationVariables,
+  AddDiscountCodeToShoppingCartDocument,
+  type CurrentUserPurchasesPaginatedParams,
+  PaymentLinkDocument,
+  type PaymentLink
 } from '@/gql/graphql'
-import { EnrollmentTypeEnum, type SiteSetting } from '@/gql/graphql'
 import { ApolloClient, ApolloError } from '@apollo/client/core'
 import { CustomCalendarClasses } from '@/model/CustomCalendarClasses'
 import { SmsValidationResponse } from '@/modules/buy_packages/models/sms-validation-response'
 import { IsSmsValidationCodeValidResponse } from '@/modules/buy_packages/models/is-sms-validation-code-valid-response'
+import type { IApiService } from './IApiService'
+import type { Product, ProductFromQuery } from '@/modules/shop/models/Product'
+import { createProductModel } from '@/modules/shop/factories/productFactory'
+import type { AppProductType } from '@/modules/shop/models/types'
+import type { SiteEnum } from '@/modules/shared/interfaces/site.enum'
+import type { ShoppingCart as ShoppingCartModel } from '@/modules/shop/models/ShoppingCart'
+import { createShoppingCartModel } from '@/modules/shop/factories/shoppingCartFactory'
+import type { BasicUser } from '@/modules/auth/types'
+import type { CartSummary } from '@/modules/shop/interfaces/cart-summary'
 
-export class ApiService {
+// A custom error class to handle API errors more cleanly.
+export class ApiError extends Error {
+  constructor(message: string, public readonly code?: string) {
+    super(message)
+    this.name = 'ApiError'
+  }
+}
+
+export class ApiService implements IApiService {
+  /**
+   * Apollo client for making authenticated requests.
+   */
   authApiClient: ApolloClient<any>
+
+  /**
+   * Apollo client for making anonymous requests.
+   */
   anonymousApiClient: ApolloClient<any>
 
   constructor(authApiClient: ApolloClient<any>, anonymousApiClient: ApolloClient<any>) {
@@ -128,39 +201,6 @@ export class ApiService {
     }
   }
 
-  async getCurrentUserWorkoutStats(site: SiteEnum): Promise<ClassStat[]> {
-    const query = gql`
-      query currentUserWorkoutStats($site: SiteEnum!) {
-        currentUserWorkoutStats(site: $site) {
-          enrollment {
-            enrollmentInfo {
-              id
-              ... on EnrollmentInfo {
-                spotNumber
-              }
-            }
-            class {
-              name
-              start
-              duration
-            }
-          }
-          totalEnergy
-        }
-      }
-    `
-
-    const queryResult = await this.authApiClient.query({
-      query: query,
-      variables: {
-        site: site
-      },
-      fetchPolicy: 'network-only'
-    })
-
-    return queryResult.data.currentUserWorkoutStats as ClassStat[]
-  }
-
   async currentUserSingleWorkoutStat(enrollmentId: string): Promise<ClassStat> {
     const query = gql`
       query currentUserSingleWorkoutStat($enrollmentId: ID!) {
@@ -206,52 +246,6 @@ export class ApiService {
     return queryResult.data.currentUserSingleWorkoutStat as ClassStat
   }
 
-  async getCurrentUserEnrollments(
-    site: SiteEnum,
-    params: CurrentUserEnrollmentsParams
-  ): Promise<Enrollment[]> {
-    const CURRENT_USER_ENROLLMENTS_QUERY = gql`
-      query currentUserEnrollments($site: SiteEnum!, $params: CurrentUserEnrollmentsParams) {
-        currentUserEnrollments(site: $site, params: $params) {
-          enrollmentInfo {
-            id
-            enrollmentStatus
-            enrollmentDateTime
-            enrollmentDateTimeWithNoTimeZone
-            ... on EnrollmentInfo {
-              spotNumber
-            }
-            ... on WaitlistEntry {
-              canBeTurnedIntoEnrollment
-            }
-          }
-          class {
-            id
-            name
-            description
-            instructorName
-            start
-            startWithNoTimeZone
-            duration
-            waitListAvailable
-            showAsDisabled
-          }
-        }
-      }
-    `
-
-    const queryResult = await this.authApiClient.query({
-      query: CURRENT_USER_ENROLLMENTS_QUERY,
-      variables: {
-        site: site,
-        params: params
-      },
-      fetchPolicy: 'network-only'
-    })
-
-    return queryResult.data.currentUserEnrollments as Enrollment[]
-  }
-
   async getCurrentUserEnrollmentInClass(classId: string): Promise<EnrollmentInfo | null> {
     const CURRENT_USER_ENROLLMENT_IN_CLASS_QUERY = gql`
       query currentUserEnrollmentInClass($classId: ID!) {
@@ -281,33 +275,6 @@ export class ApiService {
       return null
     } catch (error) {
       return null
-    }
-  }
-
-  async getCurrentUserPurchases(site: SiteEnum): Promise<Purchase[]> {
-    const CURRENT_USER_PURCHASES_QUERY = gql`
-      query currentUserPurchases($site: SiteEnum!) {
-        currentUserPurchases(site: $site) {
-          packageName
-          allowanceObtained
-          allowanceRemaining
-          paymentDateTime
-          activationDateTime
-          expirationDateTime
-        }
-      }
-    `
-    try {
-      const queryResult = await this.authApiClient.query({
-        query: CURRENT_USER_PURCHASES_QUERY,
-        variables: {
-          site: site
-        }
-      })
-
-      return queryResult.data.currentUserPurchases as Purchase[]
-    } catch (error) {
-      return []
     }
   }
 
@@ -803,7 +770,7 @@ export class ApiService {
       newSpotNumber: newSpotNumber
     } as EditEnrollmentInput
 
-    const muration = gql`
+    const mutation = gql`
       mutation editCurrentUserEnrollment($site: SiteEnum!, $input: EditEnrollmentInput!) {
         editCurrentUserEnrollment(site: $site, input: $input) {
           __typename
@@ -822,7 +789,7 @@ export class ApiService {
 
     try {
       const result = await this.authApiClient.mutate({
-        mutation: muration,
+        mutation: mutation,
         variables: {
           site: site,
           input: input
@@ -839,7 +806,7 @@ export class ApiService {
   async requestPasswordLink(email: string): Promise<ResetPasswordLinkResultUnion | null> {
     const input = { email: email } as RequestPasswordLinkInput
 
-    const muration = gql`
+    const mutation = gql`
       mutation requestPasswordLink($input: RequestPasswordLinkInput) {
         requestPasswordLink(input: $input) {
           ... on TooManyResetPasswordLinkRequestsError {
@@ -854,7 +821,7 @@ export class ApiService {
 
     try {
       const result = await this.authApiClient.mutate({
-        mutation: muration,
+        mutation: mutation,
         variables: {
           input: input
         },
@@ -876,7 +843,7 @@ export class ApiService {
       repeatedPassword: repeatedPassword
     } as ResetPasswordForCurrentUserInput
 
-    const muration = gql`
+    const mutation = gql`
       mutation resetPasswordForCurrentUser($input: ResetPasswordForCurrentUserInput) {
         resetPasswordForCurrentUser(input: $input) {
           __typename
@@ -894,7 +861,7 @@ export class ApiService {
 
     try {
       const result = await this.authApiClient.mutate({
-        mutation: muration,
+        mutation: mutation,
         variables: {
           input: input
         },
@@ -934,7 +901,7 @@ export class ApiService {
     fromSite: string,
     toSite: string
   ): Promise<CreateCurrentUserInSiteUnion | null> {
-    const muration = gql`
+    const mutation = gql`
       mutation createCurrentUserInSite($fromSite: SiteEnum!, $toSite: SiteEnum!) {
         createCurrentUserInSite(fromSite: $fromSite, toSite: $toSite) {
           ... on CreateCurrentUserInSiteSuccess {
@@ -951,7 +918,7 @@ export class ApiService {
 
     try {
       const result = await this.authApiClient.mutate({
-        mutation: muration,
+        mutation: mutation,
         variables: {
           fromSite: fromSite,
           toSite: toSite
@@ -968,7 +935,7 @@ export class ApiService {
   async removeUserFromWaitlist(waitlistEntryId: string): Promise<RemoveUserFromWaitlistUnion> {
     const input = { waitlistEntryId: waitlistEntryId } as RemoveUserFromWaitlistInput
 
-    const muration = gql`
+    const mutation = gql`
       mutation removeUserFromWaitlist($input: RemoveUserFromWaitlistInput!) {
         removeUserFromWaitlist(input: $input) {
           ... on RemoveFromWaitlistResult {
@@ -982,7 +949,7 @@ export class ApiService {
     `
 
     const result = await this.authApiClient.mutate({
-      mutation: muration,
+      mutation: mutation,
       variables: {
         input: input
       },
@@ -1255,11 +1222,16 @@ export class ApiService {
 
   async currentUserPurchasesPaginated(
     site: SiteEnum,
-    pagination: PaginationInput
+    pagination: PaginationInput,
+    params: CurrentUserPurchasesPaginatedParams
   ): Promise<PaginatedPurchases> {
     const query = gql`
-      query currentUserPurchasesPaginated($site: SiteEnum!, $pagination: PaginationInput) {
-        currentUserPurchasesPaginated(site: $site, pagination: $pagination) {
+      query currentUserPurchasesPaginated(
+        $site: SiteEnum!
+        $pagination: PaginationInput
+        $params: CurrentUserPurchasesPaginatedParams!
+      ) {
+        currentUserPurchasesPaginated(site: $site, params: $params, pagination: $pagination) {
           purchases {
             packageName
             allowanceObtained
@@ -1278,6 +1250,7 @@ export class ApiService {
       query: query,
       variables: {
         site: site,
+        params: params,
         pagination: pagination
       }
     })
@@ -1311,7 +1284,7 @@ export class ApiService {
     countryCode: string,
     mobilePhone: string
   ): Promise<SmsValidationResponse> {
-    const muration = gql`
+    const mutation = gql`
       mutation requestSMSValidation($input: RequestSMSValidationInput!) {
         requestSMSValidation(input: $input) {
           ... on MobilePhoneAlreadyVerifiedError {
@@ -1329,7 +1302,7 @@ export class ApiService {
 
     try {
       const result = await this.authApiClient.mutate({
-        mutation: muration,
+        mutation: mutation,
         variables: {
           input: {
             countryCode: countryCode,
@@ -1341,7 +1314,7 @@ export class ApiService {
 
       const smsValidation = result.data.requestSMSValidation as SmsValidationUnion
 
-      return new SmsValidationResponse(smsValidation.__typename)
+      return new SmsValidationResponse(smsValidation.__typename ?? 'UnknownError')
     } catch (error) {
       return new SmsValidationResponse('UnknownError')
     }
@@ -1377,7 +1350,7 @@ export class ApiService {
       })
 
       const response = queryResult.data.isSMSValidationCodeValid as IsSmsValidationCodeValidUnion
-      return new IsSmsValidationCodeValidResponse(response.__typename)
+      return new IsSmsValidationCodeValidResponse(response.__typename ?? 'UnknownError')
     } catch (error) {
       return new IsSmsValidationCodeValidResponse('UnknownError')
     }
@@ -1405,9 +1378,363 @@ export class ApiService {
     }
   }
 
+  async getProducts(site: SiteEnum, options?: { type?: AppProductType }): Promise<Product[]> {
+    // Create the variables object for the query in a type-safe way.
+    const variables: GetProductsQueryVariables = { site }
+    if (options?.type) {
+      // The `input` variable itself is optional in the GraphQL query.
+      // We only add it to the variables object if the type is specified.
+      variables.input = { type: options.type as unknown as ProductType }
+    }
+
+    try {
+      const { data, errors } = await this.authApiClient.query<
+        GetProductsQuery,
+        GetProductsQueryVariables
+      >({
+        // Use the strongly-typed DocumentNode from our generated file.
+        query: GetProductsDocument,
+        variables,
+        fetchPolicy: 'network-only'
+      })
+
+      // It's best practice to check for the `errors` array returned by GraphQL.
+      if (errors && errors.length > 0) {
+        throw new ApiError(
+          `GraphQL error fetching products: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      // If the API returns null or an empty array for products, we simply return an empty array.
+      // This is expected behavior, not an error.
+      if (!data || !data.products) {
+        return []
+      }
+
+      // Map the raw DTOs from the API to our rich domain models using the factory.
+      return data.products.map((productData) => createProductModel(productData as ProductFromQuery))
+    } catch (error) {
+      // Any exception (our ApiError, a network error, etc.) is caught here.
+      // We log it and then re-throw it. This allows the calling code (e.g., a composable)
+      // to catch the error and update the UI state (e.g., show an error message).
+      console.error('ApiService: Failed to fetch products.', error)
+      throw error
+    }
+  }
+
+  async addItemToShoppingCart(
+    site: SiteEnum,
+    sellableProductId: string,
+    quantity: number
+  ): Promise<ShoppingCartModel> {
+    const input: ItemToShoppingCartInput = { sellableProductId, quantity }
+
+    try {
+      const { data, errors } = await this.authApiClient.mutate<
+        AddItemToShoppingCartMutation,
+        AddItemToShoppingCartMutationVariables
+      >({
+        mutation: AddItemToShoppingCartDocument,
+        variables: {
+          site: site,
+          input: input
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      if (errors) {
+        throw new Error(`GraphQL error: ${errors.map((e) => e.message).join(', ')}`)
+      }
+
+      const result = data?.addItemToShoppingCart
+
+      if (!result) {
+        throw new Error('Did not receive a valid response from the server.')
+      }
+
+      if (result.__typename === 'ShoppingCart') {
+        // Success: The `result` object is fully typed thanks to the fragment.
+        // We can now safely pass it to our model factory.
+        return createShoppingCartModel(result as unknown as GqlShoppingCart)
+      } else {
+        // Business logic error (e.g., ProductNotFound)
+        const errorCode = (result as { code?: string }).code ?? 'UnknownBusinessError'
+        throw new ApiError(
+          `Failed to add item. API returned error: ${result.__typename}`,
+          errorCode
+        )
+      }
+    } catch (error) {
+      console.error('ApiService.addItemToShoppingCart failed:', error)
+      // Re-throw for the UI layer to handle
+      throw error
+    }
+  }
+
+  async removeItemFromShoppingCart(
+    site: SiteEnum,
+    shoppingCartItemId: string
+  ): Promise<ShoppingCartModel> {
+    try {
+      const { data, errors } = await this.authApiClient.mutate<
+        RemoveItemFromShoppingCartMutation,
+        RemoveItemFromShoppingCartMutationVariables
+      >({
+        mutation: RemoveItemFromShoppingCartDocument,
+        variables: {
+          site,
+          shoppingCartItemId
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      if (errors) {
+        throw new ApiError(
+          `GraphQL error removing item from cart: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      const result = data?.removeItemFromShoppingCart
+
+      if (!result) {
+        throw new Error('Did not receive a valid response from the server.')
+      }
+
+      if (result.__typename === 'ShoppingCart') {
+        // Success: The API returned the updated cart.
+        // We map the raw DTO to our rich domain model.
+        return createShoppingCartModel(result as unknown as GqlShoppingCart)
+      } else {
+        // Business logic error (e.g., ShoppingCartItemNotFound).
+        // We throw a structured error for the UI layer to handle.
+        const errorCode = (result as { code?: string }).code ?? 'UnknownBusinessError'
+        throw new ApiError(
+          `Failed to remove item. API returned error: ${result.__typename}`,
+          errorCode
+        )
+      }
+    } catch (error) {
+      // Catch and re-throw any error for the calling function to handle.
+      console.error('ApiService.removeItemFromShoppingCart failed:', error)
+      throw error
+    }
+  }
+
+  async updateItemInShoppingCart(
+    site: SiteEnum,
+    sellableProductId: string,
+    quantity: number
+  ): Promise<ShoppingCartModel> {
+    try {
+      const { data, errors } = await this.authApiClient.mutate<
+        UpdateItemInShoppingCartMutation,
+        UpdateItemInShoppingCartMutationVariables
+      >({
+        mutation: UpdateItemInShoppingCartDocument,
+        variables: {
+          site,
+          shoppingCartItemId: sellableProductId,
+          quantity: quantity
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      if (errors) {
+        throw new ApiError(
+          `GraphQL error updating item in cart: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      const result = data?.updateItemInShoppingCart
+
+      if (!result) {
+        throw new Error('Did not receive a valid response from the server.')
+      }
+
+      if (result.__typename === 'ShoppingCart') {
+        // Success: Map the raw DTO to our rich domain model.
+        return createShoppingCartModel(result as unknown as GqlShoppingCart)
+      } else {
+        // Business logic error: Throw a structured error for the UI to handle.
+        const errorCode = (result as { code?: string }).code ?? 'UnknownBusinessError'
+        throw new ApiError(
+          `Failed to update item. API returned error: ${result.__typename}`,
+          errorCode
+        )
+      }
+    } catch (error) {
+      // Catch and re-throw any error for the calling function to handle.
+      console.error('ApiService.updateItemInShoppingCart failed:', error)
+      throw error
+    }
+  }
+
+  async addGiftCardCodeToShoppingCart(giftCard: string): Promise<string> {
+    throw new Error('Method not implemented.')
+  }
+
+  async addDiscountCodeToShoppingCart(
+    site: SiteEnum,
+    discountCode: string
+  ): Promise<ShoppingCartModel> {
+    try {
+      const { data, errors } = await this.authApiClient.mutate<
+        AddDiscountCodeToShoppingCartMutation,
+        AddDiscountCodeToShoppingCartMutationVariables
+      >({
+        mutation: AddDiscountCodeToShoppingCartDocument,
+        variables: {
+          site,
+          discountCode
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      if (errors && errors.length > 0) {
+        throw new ApiError(
+          `GraphQL error applying discount code: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      const result = data?.addDiscountCodeToShoppingCart
+
+      if (!result) {
+        throw new Error('Did not receive a valid response from the server.')
+      }
+
+      if (result.__typename === 'ShoppingCart') {
+        return createShoppingCartModel(result as unknown as GqlShoppingCart)
+      } else {
+        const errorCode = (result as { code?: string }).code ?? 'UnknownBusinessError'
+        let errorMessage = 'Invalid discount code.'
+
+        if (result.__typename === 'DiscountCodeIsInvalid') {
+          errorMessage = 'The provided discount code is not valid.'
+        } else if (result.__typename === 'ShoppingCartIsEmpty') {
+          errorMessage = 'Cannot apply a discount code to an empty cart.'
+        }
+
+        throw new ApiError(errorMessage, errorCode)
+      }
+    } catch (error) {
+      console.error('ApiService.addDiscountCodeToShoppingCart failed:', error)
+      throw error
+    }
+  }
+
+  async calculateTotalForShoppingCart(site: SiteEnum): Promise<ShoppingCartModel> {
+    try {
+      const { data, errors } = await this.authApiClient.query<
+        CalculateTotalForShoppingCartQuery,
+        CalculateTotalForShoppingCartQueryVariables
+      >({
+        query: CalculateTotalForShoppingCartDocument,
+        variables: {
+          site: site
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      if (errors) {
+        throw new ApiError(
+          `GraphQL error calculating cart total: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      const result = data?.calculateTotalForShoppingCart
+
+      if (!result) {
+        throw new Error('Did not receive a valid response from the server when calculating total.')
+      }
+
+      if (result.__typename === 'ShoppingCart') {
+        // Success: The API returned the cart with updated totals.
+        // We map the raw DTO to our rich domain model.
+        return createShoppingCartModel(result as unknown as GqlShoppingCart)
+      } else {
+        // Business logic error (e.g., ShoppingCartIsEmpty, DiscountCodeIsInvalid).
+        // We throw a structured error for the UI layer to handle.
+        const errorCode = (result as { code?: string }).code ?? 'UnknownBusinessError'
+        throw new ApiError(
+          `Could not calculate total. API returned error: ${result.__typename}`,
+          errorCode
+        )
+      }
+    } catch (error) {
+      // Catch and re-throw any error for the calling function to handle.
+      console.error('ApiService.calculateTotalForShoppingCart failed:', error)
+      throw error
+    }
+  }
+
+  async generatePayfortForm(site: SiteEnum, input: PayfortFormInput): Promise<string> {
+    try {
+      const { data, errors } = await this.authApiClient.mutate<
+        GeneratePayfortFormMutation,
+        GeneratePayfortFormMutationVariables
+      >({
+        // Use the generated DocumentNode for type safety.
+        mutation: GeneratePayfortFormDocument,
+        variables: { site, input },
+        fetchPolicy: 'network-only' // This is a one-time action.
+      })
+
+      if (errors && errors.length > 0) {
+        throw new ApiError(
+          `GraphQL error generating Payfort form: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      // A missing or empty HTML form is a critical failure.
+      const htmlForm = data?.payfortForm?.htmlForm
+      if (!htmlForm) {
+        throw new Error('Did not receive a valid HTML form from the server.')
+      }
+
+      // On success, return the HTML string.
+      return htmlForm
+    } catch (error) {
+      // Catch and re-throw any error so the calling layer can handle the failure.
+      console.error('ApiService.generatePayfortForm failed:', error)
+      throw error
+    }
+  }
+
+  async generateMerchantReference(site: SiteEnum): Promise<string> {
+    try {
+      const { data, errors } = await this.authApiClient.mutate<
+        GenerateMerchantReferenceMutation,
+        GenerateMerchantReferenceMutationVariables
+      >({
+        mutation: GenerateMerchantReferenceDocument,
+        variables: { site },
+        fetchPolicy: 'network-only'
+      })
+
+      if (errors && errors.length > 0) {
+        throw new ApiError(
+          `GraphQL error generating merchant reference: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      // A missing or empty reference is a critical failure.
+      if (!data?.generateMerchantReference) {
+        throw new Error('Did not receive a valid merchant reference from the server.')
+      }
+
+      // On success, return the reference string.
+      return data.generateMerchantReference
+    } catch (error) {
+      // Catch any error (our thrown errors or network errors) and re-throw it
+      // so the calling layer can handle the failure.
+      console.error('ApiService.generateMerchantReference failed:', error)
+      throw error
+    }
+  }
+
   async getCurrentUserSitesWithNames(): Promise<Site[]> {
     const query = gql`
-      query CurrentUserSites {
+      query CurrentUserSitesWithNames {
         currentUser {
           siteUsers {
             site
@@ -1437,6 +1764,255 @@ export class ApiService {
       return sites
     } catch (error) {
       return []
+    }
+  }
+
+  async checkTransactionStatus(merchantReference: string): Promise<PaymentTransactionStatusEnum> {
+    const input: PaymentTransactionStatusInput = { merchantReference }
+
+    try {
+      const { data, errors } = await this.authApiClient.query<
+        PaymentTransactionStatusQuery,
+        PaymentTransactionStatusQueryVariables
+      >({
+        query: PaymentTransactionStatusDocument,
+        variables: { input },
+        fetchPolicy: 'network-only'
+      })
+
+      if (errors && errors.length > 0) {
+        throw new ApiError(
+          `GraphQL error fetching transaction status: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      const result = data?.paymentTransactionStatus
+
+      if (!result) {
+        throw new Error('Did not receive a valid response from the server for transaction status.')
+      }
+
+      if (result.__typename === 'PaymentTransactionStatus') {
+        // --- Success Path ---
+        // The query was successful, return the status enum directly.
+        return result.status
+      } else {
+        // --- Business Logic Error Path ---
+        // The API returned a specific error, like 'TemporalTransactionNotFound'.
+        // We throw a structured error for the UI to handle.
+        const errorCode = (result as { code?: string }).code ?? 'UnknownBusinessError'
+        throw new ApiError(
+          `Could not get transaction status. API returned error: ${result.__typename}`,
+          errorCode
+        )
+      }
+    } catch (error) {
+      // --- Network/GraphQL Error Path ---
+      // Catch and re-throw any error for the calling function to handle.
+      console.error('ApiService.paymentTransactionStatus failed:', error)
+      throw error
+    }
+  }
+
+  async getCartDetails(site: SiteEnum): Promise<ShoppingCartModel | null> {
+    try {
+      const { data, errors } = await this.authApiClient.query<
+        GetShoppingCartQuery,
+        GetShoppingCartQueryVariables
+      >({
+        query: GetShoppingCartDocument,
+        variables: { site },
+        fetchPolicy: 'network-only'
+      })
+
+      if (errors) {
+        throw new ApiError(
+          `GraphQL error fetching shopping cart: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      const cartData = data?.currentUser?.shoppingCart
+      if (!cartData) {
+        return null
+      }
+
+      return createShoppingCartModel(cartData as unknown as GqlShoppingCart)
+    } catch (error) {
+      console.error('ApiService: Error fetching shopping cart:', error)
+      throw new Error('Failed to fetch shopping cart.')
+    }
+  }
+
+  public async clearShoppingCart(site: SiteEnum): Promise<ShoppingCartModel> {
+    try {
+      const { data, errors } = await this.authApiClient.mutate<
+        EmptyShoppingCartMutation,
+        EmptyShoppingCartMutationVariables
+      >({
+        mutation: EmptyShoppingCartDocument,
+        variables: { site },
+        fetchPolicy: 'network-only'
+      })
+
+      if (errors && errors.length > 0) {
+        throw new ApiError(
+          `GraphQL error clearing the cart: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      const result = data?.emptyShoppingCart
+
+      if (!result) {
+        throw new Error('Did not receive a valid response from the server when clearing the cart.')
+      }
+
+      if (result.__typename === 'ShoppingCart') {
+        // Success: The API returned the empty cart.
+        return createShoppingCartModel(result as unknown as GqlShoppingCart)
+      } else {
+        const errorCode = (result as { code?: string }).code ?? 'UnknownBusinessError'
+        throw new ApiError(
+          `Could not clear cart. API returned error: ${result.__typename}`,
+          errorCode
+        )
+      }
+    } catch (error) {
+      // --- Network/GraphQL Error Path ---
+      // Catch and re-throw any error for the calling function to handle.
+      console.error('ApiService.clearShoppingCart failed:', error)
+      throw error
+    }
+  }
+
+  public async lockShoppingCart(site: SiteEnum): Promise<boolean> {
+    try {
+      const { data, errors } = await this.authApiClient.mutate<
+        LockShoppingCartMutation,
+        LockShoppingCartMutationVariables
+      >({
+        mutation: LockShoppingCartDocument,
+        variables: { site },
+        fetchPolicy: 'network-only'
+      })
+
+      if (errors && errors.length > 0) {
+        throw new ApiError(
+          `GraphQL error locking the cart: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      if (typeof data?.lockShoppingCart !== 'boolean') {
+        throw new Error(
+          'Did not receive a valid boolean response from the server when locking the cart.'
+        )
+      }
+
+      return data.lockShoppingCart
+    } catch (error) {
+      // --- Network/GraphQL Error Path ---
+      // Catch and re-throw any error for the calling function to handle.
+      console.error('ApiService.lockShoppingCart failed:', error)
+      throw error
+    }
+  }
+
+  public async removeDiscountCode(site: SiteEnum): Promise<ShoppingCartModel> {
+    try {
+      const { data, errors } = await this.authApiClient.mutate<
+        RemoveDiscountCodeMutation,
+        RemoveDiscountCodeMutationVariables
+      >({
+        mutation: RemoveDiscountCodeDocument,
+        variables: { site },
+        fetchPolicy: 'network-only'
+      })
+
+      if (errors && errors.length > 0) {
+        throw new ApiError(
+          `GraphQL error removing discount code: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      const result = data?.removeDiscountCodeForCurrentShoppingCart
+
+      if (!result) {
+        throw new Error(
+          'Did not receive a valid response from the server when removing discount code.'
+        )
+      }
+
+      if (result.__typename === 'ShoppingCart') {
+        // Success: The API returned the updated cart.
+        // We mapped the DTO to our domain model.
+        return createShoppingCartModel(result as unknown as GqlShoppingCart)
+      } else {
+        // Business Error: Cart not found, for example.
+        const errorCode = (result as { code?: string }).code ?? 'UnknownBusinessError'
+        throw new ApiError(
+          `Could not remove discount code. API returned error: ${result.__typename}`,
+          errorCode
+        )
+      }
+    } catch (error) {
+      // --- Network/GraphQL Error Path ---
+      // Catch and re-throw any error for the calling function to handle.
+      console.error('ApiService.removeDiscountCode failed:', error)
+      throw error
+    }
+  }
+
+  public async getMyselfBasic(): Promise<BasicUser | null> {
+    try {
+      const queryResult = await this.authApiClient.query({
+        query: GetCurrentUserBasicInfoDocument,
+        fetchPolicy: 'network-only'
+      })
+      return queryResult.data.currentUser ?? null
+    } catch (error) {
+      console.error('ApiService: Failed to fetch basic user info.', error)
+      return null
+    }
+  }
+
+  public async getCartSummary(site: SiteEnum): Promise<CartSummary | null> {
+    try {
+      const { data, errors } = await this.authApiClient.query({
+        query: GetCartSummaryDocument,
+        variables: { site },
+        fetchPolicy: 'network-only'
+      })
+
+      if (errors && errors.length > 0) {
+        throw new ApiError(
+          `GraphQL error fetching cart summary: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      return data?.currentUser?.shoppingCart ?? null
+    } catch (error) {
+      console.error('ApiService.getCartSummary failed:', error)
+      return null
+    }
+  }
+
+  public async getPaymentLink(id: string): Promise<PaymentLink | null> {
+    try {
+      const { data, errors } = await this.authApiClient.query({
+        query: PaymentLinkDocument,
+        variables: { id },
+        fetchPolicy: 'network-only'
+      })
+
+      if (errors && errors.length > 0) {
+        throw new ApiError(
+          `GraphQL error fetching cart summary: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      return data?.paymentLink ?? null
+    } catch (error) {
+      console.error('ApiService.paymentLink failed:', error)
+      return null
     }
   }
 }

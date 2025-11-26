@@ -16,7 +16,7 @@ import { onMounted, reactive, ref, computed, inject } from 'vue'
 import useVuelidate from '@vuelidate/core'
 import { required, maxLength, helpers, minValue, minLength } from '@vuelidate/validators'
 import { GenderEnum, type UserInput } from '@/gql/graphql'
-import type { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/ApiService'
 
 import ModalComponent from '@/components/ModalComponent.vue'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
@@ -227,8 +227,8 @@ function onChangeCountry() {
   <form @submit.prevent="submitForm" autocomplete="off">
     <div class="field">
       <RouterLink class="btn btn-primary" :to="{ name: 'change_password' }"
-        >Change Password</RouterLink
-      >
+        >Change Password
+      </RouterLink>
     </div>
     <hr />
 
@@ -308,13 +308,7 @@ function onChangeCountry() {
     <div class="form-row">
       <div class="col-md-6 mb-3">
         <label for="genderMyProfile" class="input-label">Gender *</label>
-        <select
-          class="custom-select"
-          v-model="formData.gender"
-          id="genderMyProfile"
-          placeholder="Gender"
-          required
-        >
+        <select class="custom-select" v-model="formData.gender" id="genderMyProfile" required>
           <option value="M">Male</option>
           <option value="F">Female</option>
         </select>
@@ -716,6 +710,7 @@ h3 {
   background: var(--dp-danger-color) !important;
   color: var(--dp-primary-text-color) !important;
 }
+
 .dp__action_select {
   background: #000000 !important;
   color: var(--dp-primary-text-color) !important;
@@ -728,6 +723,7 @@ input {
 li > span {
   font-family: 'Avenir', sans-serif;
 }
+
 li > strong {
   font-family: 'Avenir', sans-serif;
 }

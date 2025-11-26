@@ -1,0 +1,25 @@
+# Import the shared fragment to define the shape of the returned shopping cart.
+#import "./fragments/ShoppingCartFields.fragment.graphql"
+
+# This query calculates the totals for the current user's shopping cart.
+# It's useful for getting updated totals after applying a discount code, for example.
+# It returns the full ShoppingCart object with the recalculated totals.
+query CalculateTotalForShoppingCart($site: SiteEnum!) {
+  calculateTotalForShoppingCart(site: $site) {
+    __typename
+    # On success, return the full cart object using our consistent fragment.
+    ... on ShoppingCart {
+      ...ShoppingCartFields
+    }
+    # Handle possible business logic errors.
+    ... on ShoppingCartNotFound {
+      code
+    }
+    ... on ShoppingCartIsEmpty {
+      code
+    }
+    ... on DiscountCodeIsInvalid {
+      code
+    }
+  }
+}

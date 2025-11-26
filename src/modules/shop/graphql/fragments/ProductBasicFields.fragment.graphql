@@ -1,0 +1,17 @@
+fragment ProductBasicFields on SellableProductInterface {
+  __typename
+  id
+  title
+  subtitle
+  currency
+  alertBeforePurchasing {
+    title
+    description
+  }
+  ... on ClassPackageProduct {
+    type
+  }
+  ... on GiftCard {
+    purchaseUrl
+  }
+}

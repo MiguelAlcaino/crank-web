@@ -22,10 +22,9 @@ import useVuelidate from '@vuelidate/core'
 import { required, email, minLength, sameAs, maxLength, helpers } from '@vuelidate/validators'
 import { GenderEnum, type RegisterUserInput } from '@/gql/graphql'
 
-import type { ApiService } from '@/services/apiService'
+import type { ApiService } from '@/services/ApiService'
 import { authService } from '@/services/authService'
 import { appStore } from '@/stores/appStorage'
-import router from '@/router'
 import ModalComponent from '@/components/ModalComponent.vue'
 import { ERROR_UNKNOWN } from '@/utils/errorMessages'
 import dayjs from 'dayjs'
@@ -34,7 +33,9 @@ import { VueTelInput } from 'vue-tel-input'
 import 'vue-tel-input/vue-tel-input.css'
 import { getFormattedPhoneNumber } from '@/utils/utility-functions'
 import type { SiteEnum } from '@/modules/shared/interfaces/site.enum'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const loadingSites = ref(false)
 const sites = ref<Site[]>([])
 
@@ -455,13 +456,7 @@ async function fetchSites() {
     <div class="form-row">
       <div class="col-md-6 mb-3">
         <label for="genderRegistration" class="input-label">Gender *</label>
-        <select
-          class="custom-select"
-          v-model="formData.gender"
-          id="genderRegistration"
-          placeholder="Gender"
-          required
-        >
+        <select class="custom-select" v-model="formData.gender" id="genderRegistration" required>
           <option value="M">Male</option>
           <option value="F">Female</option>
         </select>
