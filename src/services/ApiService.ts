@@ -88,7 +88,8 @@ import {
   type UserInRankingParams,
   type AddDiscountCodeToShoppingCartMutation,
   type AddDiscountCodeToShoppingCartMutationVariables,
-  AddDiscountCodeToShoppingCartDocument
+  AddDiscountCodeToShoppingCartDocument,
+  type CurrentUserPurchasesPaginatedParams
 } from '@/gql/graphql'
 import { ApolloClient, ApolloError } from '@apollo/client/core'
 import { CustomCalendarClasses } from '@/model/CustomCalendarClasses'
@@ -1219,11 +1220,16 @@ export class ApiService implements IApiService {
 
   async currentUserPurchasesPaginated(
     site: SiteEnum,
-    pagination: PaginationInput
+    pagination: PaginationInput,
+    params: CurrentUserPurchasesPaginatedParams
   ): Promise<PaginatedPurchases> {
     const query = gql`
-      query currentUserPurchasesPaginated($site: SiteEnum!, $pagination: PaginationInput) {
-        currentUserPurchasesPaginated(site: $site, pagination: $pagination) {
+      query currentUserPurchasesPaginated(
+        $site: SiteEnum!
+        $pagination: PaginationInput
+        $params: CurrentUserPurchasesPaginatedParams!
+      ) {
+        currentUserPurchasesPaginated(site: $site, params: $params, pagination: $pagination) {
           purchases {
             packageName
             allowanceObtained
@@ -1242,6 +1248,7 @@ export class ApiService implements IApiService {
       query: query,
       variables: {
         site: site,
+        params: params,
         pagination: pagination
       }
     })

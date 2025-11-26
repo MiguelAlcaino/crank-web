@@ -44,10 +44,14 @@ async function currentUserPurchasesPaginated() {
   try {
     await getSiteDateTimeNow()
 
-    const paginatedPurchases = await apiService.currentUserPurchasesPaginated(appStore().site, {
-      limit: pageLimit,
-      page: currentPage.value
-    })
+    const paginatedPurchases = await apiService.currentUserPurchasesPaginated(
+      appStore().site,
+      {
+        limit: pageLimit,
+        page: currentPage.value
+      },
+      {}
+    )
 
     total.value = paginatedPurchases.total
     purchases.value = paginatedPurchases.purchases as Purchase[]

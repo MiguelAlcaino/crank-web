@@ -8,6 +8,7 @@ import type {
   Country,
   CreateCurrentUserInSiteUnion,
   CurrentUserEnrollmentsParams,
+  CurrentUserPurchasesPaginatedParams,
   EditClassInput,
   EditClassResultUnion,
   EditEnrollmentInput,
@@ -315,11 +316,13 @@ export interface IApiService {
    * Gets a paginated list of the current user's purchases.
    * @param site The site to query.
    * @param pagination Pagination information.
+   * @param params Filters for the purchases.
    * @returns A promise that resolves with the paginated purchases.
    */
   currentUserPurchasesPaginated(
     site: SiteEnum,
-    pagination: PaginationInput
+    pagination: PaginationInput,
+    params: CurrentUserPurchasesPaginatedParams
   ): Promise<PaginatedPurchases>
 
   /**
