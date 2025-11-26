@@ -304,6 +304,11 @@ export type ClientIsOutsideSchedulingWindowError = Error & {
   code: Scalars['String']
 }
 
+export type ClientNotFoundInMindbody = Error & {
+  __typename?: 'ClientNotFoundInMindbody'
+  code: Scalars['String']
+}
+
 export type Country = {
   __typename?: 'Country'
   code: Scalars['String']
@@ -318,9 +323,29 @@ export type CreateCurrentUserInSiteSuccess = {
 
 export type CreateCurrentUserInSiteUnion = CreateCurrentUserInSiteSuccess | UserAlreadyExistsError
 
+export type CreatePaymentLinkInput = {
+  amount: Scalars['Int']
+  currency: Scalars['String']
+  site: SiteEnum
+  title: Scalars['String']
+}
+
 export type CurrentUserEnrollmentsParams = {
   endDate?: InputMaybe<Scalars['Date']>
   enrollmentType?: InputMaybe<EnrollmentTypeEnum>
+  startDate?: InputMaybe<Scalars['Date']>
+}
+
+export type CurrentUserPurchasesPaginatedParams = {
+  filter?: InputMaybe<ServiceStatusEnum>
+}
+
+export type CurrentUserWorkoutStatsPaginatedParams = {
+  dateRange?: InputMaybe<DateRange>
+}
+
+export type DateRange = {
+  endDate?: InputMaybe<Scalars['Date']>
   startDate?: InputMaybe<Scalars['Date']>
 }
 
@@ -634,12 +659,16 @@ export type Mutation = {
   checkoutUserInClass?: Maybe<CheckoutResultUnion>
   /** Creates a copy of the current user in the given site */
   createCurrentUserInSite?: Maybe<CreateCurrentUserInSiteUnion>
+  /** Creates a new payment link */
+  createPaymentLink: PaymentLink
   /** Creates a new room layout */
   createRoomLayout: RoomLayout
   /** It deletes the current user's account */
   deleteCurrentUserAccount?: Maybe<DeleteCurrentUserAccountUnion>
   /** Removes a devices token */
   deleteDeviceTokenToCurrentUser?: Maybe<Scalars['Boolean']>
+  /** Soft deletes a payment link */
+  deletePaymentLink: Scalars['Boolean']
   /** Disables a spot in a class */
   disableSpot?: Maybe<DisableEnableSpotResultUnion>
   /** Edits a class */
@@ -721,6 +750,8 @@ export type Mutation = {
   updateGiftCard: GiftCard
   /** Allows to update an Item from Shopping Cart */
   updateItemInShoppingCart: ShoppingCartResultUnion
+  /** Updates a payment link */
+  updatePaymentLink: PaymentLink
   updateUserPassword?: Maybe<Scalars['Boolean']>
 }
 
@@ -782,6 +813,10 @@ export type MutationCreateCurrentUserInSiteArgs = {
   toSite: SiteEnum
 }
 
+export type MutationCreatePaymentLinkArgs = {
+  input: CreatePaymentLinkInput
+}
+
 export type MutationCreateRoomLayoutArgs = {
   input: RoomLayoutInput
   site: SiteEnum
@@ -795,6 +830,10 @@ export type MutationDeleteCurrentUserAccountArgs = {
 export type MutationDeleteDeviceTokenToCurrentUserArgs = {
   input?: InputMaybe<DeviceTokenInput>
   site?: InputMaybe<SiteEnum>
+}
+
+export type MutationDeletePaymentLinkArgs = {
+  id: Scalars['ID']
 }
 
 export type MutationDisableSpotArgs = {
@@ -973,6 +1012,10 @@ export type MutationUpdateItemInShoppingCartArgs = {
   site: SiteEnum
 }
 
+export type MutationUpdatePaymentLinkArgs = {
+  input: UpdatePaymentLinkInput
+}
+
 export type MutationUpdateUserPasswordArgs = {
   input: UpdateUserPasswordInput
 }
@@ -1024,6 +1067,16 @@ export type PayfortFormInput = {
 export type PayfortFormResult = {
   __typename?: 'PayfortFormResult'
   htmlForm: Scalars['String']
+}
+
+export type PaymentLink = {
+  __typename?: 'PaymentLink'
+  amount: Scalars['Int']
+  currency: Scalars['String']
+  id: Scalars['ID']
+  site: Site
+  title: Scalars['String']
+  url: Scalars['String']
 }
 
 /** Error returned when a client does not have enough credit or allowance to book a class */
@@ -1152,6 +1205,10 @@ export type Query = {
   giftCards: Array<GiftCard>
   /** Verifies whether an sms validation code is valid */
   isSMSValidationCodeValid?: Maybe<IsSmsValidationCodeValidUnion>
+  /** Returns a single payment link by ID */
+  paymentLink?: Maybe<PaymentLink>
+  /** Returns a list of payment links */
+  paymentLinks: Array<PaymentLink>
   /** Allows to get the status of a transaction  */
   paymentTransactionStatus: PaymentTransactionUnion
   /** Returns a list of available products for a specific site */
@@ -1224,6 +1281,7 @@ export type QueryCurrentUserPurchasesArgs = {
 
 export type QueryCurrentUserPurchasesPaginatedArgs = {
   pagination?: InputMaybe<PaginationInput>
+  params: CurrentUserPurchasesPaginatedParams
   site?: InputMaybe<SiteEnum>
 }
 
@@ -1242,11 +1300,20 @@ export type QueryCurrentUserWorkoutStatsArgs = {
 
 export type QueryCurrentUserWorkoutStatsPaginatedArgs = {
   pagination?: InputMaybe<PaginationInput>
+  params?: InputMaybe<CurrentUserWorkoutStatsPaginatedParams>
   site: SiteEnum
 }
 
 export type QueryIsSmsValidationCodeValidArgs = {
   smsCode: Scalars['String']
+}
+
+export type QueryPaymentLinkArgs = {
+  id: Scalars['ID']
+}
+
+export type QueryPaymentLinksArgs = {
+  site?: InputMaybe<SiteEnum>
 }
 
 export type QueryPaymentTransactionStatusArgs = {
@@ -1337,6 +1404,13 @@ export type RejectLateCancelledSpotInClassInput = {
 export type RejectLateCancelledSpotInClassSuccess = {
   __typename?: 'RejectLateCancelledSpotInClassSuccess'
   success: Scalars['Boolean']
+}
+
+export type RemainingCreditsResultUnion = ClientNotFoundInMindbody | RemainingCreditsSuccess
+
+export type RemainingCreditsSuccess = {
+  __typename?: 'RemainingCreditsSuccess'
+  credits: Scalars['Int']
 }
 
 export type RemoveCurrentUserFromWaitlistInput = {
@@ -1445,6 +1519,12 @@ export type SellableProductInterface = {
 export type SendClassStatsToEmailInput = {
   email: Scalars['String']
   enrollmentId: Scalars['ID']
+}
+
+export enum ServiceStatusEnum {
+  ActiveOnly = 'activeOnly',
+  All = 'all',
+  ExpiredOnly = 'expiredOnly'
 }
 
 export type SetRoomLayoutForClassSchedulesInput = {
@@ -1628,6 +1708,14 @@ export type UpdateGiftCardInput = {
   id: Scalars['ID']
 }
 
+export type UpdatePaymentLinkInput = {
+  amount?: InputMaybe<Scalars['Int']>
+  currency?: InputMaybe<Scalars['String']>
+  id: Scalars['ID']
+  site?: InputMaybe<SiteEnum>
+  title?: InputMaybe<Scalars['String']>
+}
+
 export type UpdateUserPasswordInput = {
   newPassword: Scalars['String']
   userId: Scalars['ID']
@@ -1654,6 +1742,7 @@ export type User = {
   lastName: Scalars['String']
   leaderboardUsername?: Maybe<Scalars['String']>
   phone: Scalars['String']
+  remainingCreditsBySite?: Maybe<RemainingCreditsResultUnion>
   shoppingCart: ShoppingCart
   siteUsers: Array<SimpleSiteUser>
   state?: Maybe<State>
@@ -1667,6 +1756,10 @@ export type UserDoesExistInSiteArgs = {
 
 export type UserEnrollmentInClassArgs = {
   classId: Scalars['ID']
+}
+
+export type UserRemainingCreditsBySiteArgs = {
+  site: SiteEnum
 }
 
 export type UserShoppingCartArgs = {
@@ -3252,29 +3345,6 @@ export type CurrentUserWorkoutStatsPaginatedQuery = {
           | { __typename: 'WaitlistEntry'; id: string }
         class: { __typename: 'Class'; name: string; start: any; duration: number }
       }
-    }>
-  }
-}
-
-export type CurrentUserPurchasesPaginatedQueryVariables = Exact<{
-  site: SiteEnum
-  pagination?: InputMaybe<PaginationInput>
-}>
-
-export type CurrentUserPurchasesPaginatedQuery = {
-  __typename: 'Query'
-  currentUserPurchasesPaginated: {
-    __typename: 'PaginatedPurchases'
-    total: number
-    purchases: Array<{
-      __typename: 'Purchase'
-      packageName: string
-      allowanceObtained: number
-      allowanceRemaining: number
-      paymentDateTime: any
-      activationDateTime: any
-      expirationDateTime: any
-      current: boolean
     }>
   }
 }
@@ -6871,77 +6941,6 @@ export const CurrentUserWorkoutStatsPaginatedDocument = {
 } as unknown as DocumentNode<
   CurrentUserWorkoutStatsPaginatedQuery,
   CurrentUserWorkoutStatsPaginatedQueryVariables
->
-export const CurrentUserPurchasesPaginatedDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'currentUserPurchasesPaginated' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
-          }
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'pagination' } },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'PaginationInput' } }
-        }
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'currentUserPurchasesPaginated' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'site' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'pagination' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'pagination' } }
-              }
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'purchases' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'packageName' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'allowanceObtained' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'allowanceRemaining' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'paymentDateTime' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'activationDateTime' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'expirationDateTime' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'current' } }
-                    ]
-                  }
-                },
-                { kind: 'Field', name: { kind: 'Name', value: 'total' } }
-              ]
-            }
-          }
-        ]
-      }
-    }
-  ]
-} as unknown as DocumentNode<
-  CurrentUserPurchasesPaginatedQuery,
-  CurrentUserPurchasesPaginatedQueryVariables
 >
 export const CurrentUserPhoneNumberDocument = {
   kind: 'Document',
