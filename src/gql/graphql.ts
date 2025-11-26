@@ -2358,6 +2358,23 @@ export type LockShoppingCartMutationVariables = Exact<{
 
 export type LockShoppingCartMutation = { __typename: 'Mutation'; lockShoppingCart: boolean }
 
+export type PaymentLinkQueryVariables = Exact<{
+  id: Scalars['ID']
+}>
+
+export type PaymentLinkQuery = {
+  __typename: 'Query'
+  paymentLink?: {
+    __typename: 'PaymentLink'
+    id: string
+    title: string
+    amount: number
+    currency: string
+    url: string
+    site: { __typename: 'Site'; name: string; code: SiteEnum }
+  } | null
+}
+
 export type PaymentTransactionStatusQueryVariables = Exact<{
   input: PaymentTransactionStatusInput
 }>
@@ -4330,6 +4347,63 @@ export const LockShoppingCartDocument = {
     }
   ]
 } as unknown as DocumentNode<LockShoppingCartMutation, LockShoppingCartMutationVariables>
+export const PaymentLinkDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'PaymentLink' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'paymentLink' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'id' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'currency' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'url' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'site' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'code' } }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<PaymentLinkQuery, PaymentLinkQueryVariables>
 export const PaymentTransactionStatusDocument = {
   kind: 'Document',
   definitions: [

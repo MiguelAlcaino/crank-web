@@ -89,7 +89,9 @@ import {
   type AddDiscountCodeToShoppingCartMutation,
   type AddDiscountCodeToShoppingCartMutationVariables,
   AddDiscountCodeToShoppingCartDocument,
-  type CurrentUserPurchasesPaginatedParams
+  type CurrentUserPurchasesPaginatedParams,
+  PaymentLinkDocument,
+  type PaymentLink
 } from '@/gql/graphql'
 import { ApolloClient, ApolloError } from '@apollo/client/core'
 import { CustomCalendarClasses } from '@/model/CustomCalendarClasses'
@@ -1989,6 +1991,27 @@ export class ApiService implements IApiService {
       return data?.currentUser?.shoppingCart ?? null
     } catch (error) {
       console.error('ApiService.getCartSummary failed:', error)
+      return null
+    }
+  }
+
+  public async getPaymentLink(id: string): Promise<PaymentLink | null> {
+    try {
+      const { data, errors } = await this.authApiClient.query({
+        query: PaymentLinkDocument,
+        variables: { id },
+        fetchPolicy: 'network-only'
+      })
+
+      if (errors && errors.length > 0) {
+        throw new ApiError(
+          `GraphQL error fetching cart summary: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      return data?.paymentLink ?? null
+    } catch (error) {
+      console.error('ApiService.paymentLink failed:', error)
       return null
     }
   }
