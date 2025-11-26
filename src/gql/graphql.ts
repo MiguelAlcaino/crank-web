@@ -3349,6 +3349,30 @@ export type CurrentUserWorkoutStatsPaginatedQuery = {
   }
 }
 
+export type CurrentUserPurchasesPaginatedQueryVariables = Exact<{
+  site: SiteEnum
+  pagination?: InputMaybe<PaginationInput>
+  params: CurrentUserPurchasesPaginatedParams
+}>
+
+export type CurrentUserPurchasesPaginatedQuery = {
+  __typename: 'Query'
+  currentUserPurchasesPaginated: {
+    __typename: 'PaginatedPurchases'
+    total: number
+    purchases: Array<{
+      __typename: 'Purchase'
+      packageName: string
+      allowanceObtained: number
+      allowanceRemaining: number
+      paymentDateTime: any
+      activationDateTime: any
+      expirationDateTime: any
+      current: boolean
+    }>
+  }
+}
+
 export type CurrentUserPhoneNumberQueryVariables = Exact<{ [key: string]: never }>
 
 export type CurrentUserPhoneNumberQuery = {
@@ -6941,6 +6965,93 @@ export const CurrentUserWorkoutStatsPaginatedDocument = {
 } as unknown as DocumentNode<
   CurrentUserWorkoutStatsPaginatedQuery,
   CurrentUserWorkoutStatsPaginatedQueryVariables
+>
+export const CurrentUserPurchasesPaginatedDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'currentUserPurchasesPaginated' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'pagination' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'PaginationInput' } }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'params' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'CurrentUserPurchasesPaginatedParams' }
+            }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentUserPurchasesPaginated' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'params' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'params' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'pagination' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'pagination' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'purchases' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'packageName' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'allowanceObtained' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'allowanceRemaining' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'paymentDateTime' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'activationDateTime' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'expirationDateTime' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'current' } }
+                    ]
+                  }
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'total' } }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  CurrentUserPurchasesPaginatedQuery,
+  CurrentUserPurchasesPaginatedQueryVariables
 >
 export const CurrentUserPhoneNumberDocument = {
   kind: 'Document',
