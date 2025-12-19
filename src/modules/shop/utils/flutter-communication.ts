@@ -43,7 +43,7 @@ export const sendMessageToFlutter = (message: string): void => {
  */
 export const notifyPaymentSuccess = (hasWebviewToken: boolean = false): void => {
   if (isFlutterWebView(hasWebviewToken)) {
-    sendMessageToFlutter('paymentSuccess')
+    sendMessageToFlutter(FlutterMessage.PAYMENT_SUCCESS)
   }
 }
 
@@ -53,7 +53,16 @@ export const notifyPaymentSuccess = (hasWebviewToken: boolean = false): void => 
  */
 export const notifyPaymentFailure = (hasWebviewToken: boolean = false): void => {
   if (isFlutterWebView(hasWebviewToken)) {
-    sendMessageToFlutter('paymentFailure')
+    sendMessageToFlutter(FlutterMessage.PAYMENT_FAILURE)
+  }
+}
+
+/**
+ * @description Notifies Flutter about a pending/timeout payment (neutral state).
+ */
+export const notifyPaymentPending = (hasWebviewToken: boolean = false): void => {
+  if (isFlutterWebView(hasWebviewToken)) {
+    sendMessageToFlutter(FlutterMessage.PAYMENT_PENDING)
   }
 }
 
@@ -62,5 +71,6 @@ export const notifyPaymentFailure = (hasWebviewToken: boolean = false): void => 
  */
 export enum FlutterMessage {
   PAYMENT_SUCCESS = 'paymentSuccess',
-  PAYMENT_FAILURE = 'paymentFailure'
+  PAYMENT_FAILURE = 'paymentFailure',
+  PAYMENT_PENDING = 'paymentPending'
 }

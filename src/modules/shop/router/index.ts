@@ -30,6 +30,12 @@ export const shopRoute: RouteRecordRaw = {
       name: 'after-checkout',
       component: () => import('@/modules/shop/views/AfterCheckoutView.vue'),
       meta: { requiresAuth: true }
+    },
+    {
+      path: `/payment-link/:id`,
+      name: 'payment-link',
+      component: () => import('@/modules/shop/views/PaymentLinkView.vue'),
+      meta: { requiresAuth: true }
     }
   ]
 }

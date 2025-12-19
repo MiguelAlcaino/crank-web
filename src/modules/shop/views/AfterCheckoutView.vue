@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { inject, onMounted, computed, watch } from 'vue'
+import { computed, inject, onMounted, watch } from 'vue'
 import type { ApiService } from '@/services/ApiService'
 import { useAfterCheckout } from '@/modules/shop/composables/useAfterCheckout'
-import { useRouter, useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { PaymentTransactionStatusEnum } from '@/gql/graphql'
 import {
   isFlutterWebView,
-  notifyPaymentSuccess,
-  notifyPaymentFailure
+  notifyPaymentFailure,
+  notifyPaymentPending,
+  notifyPaymentSuccess
 } from '@/modules/shop/utils/flutter-communication'
 
 // Local Components
@@ -43,6 +44,10 @@ const handlePaymentResult = () => {
     case PaymentTransactionStatusEnum.Successful:
       notifyPaymentSuccess(hasWebviewToken)
       break
+    case PaymentTransactionStatusEnum.WaitingConfirmation: {
+      notifyPaymentPending(hasWebviewToken)
+      return
+    }
     case PaymentTransactionStatusEnum.Rejected:
     case PaymentTransactionStatusEnum.Refunded:
       notifyPaymentFailure(hasWebviewToken)
@@ -64,6 +69,24 @@ const goToShop = () => {
   ) {
     notifyPaymentFailure(hasWebviewToken)
   }
+  if (isFlutterWebView(hasWebviewToken)) {
+    // Success
+    if (purchaseStatus.value === PaymentTransactionStatusEnum.Successful) {
+      notifyPaymentSuccess(hasWebviewToken)
+      return
+    }
+
+    // Failure
+    if (
+      purchaseStatus.value === PaymentTransactionStatusEnum.Rejected ||
+      purchaseStatus.value === PaymentTransactionStatusEnum.Refunded ||
+      hasError.value
+    ) {
+      notifyPaymentFailure(hasWebviewToken)
+      return
+    }
+  }
+
   router.push('/shop/products')
 }
 
