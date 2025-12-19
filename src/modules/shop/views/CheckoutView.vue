@@ -23,11 +23,7 @@ import { useCheckout } from '@/modules/shop/composables/useCheckout'
 import { useAuth } from '@/modules/auth/composables/useAuth'
 import { useShoppingCart } from '@/modules/shop/composables/useShoppingCart'
 import { createPayfortFormManager } from '@/modules/shop/services/PayfortFormManager'
-import {
-  isFlutterWebView,
-  notifyPaymentSuccess,
-  notifyPaymentFailure
-} from '@/modules/shop/utils/flutter-communication'
+import { isFlutterWebView, notifyPaymentFailure } from '@/modules/shop/utils/flutter-communication'
 import type { IApiService } from '@/services/IApiService'
 import { authService } from '@/services/authService'
 import { luhnCheck } from '@/modules/shop/utils/shop-utils'
@@ -370,7 +366,6 @@ const onFingerprintError = (error: Error) => {
       <p v-if="isAuthLoading" class="header-subtitle">LOADING USER...</p>
       <p v-else-if="isAuthenticated" class="header-subtitle">
         LOGGED IN AS {{ user?.firstName?.toUpperCase() }} {{ user?.lastName?.toUpperCase() }}
-        <span v-if="isWebviewMode" class="webview-indicator">(WEBVIEW MODE)</span>
       </p>
 
       <!-- Purchase Summary -->
