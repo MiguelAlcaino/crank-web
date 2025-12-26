@@ -17,6 +17,7 @@ import { helpers, maxLength, minLength, required } from '@vuelidate/validators'
 import BaseModal from '@/modules/shop/components/BaseModal.vue'
 import DeviceFingerprint from '@/modules/shop/components/DeviceFingerprint.vue'
 import DiscountCodeForm from '@/modules/shop/components/DiscountCodeForm.vue'
+import CheckoutConfirmation from '@/modules/shop/components/CheckoutConfirmation.vue'
 
 // Composables, Services & Utilities
 import { useCheckout } from '@/modules/shop/composables/useCheckout'
@@ -114,6 +115,8 @@ const isWebviewMode = ref(false)
  * @description Stores the authentication token from URL parameters.
  */
 const webviewToken = ref<string>('')
+
+const currentStep = ref<'details' | 'confirmation'>('details')
 
 //
 // -----------------
@@ -213,10 +216,54 @@ function showErrorModal(title: string, message: string) {
  */
 const handleSubmit = async () => {
   if (selectedPaymentMethod.value === 'newCard') {
-    await handleNewCardPayment()
+    const isValid = await v$.value.$validate()
+    if (!isValid) return
+
+    if (!isFingerprintReady.value) {
+      showErrorModal('Security Check Not Ready', 'Please wait a moment and try again.')
+      return
+    }
+ 
+    currentStep.value = 'confirmation'
+
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   } else if (selectedPaymentMethod.value === 'digitalWallet') {
-    // Apple Pay / Digital Wallet logic would go here
-    showErrorModal('Not Implemented', 'Digital wallet payments are not yet supported.')
+    showErrorModal('Not Implemented', 'Digital wallet not supported yet.')
+  }
+}
+
+
+const handleFinalPayment = async () => {
+  isSubmitting.value = true
+
+  try {   
+    await initiatePayment(fingerprintSessionId.value, {
+      saveCard: formData.saveForFuture
+    })
+
+    if (checkoutError.value) throw checkoutError.value
+
+    if (payfortFormHtml.value) {
+      const formManager = createPayfortFormManager(payfortFormHtml.value)
+      const cardData = {
+        cardNumber: formData.cardNumber.replace(/\s/g, ''),
+        expiryDate: `${formData.expiryMonth}/${formData.expiryYear}`,
+        cvv: formData.cvv,
+        cardholderName: formData.cardholderName,
+        saveForFuture: formData.saveForFuture
+      } as CardData
+
+      formManager.addCardData(cardData)
+      formManager.submit()
+    } else {
+      showErrorModal('Payment Error', ERROR_UNKNOWN)
+    }
+  } catch (error: any) {
+    if (isFlutterWebView(isWebviewMode.value)) {
+      notifyPaymentFailure(isWebviewMode.value)
+    }
+    showErrorModal('Payment Error', error?.message || 'Unexpected error.')
+    isSubmitting.value = false
   }
 }
 
@@ -358,162 +405,99 @@ const onFingerprintError = (error: Error) => {
       @ready="onFingerprintReady"
       @error="onFingerprintError"
     />
-    <div class="main-container">
-      <a href="#" class="back-arrow"><i class="fas fa-chevron-left"></i></a>
+    <div v-show="currentStep === 'details'" class="main-container">
+      <div class="main-container">
+        <a href="#" class="back-arrow"><i class="fas fa-chevron-left"></i></a>
 
-      <!-- Header -->
-      <h2 class="header-title">PAYMENT DETAILS</h2>
-      <p v-if="isAuthLoading" class="header-subtitle">LOADING USER...</p>
-      <p v-else-if="isAuthenticated" class="header-subtitle">
-        LOGGED IN AS {{ user?.firstName?.toUpperCase() }} {{ user?.lastName?.toUpperCase() }}
-      </p>
+        <!-- Header -->
+        <h2 class="header-title">PAYMENT DETAILS</h2>
+        <p v-if="isAuthLoading" class="header-subtitle">LOADING USER...</p>
+        <p v-else-if="isAuthenticated" class="header-subtitle">
+          LOGGED IN AS {{ user?.firstName?.toUpperCase() }} {{ user?.lastName?.toUpperCase() }}
+        </p>
 
-      <!-- Purchase Summary -->
-      <div class="purchase-summary">
-        <div class="summary-header">
-          <h5 class="text-orange">YOU ARE BUYING:</h5>
-          <router-link v-if="!isWebviewMode" to="/shop/cart" class="edit-cart-link">
-            Edit Cart
-          </router-link>
+        <!-- Purchase Summary -->
+        <div class="purchase-summary">
+          <div class="summary-header">
+            <h5 class="text-orange">YOU ARE BUYING:</h5>
+            <router-link v-if="!isWebviewMode" to="/shop/cart" class="edit-cart-link">
+              Edit Cart
+            </router-link>
+          </div>
+          <div v-if="isLoading" class="loading-state">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            <span style="margin-left: 0.5rem">Loading items...</span>
+          </div>
+          <div v-else>
+            <h5>{{ formattedCartItems }}</h5>
+            <p>{{ detailedCart?.formattedTotal }}</p>
+            <span class="item-count">{{ totalItemsInCart }} items</span>
+          </div>
+          <details>
+            <summary>Do you have a discount code?</summary>
+            <DiscountCodeForm />
+          </details>
         </div>
-        <div v-if="isLoading" class="loading-state">
-          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-          <span style="margin-left: 0.5rem">Loading items...</span>
-        </div>
-        <div v-else>
-          <h5>{{ formattedCartItems }}</h5>
-          <p>{{ detailedCart?.formattedTotal }}</p>
-          <span class="item-count">{{ totalItemsInCart }} items</span>
-        </div>
-        <details>
-          <summary>Do you have a discount code?</summary>
-          <DiscountCodeForm />
-        </details>
-      </div>
 
-      <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-12 col-md-8 col-lg-8">
-            <!-- New Card Payment Option -->
-            <p class="section-title">SELECT YOUR PAYMENT OPTION</p>
-            <div class="payment-form-container">
-              <div class="payment-option-header">
-                <input
-                  type="radio"
-                  id="newCard"
-                  name="paymentMethod"
-                  value="newCard"
-                  v-model="selectedPaymentMethod"
-                />
-                <label for="newCard">PAY WITH A NEW CARD</label>
-              </div>
-
-              <!-- Card Details Form (Conditional) -->
-              <div v-if="selectedPaymentMethod === 'newCard'">
-                <div class="form-row">
-                  <div class="form-group col-12">
-                    <input
-                      id="cardholderName"
-                      v-model="formData.cardholderName"
-                      type="text"
-                      class="form-control"
-                      placeholder="CARDHOLDER NAME"
-                      maxlength="26"
-                      @input="
-                        formData.cardholderName = (
-                          $event.target as HTMLInputElement
-                        ).value.toUpperCase()
-                      "
-                      required
-                    />
-                    <small
-                      v-for="error in v$.cardholderName.$errors"
-                      :key="error.$uid"
-                      class="form-text"
-                      style="color: red"
-                    >
-                      {{ error.$message }}
-                    </small>
-                  </div>
-                </div>
-                <div class="form-group">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-8">
+              <!-- New Card Payment Option -->
+              <p class="section-title">SELECT YOUR PAYMENT OPTION</p>
+              <div class="payment-form-container">
+                <div class="payment-option-header">
                   <input
-                    id="cardNumber"
-                    v-model="formData.cardNumber"
-                    type="tel"
-                    inputmode="numeric"
-                    class="form-control"
-                    placeholder="CARD NUMBER"
-                    maxlength="19"
-                    @input="formatCardNumber"
-                    required
+                    type="radio"
+                    id="newCard"
+                    name="paymentMethod"
+                    value="newCard"
+                    v-model="selectedPaymentMethod"
                   />
-                  <small
-                    v-for="error in v$.cardNumber.$errors"
-                    :key="error.$uid"
-                    class="form-text"
-                    style="color: red"
-                  >
-                    {{ error.$message }}
-                  </small>
+                  <label for="newCard">PAY WITH A NEW CARD</label>
                 </div>
-                <div class="form-row">
-                  <div class="form-group col-4">
-                    <select
-                      id="expiryMonth"
-                      class="custom-select form-control"
-                      v-model="formData.expiryMonth"
-                      required
-                    >
-                      <option value="" disabled>MONTH</option>
-                      <option v-for="m in 12" :key="m" :value="m.toString().padStart(2, '0')">
-                        {{ m.toString().padStart(2, '0') }}
-                      </option>
-                    </select>
-                    <small
-                      v-for="error in v$.expiryMonth.$errors"
-                      :key="error.$uid"
-                      class="form-text"
-                      style="color: red"
-                    >
-                      {{ error.$message }}
-                    </small>
+
+                <!-- Card Details Form (Conditional) -->
+                <div v-if="selectedPaymentMethod === 'newCard'">
+                  <div class="form-row">
+                    <div class="form-group col-12">
+                      <input
+                        id="cardholderName"
+                        v-model="formData.cardholderName"
+                        type="text"
+                        class="form-control"
+                        placeholder="CARDHOLDER NAME"
+                        maxlength="26"
+                        @input="
+                          formData.cardholderName = (
+                            $event.target as HTMLInputElement
+                          ).value.toUpperCase()
+                        "
+                        required
+                      />
+                      <small
+                        v-for="error in v$.cardholderName.$errors"
+                        :key="error.$uid"
+                        class="form-text"
+                        style="color: red"
+                      >
+                        {{ error.$message }}
+                      </small>
+                    </div>
                   </div>
-                  <div class="form-group col-4">
-                    <select
-                      id="expiryYear"
-                      class="custom-select form-control"
-                      v-model="formData.expiryYear"
-                      required
-                    >
-                      <option value="" disabled>YEAR</option>
-                      <option v-for="y in EXPIRY_YEARS" :key="y" :value="y">
-                        {{ y }}
-                      </option>
-                    </select>
-                    <small
-                      v-for="error in v$.expiryYear.$errors"
-                      :key="error.$uid"
-                      class="form-text"
-                      style="color: red"
-                    >
-                      {{ error.$message }}
-                    </small>
-                  </div>
-                  <div class="form-group col-4">
+                  <div class="form-group">
                     <input
-                      id="cvv"
-                      class="form-control"
-                      placeholder="CVV"
-                      v-model="formData.cvv"
+                      id="cardNumber"
+                      v-model="formData.cardNumber"
                       type="tel"
                       inputmode="numeric"
-                      maxlength="4"
+                      class="form-control"
+                      placeholder="CARD NUMBER"
+                      maxlength="19"
+                      @input="formatCardNumber"
                       required
-                      @input="formatCVV"
                     />
                     <small
-                      v-for="error in v$.cvv.$errors"
+                      v-for="error in v$.cardNumber.$errors"
                       :key="error.$uid"
                       class="form-text"
                       style="color: red"
@@ -521,52 +505,125 @@ const onFingerprintError = (error: Error) => {
                       {{ error.$message }}
                     </small>
                   </div>
+                  <div class="form-row">
+                    <div class="form-group col-4">
+                      <select
+                        id="expiryMonth"
+                        class="custom-select form-control"
+                        v-model="formData.expiryMonth"
+                        required
+                      >
+                        <option value="" disabled>MONTH</option>
+                        <option v-for="m in 12" :key="m" :value="m.toString().padStart(2, '0')">
+                          {{ m.toString().padStart(2, '0') }}
+                        </option>
+                      </select>
+                      <small
+                        v-for="error in v$.expiryMonth.$errors"
+                        :key="error.$uid"
+                        class="form-text"
+                        style="color: red"
+                      >
+                        {{ error.$message }}
+                      </small>
+                    </div>
+                    <div class="form-group col-4">
+                      <select
+                        id="expiryYear"
+                        class="custom-select form-control"
+                        v-model="formData.expiryYear"
+                        required
+                      >
+                        <option value="" disabled>YEAR</option>
+                        <option v-for="y in EXPIRY_YEARS" :key="y" :value="y">
+                          {{ y }}
+                        </option>
+                      </select>
+                      <small
+                        v-for="error in v$.expiryYear.$errors"
+                        :key="error.$uid"
+                        class="form-text"
+                        style="color: red"
+                      >
+                        {{ error.$message }}
+                      </small>
+                    </div>
+                    <div class="form-group col-4">
+                      <input
+                        id="cvv"
+                        class="form-control"
+                        placeholder="CVV"
+                        v-model="formData.cvv"
+                        type="tel"
+                        inputmode="numeric"
+                        maxlength="4"
+                        required
+                        @input="formatCVV"
+                      />
+                      <small
+                        v-for="error in v$.cvv.$errors"
+                        :key="error.$uid"
+                        class="form-text"
+                        style="color: red"
+                      >
+                        {{ error.$message }}
+                      </small>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <!-- Digital Wallet Payment Option -->
-            <p class="section-title mt-4">PAY WITH YOUR DIGITAL WALLET</p>
-            <div class="digital-wallet-container">
-              <input
-                type="radio"
-                id="digitalWallet"
-                value="digitalWallet"
-                name="paymentMethod"
-                v-model="selectedPaymentMethod"
-              />
-              <label for="digitalWallet">PAY WITH</label>
-              <img :src="applePay" alt="Apple Pay" class="apple-pay-logo" />
+              <!-- Digital Wallet Payment Option -->
+              <p class="section-title mt-4">PAY WITH YOUR DIGITAL WALLET</p>
+              <div class="digital-wallet-container">
+                <input
+                  type="radio"
+                  id="digitalWallet"
+                  value="digitalWallet"
+                  name="paymentMethod"
+                  v-model="selectedPaymentMethod"
+                />
+                <label for="digitalWallet">PAY WITH</label>
+                <img :src="applePay" alt="Apple Pay" class="apple-pay-logo" />
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Sticky Footer for Action Button -->
-    <footer class="payment-footer">
-      <button
-        class="pay-now-btn"
-        @click="handleSubmit"
-        :disabled="isSubmitting || selectedPaymentMethod === ''"
-      >
-        <span
-          v-if="isSubmitting"
-          class="spinner-border spinner-border-sm"
-          role="status"
-          aria-hidden="true"
-        ></span>
-        <span v-if="!isSubmitting">PAY NOW</span>
-        <span v-else style="margin-left: 0.5rem">PROCESSING...</span>
-      </button>
-      <div class="footer-disclaimer">
-        <span>WE ACCEPT PAYMENTS ONLINE USING VISA AND MASTERCARD CREDIT/DEBIT CARD IN AED</span>
-      </div>
-      <div class="payment-logos">
-        <img :src="cardsAccepted" alt="Cards Accepted" />
-        <img :src="protectedByPayfort" alt="Protected by Payfort" />
-      </div>
-    </footer>
+      <!-- Sticky Footer for Action Button -->
+      <footer class="payment-footer">
+        <button
+          class="pay-now-btn"
+          @click="handleSubmit"
+          :disabled="isSubmitting || selectedPaymentMethod === ''"
+        >
+          <span
+            v-if="isSubmitting"
+            class="spinner-border spinner-border-sm"
+            role="status"
+            aria-hidden="true"
+          ></span>
+          <span v-if="!isSubmitting">PAY NOW</span>
+          <span v-else style="margin-left: 0.5rem">PROCESSING...</span>
+        </button>
+        <div class="footer-disclaimer">
+          <span>WE ACCEPT PAYMENTS ONLINE USING VISA AND MASTERCARD CREDIT/DEBIT CARD IN AED</span>
+        </div>
+        <div class="payment-logos">
+          <img :src="cardsAccepted" alt="Cards Accepted" />
+          <img :src="protectedByPayfort" alt="Protected by Payfort" />
+        </div>
+      </footer>
+    </div>
+    <div v-if="currentStep === 'confirmation'">
+      <CheckoutConfirmation
+        :cart="detailedCart"
+        :is-loading="isSubmitting"
+        @confirm="handleFinalPayment"
+        @back="currentStep = 'details'"
+      />
+    </div>
 
     <!-- Modal for showing errors or messages -->
     <BaseModal

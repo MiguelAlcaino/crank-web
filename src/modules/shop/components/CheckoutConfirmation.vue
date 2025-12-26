@@ -1,0 +1,178 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+import type { ShoppingCart } from '../models/ShoppingCart'
+import type { IconName } from '../models/types'
+
+import IconBag from '@/modules/shop/components/icons/IconBag.vue'
+import IconGift from '@/modules/shop/components/icons/IconGift.vue'
+import IconMerch from '@/modules/shop/components/icons/IconMerch.vue'
+import IconSmoothie from '@/modules/shop/components/icons/IconSmoothie.vue'
+
+const props = defineProps<{
+  cart: ShoppingCart | null
+  isLoading: boolean
+}>()
+
+const emit = defineEmits(['confirm', 'back'])
+
+const iconComponents: Record<string, any> = {
+  bag: IconBag,
+  gift: IconGift,
+  merch: IconMerch,
+  smoothie: IconSmoothie,
+  default: IconBag
+}
+
+const getIcon = (iconName: string) => {
+  return iconComponents[iconName] || iconComponents.default
+}
+</script>
+
+<template>
+  <div class="confirmation-container d-flex flex-column h-100">
+    <!-- Header -->
+    <div class="header text-center p-4">
+      <h1 class="font-weight-bold">MY WORKOUT WISHLIST</h1>
+      <p class="text-muted text-uppercase" v-if="cart">{{ cart.itemCount }} ITEMS IN YOUR BASKET</p>
+    </div>
+
+    <!-- Scrollable List -->
+    <div class="items-list flex-grow-1 overflow-auto">
+      <div v-for="item in cart?.items" :key="item.id" class="confirm-item d-flex">
+        <!-- Icon (Left Black Box) -->
+        <div class="item-icon d-flex justify-content-center align-items-center">
+          <component :is="getIcon(item.variant.product.iconName)" class="icon-svg" />
+        </div>
+
+        <!-- Details (Center) -->
+        <div
+          class="item-details flex-grow-1 d-flex flex-column justify-content-center text-center p-2"
+        >
+          <span class="item-title font-weight-bold text-uppercase">
+            {{ item.variant.product.title }}
+          </span>
+          <span class="item-price font-weight-bold">
+            {{ item.variant.getFormattedPrice() }}
+          </span>
+          <span class="item-subtitle small text-muted text-uppercase mt-1">
+            {{ item.variant.product.subtitle || 'INSTRUCTIONS HERE' }}
+          </span>
+        </div>
+
+        <!-- Quantity (Right Grey Box) -->
+        <div class="item-qty d-flex justify-content-center align-items-center">
+          <span class="font-weight-bold">{{ item.quantity }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer-area mt-auto">
+      <!-- Total Bar -->
+      <div class="total-bar d-flex justify-content-between align-items-center text-white p-3">
+        <span class="font-weight-bold">TOTAL AMOUNT</span>
+        <span class="font-weight-bold text-orange">
+          {{ cart?.formattedTotal }}
+        </span>
+      </div>
+
+      <!-- Action Button -->
+      <div class="p-4 bg-white text-center">
+        <button class="btn-confirm w-100" @click="$emit('confirm')" :disabled="isLoading">
+          <span v-if="isLoading" class="spinner-border spinner-border-sm mr-2"></span>
+          <span v-else>CONFIRM</span>
+        </button>
+
+        <button class="btn-back mt-3" @click="$emit('back')" :disabled="isLoading">
+          Modify Payment Details
+        </button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
+<style lang="css" scoped src="@/assets/main.css"></style>
+
+<style scoped>
+.confirmation-container {
+  background-color: #f4f5f7;
+  min-height: 60vh;
+}
+
+.header h1 {
+  font-family: 'BigJohn', sans-serif;
+  font-size: 2rem;
+}
+
+/* Item Styles */
+.confirm-item {
+  background-color: #f4f4f4;
+  border-bottom: 2px solid #fff;
+  height: 100px;
+}
+
+.item-icon {
+  background-color: black;
+  width: 80px;
+  min-width: 80px;
+  color: white;
+}
+
+.icon-svg {
+  width: 30px;
+  height: 30px;
+}
+
+.item-details {
+  background-color: #f4f4f4;
+}
+
+.item-title {
+  font-family: 'BigJohn', sans-serif;
+  font-size: 0.9rem;
+}
+
+.item-qty {
+  background-color: #e0e0e0;
+  width: 60px;
+  min-width: 60px;
+  font-family: 'BigJohn', sans-serif;
+  font-size: 1.1rem;
+}
+
+/* Footer Styles */
+.total-bar {
+  background-color: black;
+  font-family: 'BigJohn', sans-serif;
+  letter-spacing: 1px;
+}
+
+.text-orange {
+  color: #ff8c69;
+}
+
+.btn-confirm {
+  background-color: #ff8c69;
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: 12px;
+  font-family: 'BigJohn', sans-serif;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 10px rgba(255, 140, 105, 0.4);
+  transition: transform 0.1s;
+}
+
+.btn-confirm:active {
+  transform: scale(0.98);
+}
+
+.btn-back {
+  background: none;
+  border: none;
+  text-decoration: underline;
+  color: #666;
+  font-size: 0.9rem;
+}
+</style>
