@@ -36,6 +36,9 @@ import cardsAccepted from '../assets/images/cards_accepted.png'
 import protectedByPayfort from '../assets/images/protected_by_payfort.png'
 import applePay from '../assets/images/apple_pay_button_pay.png'
 
+import { appStore } from '@/stores/appStorage'
+import { SiteEnum } from '@/modules/shared/interfaces/site.enum'
+
 //
 // -----------------
 // DEPENDENCIES & COMPOSABLES
@@ -351,12 +354,28 @@ const formatCVV = (event: Event) => {
  * @description When the component is mounted, fetch essential data.
  */
 onMounted(() => {
-  // Check if token is provided in URL (webview mode)
+  const store = appStore()
+
   const token = route.query.token as string
+  const siteParam = route.query.site as string
+
+  if (siteParam) {
+    const matchedSite = Object.values(SiteEnum).find(
+      (s) => s.toLowerCase() === siteParam.toLowerCase()
+    )
+
+    if (matchedSite) {
+      console.log(`Webview: Switching site to ${matchedSite}`)
+      store.setSite(matchedSite as SiteEnum)
+    } else {
+      console.warn(`Webview: Invalid site parameter received: ${siteParam}`)
+    }
+  }
+
+  // Check if token is provided in URL (webview mode)
   if (token) {
     isWebviewMode.value = true
     webviewToken.value = token
-    // Set the token in the auth service for webview mode
     authService.setWebviewToken(token)
   }
 
