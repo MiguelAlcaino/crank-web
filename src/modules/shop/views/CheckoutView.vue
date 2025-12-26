@@ -223,7 +223,7 @@ const handleSubmit = async () => {
       showErrorModal('Security Check Not Ready', 'Please wait a moment and try again.')
       return
     }
- 
+
     currentStep.value = 'confirmation'
 
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -232,11 +232,10 @@ const handleSubmit = async () => {
   }
 }
 
-
 const handleFinalPayment = async () => {
   isSubmitting.value = true
 
-  try {   
+  try {
     await initiatePayment(fingerprintSessionId.value, {
       saveCard: formData.saveForFuture
     })

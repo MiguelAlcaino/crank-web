@@ -29,7 +29,7 @@ const getIcon = (iconName: string) => {
 </script>
 
 <template>
-  <div class="confirmation-container d-flex flex-column h-100">
+  <div class="confirmation-container">
     <!-- Header -->
     <div class="header text-center p-4">
       <h1 class="font-weight-bold">MY WORKOUT WISHLIST</h1>
@@ -37,7 +37,7 @@ const getIcon = (iconName: string) => {
     </div>
 
     <!-- Scrollable List -->
-    <div class="items-list flex-grow-1 overflow-auto">
+    <div class="items-list p-3">
       <div v-for="item in cart?.items" :key="item.id" class="confirm-item d-flex">
         <!-- Icon (Left Black Box) -->
         <div class="item-icon d-flex justify-content-center align-items-center">
@@ -67,23 +67,21 @@ const getIcon = (iconName: string) => {
     </div>
 
     <!-- Footer -->
-    <div class="footer-area mt-auto">
+    <div class="footer-area">
       <!-- Total Bar -->
-      <div class="total-bar d-flex justify-content-between align-items-center text-white p-3">
-        <span class="font-weight-bold">TOTAL AMOUNT</span>
-        <span class="font-weight-bold text-orange">
-          {{ cart?.formattedTotal }}
-        </span>
+      <div class="total-bar p-3 d-flex justify-content-between">
+        <span>TOTAL AMOUNT</span>
+        <span class="text-orange"> {{ cart?.formattedTotal || '$0.00' }} </span>
       </div>
 
       <!-- Action Button -->
-      <div class="p-4 bg-white text-center">
-        <button class="btn-confirm w-100" @click="$emit('confirm')" :disabled="isLoading">
+      <div class="p-4 text-center">
+        <button class="btn-confirm" @click="$emit('confirm')" :disabled="isLoading">
           <span v-if="isLoading" class="spinner-border spinner-border-sm mr-2"></span>
           <span v-else>CONFIRM</span>
         </button>
 
-        <button class="btn-back mt-3" @click="$emit('back')" :disabled="isLoading">
+        <button class="btn-back d-block w-100" @click="$emit('back')" :disabled="isLoading">
           Modify Payment Details
         </button>
       </div>
@@ -96,16 +94,32 @@ const getIcon = (iconName: string) => {
 
 <style scoped>
 .confirmation-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
   background-color: #f4f5f7;
-  min-height: 60vh;
+}
+
+.items-list {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 0;
+  background-color: white;
+}
+
+.footer-area {
+  margin-top: auto;
+  background-color: white;
+  width: 100%;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
 }
 
 .header h1 {
   font-family: 'BigJohn', sans-serif;
   font-size: 2rem;
+  margin-top: 1rem;
 }
 
-/* Item Styles */
 .confirm-item {
   background-color: #f4f4f4;
   border-bottom: 2px solid #fff;
@@ -131,6 +145,7 @@ const getIcon = (iconName: string) => {
 .item-title {
   font-family: 'BigJohn', sans-serif;
   font-size: 0.9rem;
+  line-height: 1.2;
 }
 
 .item-qty {
@@ -141,9 +156,9 @@ const getIcon = (iconName: string) => {
   font-size: 1.1rem;
 }
 
-/* Footer Styles */
 .total-bar {
   background-color: black;
+  color: white;
   font-family: 'BigJohn', sans-serif;
   letter-spacing: 1px;
 }
@@ -160,7 +175,11 @@ const getIcon = (iconName: string) => {
   border-radius: 12px;
   font-family: 'BigJohn', sans-serif;
   font-size: 1.2rem;
-  box-shadow: 0 4px 10px rgba(255, 140, 105, 0.4);
+  font-weight: bold;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 15px rgba(255, 140, 105, 0.4);
+  width: 100%;
+  margin-bottom: 1rem;
   transition: transform 0.1s;
 }
 
@@ -173,6 +192,10 @@ const getIcon = (iconName: string) => {
   border: none;
   text-decoration: underline;
   color: #666;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
 }
 </style>
