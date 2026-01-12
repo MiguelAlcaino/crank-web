@@ -34,17 +34,17 @@ import type {
 } from '@/gql/graphql'
 import { PaymentTransactionStatusEnum } from '@/gql/graphql'
 import type { CustomCalendarClasses } from '@/model/CustomCalendarClasses'
+import type { BasicUser } from '@/modules/auth/types'
 import type { IsSmsValidationCodeValidResponse } from '@/modules/buy_packages/models/is-sms-validation-code-valid-response'
 import type { SmsValidationResponse } from '@/modules/buy_packages/models/sms-validation-response'
-import type { IApiService } from './IApiService'
+import type { SiteEnum } from '@/modules/shared/interfaces/site.enum'
+import { createProductModel } from '@/modules/shop/factories/productFactory'
+import { createShoppingCartModel } from '@/modules/shop/factories/shoppingCartFactory'
+import type { CartSummary } from '@/modules/shop/interfaces/cart-summary'
 import type { Product, ProductFromQuery } from '@/modules/shop/models/Product'
 import type { ShoppingCart as ShoppingCartModel } from '@/modules/shop/models/ShoppingCart'
 import type { AppProductType } from '@/modules/shop/models/types'
-import type { SiteEnum } from '@/modules/shared/interfaces/site.enum'
-import type { BasicUser } from '@/modules/auth/types'
-import type { CartSummary } from '@/modules/shop/interfaces/cart-summary'
-import { createProductModel } from '@/modules/shop/factories/productFactory'
-import { createShoppingCartModel } from '@/modules/shop/factories/shoppingCartFactory'
+import type { IApiService } from './IApiService'
 
 import type {
   ShoppingCart as GqlShoppingCart,
@@ -77,7 +77,8 @@ export class FakeApiService implements IApiService {
     this._currentUser = {
       firstName: 'John',
       lastName: 'Doe',
-      email: 'test@crank.com'
+      email: 'test@crank.com',
+      isMobilePhoneVerified: false
     }
 
     // Initialize a set of fake products
