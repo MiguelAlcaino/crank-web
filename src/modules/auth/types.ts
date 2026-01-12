@@ -5,4 +5,4 @@ import type { User } from '@/gql/graphql'
  * Contains only the necessary information for global state management and UI display
  * (e.g., headers, menus), avoiding the overhead of the full User object.
  */
-export type BasicUser = Pick<User, 'firstName' | 'lastName' | 'email'>
+export type BasicUser = Pick<User, 'firstName' | 'lastName' | 'email' | 'isMobilePhoneVerified'>

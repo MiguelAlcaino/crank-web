@@ -14,6 +14,7 @@ export type Scalars = {
   Date: any
   DateTime: any
   DateTimeWithoutTimeZone: any
+  File: any
 }
 
 export type AcceptLateCancelledSpotInClassInput = {
@@ -118,14 +119,29 @@ export type BookingOverlapsAnotherOneError = Error & {
   code: Scalars['String']
 }
 
+/**
+ * Defines the time window during which a class can be booked or cancelled.
+ *
+ * Users cannot book or cancel outside this window. The window typically opens several days
+ * before the class and closes a few hours before the class starts.
+ */
 export type BookingWindow = {
   __typename?: 'BookingWindow'
+  /** The latest date and time when booking is allowed for this class */
   endDateTime: Scalars['DateTime']
+  /** The earliest date and time when booking becomes available for this class */
   startDateTime: Scalars['DateTime']
 }
 
+/**
+ * Filters for querying classes within a specific date range.
+ *
+ * If no dates are provided, returns classes starting from the current date and time.
+ */
 export type CalendarClassesParams = {
+  /** End date for the class search range (format: YYYY-MM-DD). If omitted, it defaults to +1 week from now. */
   endDate?: InputMaybe<Scalars['Date']>
+  /** Start date for the class search range (format: YYYY-MM-DD). If omitted, defaults to current date. If provided and end date should also be provided. */
   startDate?: InputMaybe<Scalars['Date']>
 }
 
@@ -185,24 +201,45 @@ export type CheckoutUserInClass = {
   enrollmentId: Scalars['ID']
 }
 
+/**
+ * Represents a fitness class session with booking and scheduling information.
+ *
+ * Contains all details needed to display and book a class, including instructor information,
+ * timing, capacity, and booking rules.
+ */
 export type Class = {
   __typename?: 'Class'
+  /** Time window during which users can book or cancel this class */
   bookingWindow: BookingWindow
+  /** Detailed description of the class */
   description: Scalars['String']
+  /** Duration of the class in minutes */
   duration: Scalars['Int']
+  /** Whether performance statistics are available for this class */
   hasClassStats: Scalars['Boolean']
+  /** Unique identifier for the class */
   id: Scalars['ID']
+  /** Full name of the instructor leading the class */
   instructorName: Scalars['String']
+  /** Whether this class has a substitute instructor (different from the regularly scheduled instructor) */
   isSubstitute: Scalars['Boolean']
+  /** Whether this class is currently being synchronized with external systems */
   isSynchronizing: Scalars['Boolean']
+  /** Maximum number of participants that can book this class */
   maxCapacity: Scalars['Int']
+  /** Name/type of the class (e.g., 'CRANK', 'RIDE', 'POWER') */
   name: Scalars['String']
+  /** Whether this class should be displayed as disabled in the UI (typically for cancelled or past classes) */
   showAsDisabled: Scalars['Boolean']
+  /** Class start date and time with timezone (ISO 8601 format) */
   start: Scalars['DateTime']
   /** Same as start but without timezone. If start is 2023-11-04T10:15:00+04:00 then this value will be 2023-11-04T10:15:00 */
   startWithNoTimeZone: Scalars['DateTimeWithoutTimeZone']
+  /** Current number of participants booked in this class */
   totalBooked: Scalars['Int']
+  /** Number of spots marked as under maintenance or disabled */
   totalUnderMaintenanceSpots: Scalars['Int']
+  /** Whether the waitlist is available for this class when it's full */
   waitListAvailable: Scalars['Boolean']
 }
 
@@ -230,13 +267,19 @@ export type ClassPackageProduct = SellableProductInterface & {
   alertBeforePurchasing?: Maybe<ProductAlertBeforePurchasing>
   buttonText?: Maybe<Scalars['String']>
   currency: Scalars['String']
+  doesItRequireSmsAuth?: Maybe<Scalars['Boolean']>
+  doestItActivateVodForClients?: Maybe<Scalars['Boolean']>
   id: Scalars['ID']
+  isCLassPassPackage?: Maybe<Scalars['Boolean']>
+  isMembership?: Maybe<Scalars['Boolean']>
+  isTrialPackage?: Maybe<Scalars['Boolean']>
   isVisible: Scalars['Boolean']
   position?: Maybe<Scalars['Int']>
   subtitle?: Maybe<Scalars['String']>
   title: Scalars['String']
   type?: Maybe<ClassPackageTypeEnum>
   variants: Array<Variant>
+  vodAmountOfDays?: Maybe<Scalars['Int']>
 }
 
 export enum ClassPackageTypeEnum {
@@ -246,6 +289,8 @@ export enum ClassPackageTypeEnum {
   Trial = 'trial',
   Vod = 'vod'
 }
+
+export type ClassPackageUpdateResultUnion = ClassPackageProduct | ProductNotFound | UnknownError
 
 export type ClassPositionInterface = {
   icon: PositionIconEnum
@@ -316,6 +361,19 @@ export type Country = {
   states?: Maybe<Array<Maybe<State>>>
 }
 
+export type CrankInstructor = {
+  __typename?: 'CrankInstructor'
+  firstName?: Maybe<Scalars['String']>
+  id: Scalars['ID']
+  lastName?: Maybe<Scalars['String']>
+  profilePictureFile?: Maybe<Scalars['String']>
+}
+
+export type CrankInstructorResultUnion =
+  | CrankInstructor
+  | InstructorNotFound
+  | UploadedFileIsNotAnImage
+
 export type CreateCurrentUserInSiteSuccess = {
   __typename?: 'CreateCurrentUserInSiteSuccess'
   result: Scalars['Boolean']
@@ -326,6 +384,8 @@ export type CreateCurrentUserInSiteUnion = CreateCurrentUserInSiteSuccess | User
 export type CreatePaymentLinkInput = {
   amount: Scalars['Int']
   currency: Scalars['String']
+  /** After a successful purchase an email will be sent to this email address with details about the payment (meant to be used by admins) */
+  notificationEmailAddress: Scalars['String']
   site: SiteEnum
   title: Scalars['String']
 }
@@ -573,6 +633,17 @@ export type GiftCardNotRegisteredOnCurrentShoppingCart = Error & {
   code: Scalars['String']
 }
 
+export type GiftcardInput = {
+  alertBeforePurchasing?: InputMaybe<ProductAlertBeforePurchasingInput>
+  buttonText?: InputMaybe<Scalars['String']>
+  currency?: InputMaybe<Scalars['String']>
+  isVisible?: InputMaybe<Scalars['Boolean']>
+  position?: InputMaybe<Scalars['Int']>
+  purchaseUrl?: InputMaybe<Scalars['String']>
+  subtitle?: InputMaybe<Scalars['String']>
+  title?: InputMaybe<Scalars['String']>
+}
+
 export type IconPosition = ClassPositionInterface & {
   __typename?: 'IconPosition'
   icon: PositionIconEnum
@@ -605,6 +676,11 @@ export type Instructor = {
   id: Scalars['ID']
   name: Scalars['String']
   site: Site
+}
+
+export type InstructorNotFound = Error & {
+  __typename?: 'InstructorNotFound'
+  code: Scalars['String']
 }
 
 export type IsSmsValidationCodeValidUnion =
@@ -731,12 +807,16 @@ export type Mutation = {
   syncAllClasses: Scalars['Boolean']
   /** Sync all gift cards from Mindbody with the local database */
   syncAllGiftCards: Scalars['Boolean']
+  /** Allows to syncronize all packages by site */
+  syncAllPackagesBySite: Array<ClassPackageProduct>
   /** Sync one class */
   syncClass: ClassInfo
   /** Sync a class with PIQ */
   syncClassWithPIQ: ClassInfo
   /** Updates an admin user */
   updateAdminUser: AdminUserResultUnion
+  /** Allows to update product */
+  updateClassPackage?: Maybe<ClassPackageUpdateResultUnion>
   /** Allows to update the current AdminUser */
   updateCurrentAdminUser: AdminUser
   /** Allows to update the favorite site for a AdminUser */
@@ -748,6 +828,10 @@ export type Mutation = {
   updateCurrentUserPassword?: Maybe<Scalars['Boolean']>
   /** Updates a gift card */
   updateGiftCard: GiftCard
+  /** Allows to update variant */
+  updateGiftCardNew?: Maybe<UpdateGiftcardResiltUnion>
+  /** Allows to update an Instructor */
+  updateInstructor?: Maybe<CrankInstructorResultUnion>
   /** Allows to update an Item from Shopping Cart */
   updateItemInShoppingCart: ShoppingCartResultUnion
   /** Updates a payment link */
@@ -967,6 +1051,10 @@ export type MutationSyncAllClassesArgs = {
   site: SiteEnum
 }
 
+export type MutationSyncAllPackagesBySiteArgs = {
+  site?: InputMaybe<SiteEnum>
+}
+
 export type MutationSyncClassArgs = {
   classId: Scalars['ID']
   site: SiteEnum
@@ -979,6 +1067,11 @@ export type MutationSyncClassWithPiqArgs = {
 
 export type MutationUpdateAdminUserArgs = {
   input: UpdateAdminUserInput
+}
+
+export type MutationUpdateClassPackageArgs = {
+  id: Scalars['ID']
+  input: ProductInput
 }
 
 export type MutationUpdateCurrentAdminUserArgs = {
@@ -1004,6 +1097,16 @@ export type MutationUpdateCurrentUserPasswordArgs = {
 
 export type MutationUpdateGiftCardArgs = {
   input: UpdateGiftCardInput
+}
+
+export type MutationUpdateGiftCardNewArgs = {
+  id: Scalars['ID']
+  input: GiftcardInput
+}
+
+export type MutationUpdateInstructorArgs = {
+  id: Scalars['ID']
+  input: UpdateInstructorInput
 }
 
 export type MutationUpdateItemInShoppingCartArgs = {
@@ -1074,6 +1177,7 @@ export type PaymentLink = {
   amount: Scalars['Int']
   currency: Scalars['String']
   id: Scalars['ID']
+  notificationEmailAddress: Scalars['String']
   site: Site
   title: Scalars['String']
   url: Scalars['String']
@@ -1126,6 +1230,27 @@ export type ProductAlertBeforePurchasing = {
   title: Scalars['String']
 }
 
+export type ProductAlertBeforePurchasingInput = {
+  description: Scalars['String']
+  title: Scalars['String']
+}
+
+export type ProductInput = {
+  alertBeforePurchasing?: InputMaybe<ProductAlertBeforePurchasingInput>
+  buttonText?: InputMaybe<Scalars['String']>
+  currency?: InputMaybe<Scalars['String']>
+  doesItRequiredSmsAuth?: InputMaybe<Scalars['Boolean']>
+  doestItActivateVodForClients?: InputMaybe<Scalars['Boolean']>
+  isCLassPassPackage?: InputMaybe<Scalars['Boolean']>
+  isMembership?: InputMaybe<Scalars['Boolean']>
+  isTrialPackage?: InputMaybe<Scalars['Boolean']>
+  isVisible?: InputMaybe<Scalars['Boolean']>
+  position?: InputMaybe<Scalars['Int']>
+  subtitle?: InputMaybe<Scalars['String']>
+  title?: InputMaybe<Scalars['String']>
+  vodAmountOfDays?: InputMaybe<Scalars['Int']>
+}
+
 export type ProductNotFound = Error & {
   __typename?: 'ProductNotFound'
   code: Scalars['String']
@@ -1166,7 +1291,12 @@ export type Query = {
   availableSites?: Maybe<Array<Site>>
   /** Return the total for the current shoppingCart for the current user */
   calculateTotalForShoppingCart: ShoppingCartResultUnion
-  /** Get next classes */
+  /**
+   * Returns a list of upcoming fitness classes for a specific site within an optional date range.
+   *
+   * Use this query to retrieve the class schedule, including details like instructor name, start time,
+   * duration, capacity, and booking availability. Results are ordered chronologically by class start time.
+   */
   calendarClasses: Array<Class>
   /** Get a single class information */
   classInfo?: Maybe<ClassInfo>
@@ -1604,9 +1734,17 @@ export type Site = {
   name: Scalars['String']
 }
 
+/**
+ * Available CRANK fitness studio locations.
+ *
+ * Each site has its own class schedule, instructors, and facility configuration.
+ */
 export enum SiteEnum {
+  /** CRANK Abu Dhabi location */
   AbuDhabi = 'abu_dhabi',
+  /** CRANK Dubai location */
   Dubai = 'dubai',
+  /** CRANK Town Square location */
   TownSquare = 'town_square'
 }
 
@@ -1708,10 +1846,20 @@ export type UpdateGiftCardInput = {
   id: Scalars['ID']
 }
 
+export type UpdateGiftcardResiltUnion = GiftCard | ProductNotFound | UnknownError
+
+export type UpdateInstructorInput = {
+  firstName?: InputMaybe<Scalars['String']>
+  lastName?: InputMaybe<Scalars['String']>
+  profilePictureFile?: InputMaybe<Scalars['File']>
+}
+
 export type UpdatePaymentLinkInput = {
   amount?: InputMaybe<Scalars['Int']>
   currency?: InputMaybe<Scalars['String']>
   id: Scalars['ID']
+  /** After a successful purchase an email will be sent to this email address with details about the payment (meant to be used by admins) */
+  notificationEmailAddress: Scalars['String']
   site?: InputMaybe<SiteEnum>
   title?: InputMaybe<Scalars['String']>
 }
@@ -1719,6 +1867,11 @@ export type UpdatePaymentLinkInput = {
 export type UpdateUserPasswordInput = {
   newPassword: Scalars['String']
   userId: Scalars['ID']
+}
+
+export type UploadedFileIsNotAnImage = Error & {
+  __typename?: 'UploadedFileIsNotAnImage'
+  code: Scalars['String']
 }
 
 export type User = {
@@ -1739,9 +1892,12 @@ export type User = {
   firstName: Scalars['String']
   gender?: Maybe<GenderEnum>
   hideMetrics?: Maybe<Scalars['Boolean']>
+  isMobilePhoneVerified: Scalars['Boolean']
   lastName: Scalars['String']
   leaderboardUsername?: Maybe<Scalars['String']>
   phone: Scalars['String']
+  /** Allows to get remaining credits for current user for all sites */
+  remainingCredits: RemainingCreditsResultUnion
   remainingCreditsBySite?: Maybe<RemainingCreditsResultUnion>
   shoppingCart: ShoppingCart
   siteUsers: Array<SimpleSiteUser>
@@ -1870,7 +2026,13 @@ export type GetCurrentUserBasicInfoQueryVariables = Exact<{ [key: string]: never
 
 export type GetCurrentUserBasicInfoQuery = {
   __typename: 'Query'
-  currentUser?: { __typename: 'User'; firstName: string; lastName: string; email: string } | null
+  currentUser?: {
+    __typename: 'User'
+    firstName: string
+    lastName: string
+    email: string
+    isMobilePhoneVerified: boolean
+  } | null
 }
 
 export type AddDiscountCodeToShoppingCartMutationVariables = Exact<{
@@ -1921,6 +2083,7 @@ export type AddDiscountCodeToShoppingCartMutation = {
               | {
                   __typename: 'ClassPackageProduct'
                   type?: ClassPackageTypeEnum | null
+                  doesItRequireSmsAuth?: boolean | null
                   id: string
                   title: string
                   subtitle?: string | null
@@ -2000,6 +2163,7 @@ export type AddItemToShoppingCartMutation = {
               | {
                   __typename: 'ClassPackageProduct'
                   type?: ClassPackageTypeEnum | null
+                  doesItRequireSmsAuth?: boolean | null
                   id: string
                   title: string
                   subtitle?: string | null
@@ -2078,6 +2242,7 @@ export type CalculateTotalForShoppingCartQuery = {
               | {
                   __typename: 'ClassPackageProduct'
                   type?: ClassPackageTypeEnum | null
+                  doesItRequireSmsAuth?: boolean | null
                   id: string
                   title: string
                   subtitle?: string | null
@@ -2156,6 +2321,7 @@ export type EmptyShoppingCartMutation = {
               | {
                   __typename: 'ClassPackageProduct'
                   type?: ClassPackageTypeEnum | null
+                  doesItRequireSmsAuth?: boolean | null
                   id: string
                   title: string
                   subtitle?: string | null
@@ -2323,6 +2489,7 @@ export type GetShoppingCartQuery = {
             | {
                 __typename: 'ClassPackageProduct'
                 type?: ClassPackageTypeEnum | null
+                doesItRequireSmsAuth?: boolean | null
                 id: string
                 title: string
                 subtitle?: string | null
@@ -2371,6 +2538,7 @@ export type PaymentLinkQuery = {
     amount: number
     currency: string
     url: string
+    notificationEmailAddress: string
     site: { __typename: 'Site'; name: string; code: SiteEnum }
   } | null
 }
@@ -2433,6 +2601,7 @@ export type RemoveDiscountCodeMutation = {
               | {
                   __typename: 'ClassPackageProduct'
                   type?: ClassPackageTypeEnum | null
+                  doesItRequireSmsAuth?: boolean | null
                   id: string
                   title: string
                   subtitle?: string | null
@@ -2512,6 +2681,7 @@ export type RemoveItemFromShoppingCartMutation = {
               | {
                   __typename: 'ClassPackageProduct'
                   type?: ClassPackageTypeEnum | null
+                  doesItRequireSmsAuth?: boolean | null
                   id: string
                   title: string
                   subtitle?: string | null
@@ -2592,6 +2762,7 @@ export type UpdateItemInShoppingCartMutation = {
               | {
                   __typename: 'ClassPackageProduct'
                   type?: ClassPackageTypeEnum | null
+                  doesItRequireSmsAuth?: boolean | null
                   id: string
                   title: string
                   subtitle?: string | null
@@ -2626,6 +2797,7 @@ export type UpdateItemInShoppingCartMutation = {
 type ProductBasicFields_ClassPackageProduct_Fragment = {
   __typename: 'ClassPackageProduct'
   type?: ClassPackageTypeEnum | null
+  doesItRequireSmsAuth?: boolean | null
   id: string
   title: string
   subtitle?: string | null
@@ -2738,6 +2910,7 @@ export type ShoppingCartFieldsFragment = {
         | {
             __typename: 'ClassPackageProduct'
             type?: ClassPackageTypeEnum | null
+            doesItRequireSmsAuth?: boolean | null
             id: string
             title: string
             subtitle?: string | null
@@ -3547,7 +3720,10 @@ export const ProductBasicFieldsFragmentDoc = {
             },
             selectionSet: {
               kind: 'SelectionSet',
-              selections: [{ kind: 'Field', name: { kind: 'Name', value: 'type' } }]
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'doesItRequireSmsAuth' } }
+              ]
             }
           },
           {
@@ -3676,7 +3852,8 @@ export const GetCurrentUserBasicInfoDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'firstName' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'lastName' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'email' } }
+                { kind: 'Field', name: { kind: 'Name', value: 'email' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'isMobilePhoneVerified' } }
               ]
             }
           }
@@ -4385,6 +4562,7 @@ export const PaymentLinkDocument = {
                 { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'currency' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'url' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'notificationEmailAddress' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'site' },

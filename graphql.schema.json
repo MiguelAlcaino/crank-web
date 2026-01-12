@@ -877,12 +877,12 @@
       {
         "kind": "OBJECT",
         "name": "BookingWindow",
-        "description": null,
+        "description": "Defines the time window during which a class can be booked or cancelled.\n\nUsers cannot book or cancel outside this window. The window typically opens several days\nbefore the class and closes a few hours before the class starts.",
         "isOneOf": null,
         "fields": [
           {
             "name": "endDateTime",
-            "description": null,
+            "description": "The latest date and time when booking is allowed for this class",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -898,7 +898,7 @@
           },
           {
             "name": "startDateTime",
-            "description": null,
+            "description": "The earliest date and time when booking becomes available for this class",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -932,13 +932,13 @@
       {
         "kind": "INPUT_OBJECT",
         "name": "CalendarClassesParams",
-        "description": null,
+        "description": "Filters for querying classes within a specific date range.\n\nIf no dates are provided, returns classes starting from the current date and time.",
         "isOneOf": false,
         "fields": null,
         "inputFields": [
           {
             "name": "endDate",
-            "description": null,
+            "description": "End date for the class search range (format: YYYY-MM-DD). If omitted, it defaults to +1 week from now.",
             "type": {
               "kind": "SCALAR",
               "name": "Date",
@@ -950,7 +950,7 @@
           },
           {
             "name": "startDate",
-            "description": null,
+            "description": "Start date for the class search range (format: YYYY-MM-DD). If omitted, defaults to current date. If provided and end date should also be provided.",
             "type": {
               "kind": "SCALAR",
               "name": "Date",
@@ -1361,12 +1361,12 @@
       {
         "kind": "OBJECT",
         "name": "Class",
-        "description": null,
+        "description": "Represents a fitness class session with booking and scheduling information.\n\nContains all details needed to display and book a class, including instructor information,\ntiming, capacity, and booking rules.",
         "isOneOf": null,
         "fields": [
           {
             "name": "bookingWindow",
-            "description": null,
+            "description": "Time window during which users can book or cancel this class",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1382,7 +1382,7 @@
           },
           {
             "name": "description",
-            "description": null,
+            "description": "Detailed description of the class",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1398,7 +1398,7 @@
           },
           {
             "name": "duration",
-            "description": null,
+            "description": "Duration of the class in minutes",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1414,7 +1414,7 @@
           },
           {
             "name": "hasClassStats",
-            "description": null,
+            "description": "Whether performance statistics are available for this class",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1430,7 +1430,7 @@
           },
           {
             "name": "id",
-            "description": null,
+            "description": "Unique identifier for the class",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1446,7 +1446,7 @@
           },
           {
             "name": "instructorName",
-            "description": null,
+            "description": "Full name of the instructor leading the class",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1462,7 +1462,7 @@
           },
           {
             "name": "isSubstitute",
-            "description": null,
+            "description": "Whether this class has a substitute instructor (different from the regularly scheduled instructor)",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1478,7 +1478,7 @@
           },
           {
             "name": "isSynchronizing",
-            "description": null,
+            "description": "Whether this class is currently being synchronized with external systems",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1494,7 +1494,7 @@
           },
           {
             "name": "maxCapacity",
-            "description": null,
+            "description": "Maximum number of participants that can book this class",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1510,7 +1510,7 @@
           },
           {
             "name": "name",
-            "description": null,
+            "description": "Name/type of the class (e.g., 'CRANK', 'RIDE', 'POWER')",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1526,7 +1526,7 @@
           },
           {
             "name": "showAsDisabled",
-            "description": null,
+            "description": "Whether this class should be displayed as disabled in the UI (typically for cancelled or past classes)",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1542,7 +1542,7 @@
           },
           {
             "name": "start",
-            "description": null,
+            "description": "Class start date and time with timezone (ISO 8601 format)",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1574,7 +1574,7 @@
           },
           {
             "name": "totalBooked",
-            "description": null,
+            "description": "Current number of participants booked in this class",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1590,7 +1590,7 @@
           },
           {
             "name": "totalUnderMaintenanceSpots",
-            "description": null,
+            "description": "Number of spots marked as under maintenance or disabled",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1606,7 +1606,7 @@
           },
           {
             "name": "waitListAvailable",
-            "description": null,
+            "description": "Whether the waitlist is available for this class when it's full",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -1844,6 +1844,30 @@
             "deprecationReason": null
           },
           {
+            "name": "doesItRequireSmsAuth",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "doestItActivateVodForClients",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "id",
             "description": null,
             "args": [],
@@ -1855,6 +1879,42 @@
                 "name": "ID",
                 "ofType": null
               }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "isCLassPassPackage",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "isMembership",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "isTrialPackage",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -1950,6 +2010,18 @@
             },
             "isDeprecated": false,
             "deprecationReason": null
+          },
+          {
+            "name": "vodAmountOfDays",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "inputFields": null,
@@ -2004,6 +2076,33 @@
           }
         ],
         "possibleTypes": null
+      },
+      {
+        "kind": "UNION",
+        "name": "ClassPackageUpdateResultUnion",
+        "description": null,
+        "isOneOf": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "ClassPackageProduct",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "ProductNotFound",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "UnknownError",
+            "ofType": null
+          }
+        ]
       },
       {
         "kind": "INTERFACE",
@@ -2627,6 +2726,97 @@
       },
       {
         "kind": "OBJECT",
+        "name": "CrankInstructor",
+        "description": null,
+        "isOneOf": null,
+        "fields": [
+          {
+            "name": "firstName",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "id",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ID",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "lastName",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "profilePictureFile",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "UNION",
+        "name": "CrankInstructorResultUnion",
+        "description": null,
+        "isOneOf": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "CrankInstructor",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "InstructorNotFound",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "UploadedFileIsNotAnImage",
+            "ofType": null
+          }
+        ]
+      },
+      {
+        "kind": "OBJECT",
         "name": "CreateCurrentUserInSiteSuccess",
         "description": null,
         "isOneOf": null,
@@ -2701,6 +2891,22 @@
           {
             "name": "currency",
             "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "notificationEmailAddress",
+            "description": "After a successful purchase an email will be sent to this email address with details about the payment (meant to be used by admins)",
             "type": {
               "kind": "NON_NULL",
               "name": null,
@@ -4284,6 +4490,11 @@
           },
           {
             "kind": "OBJECT",
+            "name": "InstructorNotFound",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
             "name": "LateCancellationRequiredError",
             "ofType": null
           },
@@ -4384,6 +4595,11 @@
           },
           {
             "kind": "OBJECT",
+            "name": "UploadedFileIsNotAnImage",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
             "name": "UserAlreadyExistsError",
             "ofType": null
           },
@@ -4418,6 +4634,17 @@
             "ofType": null
           }
         ]
+      },
+      {
+        "kind": "SCALAR",
+        "name": "File",
+        "description": null,
+        "isOneOf": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
       },
       {
         "kind": "SCALAR",
@@ -4849,6 +5076,114 @@
         "possibleTypes": null
       },
       {
+        "kind": "INPUT_OBJECT",
+        "name": "GiftcardInput",
+        "description": null,
+        "isOneOf": false,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "alertBeforePurchasing",
+            "description": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "ProductAlertBeforePurchasingInput",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "buttonText",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "currency",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "isVisible",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "position",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "purchaseUrl",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "subtitle",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "title",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
         "kind": "SCALAR",
         "name": "ID",
         "description": "The `ID` scalar type represents a unique identifier, often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `\"4\"`) or integer (such as `4`) input value will be accepted as an ID.",
@@ -5138,6 +5473,40 @@
         ],
         "inputFields": null,
         "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "InstructorNotFound",
+        "description": null,
+        "isOneOf": null,
+        "fields": [
+          {
+            "name": "code",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "Error",
+            "ofType": null
+          }
+        ],
         "enumValues": null,
         "possibleTypes": null
       },
@@ -7160,6 +7529,43 @@
             "deprecationReason": null
           },
           {
+            "name": "syncAllPackagesBySite",
+            "description": "Allows to syncronize all packages by site",
+            "args": [
+              {
+                "name": "site",
+                "description": null,
+                "type": {
+                  "kind": "ENUM",
+                  "name": "SiteEnum",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "ClassPackageProduct",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "syncClass",
             "description": "Sync one class",
             "args": [
@@ -7286,6 +7692,51 @@
                 "name": "AdminUserResultUnion",
                 "ofType": null
               }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "updateClassPackage",
+            "description": "Allows to update product",
+            "args": [
+              {
+                "name": "id",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "ID",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "input",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "ProductInput",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "UNION",
+              "name": "ClassPackageUpdateResultUnion",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -7484,6 +7935,96 @@
                 "name": "GiftCard",
                 "ofType": null
               }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "updateGiftCardNew",
+            "description": "Allows to update variant",
+            "args": [
+              {
+                "name": "id",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "ID",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "input",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "GiftcardInput",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "UNION",
+              "name": "UpdateGiftcardResiltUnion",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "updateInstructor",
+            "description": "Allows to update an Instructor",
+            "args": [
+              {
+                "name": "id",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "ID",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "input",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "UpdateInstructorInput",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "UNION",
+              "name": "CrankInstructorResultUnion",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -8098,6 +8639,22 @@
             "deprecationReason": null
           },
           {
+            "name": "notificationEmailAddress",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "site",
             "description": null,
             "args": [],
@@ -8434,6 +8991,218 @@
         ],
         "inputFields": null,
         "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "ProductAlertBeforePurchasingInput",
+        "description": null,
+        "isOneOf": false,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "description",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "title",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "ProductInput",
+        "description": null,
+        "isOneOf": false,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "alertBeforePurchasing",
+            "description": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "ProductAlertBeforePurchasingInput",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "buttonText",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "currency",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "doesItRequiredSmsAuth",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "doestItActivateVodForClients",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "isCLassPassPackage",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "isMembership",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "isTrialPackage",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "isVisible",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "position",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "subtitle",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "title",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "vodAmountOfDays",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "interfaces": null,
         "enumValues": null,
         "possibleTypes": null
       },
@@ -8818,11 +9587,11 @@
           },
           {
             "name": "calendarClasses",
-            "description": "Get next classes",
+            "description": "Returns a list of upcoming fitness classes for a specific site within an optional date range.\n\nUse this query to retrieve the class schedule, including details like instructor name, start time,\nduration, capacity, and booking availability. Results are ordered chronologically by class start time.",
             "args": [
               {
                 "name": "params",
-                "description": null,
+                "description": "Optional filters to narrow down the class list by date range",
                 "type": {
                   "kind": "INPUT_OBJECT",
                   "name": "CalendarClassesParams",
@@ -8834,7 +9603,7 @@
               },
               {
                 "name": "site",
-                "description": null,
+                "description": "The site location for which to retrieve classes",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -9105,7 +9874,7 @@
                   "name": "PaginationInput",
                   "ofType": null
                 },
-                "defaultValue": null,
+                "defaultValue": "{limit: 10, page: 1}",
                 "isDeprecated": false,
                 "deprecationReason": null
               },
@@ -9187,7 +9956,7 @@
                   "name": "PaginationInput",
                   "ofType": null
                 },
-                "defaultValue": null,
+                "defaultValue": "{limit: 10, page: 1}",
                 "isDeprecated": false,
                 "deprecationReason": null
               },
@@ -9355,7 +10124,7 @@
                   "name": "PaginationInput",
                   "ofType": null
                 },
-                "defaultValue": null,
+                "defaultValue": "{limit: 10, page: 1}",
                 "isDeprecated": false,
                 "deprecationReason": null
               },
@@ -9966,7 +10735,7 @@
                   "name": "PaginationInput",
                   "ofType": null
                 },
-                "defaultValue": null,
+                "defaultValue": "{limit: 10, page: 1}",
                 "isDeprecated": false,
                 "deprecationReason": null
               },
@@ -11925,7 +12694,7 @@
       {
         "kind": "ENUM",
         "name": "SiteEnum",
-        "description": null,
+        "description": "Available CRANK fitness studio locations.\n\nEach site has its own class schedule, instructors, and facility configuration.",
         "isOneOf": null,
         "fields": null,
         "inputFields": null,
@@ -11933,19 +12702,19 @@
         "enumValues": [
           {
             "name": "abu_dhabi",
-            "description": null,
+            "description": "CRANK Abu Dhabi location",
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
             "name": "dubai",
-            "description": null,
+            "description": "CRANK Dubai location",
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
             "name": "town_square",
-            "description": null,
+            "description": "CRANK Town Square location",
             "isDeprecated": false,
             "deprecationReason": null
           }
@@ -12668,6 +13437,81 @@
         "possibleTypes": null
       },
       {
+        "kind": "UNION",
+        "name": "UpdateGiftcardResiltUnion",
+        "description": null,
+        "isOneOf": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "GiftCard",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "ProductNotFound",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "UnknownError",
+            "ofType": null
+          }
+        ]
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "UpdateInstructorInput",
+        "description": null,
+        "isOneOf": false,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "firstName",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "lastName",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "profilePictureFile",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "File",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
         "kind": "INPUT_OBJECT",
         "name": "UpdatePaymentLinkInput",
         "description": null,
@@ -12707,6 +13551,22 @@
               "ofType": {
                 "kind": "SCALAR",
                 "name": "ID",
+                "ofType": null
+              }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "notificationEmailAddress",
+            "description": "After a successful purchase an email will be sent to this email address with details about the payment (meant to be used by admins)",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
                 "ofType": null
               }
             },
@@ -12784,6 +13644,40 @@
           }
         ],
         "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "UploadedFileIsNotAnImage",
+        "description": null,
+        "isOneOf": null,
+        "fields": [
+          {
+            "name": "code",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "Error",
+            "ofType": null
+          }
+        ],
         "enumValues": null,
         "possibleTypes": null
       },
@@ -13048,6 +13942,22 @@
             "deprecationReason": null
           },
           {
+            "name": "isMobilePhoneVerified",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "lastName",
             "description": null,
             "args": [],
@@ -13085,6 +13995,22 @@
               "ofType": {
                 "kind": "SCALAR",
                 "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "remainingCredits",
+            "description": "Allows to get remaining credits for current user for all sites",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "UNION",
+                "name": "RemainingCreditsResultUnion",
                 "ofType": null
               }
             },

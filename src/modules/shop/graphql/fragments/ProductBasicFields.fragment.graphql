@@ -10,6 +10,7 @@ fragment ProductBasicFields on SellableProductInterface {
   }
   ... on ClassPackageProduct {
     type
+    doesItRequireSmsAuth
   }
   ... on GiftCard {
     purchaseUrl

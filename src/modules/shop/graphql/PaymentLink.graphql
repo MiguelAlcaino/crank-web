@@ -5,6 +5,7 @@ query PaymentLink($id: ID!) {
     amount
     currency
     url
+    notificationEmailAddress
     site {
       name
       code

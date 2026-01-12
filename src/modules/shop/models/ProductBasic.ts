@@ -17,6 +17,7 @@ export class ProductBasic {
 
   public readonly classPackageType?: string
   public readonly purchaseUrl?: string
+  public readonly doesItRequireSmsAuth: boolean
 
   constructor(gqlProduct: ProductFromCartItem) {
     this.id = gqlProduct.id
@@ -30,8 +31,11 @@ export class ProductBasic {
         }
       : undefined
 
+    this.doesItRequireSmsAuth = false
+
     if (gqlProduct.__typename === 'ClassPackageProduct') {
       this.classPackageType = gqlProduct.type ?? 'unknown'
+      this.doesItRequireSmsAuth = gqlProduct.doesItRequireSmsAuth ?? false
     } else if (gqlProduct.__typename === 'GiftCard') {
       this.purchaseUrl = gqlProduct.purchaseUrl
     }

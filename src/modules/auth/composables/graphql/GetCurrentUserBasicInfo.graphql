@@ -3,5 +3,6 @@ query GetCurrentUserBasicInfo {
     firstName
     lastName
     email
+    isMobilePhoneVerified
   }
 }

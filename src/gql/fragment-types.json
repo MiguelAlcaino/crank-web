@@ -32,7 +32,13 @@
     "ChallengeInterface": ["DistanceChallenge"],
     "CheckinResultUnion": ["CheckinSuccess", "EnrollmentNotFoundError"],
     "CheckoutResultUnion": ["CheckoutSuccess", "EnrollmentNotFoundError"],
+    "ClassPackageUpdateResultUnion": ["ClassPackageProduct", "ProductNotFound", "UnknownError"],
     "ClassPositionInterface": ["BookableSpot", "IconPosition"],
+    "CrankInstructorResultUnion": [
+      "CrankInstructor",
+      "InstructorNotFound",
+      "UploadedFileIsNotAnImage"
+    ],
     "CreateCurrentUserInSiteUnion": ["CreateCurrentUserInSiteSuccess", "UserAlreadyExistsError"],
     "DeleteCurrentUserAccountUnion": [
       "DeleteCurrentUserAccountSuccess",
@@ -64,6 +70,7 @@
       "GiftCardAlreadyRegisteredForCurrentShoppingCart",
       "GiftCardIsNotUsable",
       "GiftCardNotRegisteredOnCurrentShoppingCart",
+      "InstructorNotFound",
       "LateCancellationRequiredError",
       "MobilePhoneAlreadyVerifiedError",
       "MobilePhoneNotValidError",
@@ -84,6 +91,7 @@
       "TooManyResetPasswordLinkRequestsError",
       "TryToSwitchToSameSpotError",
       "UnknownError",
+      "UploadedFileIsNotAnImage",
       "UserAlreadyExistsError",
       "UserAlreadyHaveFirstTimerPackage",
       "UserCanNotBuyFirstTimerPackage",
@@ -140,6 +148,7 @@
       "UserAlreadyHaveFirstTimerPackage",
       "UserCanNotBuyFirstTimerPackage"
     ],
-    "SwapSpotResultUnion": ["SwapSpotSuccess", "TryToSwitchToSameSpotError"]
+    "SwapSpotResultUnion": ["SwapSpotSuccess", "TryToSwitchToSameSpotError"],
+    "UpdateGiftcardResiltUnion": ["GiftCard", "ProductNotFound", "UnknownError"]
   }
 }
