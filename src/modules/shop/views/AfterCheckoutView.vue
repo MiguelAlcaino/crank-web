@@ -7,6 +7,7 @@ import { PaymentTransactionStatusEnum } from '@/gql/graphql'
 import {
   isFlutterWebView,
   notifyPaymentFailure,
+  notifyPaymentPending,
   notifyPaymentSuccess
 } from '@/modules/shop/utils/flutter-communication'
 
@@ -50,7 +51,7 @@ const goToShop = () => {
     }
 
     // PENDING
-    notifyPaymentFailure(hasWebviewToken)
+    notifyPaymentPending(hasWebviewToken)
     return
   }
 
