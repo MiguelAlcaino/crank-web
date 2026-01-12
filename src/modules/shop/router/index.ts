@@ -1,4 +1,5 @@
 import type { RouteRecordRaw } from 'vue-router'
+import AfterCheckoutView from '@/modules/shop/views/AfterCheckoutView.vue'
 
 const ROUTE_NAME = 'shop'
 
@@ -28,7 +29,7 @@ export const shopRoute: RouteRecordRaw = {
     {
       path: `/${ROUTE_NAME}/after-checkout`,
       name: 'after-checkout',
-      component: () => import('@/modules/shop/views/AfterCheckoutView.vue'),
+      component: AfterCheckoutView,
       meta: { requiresAuth: true }
     },
     {
