@@ -1,11 +1,11 @@
-import { createApp, h, provide } from 'vue'
-import { newAnonymousClient, newAuthenticatedApolloClient } from './services/graphqlClient'
-import { ApiService } from './services/ApiService'
 import { createPinia } from 'pinia'
+import { createApp, h, provide } from 'vue'
+import { ApiService } from './services/ApiService'
+import { newAnonymousClient, newAuthenticatedApolloClient } from './services/graphqlClient'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faLeftLong, faStepBackward, faStepForward } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
 
@@ -20,23 +20,24 @@ import router from './router'
 import { appStore } from './stores/appStorage'
 
 import App from '@/App.vue'
-import { authService } from './services/authService'
 import { SiteEnum } from './modules/shared/interfaces/site.enum'
+import { authService } from './services/authService'
 
 library.add(faStepBackward, faStepForward, faLeftLong)
 
 const defaultGqlUrl = import.meta.env.VITE_CRANK_GRAPHQL_SERVER_URL
 const defaultAppDiv = '#app'
+
+const createApiService = (gqlUrl: string) =>
+  new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
+
 //test commit
 export const startBookingCalendarApp = async function (
   site: string,
   gqlUrl: string = defaultGqlUrl,
   appDiv: string = defaultAppDiv
 ) {
-  const apiService = new ApiService(
-    newAuthenticatedApolloClient(gqlUrl),
-    newAnonymousClient(gqlUrl)
-  )
+  const apiService = createApiService(gqlUrl)
   const app = createApp({
     setup() {
       provide('gqlApiService', apiService)
@@ -102,12 +103,10 @@ export const startBookingsApp = async function (
   gqlUrl: string = defaultGqlUrl,
   appDiv: string = defaultAppDiv
 ) {
+  const apiService = createApiService(gqlUrl)
   const app = createApp({
     setup() {
-      provide(
-        'gqlApiService',
-        new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
-      )
+      provide('gqlApiService', apiService)
     },
     render: () => h(App)
   }).component('font-awesome-icon', FontAwesomeIcon)
@@ -125,12 +124,10 @@ export const startRegisterApp = async function (
   gqlUrl: string = defaultGqlUrl,
   appDiv: string = defaultAppDiv
 ) {
+  const apiService = createApiService(gqlUrl)
   const app = createApp({
     setup() {
-      provide(
-        'gqlApiService',
-        new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
-      )
+      provide('gqlApiService', apiService)
     },
     render: () => h(App)
   }).component('font-awesome-icon', FontAwesomeIcon)
@@ -148,12 +145,10 @@ export const startPurchasesApp = async function (
   gqlUrl: string = defaultGqlUrl,
   appDiv: string = defaultAppDiv
 ) {
+  const apiService = createApiService(gqlUrl)
   const app = createApp({
     setup() {
-      provide(
-        'gqlApiService',
-        new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
-      )
+      provide('gqlApiService', apiService)
     },
     render: () => h(App)
   }).component('font-awesome-icon', FontAwesomeIcon)
@@ -171,12 +166,10 @@ export const startWorkoutStatsApp = async function (
   gqlUrl: string = defaultGqlUrl,
   appDiv: string = defaultAppDiv
 ) {
+  const apiService = createApiService(gqlUrl)
   const app = createApp({
     setup() {
-      provide(
-        'gqlApiService',
-        new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
-      )
+      provide('gqlApiService', apiService)
     },
     render: () => h(App)
   }).component('font-awesome-icon', FontAwesomeIcon)
@@ -195,12 +188,10 @@ export const startProfileApp = async function (
   gqlUrl: string = defaultGqlUrl,
   appDiv: string = defaultAppDiv
 ) {
+  const apiService = createApiService(gqlUrl)
   const app = createApp({
     setup() {
-      provide(
-        'gqlApiService',
-        new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
-      )
+      provide('gqlApiService', apiService)
     },
     render: () => h(App)
   }).component('font-awesome-icon', FontAwesomeIcon)
@@ -219,10 +210,8 @@ export const startPaymentsIframeApp = async function (
   gqlUrl: string = defaultGqlUrl,
   appDiv: string = defaultAppDiv
 ) {
-  const apiService = new ApiService(
-    newAuthenticatedApolloClient(gqlUrl),
-    newAnonymousClient(gqlUrl)
-  )
+  const apiService = createApiService(gqlUrl)
+
   const app = createApp({
     setup() {
       provide('gqlApiService', apiService)
@@ -284,12 +273,10 @@ export const startResetPasswordApp = async function (
   gqlUrl: string = defaultGqlUrl,
   appDiv: string = defaultAppDiv
 ) {
+  const apiService = createApiService(gqlUrl)
   const app = createApp({
     setup() {
-      provide(
-        'gqlApiService',
-        new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
-      )
+      provide('gqlApiService', apiService)
     },
     render: () => h(App)
   }).component('font-awesome-icon', FontAwesomeIcon)
@@ -312,12 +299,10 @@ export const startLoginRedirectApp = async function (
   gqlUrl: string = defaultGqlUrl,
   appDiv: string = defaultAppDiv
 ) {
+  const apiService = createApiService(gqlUrl)
   const app = createApp({
     setup() {
-      provide(
-        'gqlApiService',
-        new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
-      )
+      provide('gqlApiService', apiService)
     },
     render: () => h(App)
   }).component('font-awesome-icon', FontAwesomeIcon)
@@ -343,10 +328,7 @@ export const startVueAppWithoutPath = async function (
   gqlUrl: string = defaultGqlUrl,
   appDiv: string = defaultAppDiv
 ) {
-  const apiService = new ApiService(
-    newAuthenticatedApolloClient(gqlUrl),
-    newAnonymousClient(gqlUrl)
-  )
+  const apiService = createApiService(gqlUrl)
   const app = createApp({
     setup() {
       provide('gqlApiService', apiService)
@@ -411,12 +393,10 @@ export const startSmsVerificationApp = async function (
   gqlUrl: string = defaultGqlUrl,
   appDiv: string = defaultAppDiv
 ) {
+  const apiService = createApiService(gqlUrl)
   const app = createApp({
     setup() {
-      provide(
-        'gqlApiService',
-        new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
-      )
+      provide('gqlApiService', apiService)
     },
     render: () => h(App)
   }).component('font-awesome-icon', FontAwesomeIcon)
