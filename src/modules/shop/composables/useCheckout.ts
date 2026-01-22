@@ -1,16 +1,16 @@
-import type { IApiService } from '@/services/IApiService'
 import { readonly, ref } from 'vue'
 import { appStore } from '@/stores/appStorage'
 import type { PayfortFormInput } from '@/gql/graphql'
+import { useApiService } from '@/services/useApiService'
 
 /**
  * A composable that encapsulates the logic for initiating the checkout process
  * by fetching the Payfort payment form from the backend.
  *
- * @param apiService An instance of the ApiService.
  * @returns An object with reactive state and methods to manage the checkout flow.
  */
-export const useCheckout = (apiService: IApiService) => {
+export const useCheckout = () => {
+  const apiService = useApiService()
   // --- Reactive State ---
 
   /**

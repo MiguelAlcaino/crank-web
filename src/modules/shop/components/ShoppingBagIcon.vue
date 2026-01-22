@@ -6,12 +6,10 @@
 //
 
 // Libs & Framework
-import { inject } from 'vue'
 import { useRouter } from 'vue-router'
 
 // Composables, Services & Utilities
 import { useShoppingCart } from '../composables/useShoppingCart'
-import type { IApiService } from '@/services/IApiService'
 
 //
 // -----------------
@@ -38,8 +36,7 @@ const props = withDefaults(
 //
 
 const router = useRouter()
-const apiService = inject<IApiService>('gqlApiService')!
-const { totalItemsInCart, isLoading } = useShoppingCart(apiService)
+const { totalItemsInCart, isLoading } = useShoppingCart()
 
 //
 // -----------------

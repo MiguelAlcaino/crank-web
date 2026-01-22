@@ -3,13 +3,14 @@ import { appStore } from '@/stores/appStorage'
 import { ClassPackageTypeEnum } from '../interfaces'
 import type { SessionsProductGroup } from '../interfaces/sessions-product-group'
 import { ClassPackage, GiftCardProduct, Product } from '../models/Product'
-import type { IApiService } from '@/services/IApiService'
+import { useApiService } from '@/services/useApiService'
 
 /**
  * @description Manages the state and business logic for fetching, filtering, and displaying products.
- * @param apiService An instance of the IApiService.
  */
-export const useProducts = (apiService: IApiService) => {
+export const useProducts = () => {
+  const apiService = useApiService()
+
   //
   // -----------------
   // STATE

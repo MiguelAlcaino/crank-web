@@ -7,7 +7,7 @@
 
 // Libs & Frameworks
 import type { Component } from 'vue'
-import { inject, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 // Local Components
@@ -21,7 +21,6 @@ import DiscountCodeForm from '@/modules/shop/components/DiscountCodeForm.vue'
 
 // Composables, Services & Utilities
 import { useShoppingCart } from '../composables/useShoppingCart'
-import type { IApiService } from '@/services/IApiService'
 import type { IconName } from '@/modules/shop/models/types'
 
 //
@@ -30,10 +29,9 @@ import type { IconName } from '@/modules/shop/models/types'
 // -----------------
 //
 const router = useRouter()
-const apiService = inject<IApiService>('gqlApiService')!
 
 const { detailedCart, totalItemsInCart, isLoading, isItemUpdating, fetchCartDetails } =
-  useShoppingCart(apiService)
+  useShoppingCart()
 
 //
 // -----------------

@@ -6,26 +6,23 @@
 //
 
 // Libs & Frameworks
-import { ref, inject } from 'vue'
+import { ref } from 'vue'
 
 // Composables, Services & Utilities
-import { useShoppingCart } from '../composables/useShoppingCart' // Ajusta la ruta si es necesario
-import type { IApiService } from '@/services/IApiService'
+import { useShoppingCart } from '../composables/useShoppingCart'
 
 //
 // -----------------
 // DEPENDENCIES & COMPOSABLES
 // -----------------
 //
-const apiService = inject<IApiService>('gqlApiService')!
-
 const {
   detailedCart,
   error: discountError,
   isApplyingDiscount,
   applyDiscountCode,
   removeDiscountCode
-} = useShoppingCart(apiService)
+} = useShoppingCart()
 
 //
 // -----------------

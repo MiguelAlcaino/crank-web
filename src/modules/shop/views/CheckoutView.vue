@@ -47,8 +47,8 @@ import { SiteEnum } from '@/modules/shared/interfaces/site.enum'
 //
 
 const apiService = inject<IApiService>('gqlApiService')!
-const { error: checkoutError, payfortFormHtml, initiatePayment } = useCheckout(apiService)
-const { totalItemsInCart, detailedCart, fetchCartDetails, isLoading } = useShoppingCart(apiService)
+const { error: checkoutError, payfortFormHtml, initiatePayment } = useCheckout()
+const { totalItemsInCart, detailedCart, fetchCartDetails, isLoading } = useShoppingCart()
 const { user, isAuthenticated, isLoading: isAuthLoading, fetchCurrentUser } = useAuth(apiService)
 const route = useRoute()
 

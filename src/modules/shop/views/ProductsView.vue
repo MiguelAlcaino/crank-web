@@ -6,7 +6,7 @@
 //
 
 // Libs & Frameworks
-import { inject, onMounted } from 'vue'
+import { onMounted } from 'vue'
 
 // Local Components
 import ProductCard from '@/modules/shop/components/ProductCard.vue'
@@ -17,15 +17,12 @@ import SiteSelector from '@/components/SiteSelector.vue'
 // Composables, Services & Utilities
 import { useProducts } from '../composables/useProducts'
 import { useShoppingCart } from '../composables/useShoppingCart'
-import type { IApiService } from '@/services/IApiService'
 
 //
 // -----------------
 // DEPENDENCIES & COMPOSABLES
 // -----------------
 //
-const apiService = inject<IApiService>('gqlApiService')!
-
 const {
   // State
   isLoading,
@@ -38,14 +35,14 @@ const {
   // Methods
   setActiveTab,
   fetchAllProducts
-} = useProducts(apiService)
+} = useProducts()
 
 const {
   // State
   productIdsInCart,
   // Methods
   fetchCartSummary
-} = useShoppingCart(apiService)
+} = useShoppingCart()
 
 //
 // -----------------

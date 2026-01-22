@@ -1,17 +1,16 @@
 import { PaymentTransactionStatusEnum } from '@/gql/graphql'
-import type { IApiService } from '@/services/IApiService'
 import { ApiError } from '@/services/utils/ApiError'
 import { onMounted, onUnmounted, readonly, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { useApiService } from '@/services/useApiService'
 
 /**
  * Manages the logic for the post-checkout page.
  * Its main responsibility is to verify the actual status of a transaction
  * using the merchant_reference provided in the URL by the payment gateway.
- *
- * @param apiService An instance of the API service.
  */
-export const useAfterCheckout = (apiService: IApiService) => {
+export const useAfterCheckout = () => {
+  const apiService = useApiService()
   const route = useRoute()
 
   // --- STATE ---

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { inject } from 'vue'
-import type { ApiService } from '@/services/ApiService'
 import { useAfterCheckout } from '@/modules/shop/composables/useAfterCheckout'
 import { useRoute, useRouter } from 'vue-router'
 import { PaymentTransactionStatusEnum } from '@/gql/graphql'
@@ -16,7 +14,7 @@ import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIn
 
 const router = useRouter()
 const route = useRoute()
-const apiService = inject<ApiService>('gqlApiService')!
+
 const {
   isLoading,
   hasError,
@@ -26,7 +24,7 @@ const {
   retryCount,
   maxRetries,
   isRetrying
-} = useAfterCheckout(apiService)
+} = useAfterCheckout()
 
 const goToShop = () => {
   const hasWebviewToken = !!route.query.token

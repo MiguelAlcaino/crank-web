@@ -5,15 +5,11 @@
 // -----------------
 //
 
-// Libs & Frameworks
-import { inject } from 'vue'
-
 // Local Components
 import QuantityStepper from '@/modules/shop/components/QuantityStepper.vue'
 
 // Composables, Services & Utilities
 import { useShoppingCart } from '../composables/useShoppingCart'
-import type { IApiService } from '@/services/IApiService'
 import type { ShoppingCartItem } from '@/modules/shop/models/ShoppingCartItem'
 
 //
@@ -32,9 +28,7 @@ const props = defineProps<{
 // DEPENDENCIES & COMPOSABLES
 // -----------------
 //
-const apiService = inject<IApiService>('gqlApiService')!
-
-const { removeFromCart, updateItemQuantity } = useShoppingCart(apiService)
+const { removeFromCart, updateItemQuantity } = useShoppingCart()
 
 //
 // -----------------

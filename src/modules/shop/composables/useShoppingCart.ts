@@ -1,7 +1,7 @@
 import { useModal } from '@/modules/shared/composables/useModal'
 import type { CartSummary } from '@/modules/shop/interfaces/cart-summary'
 import { ShoppingCart } from '@/modules/shop/models/ShoppingCart'
-import type { IApiService } from '@/services/IApiService'
+import { useApiService } from '@/services/useApiService'
 import { ApiError } from '@/services/utils/ApiError'
 import { appStore } from '@/stores/appStorage'
 import { computed, readonly, ref } from 'vue'
@@ -28,7 +28,9 @@ function isItemUpdating(itemId: string) {
   return computed(() => updatingItemIds.value.has(itemId))
 }
 
-export const useShoppingCart = (apiService: IApiService) => {
+export const useShoppingCart = () => {
+  const apiService = useApiService()
+
   const { showConfirmation } = useModal()
   //
   // -----------------

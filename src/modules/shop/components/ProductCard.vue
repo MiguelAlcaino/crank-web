@@ -5,7 +5,7 @@
 // -----------------
 //
 
-import { computed, inject, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 // Local Components
@@ -15,7 +15,6 @@ import VariantSelectorModal from './VariantSelectorModal.vue'
 // Models, Composables & Services
 import type { Product } from '../models/Product'
 import { useShoppingCart } from '../composables/useShoppingCart'
-import type { IApiService } from '@/services/IApiService'
 
 //
 // -----------------
@@ -33,8 +32,7 @@ const props = defineProps<{
 // -----------------
 //
 const router = useRouter()
-const apiService = inject<IApiService>('gqlApiService')!
-const { addToCart, buyNow, isProcessingBuyNow } = useShoppingCart(apiService)
+const { addToCart, buyNow, isProcessingBuyNow } = useShoppingCart()
 
 //
 // -----------------
