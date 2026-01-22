@@ -353,10 +353,22 @@ p {
   margin-top: 1.5rem;
   text-decoration: none;
   display: inline-block;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.btn-primary:hover {
+/* Keep same visual on hover/focus/active and replace default blue focus ring with a subtle brand-colored ring */
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:focus-visible,
+.btn-primary:active {
+  background-color: #ff8c69;
+  color: white;
   opacity: 0.9;
   transform: translateY(-2px);
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(255,140,105,0.12);
 }
 </style>
