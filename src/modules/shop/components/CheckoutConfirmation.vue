@@ -1,19 +1,17 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import type { ShoppingCart } from '../models/ShoppingCart'
-import type { IconName } from '../models/types'
 
 import IconBag from '@/modules/shop/components/icons/IconBag.vue'
 import IconGift from '@/modules/shop/components/icons/IconGift.vue'
 import IconMerch from '@/modules/shop/components/icons/IconMerch.vue'
 import IconSmoothie from '@/modules/shop/components/icons/IconSmoothie.vue'
 
-const props = defineProps<{
+defineProps<{
   cart: ShoppingCart | null
   isLoading: boolean
 }>()
 
-const emit = defineEmits(['confirm', 'back'])
+defineEmits(['confirm', 'back'])
 
 const iconComponents: Record<string, any> = {
   bag: IconBag,

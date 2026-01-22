@@ -196,7 +196,7 @@ const formattedCartItems = computed(() => {
 // Computed to block checkout
 const cartRequiresMobile = computed(() => {
   if (!detailedCart.value?.items) return false
-  return detailedCart.value.items.some(item => item.variant.product.doesItRequireSmsAuth)
+  return detailedCart.value.items.some((item) => item.variant.product.doesItRequireSmsAuth)
 })
 
 const isCheckoutBlockedByMobile = computed(() => {
@@ -359,8 +359,8 @@ const formatCVV = (event: Event) => {
 /**
  * @description Handler for when mobile verification is completed.
  */
-const onMobileVerified = async () => { 
-  await fetchCurrentUser()  
+const onMobileVerified = async () => {
+  await fetchCurrentUser()
 }
 
 //

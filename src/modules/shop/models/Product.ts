@@ -1,6 +1,7 @@
 import { ClassPackageTypeEnum, type GetProductsQuery } from '@/gql/graphql'
 import type { IconName } from '@/modules/shop/models/types'
 import { VariantBasic, type VariantFromProductQuery } from '@/modules/shop/models/VariantBasic'
+import { formatPrice } from '../utils/shop-utils'
 
 // Create a reusable utility type for a single product from the API response.
 // This makes the code cleaner and easier to read than repeating ProductsQuery['products'][number].
@@ -47,7 +48,8 @@ export abstract class Product {
    * @returns A formatted string like "AED 150.00".
    */
   public getFormattedPrice(locale?: string): string {
-    return '0' //formatPrice(this.price, this.currency, locale)
+    const price = this.variants[0]?.price ?? 0
+    return formatPrice(price, this.currency, locale)
   }
 
   public get iconName(): IconName {
