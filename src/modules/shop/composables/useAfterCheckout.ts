@@ -3,6 +3,7 @@ import { ApiError } from '@/services/utils/ApiError'
 import { onMounted, onUnmounted, readonly, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useApiService } from '@/services/useApiService'
+import { useShopApiService } from '@/modules/shop/composables/useShopApiService'
 
 /**
  * Manages the logic for the post-checkout page.
@@ -11,6 +12,7 @@ import { useApiService } from '@/services/useApiService'
  */
 export const useAfterCheckout = () => {
   const apiService = useApiService()
+  const shopApi = useShopApiService()
   const route = useRoute()
 
   // --- STATE ---
@@ -66,7 +68,7 @@ export const useAfterCheckout = () => {
 
     try {
       console.log(`Verifying status for reference: ${merchantReference.value}`)
-      const status = await apiService.checkTransactionStatus(merchantReference.value)
+      const status = await shopApi.checkTransactionStatus(merchantReference.value)
 
       // Update the purchase status
       purchaseStatus.value = status
@@ -117,7 +119,7 @@ export const useAfterCheckout = () => {
     // 3. Call the backend to verify the actual transaction status
     try {
       console.log(`Verifying status for reference: ${merchantReference.value}`)
-      const status = await apiService.checkTransactionStatus(merchantReference.value)
+      const status = await shopApi.checkTransactionStatus(merchantReference.value)
       purchaseStatus.value = status
 
       // If status is WaitingConfirmation, start the retry mechanism

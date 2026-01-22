@@ -23,26 +23,28 @@ import { appStore } from './stores/appStorage'
 // Types and Root Component
 import { default as AppRoot } from '@/App.vue'
 import { SiteEnum } from './modules/shared/interfaces/site.enum'
+import { ShopApiService } from '@/modules/shop/services/ShopApiService'
 
 // Initial configuration
 library.add(faStepBackward, faStepForward, faLeftLong)
 const defaultGqlUrl = import.meta.env.VITE_CRANK_GRAPHQL_SERVER_URL
 const defaultAppDiv = '#app'
 
-// --- HELPER 1: API Service Creator ---
-const createApiService = (gqlUrl: string) =>
-  new ApiService(newAuthenticatedApolloClient(gqlUrl), newAnonymousClient(gqlUrl))
-
-// --- HELPER 2: Application Factory ---
+// --- HELPER: Application Factory ---
 /**
- * Crea la instancia base de Vue con todos los plugins comunes
+ * Create the base instance of Vue with all common plugins
  */
 const createBaseApp = (gqlUrl: string) => {
-  const apiService = createApiService(gqlUrl)
+  const authClient = newAuthenticatedApolloClient(gqlUrl)
+  const anonClient = newAnonymousClient(gqlUrl)
+
+  const apiService = new ApiService(authClient, anonClient)
+  const shopApiService = new ShopApiService(authClient)
 
   const app = createApp({
     setup() {
       provide('gqlApiService', apiService)
+      provide('shopApiService', shopApiService)
     },
     render: () => h(AppRoot)
   })
@@ -55,7 +57,7 @@ const createBaseApp = (gqlUrl: string) => {
     .component('Popper', Popper)
     .component('VueDatePicker', VueDatePicker)
 
-  return { app, apiService }
+  return { app, apiService, shopApiService }
 }
 
 // --- HELPER 3: Site Logic and Authentication ---

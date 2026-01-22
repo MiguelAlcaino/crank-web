@@ -1,7 +1,7 @@
 import { readonly, ref } from 'vue'
 import { appStore } from '@/stores/appStorage'
 import type { PayfortFormInput } from '@/gql/graphql'
-import { useApiService } from '@/services/useApiService'
+import { useShopApiService } from '@/modules/shop/composables/useShopApiService'
 
 /**
  * A composable that encapsulates the logic for initiating the checkout process
@@ -10,9 +10,9 @@ import { useApiService } from '@/services/useApiService'
  * @returns An object with reactive state and methods to manage the checkout flow.
  */
 export const useCheckout = () => {
-  const apiService = useApiService()
-  // --- Reactive State ---
+  const shopApi = useShopApiService()
 
+  // --- Reactive State ---
   /**
    * Indicates if a checkout operation is currently in progress.
    */
@@ -50,7 +50,7 @@ export const useCheckout = () => {
 
     try {
       // 2. Lock the cart to prevent modifications during payment.
-      const lockSuccess = await apiService.lockShoppingCart(appStore().site)
+      const lockSuccess = await shopApi.lockShoppingCart(appStore().site)
 
       if (!lockSuccess) {
         // If the lock fails, we must stop the process immediately.
@@ -58,7 +58,7 @@ export const useCheckout = () => {
       }
 
       // 2. Generate a unique reference for this transaction.
-      const merchantRef = await apiService.generateMerchantReference(appStore().site)
+      const merchantRef = await shopApi.generateMerchantReference(appStore().site)
 
       const formInput: PayfortFormInput = {
         merchantReference: merchantRef,
@@ -67,7 +67,7 @@ export const useCheckout = () => {
       }
 
       // 3. Generate the final Payfort form HTML.
-      const formHtml = await apiService.generatePayfortForm(appStore().site, formInput)
+      const formHtml = await shopApi.generatePayfortForm(appStore().site, formInput)
 
       // 4. On success, update the state with the form HTML.
       payfortFormHtml.value = formHtml

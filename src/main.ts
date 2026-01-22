@@ -29,6 +29,7 @@ import { appStore } from './stores/appStorage'
 
 import { hackSquarespaceMenu } from '@/utils/hack-squarespace-menu'
 import { SiteEnum } from './modules/shared/interfaces/site.enum'
+import { ShopApiService } from '@/modules/shop/services/ShopApiService'
 
 /* add icons to the library */
 library.add(faStepBackward, faStepForward, faLeftLong)
@@ -39,14 +40,17 @@ async function startApp() {
   const selection = <HTMLElement | null>document.querySelector('#app-parameters')
   const view = selection?.dataset.view as string
   const site = selection?.dataset.site as string
-  const apiService = new ApiService(
-    newAuthenticatedApolloClient(import.meta.env.VITE_CRANK_GRAPHQL_SERVER_URL),
-    newAnonymousClient(import.meta.env.VITE_CRANK_GRAPHQL_SERVER_URL)
-  )
+
+  const authClient = newAuthenticatedApolloClient(import.meta.env.VITE_CRANK_GRAPHQL_SERVER_URL)
+  const anonClient = newAnonymousClient(import.meta.env.VITE_CRANK_GRAPHQL_SERVER_URL)
+
+  const apiService = new ApiService(authClient, anonClient)
+  const shopApiService = new ShopApiService(authClient)
 
   const app = createApp({
     setup() {
       provide('gqlApiService', apiService)
+      provide('shopApiService', shopApiService)
     },
     render: () => h(App)
   }).component('font-awesome-icon', FontAwesomeIcon)

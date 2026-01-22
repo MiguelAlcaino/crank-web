@@ -3,13 +3,13 @@ import { appStore } from '@/stores/appStorage'
 import { ClassPackageTypeEnum } from '../interfaces'
 import type { SessionsProductGroup } from '../interfaces/sessions-product-group'
 import { ClassPackage, GiftCardProduct, Product } from '../models/Product'
-import { useApiService } from '@/services/useApiService'
+import { useShopApiService } from '@/modules/shop/composables/useShopApiService'
 
 /**
  * @description Manages the state and business logic for fetching, filtering, and displaying products.
  */
 export const useProducts = () => {
-  const apiService = useApiService()
+  const shopApi = useShopApiService()
 
   //
   // -----------------
@@ -124,7 +124,7 @@ export const useProducts = () => {
     hasError.value = false
 
     try {
-      allProducts.value = await apiService.getProducts(appStore().site)
+      allProducts.value = await shopApi.getProducts(appStore().site)
     } catch (error) {
       console.error('Failed to fetch products:', error)
       hasError.value = true

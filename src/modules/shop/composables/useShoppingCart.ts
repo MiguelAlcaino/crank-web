@@ -1,10 +1,10 @@
 import { useModal } from '@/modules/shared/composables/useModal'
 import type { CartSummary } from '@/modules/shop/interfaces/cart-summary'
 import { ShoppingCart } from '@/modules/shop/models/ShoppingCart'
-import { useApiService } from '@/services/useApiService'
 import { ApiError } from '@/services/utils/ApiError'
 import { appStore } from '@/stores/appStorage'
 import { computed, readonly, ref } from 'vue'
+import { useShopApiService } from '@/modules/shop/composables/useShopApiService'
 
 //
 // -----------------
@@ -29,7 +29,7 @@ function isItemUpdating(itemId: string) {
 }
 
 export const useShoppingCart = () => {
-  const apiService = useApiService()
+  const shopApi = useShopApiService()
 
   const { showConfirmation } = useModal()
   //
@@ -47,7 +47,7 @@ export const useShoppingCart = () => {
     error.value = null
 
     try {
-      cartState.value = await apiService.getCartSummary(appStore().site)
+      cartState.value = await shopApi.getCartSummary(appStore().site)
     } catch (e: any) {
       console.error('Failed to fetch cart summary:', e)
       error.value = e.message || 'Could not load cart information.'
@@ -65,7 +65,7 @@ export const useShoppingCart = () => {
     error.value = null
 
     try {
-      cartState.value = await apiService.getCartDetails(appStore().site)
+      cartState.value = await shopApi.getCartDetails(appStore().site)
     } catch (e: any) {
       console.error('Failed to fetch cart details:', e)
       error.value = e.message || 'Could not load detailed cart information.'
@@ -113,10 +113,7 @@ export const useShoppingCart = () => {
    * @param variantId The ID of the product to add.
    */
   const addToCart = async (variantId: string) => {
-    await handleCartUpdate(
-      variantId,
-      apiService.addItemToShoppingCart(appStore().site, variantId, 1)
-    )
+    await handleCartUpdate(variantId, shopApi.addItemToShoppingCart(appStore().site, variantId, 1))
   }
 
   /**
@@ -126,7 +123,7 @@ export const useShoppingCart = () => {
   const removeFromCart = async (shoppingCartItemId: string) => {
     await handleCartUpdate(
       shoppingCartItemId,
-      apiService.removeItemFromShoppingCart(appStore().site, shoppingCartItemId)
+      shopApi.removeItemFromShoppingCart(appStore().site, shoppingCartItemId)
     )
   }
 
@@ -144,7 +141,7 @@ export const useShoppingCart = () => {
 
     await handleCartUpdate(
       payload.itemId,
-      apiService.updateItemInShoppingCart(appStore().site, payload.itemId, newQuantity)
+      shopApi.updateItemInShoppingCart(appStore().site, payload.itemId, newQuantity)
     )
   }
 
@@ -152,7 +149,7 @@ export const useShoppingCart = () => {
     isApplyingDiscount.value = true
     error.value = null
     try {
-      cartState.value = await apiService.addDiscountCodeToShoppingCart(appStore().site, code)
+      cartState.value = await shopApi.addDiscountCodeToShoppingCart(appStore().site, code)
     } catch (e: any) {
       error.value = e.message || 'An error occurred.'
     } finally {
@@ -164,7 +161,7 @@ export const useShoppingCart = () => {
     isApplyingDiscount.value = true
     error.value = null
     try {
-      cartState.value = await apiService.removeDiscountCode(appStore().site)
+      cartState.value = await shopApi.removeDiscountCode(appStore().site)
     } catch (e: any) {
       error.value = e.message || 'An error occurred.'
     } finally {
@@ -173,7 +170,7 @@ export const useShoppingCart = () => {
   }
 
   async function clearCart() {
-    await handleCartUpdate(null, apiService.clearShoppingCart(appStore().site))
+    await handleCartUpdate(null, shopApi.clearShoppingCart(appStore().site))
   }
 
   /**
