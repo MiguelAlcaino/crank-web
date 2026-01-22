@@ -1,7 +1,9 @@
-import { gql } from '@apollo/client'
 import {
   type AcceptLateCancelledSpotInClassInput,
   type AcceptLateCancelledSpotInClassResultUnion,
+  AddDiscountCodeToShoppingCartDocument,
+  type AddDiscountCodeToShoppingCartMutation,
+  type AddDiscountCodeToShoppingCartMutationVariables,
   AddItemToShoppingCartDocument,
   type AddItemToShoppingCartMutation,
   type AddItemToShoppingCartMutationVariables,
@@ -17,6 +19,7 @@ import {
   type Country,
   type CreateCurrentUserInSiteUnion,
   type CurrentUserEnrollmentsParams,
+  type CurrentUserPurchasesPaginatedParams,
   type EditClassInput,
   type EditClassResultUnion,
   type EditEnrollmentInput,
@@ -41,6 +44,7 @@ import {
   GetShoppingCartDocument,
   type GetShoppingCartQuery,
   type GetShoppingCartQueryVariables,
+  type ShoppingCart as GqlShoppingCart,
   type IsSmsValidationCodeValidUnion,
   type ItemToShoppingCartInput,
   LockShoppingCartDocument,
@@ -51,6 +55,8 @@ import {
   type PaginatedPurchases,
   type PaginationInput,
   type PayfortFormInput,
+  type PaymentLink,
+  PaymentLinkDocument,
   PaymentTransactionStatusDocument,
   PaymentTransactionStatusEnum,
   type PaymentTransactionStatusInput,
@@ -73,7 +79,6 @@ import {
   type ResetPasswordForCurrentUserInput,
   type ResetPasswordForCurrentUserUnion,
   type ResetPasswordLinkResultUnion,
-  type ShoppingCart as GqlShoppingCart,
   type SimpleSiteUser,
   type Site,
   type SiteSetting,
@@ -85,35 +90,23 @@ import {
   type User,
   type UserInClassRanking,
   type UserInput,
-  type UserInRankingParams,
-  type AddDiscountCodeToShoppingCartMutation,
-  type AddDiscountCodeToShoppingCartMutationVariables,
-  AddDiscountCodeToShoppingCartDocument,
-  type CurrentUserPurchasesPaginatedParams,
-  PaymentLinkDocument,
-  type PaymentLink
+  type UserInRankingParams
 } from '@/gql/graphql'
-import { ApolloClient, ApolloError } from '@apollo/client/core'
 import { CustomCalendarClasses } from '@/model/CustomCalendarClasses'
-import { SmsValidationResponse } from '@/modules/buy_packages/models/sms-validation-response'
-import { IsSmsValidationCodeValidResponse } from '@/modules/buy_packages/models/is-sms-validation-code-valid-response'
-import type { IApiService } from './IApiService'
-import type { Product, ProductFromQuery } from '@/modules/shop/models/Product'
-import { createProductModel } from '@/modules/shop/factories/productFactory'
-import type { AppProductType } from '@/modules/shop/models/types'
-import type { SiteEnum } from '@/modules/shared/interfaces/site.enum'
-import type { ShoppingCart as ShoppingCartModel } from '@/modules/shop/models/ShoppingCart'
-import { createShoppingCartModel } from '@/modules/shop/factories/shoppingCartFactory'
 import type { BasicUser } from '@/modules/auth/types'
+import { IsSmsValidationCodeValidResponse } from '@/modules/buy_packages/models/is-sms-validation-code-valid-response'
+import { SmsValidationResponse } from '@/modules/buy_packages/models/sms-validation-response'
+import type { SiteEnum } from '@/modules/shared/interfaces/site.enum'
+import { createProductModel } from '@/modules/shop/factories/productFactory'
+import { createShoppingCartModel } from '@/modules/shop/factories/shoppingCartFactory'
 import type { CartSummary } from '@/modules/shop/interfaces/cart-summary'
-
-// A custom error class to handle API errors more cleanly.
-export class ApiError extends Error {
-  constructor(message: string, public readonly code?: string) {
-    super(message)
-    this.name = 'ApiError'
-  }
-}
+import type { Product, ProductFromQuery } from '@/modules/shop/models/Product'
+import type { ShoppingCart as ShoppingCartModel } from '@/modules/shop/models/ShoppingCart'
+import type { AppProductType } from '@/modules/shop/models/types'
+import { gql } from '@apollo/client'
+import { ApolloClient, ApolloError } from '@apollo/client/core'
+import type { IApiService } from './IApiService'
+import { ApiError } from './utils/ApiError'
 
 export class ApiService implements IApiService {
   /**

@@ -1,10 +1,10 @@
-import { computed, readonly, ref } from 'vue'
-import { appStore } from '@/stores/appStorage'
-import type { IApiService } from '@/services/IApiService'
-import { ShoppingCart } from '@/modules/shop/models/ShoppingCart'
-import { ApiError } from '@/services/ApiService'
-import type { CartSummary } from '@/modules/shop/interfaces/cart-summary'
 import { useModal } from '@/modules/shared/composables/useModal'
+import type { CartSummary } from '@/modules/shop/interfaces/cart-summary'
+import { ShoppingCart } from '@/modules/shop/models/ShoppingCart'
+import type { IApiService } from '@/services/IApiService'
+import { ApiError } from '@/services/utils/ApiError'
+import { appStore } from '@/stores/appStorage'
+import { computed, readonly, ref } from 'vue'
 
 //
 // -----------------

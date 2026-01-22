@@ -369,6 +369,6 @@ p {
   opacity: 0.9;
   transform: translateY(-2px);
   outline: none;
-  box-shadow: 0 0 0 4px rgba(255,140,105,0.12);
+  box-shadow: 0 0 0 4px rgba(255, 140, 105, 0.12);
 }
 </style>

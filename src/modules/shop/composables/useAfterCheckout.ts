@@ -1,6 +1,6 @@
 import { PaymentTransactionStatusEnum } from '@/gql/graphql'
-import { ApiError } from '@/services/ApiService'
 import type { IApiService } from '@/services/IApiService'
+import { ApiError } from '@/services/utils/ApiError'
 import { onMounted, onUnmounted, readonly, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
