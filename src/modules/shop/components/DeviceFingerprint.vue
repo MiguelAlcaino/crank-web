@@ -37,11 +37,12 @@ const emit = defineEmits<{
 
 // --- Internal State ---
 const scriptElement = ref<HTMLScriptElement | null>(null)
-let observer: MutationObserver | null = null // To hold the MutationObserver instance.
+let observer: MutationObserver | null = null
+let backupInterval: ReturnType<typeof setInterval> | null = null
+let timeoutId: ReturnType<typeof setTimeout> | null = null
 
 // --- Lifecycle Hooks ---
 onMounted(() => {
-  // The hook now only orchestrates, calling a dedicated function.
   initializeAndMonitorScript()
 })
 
@@ -52,9 +53,9 @@ onUnmounted(() => {
     console.log('Snare.js script removed.')
   }
   // Cleanup: Disconnect the observer to prevent memory leaks.
-  if (observer) {
-    observer.disconnect()
-  }
+  if (observer) observer.disconnect()
+  if (backupInterval) clearInterval(backupInterval)
+  if (timeoutId) clearTimeout(timeoutId)
 })
 
 // --- Helper Functions ---
@@ -79,8 +80,7 @@ async function initializeAndMonitorScript() {
   window.io_enable_rip = true
 
   try {
-    const loadedScript = await loadScript(SNARE_SCRIPT_URL)
-    scriptElement.value = loadedScript
+    scriptElement.value = await loadScript(SNARE_SCRIPT_URL)
 
     console.log('Snare.js successfully loaded. Monitoring for session ID...')
 
@@ -113,45 +113,50 @@ function loadScript(url: string): Promise<HTMLScriptElement> {
  */
 function monitorForSessionId(): Promise<void> {
   return new Promise((resolve, reject) => {
-    const targetNode = document.getElementById(props.sessionIdInputId)
+    const targetNode = document.getElementById(props.sessionIdInputId) as HTMLInputElement
 
     if (!targetNode) {
-      return reject(new Error(`Input element with ID "${props.sessionIdInputId}" not found.`))
+      return reject(new Error(`Input element "${props.sessionIdInputId}" not found.`))
     }
 
-    // Set a timeout to prevent the observer from running indefinitely.
-    const timeoutId = setTimeout(() => {
-      observer?.disconnect()
-      reject(
-        new Error(
-          `Timeout: Session ID was not generated within ${OBSERVER_TIMEOUT / 1000} seconds.`
-        )
-      )
+    const cleanup = () => {
+      if (backupInterval) clearInterval(backupInterval)
+      if (timeoutId) clearTimeout(timeoutId)
+      if (observer) observer.disconnect()
+    }
+
+    // Immediate success)
+    if (targetNode?.value) {
+      emit('ready', targetNode.value)
+      return resolve()
+    }
+
+    // Safety timeout (If it fails after X seconds)
+    timeoutId = setTimeout(() => {
+      cleanup()
+      reject(new Error('Timeout: Fingerprint session ID not generated.'))
     }, OBSERVER_TIMEOUT)
 
-    // Create an observer to watch for attribute changes on the input field.
-    observer = new MutationObserver((mutationsList, obs) => {
-      for (const mutation of mutationsList) {
-        // We are specifically interested in when the 'value' attribute is changed by the external script.
-        // NOTE: For hidden inputs, changing `.value` programmatically might not trigger an 'attributes' mutation.
-        // A more robust approach is to check the value inside the callback, but 'attributes' is a good starting point.
-        if (mutation.type === 'attributes' && mutation.attributeName === 'value') {
-          const input = mutation.target as HTMLInputElement
-          if (input.value) {
-            console.log('Session ID detected via MutationObserver.')
-            emit('ready', input.value)
+    // Backup polling (every 500 ms)
+    backupInterval = setInterval(() => {
+      if (targetNode?.value) {
+        console.log('Session ID detected via Polling.')
+        emit('ready', targetNode.value)
+        cleanup()
+        resolve()
+      }
+    }, 500)
 
-            // Cleanup after success
-            clearTimeout(timeoutId)
-            obs.disconnect()
-            resolve()
-            return
-          }
-        }
+    // Mutation Observer
+    observer = new MutationObserver(() => {
+      if (targetNode.value) {
+        console.log('Session ID detected via MutationObserver.')
+        emit('ready', targetNode.value)
+        cleanup()
+        resolve()
       }
     })
 
-    // Start observing the target node for attribute changes.
     observer.observe(targetNode, { attributes: true })
   })
 }
