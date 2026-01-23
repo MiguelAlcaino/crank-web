@@ -18,6 +18,7 @@ const error = ref<string | null>(null)
 const updatingItemIds = ref<Set<string>>(new Set())
 const isApplyingDiscount = ref<boolean>(false)
 const isProcessingBuyNow = ref(false)
+const isApplyingGiftCard = ref<boolean>(false)
 
 /**
  * Checks if a specific shopping cart item is currently being updated.
@@ -244,6 +245,43 @@ export const useShoppingCart = () => {
     }
   }
 
+  async function applyGiftCard(code: string) {
+    if (!code.trim()) return
+    isApplyingGiftCard.value = true
+    error.value = null
+
+    try {
+      const result = await shopApi.addGiftCardCodeToShoppingCart(code.trim(), appStore().site)
+      if (result.ok) {
+        cartState.value = result.data
+      } else {
+        error.value = result.message || 'Invalid Gift Card'
+      }
+    } catch (e: any) {
+      error.value = 'An error occurred applying the gift card.'
+    } finally {
+      isApplyingGiftCard.value = false
+    }
+  }
+
+  async function removeGiftCard(code: string) {
+    isApplyingGiftCard.value = true
+    error.value = null
+
+    try {
+      const result = await shopApi.removeGiftCardFromCurrentShoppingCart(appStore().site, code)
+      if (result.ok) {
+        cartState.value = result.data
+      } else {
+        error.value = result.message || 'Could not remove gift card'
+      }
+    } catch (e: any) {
+      error.value = 'An error occurred removing the gift card.'
+    } finally {
+      isApplyingGiftCard.value = false
+    }
+  }
+
   //
   // -----------------
   // GETTERS & COMPUTED PROPERTIES
@@ -307,6 +345,7 @@ export const useShoppingCart = () => {
     error: readonly(error),
     isApplyingDiscount: readonly(isApplyingDiscount),
     isProcessingBuyNow: readonly(isProcessingBuyNow),
+    isApplyingGiftCard: readonly(isApplyingGiftCard),
     totalItemsInCart,
     productIdsInCart,
     detailedCart,
@@ -321,6 +360,8 @@ export const useShoppingCart = () => {
     applyDiscountCode,
     removeDiscountCode,
     buyNow,
-    clearCart
+    clearCart,
+    applyGiftCard,
+    removeGiftCard
   }
 }

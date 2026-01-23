@@ -117,25 +117,24 @@ const handleRemove = () => {
 .btn-apply,
 .btn-remove {
   border: none;
-  background-color: #222;
+  background-color: #ff8c69;
   color: white;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 1.5rem;
   border-radius: 5px;
   font-weight: bold;
   font-size: 0.9rem;
   cursor: pointer;
   transition: background-color 0.2s;
   white-space: nowrap;
+  text-transform: uppercase;
 }
 
-.btn-apply:hover,
-.btn-remove:hover {
-  background-color: #555;
+.btn-apply:hover {
+  opacity: 0.9;
 }
 
-.btn-apply:disabled,
-.btn-remove:disabled {
-  background-color: #ccc;
+.btn-apply:disabled {
+  background-color: #6c757d;
   cursor: not-allowed;
 }
 

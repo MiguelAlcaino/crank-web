@@ -19,6 +19,7 @@ import DeviceFingerprint from '@/modules/shop/components/DeviceFingerprint.vue'
 import DiscountCodeForm from '@/modules/shop/components/DiscountCodeForm.vue'
 import CheckoutConfirmation from '@/modules/shop/components/CheckoutConfirmation.vue'
 import MobileVerificationForm from '@/modules/shop/components/MobileVerificationForm.vue'
+import GiftCardForm from '@/modules/shop/components/GiftCardForm.vue'
 
 // Composables, Services & Utilities
 import { useCheckout } from '@/modules/shop/composables/useCheckout'
@@ -469,12 +470,21 @@ const onFingerprintError = (error: Error) => {
           <div v-else>
             <h5>{{ formattedCartItems }}</h5>
             <p>{{ detailedCart?.formattedTotal }}</p>
-            <span class="item-count">{{ totalItemsInCart }} items</span>
+            <span class="item-count">
+              {{ totalItemsInCart }} {{ totalItemsInCart === 1 ? 'item' : 'items' }}
+            </span>
           </div>
-          <details>
-            <summary>Do you have a discount code?</summary>
-            <DiscountCodeForm />
-          </details>
+          <div class="promo-sections mt-3">
+            <details>
+              <summary>Do you have a discount code?</summary>
+              <DiscountCodeForm />
+            </details>
+
+            <details class="mt-2">
+              <summary>Do you have a gift card?</summary>
+              <GiftCardForm />
+            </details>
+          </div>
         </div>
 
         <div v-if="isCheckoutBlockedByMobile" class="mt-4">
