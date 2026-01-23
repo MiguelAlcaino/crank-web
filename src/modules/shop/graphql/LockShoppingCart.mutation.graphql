@@ -1,6 +1,3 @@
-# This mutation locks the shopping cart for a specific site,
-# likely to prevent modifications during the payment process.
-# It returns a boolean indicating success.
 mutation LockShoppingCart($site: SiteEnum!) {
-  lockShoppingCart(site: $site)
+    lockShoppingCart(site: $site)
 }

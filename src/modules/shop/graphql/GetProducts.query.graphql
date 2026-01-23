@@ -1,11 +1,5 @@
-# Import the fragment to use it within this query.
-#import "./fragments/ProductFields.fragment.graphql"
-
-# This query fetches a list of products for a given site,
-# with an optional input to filter by product type.
 query GetProducts($site: SiteEnum!, $input: ProductsInput) {
-  products(site: $site, input: $input) {
-    # By spreading the fragment, we get all fields defined in ProductFields.
-    ...ProductFields
-  }
+    products(site: $site, input: $input) {
+        ...ProductFields
+    }
 }

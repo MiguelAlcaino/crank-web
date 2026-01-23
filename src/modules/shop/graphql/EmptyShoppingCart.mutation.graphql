@@ -1,18 +1,11 @@
-# We import the fragment to ensure a consistent response.
-#import "./fragments/ShoppingCartFields.fragment.graphql"
-
-# This mutation empties all items from the cart for a specific site.
-# Returns the cart state (now empty) on success.
 mutation EmptyShoppingCart($site: SiteEnum!) {
-  emptyShoppingCart(site: $site) {
-    __typename
-    # On success, return the updated cart using our consistent fragment.
-    ... on ShoppingCart {
-      ...ShoppingCartFields
+    emptyShoppingCart(site: $site) {
+        __typename
+        ... on ShoppingCart {
+            ...ShoppingCartFields
+        }
+        ... on ShoppingCartNotFound {
+            code
+        }
     }
-    # Handle possible business logic errors.
-    ... on ShoppingCartNotFound {
-      code
-    }
-  }
 }
