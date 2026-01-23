@@ -49,7 +49,7 @@ import { SiteEnum } from '@/modules/shared/interfaces/site.enum'
 
 const apiService = inject<IApiService>('gqlApiService')!
 const { error: checkoutError, payfortFormHtml, initiatePayment } = useCheckout()
-const { totalItemsInCart, detailedCart, fetchCartDetails, isLoading } = useShoppingCart()
+const { totalItemsInCart, detailedCart, fetchCartDetails, isLoading, itemsText } = useShoppingCart()
 const { user, isAuthenticated, isLoading: isAuthLoading, fetchCurrentUser } = useAuth(apiService)
 const route = useRoute()
 
@@ -471,7 +471,7 @@ const onFingerprintError = (error: Error) => {
             <h5>{{ formattedCartItems }}</h5>
             <p>{{ detailedCart?.formattedTotal }}</p>
             <span class="item-count">
-              {{ totalItemsInCart }} {{ totalItemsInCart === 1 ? 'item' : 'items' }}
+              {{ itemsText }}
             </span>
           </div>
           <div class="promo-sections mt-3">

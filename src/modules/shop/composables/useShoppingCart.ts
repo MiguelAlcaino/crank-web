@@ -333,6 +333,11 @@ export const useShoppingCart = () => {
     return null
   })
 
+  const itemsText = computed(() => {
+    const count = totalItemsInCart.value
+    return count === 1 ? '1 item' : `${count} items`
+  })
+
   /**
    * @description A computed property that combines all primary loading states of the cart.
    * Simplifies logic for components that need a general loading indicator.
@@ -362,6 +367,7 @@ export const useShoppingCart = () => {
     buyNow,
     clearCart,
     applyGiftCard,
-    removeGiftCard
+    removeGiftCard,
+    itemsText
   }
 }
