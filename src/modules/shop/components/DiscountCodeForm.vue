@@ -62,12 +62,13 @@ const handleRemove = () => {
         <span>DISCOUNT CODE APPLIED:</span>
         <strong class="applied-code">{{ detailedCart.discountCode }}</strong>
       </div>
-      <button @click="handleRemove" class="btn-remove" :disabled="isApplyingDiscount">
-        <span
-          v-if="isApplyingDiscount"
-          class="spinner-border spinner-border-sm"
-          role="status"
-        ></span>
+      <button
+        type="button"
+        @click="handleRemove"
+        class="btn-remove-custom"
+        :disabled="isApplyingDiscount"
+      >
+        <span v-if="isApplyingDiscount" class="spinner-border spinner-border-sm"></span>
         <span v-else>REMOVE</span>
       </button>
     </div>
@@ -99,69 +100,150 @@ const handleRemove = () => {
 
 <style scoped>
 .discount-section {
-  padding: 1rem 0;
+  padding: 10px 0;
   font-family: 'Avenir', sans-serif;
-}
-
-.apply-form {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.apply-form .form-control {
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  text-transform: uppercase;
-}
-
-.btn-apply,
-.btn-remove {
-  border: none;
-  background-color: #ff8c69;
-  color: white;
-  padding: 0.5rem 1.5rem;
-  border-radius: 5px;
-  font-weight: bold;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  white-space: nowrap;
-  text-transform: uppercase;
-}
-
-.btn-apply:hover {
-  opacity: 0.9;
-}
-
-.btn-apply:disabled {
-  background-color: #6c757d;
-  cursor: not-allowed;
 }
 
 .applied-discount {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #f0fff0;
-  border: 1px solid #a3d9a5;
-  padding: 0.5rem 1rem;
-  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 140, 105, 0.4);
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-top: 5px;
 }
 
 .applied-info {
   display: flex;
   flex-direction: column;
-  font-size: 0.8rem;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.applied-info .label {
+  font-size: 0.65rem;
+  letter-spacing: 1px;
+  color: #adb5bd;
+  font-weight: bold;
 }
 
 .applied-code {
+  font-family: 'BigJohn', sans-serif;
+  font-size: 1.1rem;
+  color: #ff8c69;
+  letter-spacing: 1px;
+}
+
+.btn-remove-link {
+  background: none;
+  border: 1px solid #ff8c69;
+  color: #ff8c69;
+  padding: 5px 12px;
+  border-radius: 5px;
+  font-size: 0.75rem;
   font-weight: bold;
-  font-size: 1rem;
-  color: #2a7f2e;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-remove-link:hover {
+  background-color: #ff8c69;
+  color: white;
+}
+
+.apply-form {
+  display: flex;
+  gap: 10px;
+}
+
+.apply-form .form-control {
+  background-color: #fff;
+  border: none;
+  border-radius: 5px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.btn-apply {
+  background-color: #ff8c69;
+  color: white;
+  border: none;
+  padding: 0 20px;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 .error-message {
-  color: #d9534f;
+  color: #ff8c69;
+  font-size: 0.8rem;
+  margin-top: 8px;
   display: block;
+}
+
+.applied-discount {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 140, 105, 0.3);
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.applied-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.label {
+  font-size: 0.7rem;
+  color: #adb5bd;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.applied-code {
+  font-family: 'BigJohn', sans-serif;
+  font-size: 1.1rem;
+  color: #ff8c69;
+  letter-spacing: 1.5px;
+}
+
+.btn-remove-custom {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+
+  border: 1.5px solid #ff8c69 !important;
+  color: #ff8c69 !important;
+  padding: 6px 15px !important;
+  border-radius: 6px;
+  font-family: 'Avenir', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-remove-custom:hover:not(:disabled) {
+  background-color: #ff8c69 !important;
+  color: white !important;
+  transform: translateY(-1px);
+}
+
+.btn-remove-custom:disabled {
+  border-color: #6c757d !important;
+  color: #6c757d !important;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 </style>

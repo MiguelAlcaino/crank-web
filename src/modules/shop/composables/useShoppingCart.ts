@@ -255,7 +255,19 @@ export const useShoppingCart = () => {
       if (result.ok) {
         cartState.value = result.data
       } else {
-        error.value = result.message || 'Invalid Gift Card'
+        switch (result.error) {
+          case 'GIFT_CARD_INVALID':
+            error.value = 'This gift card is not valid or cannot be used for this purchase.'
+            break
+          case 'GIFT_CARD_ALREADY_USED':
+            error.value = 'This gift card has already been applied to your cart.'
+            break
+          case 'LIMIT_REACHED':
+            error.value = 'You cannot add more gift cards to this order.'
+            break
+          default:
+            error.value = result.message || 'An error occurred with the gift card.'
+        }
       }
     } catch (e: any) {
       error.value = 'An error occurred applying the gift card.'

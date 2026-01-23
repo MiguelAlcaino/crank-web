@@ -460,13 +460,23 @@ const onFingerprintError = (error: Error) => {
             </span>
           </div>
           <div class="promo-sections mt-3">
-            <details>
-              <summary>Do you have a discount code?</summary>
+            <details :open="!!detailedCart?.discountCode">
+              <summary>
+                <span v-if="detailedCart?.discountCode" class="text-orange">
+                  Discount Applied
+                </span>
+                <span v-else>Do you have a discount code?</span>
+              </summary>
               <DiscountCodeForm />
             </details>
 
-            <details class="mt-2">
-              <summary>Do you have a gift card?</summary>
+            <details class="mt-2" :open="detailedCart?.giftCardsCodes.length > 0">
+              <summary>
+                <span v-if="detailedCart?.giftCardsCodes.length > 0" class="text-orange">
+                  Gift Cards Applied ({{ detailedCart.giftCardsCodes.length }})
+                </span>
+                <span v-else>Do you have a gift card?</span>
+              </summary>
               <GiftCardForm />
             </details>
           </div>

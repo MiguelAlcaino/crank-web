@@ -16,9 +16,9 @@ const handleApply = async () => {
     <!-- List of Gift Cards already applied -->
     <div v-if="detailedCart?.giftCardsCodes.length" class="applied-list mb-3">
       <div v-for="code in detailedCart.giftCardsCodes" :key="code" class="applied-item">
-        <span class="code-tag"
-          >GIFT CARD: <strong>{{ code }}</strong></span
-        >
+        <span class="code-tag">
+          GIFT CARD: <strong>{{ code }}</strong>
+        </span>
         <button
           @click="removeGiftCard(code)"
           class="btn-remove-mini"
