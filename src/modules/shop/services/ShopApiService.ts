@@ -62,6 +62,12 @@ import { createShoppingCartModel } from '@/modules/shop/factories/shoppingCartFa
 import type { AppProductType } from '@/modules/shop/models/types'
 import { createProductModel } from '@/modules/shop/factories/productFactory'
 import type { CartSummary } from '@/modules/shop/interfaces/cart-summary'
+import {
+  SHOPPING_CART_ERROR_MAP,
+  type ShoppingCartBusinessError
+} from '@/modules/shop/interfaces/shopping-cart-errors'
+import type { ServiceResult } from '@/modules/shop/interfaces/service-result'
+import { handleInfrastructureError } from '@/modules/shop/services/utils/handleInfrastructureError'
 
 export class ShopApiService implements IShopApiService {
   constructor(private authApiClient: ApolloClient<any>) {}
@@ -114,7 +120,7 @@ export class ShopApiService implements IShopApiService {
   async addGiftCardCodeToShoppingCart(
     giftCard: string,
     site: SiteEnum
-  ): Promise<ShoppingCartModel> {
+  ): Promise<ServiceResult<ShoppingCartModel, ShoppingCartBusinessError>> {
     try {
       const { data, errors } = await this.authApiClient.mutate<
         AddGiftCardCodeToShoppingCartMutation,
@@ -128,55 +134,20 @@ export class ShopApiService implements IShopApiService {
         fetchPolicy: 'network-only'
       })
 
-      if (errors && errors.length > 0) {
-        throw new ApiError(
-          `GraphQL error adding gift card: ${errors.map((e) => e.message).join(', ')}`
-        )
+      if (errors?.length) {
+        return { ok: false, error: 'UNKNOWN_ERROR', message: errors[0].message }
       }
 
-      const result = data?.addGiftCardCodeToShoppingCart
-
-      if (!result) {
-        throw new Error('Did not receive a valid response from the server.')
-      }
-
-      if (result.__typename === 'ShoppingCart') {
-        return createShoppingCartModel(result as unknown as GqlShoppingCart)
-      } else {
-        const errorCode = (result as { code?: string }).code ?? 'UnknownGiftCardError'
-
-        let errorMessage = 'Could not apply gift card.'
-
-        switch (result.__typename) {
-          case 'GiftCardIsNotUsable':
-            errorMessage = 'The gift card is expired or not usable.'
-            break
-          case 'GiftCardAlreadyRegisteredForCurrentShoppingCart':
-            errorMessage = 'This gift card has already been applied.'
-            break
-          case 'DontNeedMoreGiftCards':
-            errorMessage = 'The balance is already covered; no more gift cards needed.'
-            break
-          case 'ShoppingCartIsEmpty':
-            errorMessage = 'Cannot apply a gift card to an empty cart.'
-            break
-          case 'DiscountCodeIsInvalid':
-            errorMessage = 'The provided code is invalid.'
-            break
-        }
-
-        throw new ApiError(errorMessage, errorCode)
-      }
-    } catch (error) {
-      console.error('ApiService.addGiftCardCodeToShoppingCart failed:', error)
-      throw error
+      return this.processCartResult(data?.addGiftCardCodeToShoppingCart)
+    } catch (error: any) {
+      return handleInfrastructureError<ShoppingCartBusinessError>(error)
     }
   }
 
   async removeGiftCardFromCurrentShoppingCart(
     site: SiteEnum,
     giftCardCode: string
-  ): Promise<ShoppingCartModel> {
+  ): Promise<ServiceResult<ShoppingCartModel, ShoppingCartBusinessError>> {
     try {
       const { data, errors } = await this.authApiClient.mutate<
         RemoveGiftCardFromCurrentShoppingCartMutation,
@@ -190,36 +161,13 @@ export class ShopApiService implements IShopApiService {
         fetchPolicy: 'network-only'
       })
 
-      if (errors && errors.length > 0) {
-        throw new ApiError(
-          `GraphQL error removing gift card: ${errors.map((e) => e.message).join(', ')}`
-        )
+      if (errors?.length) {
+        return { ok: false, error: 'UNKNOWN_ERROR', message: errors[0].message }
       }
 
-      const result = data?.removeGiftCardFromCurrentShoppingCart
-
-      if (!result) {
-        throw new Error('Did not receive a valid response from the server when removing gift card.')
-      }
-
-      if (result.__typename === 'ShoppingCart') {
-        return createShoppingCartModel(result as unknown as GqlShoppingCart)
-      } else {
-        const errorCode = (result as { code?: string }).code ?? 'UnknownGiftCardError'
-
-        let errorMessage = 'Could not remove gift card.'
-
-        if (result.__typename === 'GiftCardNotRegisteredOnCurrentShoppingCart') {
-          errorMessage = 'The gift card is not present in your shopping cart.'
-        } else if (result.__typename === 'ShoppingCartNotFound') {
-          errorMessage = 'Shopping cart not found.'
-        }
-
-        throw new ApiError(errorMessage, errorCode)
-      }
+      return this.processCartResult(data?.removeGiftCardFromCurrentShoppingCart)
     } catch (error) {
-      console.error('ApiService.removeGiftCardFromCurrentShoppingCart failed:', error)
-      throw error
+      return handleInfrastructureError<ShoppingCartBusinessError>(error)
     }
   }
 
@@ -740,6 +688,30 @@ export class ShopApiService implements IShopApiService {
       // Catch and re-throw any error for the calling function to handle.
       console.error('ApiService.clearShoppingCart failed:', error)
       throw error
+    }
+  }
+
+  private processCartResult(
+    result: any,
+    defaultError: ShoppingCartBusinessError = 'UNKNOWN_ERROR'
+  ): ServiceResult<ShoppingCartModel, ShoppingCartBusinessError> {
+    if (!result) throw new Error('No response from server')
+
+    // Success
+    if (result.__typename === 'ShoppingCart') {
+      return {
+        ok: true,
+        data: createShoppingCartModel(result as unknown as GqlShoppingCart)
+      }
+    }
+
+    // Failure
+    const errorType = SHOPPING_CART_ERROR_MAP[result.__typename] ?? defaultError
+
+    return {
+      ok: false,
+      error: errorType,
+      message: result.code
     }
   }
 }

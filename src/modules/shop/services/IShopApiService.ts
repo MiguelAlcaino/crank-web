@@ -4,6 +4,8 @@ import type { ShoppingCartModel as ShoppingCartModel } from '../models/ShoppingC
 import type { CartSummary } from '@/modules/shop/interfaces/cart-summary'
 import type { PayfortFormInput, PaymentTransactionStatusEnum } from '@/gql/graphql'
 import type { AppProductType } from '@/modules/shop/models/types'
+import type { ServiceResult } from '@/modules/shop/interfaces/service-result'
+import type { ShoppingCartBusinessError } from '@/modules/shop/interfaces/shopping-cart-errors'
 
 export interface IShopApiService {
   /**
@@ -152,20 +154,23 @@ export interface IShopApiService {
    * Adds a gift card code to the shopping cart.
    * @param giftCard The gift card code.
    * @param site The site where the cart exists.
-   * @returns A promise that resolves with a string (method not implemented).
+   * @returns {Promise<ServiceResult<ShoppingCartModel, ShoppingCartBusinessError>>} Promise that resolves to a `ServiceResult`: on success contains the updated `ShoppingCartModel`; on business failure contains a `ShoppingCartBusinessError`.
    */
-  addGiftCardCodeToShoppingCart(giftCard: string, site: SiteEnum): Promise<ShoppingCartModel>
+  addGiftCardCodeToShoppingCart(
+    giftCard: string,
+    site: SiteEnum
+  ): Promise<ServiceResult<ShoppingCartModel, ShoppingCartBusinessError>>
 
   /**
    * Removes a gift card from the current shopping cart.
    * @param site The site where the cart exists.
    * @param giftCardCode The gift card code to remove.
-   * @returns A Promise that resolves with the updated ShoppingCartModel instance.
-   * */
+   * @returns {Promise<ServiceResult<ShoppingCartModel, ShoppingCartBusinessError>>} Promise that resolves to a `ServiceResult`: on success contains the updated `ShoppingCartModel`; on business failure contains a `ShoppingCartBusinessError`.
+   */
   removeGiftCardFromCurrentShoppingCart(
     site: SiteEnum,
     giftCardCode: string
-  ): Promise<ShoppingCartModel>
+  ): Promise<ServiceResult<ShoppingCartModel, ShoppingCartBusinessError>>
 
   /**
    * Locks the user's shopping cart to prevent modifications during payment.
