@@ -62,12 +62,9 @@ import { createShoppingCartModel } from '@/modules/shop/factories/shoppingCartFa
 import type { AppProductType } from '@/modules/shop/models/types'
 import { createProductModel } from '@/modules/shop/factories/productFactory'
 import type { CartSummary } from '@/modules/shop/interfaces/cart-summary'
-import {
-  SHOPPING_CART_ERROR_MAP,
-  type ShoppingCartBusinessError
-} from '@/modules/shop/interfaces/shopping-cart-errors'
+import { SHOPPING_CART_ERROR_MAP, type ShoppingCartBusinessError } from '@/modules/shop/interfaces/shopping-cart-errors'
 import type { ServiceResult } from '@/modules/shop/interfaces/service-result'
-import { handleInfrastructureError } from '@/modules/shop/services/utils/handleInfrastructureError'
+import { handleInfrastructureErrors } from '@/modules/shop/services/utils/handleInfrastructureErrors'
 
 export class ShopApiService implements IShopApiService {
   constructor(private authApiClient: ApolloClient<any>) {}
@@ -140,7 +137,7 @@ export class ShopApiService implements IShopApiService {
 
       return this.processCartResult(data?.addGiftCardCodeToShoppingCart)
     } catch (error: any) {
-      return handleInfrastructureError<ShoppingCartBusinessError>(error)
+      return handleInfrastructureErrors<ShoppingCartBusinessError>(error)
     }
   }
 
@@ -167,7 +164,7 @@ export class ShopApiService implements IShopApiService {
 
       return this.processCartResult(data?.removeGiftCardFromCurrentShoppingCart)
     } catch (error) {
-      return handleInfrastructureError<ShoppingCartBusinessError>(error)
+      return handleInfrastructureErrors<ShoppingCartBusinessError>(error)
     }
   }
 

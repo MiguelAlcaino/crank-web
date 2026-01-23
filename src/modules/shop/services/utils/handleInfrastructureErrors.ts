@@ -1,6 +1,6 @@
 import type { ServiceResult } from '@/modules/shop/interfaces/service-result'
 
-export function handleInfrastructureError<E>(error: any): ServiceResult<never, E> {
+export function handleInfrastructureErrors<E>(error: any): ServiceResult<never, E> {
   console.error('Infrastructure Error:', error)
 
   let userMessage = 'An unexpected error occurred.'
