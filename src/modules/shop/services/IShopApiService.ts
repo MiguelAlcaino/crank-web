@@ -157,6 +157,17 @@ export interface IShopApiService {
   addGiftCardCodeToShoppingCart(giftCard: string, site: SiteEnum): Promise<ShoppingCartModel>
 
   /**
+   * Removes a gift card from the current shopping cart.
+   * @param site The site where the cart exists.
+   * @param giftCardCode The gift card code to remove.
+   * @returns A Promise that resolves with the updated ShoppingCartModel instance.
+   * */
+  removeGiftCardFromCurrentShoppingCart(
+    site: SiteEnum,
+    giftCardCode: string
+  ): Promise<ShoppingCartModel>
+
+  /**
    * Locks the user's shopping cart to prevent modifications during payment.
    * @param site The site where the cart exists.
    * @returns A Promise that resolves with `true` on success.

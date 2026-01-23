@@ -1,6 +1,9 @@
 import { ClassPackageTypeEnum, type GetProductsQuery } from '@/gql/graphql'
 import type { IconName } from '@/modules/shop/models/types'
-import { VariantBasicModel, type VariantFromProductQuery } from '@/modules/shop/models/VariantBasicModel'
+import {
+  VariantBasicModel,
+  type VariantFromProductQuery
+} from '@/modules/shop/models/VariantBasicModel'
 import { formatPrice } from '../utils/shop-utils' // Create a reusable utility type for a single product from the API response.
 
 // Create a reusable utility type for a single product from the API response.

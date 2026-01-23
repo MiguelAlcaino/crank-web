@@ -46,6 +46,9 @@ import {
   RemoveDiscountCodeDocument,
   type RemoveDiscountCodeMutation,
   type RemoveDiscountCodeMutationVariables,
+  RemoveGiftCardFromCurrentShoppingCartDocument,
+  type RemoveGiftCardFromCurrentShoppingCartMutation,
+  type RemoveGiftCardFromCurrentShoppingCartMutationVariables,
   RemoveItemFromShoppingCartDocument,
   type RemoveItemFromShoppingCartMutation,
   type RemoveItemFromShoppingCartMutationVariables,
@@ -166,6 +169,56 @@ export class ShopApiService implements IShopApiService {
       }
     } catch (error) {
       console.error('ApiService.addGiftCardCodeToShoppingCart failed:', error)
+      throw error
+    }
+  }
+
+  async removeGiftCardFromCurrentShoppingCart(
+    site: SiteEnum,
+    giftCardCode: string
+  ): Promise<ShoppingCartModel> {
+    try {
+      const { data, errors } = await this.authApiClient.mutate<
+        RemoveGiftCardFromCurrentShoppingCartMutation,
+        RemoveGiftCardFromCurrentShoppingCartMutationVariables
+      >({
+        mutation: RemoveGiftCardFromCurrentShoppingCartDocument,
+        variables: {
+          site,
+          giftCardCode
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      if (errors && errors.length > 0) {
+        throw new ApiError(
+          `GraphQL error removing gift card: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      const result = data?.removeGiftCardFromCurrentShoppingCart
+
+      if (!result) {
+        throw new Error('Did not receive a valid response from the server when removing gift card.')
+      }
+
+      if (result.__typename === 'ShoppingCart') {
+        return createShoppingCartModel(result as unknown as GqlShoppingCart)
+      } else {
+        const errorCode = (result as { code?: string }).code ?? 'UnknownGiftCardError'
+
+        let errorMessage = 'Could not remove gift card.'
+
+        if (result.__typename === 'GiftCardNotRegisteredOnCurrentShoppingCart') {
+          errorMessage = 'The gift card is not present in your shopping cart.'
+        } else if (result.__typename === 'ShoppingCartNotFound') {
+          errorMessage = 'Shopping cart not found.'
+        }
+
+        throw new ApiError(errorMessage, errorCode)
+      }
+    } catch (error) {
+      console.error('ApiService.removeGiftCardFromCurrentShoppingCart failed:', error)
       throw error
     }
   }
