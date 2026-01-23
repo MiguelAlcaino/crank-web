@@ -1,7 +1,6 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import {
-  isFlutterWebView,
   notifyPaymentFailure,
   notifyPaymentPending,
   notifyPaymentSuccess
@@ -10,10 +9,13 @@ import {
 export const useFlutterBridge = () => {
   const route = useRoute()
 
+  const isAppOrigin = computed(() => route.query.origin === 'app')
   const webviewToken = computed(() => route.query.token as string | undefined)
   const hasToken = computed(() => !!webviewToken.value)
 
-  const isInWebview = computed(() => isFlutterWebView(hasToken.value))
+  const isInWebview = computed(() => {
+    return isAppOrigin.value || window.FlutterChannel !== undefined
+  })
 
   const sendSuccess = () => {
     if (isInWebview.value) notifyPaymentSuccess(hasToken.value)
