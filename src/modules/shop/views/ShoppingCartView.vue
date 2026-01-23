@@ -17,7 +17,6 @@ import IconBag from '@/modules/shop/components/icons/IconBag.vue'
 import IconGift from '@/modules/shop/components/icons/IconGift.vue'
 import IconMerch from '@/modules/shop/components/icons/IconMerch.vue'
 import IconSmoothie from '@/modules/shop/components/icons/IconSmoothie.vue'
-import DiscountCodeForm from '@/modules/shop/components/DiscountCodeForm.vue'
 
 // Composables, Services & Utilities
 import { useShoppingCart } from '../composables/useShoppingCart'
@@ -107,9 +106,6 @@ const handleCheckout = () => {
 
     <!-- Fixed Footer -->
     <div class="cart-footer">
-      <div class="discount-wrapper p-3">
-        <DiscountCodeForm />
-      </div>
       <div
         class="total-bar d-flex justify-content-between align-items-center text-white font-weight-bold p-3"
       >

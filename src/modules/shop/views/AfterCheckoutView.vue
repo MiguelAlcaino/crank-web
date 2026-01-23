@@ -1,19 +1,13 @@
 <script setup lang="ts">
 import { useAfterCheckout } from '@/modules/shop/composables/useAfterCheckout'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { PaymentTransactionStatusEnum } from '@/gql/graphql'
-import {
-  isFlutterWebView,
-  notifyPaymentFailure,
-  notifyPaymentPending,
-  notifyPaymentSuccess
-} from '@/modules/shop/utils/flutter-communication'
 
 // Local Components
 import CrankCircularProgressIndicator from '@/components/CrankCircularProgressIndicator.vue'
+import { useFlutterBridge } from '@/modules/shop/composables/useFlutterBridge'
 
 const router = useRouter()
-const route = useRoute()
 
 const {
   isLoading,
@@ -26,34 +20,22 @@ const {
   isRetrying
 } = useAfterCheckout()
 
+const { isInWebview, sendSuccess, sendFailure, sendPending } = useFlutterBridge()
+
 const goToShop = () => {
-  const hasWebviewToken = !!route.query.token
-  const inFlutter = isFlutterWebView(hasWebviewToken)
-
   // Flutter WebView handling
-  if (inFlutter) {
-    // SUCCESS
+  if (isInWebview.value) {
     if (purchaseStatus.value === PaymentTransactionStatusEnum.Successful) {
-      notifyPaymentSuccess(hasWebviewToken)
-      return
+      sendSuccess()
+    } else if (purchaseStatus.value === PaymentTransactionStatusEnum.Rejected) {
+      sendFailure()
+    } else {
+      sendPending()
     }
-
-    // ERROR
-    if (
-      purchaseStatus.value === PaymentTransactionStatusEnum.Rejected ||
-      purchaseStatus.value === PaymentTransactionStatusEnum.Refunded ||
-      hasError.value
-    ) {
-      notifyPaymentFailure(hasWebviewToken)
-      return
-    }
-
-    // PENDING
-    notifyPaymentPending(hasWebviewToken)
     return
   }
 
-  // 2. Web handling
+  // Web handling
   if (
     purchaseStatus.value === PaymentTransactionStatusEnum.Rejected ||
     purchaseStatus.value === PaymentTransactionStatusEnum.Refunded ||

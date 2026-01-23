@@ -26,7 +26,6 @@ import { useCheckout } from '@/modules/shop/composables/useCheckout'
 import { useAuth } from '@/modules/auth/composables/useAuth'
 import { useShoppingCart } from '@/modules/shop/composables/useShoppingCart'
 import { createPayfortFormManager } from '@/modules/shop/services/PayfortFormManager'
-import { isFlutterWebView, notifyPaymentFailure } from '@/modules/shop/utils/flutter-communication'
 import type { IApiService } from '@/services/IApiService'
 import { authService } from '@/services/authService'
 import { luhnCheck } from '@/modules/shop/utils/shop-utils'
@@ -40,6 +39,7 @@ import applePay from '../assets/images/apple_pay_button_pay.png'
 
 import { appStore } from '@/stores/appStorage'
 import { SiteEnum } from '@/modules/shared/interfaces/site.enum'
+import { useFlutterBridge } from '@/modules/shop/composables/useFlutterBridge'
 
 //
 // -----------------
@@ -49,8 +49,9 @@ import { SiteEnum } from '@/modules/shared/interfaces/site.enum'
 
 const apiService = inject<IApiService>('gqlApiService')!
 const { error: checkoutError, payfortFormHtml, initiatePayment } = useCheckout()
-const { totalItemsInCart, detailedCart, fetchCartDetails, isLoading, itemsText } = useShoppingCart()
+const { detailedCart, fetchCartDetails, isLoading, itemsText } = useShoppingCart()
 const { user, isAuthenticated, isLoading: isAuthLoading, fetchCurrentUser } = useAuth(apiService)
+const { isInWebview, webviewToken, sendFailure } = useFlutterBridge()
 const route = useRoute()
 
 //
@@ -114,13 +115,6 @@ const selectedPaymentMethod = ref<'newCard' | 'digitalWallet' | ''>('')
 /**
  * @description Tracks if the checkout is being accessed from a webview with a token.
  */
-const isWebviewMode = ref(false)
-
-/**
- * @description Stores the authentication token from URL parameters.
- */
-const webviewToken = ref<string>('')
-
 const currentStep = ref<'details' | 'confirmation'>('details')
 
 //
@@ -221,9 +215,8 @@ function showErrorModal(title: string, message: string) {
   modalState.message = message
   modalState.show = true
 
-  // If this is an error and we're in Flutter WebView, notify about failure
-  if (isFlutterWebView(isWebviewMode.value) && title.toLowerCase().includes('error')) {
-    notifyPaymentFailure(isWebviewMode.value)
+  if (isInWebview.value && title.toLowerCase().includes('error')) {
+    sendFailure()
   }
 }
 
@@ -274,8 +267,8 @@ const handleFinalPayment = async () => {
       showErrorModal('Payment Error', ERROR_UNKNOWN)
     }
   } catch (error: any) {
-    if (isFlutterWebView(isWebviewMode.value)) {
-      notifyPaymentFailure(isWebviewMode.value)
+    if (isInWebview.value) {
+      sendFailure()
     }
     showErrorModal('Payment Error', error?.message || 'Unexpected error.')
     isSubmitting.value = false
@@ -325,9 +318,8 @@ const handleNewCardPayment = async () => {
       showErrorModal('Payment Error', ERROR_UNKNOWN)
     }
   } catch (error: any) {
-    // Notify Flutter about payment failure if in webview mode
-    if (isFlutterWebView(isWebviewMode.value)) {
-      notifyPaymentFailure(isWebviewMode.value)
+    if (isInWebview.value) {
+      sendFailure()
     }
 
     showErrorModal(
@@ -375,8 +367,6 @@ const onMobileVerified = async () => {
  */
 onMounted(() => {
   const store = appStore()
-
-  const token = route.query.token as string
   const siteParam = route.query.site as string
 
   if (siteParam) {
@@ -393,17 +383,12 @@ onMounted(() => {
   }
 
   // Check if token is provided in URL (webview mode)
-  if (token) {
-    isWebviewMode.value = true
-    webviewToken.value = token
-    authService.setWebviewToken(token)
+  if (webviewToken.value) {
+    console.log('Webview mode detected via Bridge')
+    authService.setWebviewToken(webviewToken.value)
   }
 
-  // Fetch the current user's data to display in the header.
   fetchCurrentUser()
-
-  // Fetch the full, detailed cart data to ensure totals and items are correct.
-  // This makes the page resilient to users arriving here directly.
   fetchCartDetails()
 })
 
@@ -459,7 +444,7 @@ const onFingerprintError = (error: Error) => {
         <div class="purchase-summary">
           <div class="summary-header">
             <h5 class="text-orange">YOU ARE BUYING:</h5>
-            <router-link v-if="!isWebviewMode" to="/shop/cart" class="edit-cart-link">
+            <router-link v-if="!isInWebview" to="/shop/cart" class="edit-cart-link">
               Edit Cart
             </router-link>
           </div>
