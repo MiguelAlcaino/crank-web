@@ -2,7 +2,6 @@ import { PaymentTransactionStatusEnum } from '@/gql/graphql'
 import { ApiError } from '@/services/utils/ApiError'
 import { onMounted, onUnmounted, readonly, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { useApiService } from '@/services/useApiService'
 import { useShopApiService } from '@/modules/shop/composables/useShopApiService'
 
 /**
@@ -11,7 +10,6 @@ import { useShopApiService } from '@/modules/shop/composables/useShopApiService'
  * using the merchant_reference provided in the URL by the payment gateway.
  */
 export const useAfterCheckout = () => {
-  const apiService = useApiService()
   const shopApi = useShopApiService()
   const route = useRoute()
 
