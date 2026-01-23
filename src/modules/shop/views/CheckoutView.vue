@@ -199,6 +199,8 @@ const isCheckoutBlockedByMobile = computed(() => {
   return cartRequiresMobile.value && !user.value?.isMobilePhoneVerified
 })
 
+const giftCardsCount = computed(() => detailedCart.value?.giftCardsCodes?.length ?? 0)
+
 //
 // -----------------
 // METHODS
@@ -470,10 +472,10 @@ const onFingerprintError = (error: Error) => {
               <DiscountCodeForm />
             </details>
 
-            <details class="mt-2" :open="detailedCart?.giftCardsCodes.length > 0">
+            <details class="mt-2" :open="giftCardsCount > 0">
               <summary>
-                <span v-if="detailedCart?.giftCardsCodes.length > 0" class="text-orange">
-                  Gift Cards Applied ({{ detailedCart.giftCardsCodes.length }})
+                <span v-if="giftCardsCount > 0" class="text-orange">
+                  Gift Cards Applied ({{ giftCardsCount }})
                 </span>
                 <span v-else>Do you have a gift card?</span>
               </summary>
