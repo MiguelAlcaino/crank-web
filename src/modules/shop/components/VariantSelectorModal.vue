@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import type { Product } from '../models/Product'
-import type { VariantBasic } from '../models/VariantBasic'
+import type { ProductModel } from '../models/ProductModel'
+import type { VariantBasicModel } from '../models/VariantBasicModel'
 
 const props = defineProps<{
   modelValue: boolean // To control visibility (v-model)
-  product: Product | null
+  product: ProductModel | null
 }>()
 
 const emit = defineEmits<{
@@ -13,7 +13,7 @@ const emit = defineEmits<{
   (e: 'confirm', selectedVariantId: string): void
 }>()
 
-const selectedVariant = ref<VariantBasic | null>(null)
+const selectedVariant = ref<VariantBasicModel | null>(null)
 
 // When the modal opens, pre-select the first variant by default
 watch(

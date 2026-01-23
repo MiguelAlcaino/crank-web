@@ -1,16 +1,16 @@
 import type { GetShoppingCartQuery } from '@/gql/graphql'
-import { ProductBasic, type ProductFromCartItem } from './ProductBasic'
+import { ProductBasicModel, type ProductFromCartItem } from './ProductBasicModel'
 import { formatPrice } from '@/modules/shop/utils/shop-utils'
 
 export type VariantFromCartItem = NonNullable<
   NonNullable<GetShoppingCartQuery['currentUser']>['shoppingCart']['items']
 >[number]['variant']
 
-export class Variant {
+export class VariantModel {
   public readonly id: string
   public readonly name: string | null
   public readonly price: number
-  public readonly product: ProductBasic
+  public readonly product: ProductBasicModel
 
   /**
    * Constructs a Variant instance.
@@ -21,7 +21,7 @@ export class Variant {
     this.id = data.id
     this.name = data.name ?? null
     this.price = data.price
-    this.product = new ProductBasic(data.product as ProductFromCartItem)
+    this.product = new ProductBasicModel(data.product as ProductFromCartItem)
   }
 
   public getFormattedPrice(locale: string = 'en-AE'): string {

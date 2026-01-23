@@ -13,7 +13,7 @@ import TermsModal from './TermsModal.vue'
 import VariantSelectorModal from './VariantSelectorModal.vue'
 
 // Models, Composables & Services
-import type { Product } from '../models/Product'
+import type { ProductModel } from '../models/ProductModel'
 import { useShoppingCart } from '../composables/useShoppingCart'
 
 //
@@ -22,7 +22,7 @@ import { useShoppingCart } from '../composables/useShoppingCart'
 // -----------------
 //
 const props = defineProps<{
-  product: Product
+  product: ProductModel
   isInCart: boolean
 }>()
 

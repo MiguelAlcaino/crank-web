@@ -1,9 +1,9 @@
-import type { ProductFromQuery } from '@/modules/shop/models/Product'
+import type { ProductFromQuery } from '@/modules/shop/models/ProductModel'
 import { formatPrice } from '@/modules/shop/utils/shop-utils'
 
 export type VariantFromProductQuery = ProductFromQuery['variants'][number]
 
-export class VariantBasic {
+export class VariantBasicModel {
   public readonly id: string
   public readonly name: string | null
   public readonly price: number

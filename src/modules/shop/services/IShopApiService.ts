@@ -1,6 +1,6 @@
 import type { SiteEnum } from '@/modules/shared/interfaces/site.enum'
-import type { Product } from '../models/Product'
-import type { ShoppingCart as ShoppingCartModel } from '../models/ShoppingCart'
+import type { ProductModel } from '../models/ProductModel'
+import type { ShoppingCartModel as ShoppingCartModel } from '../models/ShoppingCartModel'
 import type { CartSummary } from '@/modules/shop/interfaces/cart-summary'
 import type { PayfortFormInput, PaymentTransactionStatusEnum } from '@/gql/graphql'
 import type { AppProductType } from '@/modules/shop/models/types'
@@ -16,7 +16,7 @@ export interface IShopApiService {
    * @returns A promise that resolves to an array of `Product` domain models.
    *          Throws an `ApiError` if the fetch fails.
    */
-  getProducts(site: SiteEnum, options?: { type?: AppProductType }): Promise<Product[]>
+  getProducts(site: SiteEnum, options?: { type?: AppProductType }): Promise<ProductModel[]>
 
   /**
    * Adds an item to the user's shopping cart.
@@ -151,9 +151,10 @@ export interface IShopApiService {
   /**
    * Adds a gift card code to the shopping cart.
    * @param giftCard The gift card code.
+   * @param site The site where the cart exists.
    * @returns A promise that resolves with a string (method not implemented).
    */
-  addGiftCardCodeToShoppingCart(giftCard: string): Promise<string>
+  addGiftCardCodeToShoppingCart(giftCard: string, site: SiteEnum): Promise<ShoppingCartModel>
 
   /**
    * Locks the user's shopping cart to prevent modifications during payment.

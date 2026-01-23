@@ -2,7 +2,7 @@ import { computed, readonly, ref } from 'vue'
 import { appStore } from '@/stores/appStorage'
 import { ClassPackageTypeEnum } from '../interfaces'
 import type { SessionsProductGroup } from '../interfaces/sessions-product-group'
-import { ClassPackage, GiftCardProduct, Product } from '../models/Product'
+import { ClassPackage, GiftCardProduct, ProductModel } from '../models/ProductModel'
 import { useShopApiService } from '@/modules/shop/composables/useShopApiService'
 
 /**
@@ -21,7 +21,7 @@ export const useProducts = () => {
    * @description The raw, unfiltered list of all products fetched from the API.
    * This is the single source of truth for all product data.
    */
-  const allProducts = ref<Product[]>([])
+  const allProducts = ref<ProductModel[]>([])
 
   /**
    * @description Flag indicating if an error occurred during the product fetch.

@@ -24,6 +24,8 @@ import type {
   RemoveUserFromWaitlistUnion,
   ResetPasswordForCurrentUserUnion,
   ResetPasswordLinkResultUnion,
+  ShoppingCart as GqlShoppingCart,
+  ShoppingCartItem as GqlShoppingCartItem,
   Site,
   SiteSetting,
   UpdateCurrentUserPasswordInput,
@@ -41,15 +43,10 @@ import type { SiteEnum } from '@/modules/shared/interfaces/site.enum'
 import { createProductModel } from '@/modules/shop/factories/productFactory'
 import { createShoppingCartModel } from '@/modules/shop/factories/shoppingCartFactory'
 import type { CartSummary } from '@/modules/shop/interfaces/cart-summary'
-import type { Product, ProductFromQuery } from '@/modules/shop/models/Product'
-import type { ShoppingCart as ShoppingCartModel } from '@/modules/shop/models/ShoppingCart'
+import type { ProductFromQuery, ProductModel } from '@/modules/shop/models/ProductModel'
+import type { ShoppingCartModel as ShoppingCartModel } from '@/modules/shop/models/ShoppingCartModel'
 import type { AppProductType } from '@/modules/shop/models/types'
 import type { IApiService } from './IApiService'
-
-import type {
-  ShoppingCart as GqlShoppingCart,
-  ShoppingCartItem as GqlShoppingCartItem
-} from '@/gql/graphql'
 import { ClassPackageTypeEnum } from '@/modules/shop/interfaces'
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
@@ -393,7 +390,7 @@ export class FakeApiService implements IApiService {
     throw new Error('Method not implemented.')
   }
 
-  async getProducts(site: SiteEnum, options?: { type?: AppProductType }): Promise<Product[]> {
+  async getProducts(site: SiteEnum, options?: { type?: AppProductType }): Promise<ProductModel[]> {
     await delay(500) // Simulate network latency
     console.log('[FakeAPI] getProducts called')
 

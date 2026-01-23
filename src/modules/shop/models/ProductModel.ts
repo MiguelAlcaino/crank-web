@@ -1,7 +1,7 @@
 import { ClassPackageTypeEnum, type GetProductsQuery } from '@/gql/graphql'
 import type { IconName } from '@/modules/shop/models/types'
-import { VariantBasic, type VariantFromProductQuery } from '@/modules/shop/models/VariantBasic'
-import { formatPrice } from '../utils/shop-utils'
+import { VariantBasicModel, type VariantFromProductQuery } from '@/modules/shop/models/VariantBasicModel'
+import { formatPrice } from '../utils/shop-utils' // Create a reusable utility type for a single product from the API response.
 
 // Create a reusable utility type for a single product from the API response.
 // This makes the code cleaner and easier to read than repeating ProductsQuery['products'][number].
@@ -12,10 +12,10 @@ export type ProductFromQuery = NonNullable<GetProductsQuery['products']>[number]
  * It encapsulates common properties and logic shared across all product types.
  * This class is intended to be extended, not instantiated directly.
  */
-export abstract class Product {
+export abstract class ProductModel {
   public readonly id: string
   public readonly title: string
-  public readonly variants: readonly VariantBasic[]
+  public readonly variants: readonly VariantBasicModel[]
   public readonly subtitle: string
   public readonly currency: string
   public readonly buttonText: string
@@ -27,7 +27,7 @@ export abstract class Product {
     this.id = data.id
     this.title = data.title
     this.variants = data.variants
-      ? data.variants.map((v) => new VariantBasic(v as VariantFromProductQuery))
+      ? data.variants.map((v) => new VariantBasicModel(v as VariantFromProductQuery))
       : []
     this.subtitle = data.subtitle ?? ''
     this.currency = data.currency
@@ -64,7 +64,7 @@ export abstract class Product {
 }
 
 // 2. Class for Class Packages
-export class ClassPackage extends Product {
+export class ClassPackage extends ProductModel {
   public readonly productType = 'class_package'
   public readonly classPackageType: ClassPackageTypeEnum | 'unknown'
 
@@ -96,7 +96,7 @@ export class ClassPackage extends Product {
 }
 
 // 3. Gift Card Class
-export class GiftCardProduct extends Product {
+export class GiftCardProduct extends ProductModel {
   public readonly productType = 'gift_card'
   public readonly purchaseUrl: string
 
@@ -111,7 +111,7 @@ export class GiftCardProduct extends Product {
 }
 
 // 4. A class for unknown types
-export class UnknownProduct extends Product {
+export class UnknownProduct extends ProductModel {
   public readonly productType = 'unknown'
 
   constructor(data: ProductFromQuery) {

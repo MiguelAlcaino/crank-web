@@ -1,12 +1,15 @@
 import type { IShopApiService } from '@/modules/shop/services/IShopApiService'
 import type { ApolloClient } from '@apollo/client/core'
 import type { SiteEnum } from '@/modules/shared/interfaces/site.enum'
-import type { Product, ProductFromQuery } from '../models/Product'
-import type { ShoppingCart as ShoppingCartModel } from '../models/ShoppingCart'
+import type { ProductFromQuery, ProductModel } from '../models/ProductModel'
+import type { ShoppingCartModel } from '../models/ShoppingCartModel'
 import {
   AddDiscountCodeToShoppingCartDocument,
   type AddDiscountCodeToShoppingCartMutation,
   type AddDiscountCodeToShoppingCartMutationVariables,
+  AddGiftCardCodeToShoppingCartDocument,
+  type AddGiftCardCodeToShoppingCartMutation,
+  type AddGiftCardCodeToShoppingCartMutationVariables,
   AddItemToShoppingCartDocument,
   type AddItemToShoppingCartMutation,
   type AddItemToShoppingCartMutationVariables,
@@ -105,8 +108,66 @@ export class ShopApiService implements IShopApiService {
     }
   }
 
-  async addGiftCardCodeToShoppingCart(giftCard: string): Promise<string> {
-    throw new Error('Method not implemented.')
+  async addGiftCardCodeToShoppingCart(
+    giftCard: string,
+    site: SiteEnum
+  ): Promise<ShoppingCartModel> {
+    try {
+      const { data, errors } = await this.authApiClient.mutate<
+        AddGiftCardCodeToShoppingCartMutation,
+        AddGiftCardCodeToShoppingCartMutationVariables
+      >({
+        mutation: AddGiftCardCodeToShoppingCartDocument,
+        variables: {
+          giftcard: giftCard,
+          site: site
+        },
+        fetchPolicy: 'network-only'
+      })
+
+      if (errors && errors.length > 0) {
+        throw new ApiError(
+          `GraphQL error adding gift card: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      const result = data?.addGiftCardCodeToShoppingCart
+
+      if (!result) {
+        throw new Error('Did not receive a valid response from the server.')
+      }
+
+      if (result.__typename === 'ShoppingCart') {
+        return createShoppingCartModel(result as unknown as GqlShoppingCart)
+      } else {
+        const errorCode = (result as { code?: string }).code ?? 'UnknownGiftCardError'
+
+        let errorMessage = 'Could not apply gift card.'
+
+        switch (result.__typename) {
+          case 'GiftCardIsNotUsable':
+            errorMessage = 'The gift card is expired or not usable.'
+            break
+          case 'GiftCardAlreadyRegisteredForCurrentShoppingCart':
+            errorMessage = 'This gift card has already been applied.'
+            break
+          case 'DontNeedMoreGiftCards':
+            errorMessage = 'The balance is already covered; no more gift cards needed.'
+            break
+          case 'ShoppingCartIsEmpty':
+            errorMessage = 'Cannot apply a gift card to an empty cart.'
+            break
+          case 'DiscountCodeIsInvalid':
+            errorMessage = 'The provided code is invalid.'
+            break
+        }
+
+        throw new ApiError(errorMessage, errorCode)
+      }
+    } catch (error) {
+      console.error('ApiService.addGiftCardCodeToShoppingCart failed:', error)
+      throw error
+    }
   }
 
   async addDiscountCodeToShoppingCart(
@@ -369,7 +430,7 @@ export class ShopApiService implements IShopApiService {
     }
   }
 
-  async getProducts(site: SiteEnum, options?: { type?: AppProductType }): Promise<Product[]> {
+  async getProducts(site: SiteEnum, options?: { type?: AppProductType }): Promise<ProductModel[]> {
     // Create the variables object for the query in a type-safe way.
     const variables: GetProductsQueryVariables = { site }
     if (options?.type) {

@@ -1,5 +1,5 @@
 import type { ShoppingCart as GqlShoppingCart } from '@/gql/graphql'
-import { ShoppingCart as ShoppingCartModel } from '../models/ShoppingCart'
+import { ShoppingCartModel as ShoppingCartModel } from '../models/ShoppingCartModel'
 
 /**
  * Factory to create a ShoppingCart domain model from raw GraphQL data.

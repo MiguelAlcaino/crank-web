@@ -1,5 +1,5 @@
 import type { ShoppingCart as GqlShoppingCart } from '@/gql/graphql'
-import { ShoppingCartItem } from './ShoppingCartItem'
+import { ShoppingCartItemModel } from './ShoppingCartItemModel'
 import { formatPrice } from '@/modules/shop/utils/shop-utils'
 
 type ShoppingCartTotal = {
@@ -12,15 +12,12 @@ type ShoppingCartTotal = {
 /**
  * Represents the user's shopping cart.
  */
-export class ShoppingCart {
+export class ShoppingCartModel {
   public readonly id: string
   public readonly currency: string
   public readonly discountCode: string | null
   public readonly giftCardsCodes: string[]
-  public readonly items: ShoppingCartItem[]
-
-  // The totals are now stored in a nested object.
-  // It can be null if the backend returns an error from the union.
+  public readonly items: ShoppingCartItemModel[]
   private readonly totals: ShoppingCartTotal | null
 
   constructor(gqlCart: GqlShoppingCart) {
@@ -31,11 +28,9 @@ export class ShoppingCart {
       Boolean(code)
     )
 
-    this.items = gqlCart.items.map((item) => new ShoppingCartItem(item))
+    this.items = (gqlCart.items ?? []).map((item) => new ShoppingCartItemModel(item))
 
-    // --- NEW LOGIC for handling the total union ---
     if (gqlCart.total?.__typename === 'ShoppingCartTotal') {
-      // If the union returned the success object, we populate our totals.
       this.totals = {
         total: gqlCart.total.total ?? 0,
         subTotal: gqlCart.total.subTotal ?? 0,
@@ -43,7 +38,6 @@ export class ShoppingCart {
         amountToPay: gqlCart.total.amountToPay ?? 0
       }
     } else {
-      // If the union returned something else (an error or was null), we set totals to null.
       this.totals = null
     }
   }
@@ -76,5 +70,29 @@ export class ShoppingCart {
    */
   public get formattedTotal(): string {
     return formatPrice(this.totals?.amountToPay, this.currency)
+  }
+
+  /**
+   * Returns the total amount discounted for gift cards in the formatted format.
+   * @returns A string representing the formatted price.
+   */
+  public get formattedGiftCardAmount(): string {
+    return formatPrice(this.totals?.giftCardAmount, this.currency)
+  }
+
+  /**
+   * Return the original total (before gift cards)
+   * @returns A string representing the formatted price.
+   */
+  public get formattedTotalBeforeGiftCards(): string {
+    return formatPrice(this.totals?.total, this.currency)
+  }
+
+  /**
+   * Check if the cart has any gift cards applied
+   * @returns A string representing the formatted price.
+   */
+  public get hasGiftCards(): boolean {
+    return this.giftCardsCodes.length > 0
   }
 }

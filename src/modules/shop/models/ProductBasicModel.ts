@@ -5,7 +5,7 @@ export type ProductFromCartItem = NonNullable<
   NonNullable<GetShoppingCartQuery['currentUser']>['shoppingCart']['items']
 >[number]['variant']['product']
 
-export class ProductBasic {
+export class ProductBasicModel {
   public readonly id: string
   public readonly title: string
   public readonly subtitle: string | null

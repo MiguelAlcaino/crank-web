@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ShoppingCart } from '../models/ShoppingCart'
+import type { ShoppingCartModel } from '../models/ShoppingCartModel'
 
 import IconBag from '@/modules/shop/components/icons/IconBag.vue'
 import IconGift from '@/modules/shop/components/icons/IconGift.vue'
@@ -7,7 +7,7 @@ import IconMerch from '@/modules/shop/components/icons/IconMerch.vue'
 import IconSmoothie from '@/modules/shop/components/icons/IconSmoothie.vue'
 
 defineProps<{
-  cart: ShoppingCart | null
+  cart: ShoppingCartModel | null
   isLoading: boolean
 }>()
 

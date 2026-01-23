@@ -1,12 +1,12 @@
 import {
   ClassPackage,
   GiftCardProduct,
-  Product,
   type ProductFromQuery,
+  ProductModel,
   UnknownProduct
-} from '../models/Product'
+} from '../models/ProductModel'
 
-export function createProductModel(productData: ProductFromQuery): Product {
+export function createProductModel(productData: ProductFromQuery): ProductModel {
   switch (productData.__typename) {
     case 'ClassPackageProduct':
       return new ClassPackage(productData)

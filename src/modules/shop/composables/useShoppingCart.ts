@@ -1,6 +1,6 @@
 import { useModal } from '@/modules/shared/composables/useModal'
 import type { CartSummary } from '@/modules/shop/interfaces/cart-summary'
-import { ShoppingCart } from '@/modules/shop/models/ShoppingCart'
+import { ShoppingCartModel } from '@/modules/shop/models/ShoppingCartModel'
 import { ApiError } from '@/services/utils/ApiError'
 import { appStore } from '@/stores/appStorage'
 import { computed, readonly, ref } from 'vue'
@@ -11,7 +11,7 @@ import { useShopApiService } from '@/modules/shop/composables/useShopApiService'
 // MODULE-LEVEL STATE & LOGIC (SINGLETON)
 // -----------------
 //
-const cartState = ref<CartSummary | ShoppingCart | null>(null)
+const cartState = ref<CartSummary | ShoppingCartModel | null>(null)
 const isSummaryLoading = ref<boolean>(false)
 const isDetailsLoading = ref<boolean>(false)
 const error = ref<string | null>(null)
@@ -85,11 +85,11 @@ export const useShoppingCart = () => {
    * It manages the global error state and updates the cartState upon success.
    * It also tracks loading states for individual items if an itemId is provided.
    * @param {string | null} itemId - The ID of the item being modified. Can be null for cart-wide operations like 'clear'.
-   * @param {Promise<ShoppingCart | null>} updatePromise - The promise from the ApiService that resolves with the updated cart.
+   * @param {Promise<ShoppingCartModel | null>} updatePromise - The promise from the ApiService that resolves with the updated cart.
    */
   const handleCartUpdate = async (
     itemId: string | null,
-    updatePromise: Promise<ShoppingCart | null>
+    updatePromise: Promise<ShoppingCartModel | null>
   ) => {
     if (itemId) updatingItemIds.value.add(itemId)
     error.value = null
@@ -257,7 +257,7 @@ export const useShoppingCart = () => {
   const productIdsInCart = computed(() => {
     if (!cartState.value?.items) return new Set<string>()
 
-    if (cartState.value instanceof ShoppingCart) {
+    if (cartState.value instanceof ShoppingCartModel) {
       return new Set(cartState.value.items.map((item) => item.variant.id))
     }
 
@@ -271,7 +271,7 @@ export const useShoppingCart = () => {
   const totalItemsInCart = computed(() => {
     if (!cartState.value) return 0
 
-    if (cartState.value instanceof ShoppingCart) {
+    if (cartState.value instanceof ShoppingCartModel) {
       return cartState.value.itemCount
     }
 
@@ -288,8 +288,8 @@ export const useShoppingCart = () => {
    * @description Returns the full ShoppingCart class instance if available, otherwise null.
    * This is what the main cart page should use to display totals.
    */
-  const detailedCart = computed((): ShoppingCart | null => {
-    if (cartState.value instanceof ShoppingCart) {
+  const detailedCart = computed((): ShoppingCartModel | null => {
+    if (cartState.value instanceof ShoppingCartModel) {
       return cartState.value
     }
     return null

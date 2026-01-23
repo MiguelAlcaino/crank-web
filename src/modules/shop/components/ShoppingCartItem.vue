@@ -10,7 +10,7 @@ import QuantityStepper from '@/modules/shop/components/QuantityStepper.vue'
 
 // Composables, Services & Utilities
 import { useShoppingCart } from '../composables/useShoppingCart'
-import type { ShoppingCartItem } from '@/modules/shop/models/ShoppingCartItem'
+import type { ShoppingCartItemModel } from '@/modules/shop/models/ShoppingCartItemModel'
 
 //
 // -----------------
@@ -18,7 +18,7 @@ import type { ShoppingCartItem } from '@/modules/shop/models/ShoppingCartItem'
 // -----------------
 //
 const props = defineProps<{
-  item: ShoppingCartItem
+  item: ShoppingCartItemModel
   iconComponent: any
   isUpdating: boolean
 }>()
