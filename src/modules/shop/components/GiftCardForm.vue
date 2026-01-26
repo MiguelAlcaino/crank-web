@@ -57,6 +57,11 @@ const handleApply = async () => {
 <style lang="css" scoped src="@/assets/main.css"></style>
 
 <style scoped>
+.gift-card-section {
+  padding: 10px 0;
+  font-family: 'Avenir', sans-serif;
+}
+
 .applied-item {
   display: flex;
   justify-content: space-between;
