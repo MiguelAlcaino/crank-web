@@ -1,17 +1,17 @@
 query CalculateTotalForShoppingCart($site: SiteEnum!) {
-    calculateTotalForShoppingCart(site: $site) {
-        __typename
-        ... on ShoppingCart {
-            ...ShoppingCartFields
-        }
-        ... on ShoppingCartNotFound {
-            code
-        }
-        ... on ShoppingCartIsEmpty {
-            code
-        }
-        ... on DiscountCodeIsInvalid {
-            code
-        }
+  calculateTotalForShoppingCart(site: $site) {
+    __typename
+    ... on ShoppingCart {
+      ...ShoppingCartFields
     }
+    ... on ShoppingCartNotFound {
+      code
+    }
+    ... on ShoppingCartIsEmpty {
+      code
+    }
+    ... on DiscountCodeIsInvalid {
+      code
+    }
+  }
 }

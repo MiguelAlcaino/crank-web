@@ -1,14 +1,14 @@
 mutation RemoveDiscountCode($site: SiteEnum!) {
-    removeDiscountCodeForCurrentShoppingCart(site: $site) {
-        __typename
-        ... on ShoppingCart {
-            ...ShoppingCartFields
-        }
-        ... on ShoppingCartNotFound {
-            code
-        }
-        ... on ShoppingCartIsEmpty {
-            code
-        }
+  removeDiscountCodeForCurrentShoppingCart(site: $site) {
+    __typename
+    ... on ShoppingCart {
+      ...ShoppingCartFields
     }
+    ... on ShoppingCartNotFound {
+      code
+    }
+    ... on ShoppingCartIsEmpty {
+      code
+    }
+  }
 }

@@ -16,13 +16,8 @@ import { useShoppingCart } from '../composables/useShoppingCart'
 // DEPENDENCIES & COMPOSABLES
 // -----------------
 //
-const {
-  detailedCart,
-  error: discountError,
-  isApplyingDiscount,
-  applyDiscountCode,
-  removeDiscountCode
-} = useShoppingCart()
+const { detailedCart, discountError, isApplyingDiscount, applyDiscountCode, removeDiscountCode } =
+  useShoppingCart()
 
 //
 // -----------------
@@ -88,7 +83,7 @@ const handleRemove = () => {
           class="spinner-border spinner-border-sm"
           role="status"
         ></span>
-        <span v-else>Apply</span>
+        <span v-else>APPLY</span>
       </button>
     </div>
 

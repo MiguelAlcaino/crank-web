@@ -1,7 +1,7 @@
 query GetShoppingCart($site: SiteEnum!) {
-    currentUser {
-        shoppingCart(site: $site) {
-            ...ShoppingCartFields
-        }
+  currentUser {
+    shoppingCart(site: $site) {
+      ...ShoppingCartFields
     }
+  }
 }

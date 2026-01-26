@@ -1,5 +1,5 @@
 mutation GeneratePayfortForm($site: SiteEnum!, $input: PayfortFormInput!) {
-    payfortForm(site: $site, input: $input) {
-        htmlForm
-    }
+  payfortForm(site: $site, input: $input) {
+    htmlForm
+  }
 }

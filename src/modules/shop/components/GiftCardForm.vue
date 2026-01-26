@@ -2,12 +2,13 @@
 import { ref } from 'vue'
 import { useShoppingCart } from '../composables/useShoppingCart'
 
-const { detailedCart, error, isApplyingGiftCard, applyGiftCard, removeGiftCard } = useShoppingCart()
+const { detailedCart, giftCardError, isApplyingGiftCard, applyGiftCard, removeGiftCard } =
+  useShoppingCart()
 const codeInput = ref('')
 
 const handleApply = async () => {
   await applyGiftCard(codeInput.value)
-  if (!error.value) codeInput.value = ''
+  if (!giftCardError.value) codeInput.value = ''
 }
 </script>
 
@@ -48,7 +49,7 @@ const handleApply = async () => {
       </button>
     </div>
 
-    <small v-if="error" class="error-msg">{{ error }}</small>
+    <small v-if="giftCardError" class="error-msg">{{ giftCardError }}</small>
   </div>
 </template>
 
@@ -95,7 +96,8 @@ const handleApply = async () => {
 }
 .error-msg {
   color: #ff8c69;
+  font-size: 0.8rem;
+  margin-top: 8px;
   display: block;
-  margin-top: 5px;
 }
 </style>

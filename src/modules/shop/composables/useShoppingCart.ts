@@ -1,10 +1,11 @@
 import { useModal } from '@/modules/shared/composables/useModal'
+import { useShopApiService } from '@/modules/shop/composables/useShopApiService'
 import type { CartSummary } from '@/modules/shop/interfaces/cart-summary'
+import { ERROR_MESSAGES } from '@/modules/shop/interfaces/shopping-cart-errors'
 import { ShoppingCartModel } from '@/modules/shop/models/ShoppingCartModel'
 import { ApiError } from '@/services/utils/ApiError'
 import { appStore } from '@/stores/appStorage'
 import { computed, readonly, ref } from 'vue'
-import { useShopApiService } from '@/modules/shop/composables/useShopApiService'
 
 //
 // -----------------
@@ -19,6 +20,9 @@ const updatingItemIds = ref<Set<string>>(new Set())
 const isApplyingDiscount = ref<boolean>(false)
 const isProcessingBuyNow = ref(false)
 const isApplyingGiftCard = ref<boolean>(false)
+const cartError = ref<string | null>(null)
+const discountError = ref<string | null>(null)
+const giftCardError = ref<string | null>(null)
 
 /**
  * Checks if a specific shopping cart item is currently being updated.
@@ -148,11 +152,11 @@ export const useShoppingCart = () => {
 
   async function applyDiscountCode(code: string) {
     isApplyingDiscount.value = true
-    error.value = null
+    discountError.value = null
     try {
       cartState.value = await shopApi.addDiscountCodeToShoppingCart(appStore().site, code)
     } catch (e: any) {
-      error.value = e.message || 'An error occurred.'
+      discountError.value = e.message || 'Invalid discount code.'
     } finally {
       isApplyingDiscount.value = false
     }
@@ -248,29 +252,17 @@ export const useShoppingCart = () => {
   async function applyGiftCard(code: string) {
     if (!code.trim()) return
     isApplyingGiftCard.value = true
-    error.value = null
+    giftCardError.value = null
 
     try {
       const result = await shopApi.addGiftCardCodeToShoppingCart(code.trim(), appStore().site)
       if (result.ok) {
         cartState.value = result.data
       } else {
-        switch (result.error) {
-          case 'GIFT_CARD_INVALID':
-            error.value = 'This gift card is not valid or cannot be used for this purchase.'
-            break
-          case 'GIFT_CARD_ALREADY_USED':
-            error.value = 'This gift card has already been applied to your cart.'
-            break
-          case 'LIMIT_REACHED':
-            error.value = 'You cannot add more gift cards to this order.'
-            break
-          default:
-            error.value = result.message || 'An error occurred with the gift card.'
-        }
+        giftCardError.value = ERROR_MESSAGES[result.error] || ERROR_MESSAGES.UNKNOWN_ERROR
       }
     } catch (e: any) {
-      error.value = 'An error occurred applying the gift card.'
+      giftCardError.value = 'An error occurred.'
     } finally {
       isApplyingGiftCard.value = false
     }
@@ -363,6 +355,9 @@ export const useShoppingCart = () => {
     isApplyingDiscount: readonly(isApplyingDiscount),
     isProcessingBuyNow: readonly(isProcessingBuyNow),
     isApplyingGiftCard: readonly(isApplyingGiftCard),
+    discountError: readonly(discountError),
+    giftCardError: readonly(giftCardError),
+    cartError: readonly(cartError),
     totalItemsInCart,
     productIdsInCart,
     detailedCart,

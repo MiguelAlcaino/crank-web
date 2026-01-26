@@ -1,17 +1,17 @@
 mutation RemoveItemFromShoppingCart($site: SiteEnum!, $shoppingCartItemId: ID!) {
-    removeItemFromShoppingCart(site: $site, shoppingCartItemId: $shoppingCartItemId) {
-        __typename
-        ... on ShoppingCart {
-            ...ShoppingCartFields
-        }
-        ... on ShoppingCartItemNotFound {
-            code
-        }
-        ... on ShoppingCartNotFound {
-            code
-        }
-        ... on ShoppingCartIsEmpty {
-            code
-        }
+  removeItemFromShoppingCart(site: $site, shoppingCartItemId: $shoppingCartItemId) {
+    __typename
+    ... on ShoppingCart {
+      ...ShoppingCartFields
     }
+    ... on ShoppingCartItemNotFound {
+      code
+    }
+    ... on ShoppingCartNotFound {
+      code
+    }
+    ... on ShoppingCartIsEmpty {
+      code
+    }
+  }
 }

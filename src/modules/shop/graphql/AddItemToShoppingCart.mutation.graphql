@@ -1,15 +1,15 @@
 mutation AddItemToShoppingCart($site: SiteEnum!, $input: ItemToShoppingCartInput!) {
-    addItemToShoppingCart(site: $site, input: $input) {
-        __typename
-        ... on ShoppingCart {
-            ...ShoppingCartFields
-        }
-        ... on ProductNotFound {
-            code
-        }
-        ... on ShoppingCartNotFound {
-            code
-        }
-        # ... include other possible error types from the union if you need to handle them
+  addItemToShoppingCart(site: $site, input: $input) {
+    __typename
+    ... on ShoppingCart {
+      ...ShoppingCartFields
     }
+    ... on ProductNotFound {
+      code
+    }
+    ... on ShoppingCartNotFound {
+      code
+    }
+    # ... include other possible error types from the union if you need to handle them
+  }
 }

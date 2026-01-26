@@ -1,38 +1,38 @@
 mutation RemoveGiftCardFromCurrentShoppingCart($giftCardCode: String!, $site: SiteEnum!) {
-    removeGiftCardFromCurrentShoppingCart(giftCardCode: $giftCardCode, site: $site) {
-        __typename
-        ... on ShoppingCart {
-            ...ShoppingCartFields
-        }
-        ... on GiftCardNotRegisteredOnCurrentShoppingCart {
-            code
-        }
-        ... on DontNeedMoreGiftCards {
-            code
-        }
-        ... on GiftCardAlreadyRegisteredForCurrentShoppingCart {
-            code
-        }
-        ... on GiftCardIsNotUsable {
-            code
-        }
-        ... on DiscountCodeIsInvalid {
-            code
-        }
-        ... on DiscountCodeIsEmpty {
-            code
-        }
-        ... on ProductNotFound {
-            code
-        }
-        ... on ShoppingCartNotFound {
-            code
-        }
-        ... on ShoppingCartItemNotFound {
-            code
-        }
-        ... on ShoppingCartIsEmpty {
-            code
-        }
+  removeGiftCardFromCurrentShoppingCart(giftCardCode: $giftCardCode, site: $site) {
+    __typename
+    ... on ShoppingCart {
+      ...ShoppingCartFields
     }
+    ... on GiftCardNotRegisteredOnCurrentShoppingCart {
+      code
+    }
+    ... on DontNeedMoreGiftCards {
+      code
+    }
+    ... on GiftCardAlreadyRegisteredForCurrentShoppingCart {
+      code
+    }
+    ... on GiftCardIsNotUsable {
+      code
+    }
+    ... on DiscountCodeIsInvalid {
+      code
+    }
+    ... on DiscountCodeIsEmpty {
+      code
+    }
+    ... on ProductNotFound {
+      code
+    }
+    ... on ShoppingCartNotFound {
+      code
+    }
+    ... on ShoppingCartItemNotFound {
+      code
+    }
+    ... on ShoppingCartIsEmpty {
+      code
+    }
+  }
 }

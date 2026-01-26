@@ -1,11 +1,11 @@
 mutation EmptyShoppingCart($site: SiteEnum!) {
-    emptyShoppingCart(site: $site) {
-        __typename
-        ... on ShoppingCart {
-            ...ShoppingCartFields
-        }
-        ... on ShoppingCartNotFound {
-            code
-        }
+  emptyShoppingCart(site: $site) {
+    __typename
+    ... on ShoppingCart {
+      ...ShoppingCartFields
     }
+    ... on ShoppingCartNotFound {
+      code
+    }
+  }
 }

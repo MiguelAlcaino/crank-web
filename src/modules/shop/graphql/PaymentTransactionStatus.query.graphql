@@ -1,11 +1,11 @@
 query PaymentTransactionStatus($input: PaymentTransactionStatusInput!) {
-    paymentTransactionStatus(input: $input) {
-        __typename
-        ... on PaymentTransactionStatus {
-            status
-        }
-        ... on TemporalTransactionNotFound {
-            code
-        }
+  paymentTransactionStatus(input: $input) {
+    __typename
+    ... on PaymentTransactionStatus {
+      status
     }
+    ... on TemporalTransactionNotFound {
+      code
+    }
+  }
 }

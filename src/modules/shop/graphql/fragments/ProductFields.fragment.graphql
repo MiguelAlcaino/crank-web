@@ -1,25 +1,25 @@
 fragment ProductFields on SellableProductInterface {
-    __typename
-    id
+  __typename
+  id
+  title
+  subtitle
+  currency
+  buttonText
+  isVisible
+  alertBeforePurchasing {
     title
-    subtitle
-    currency
-    buttonText
-    isVisible
-    alertBeforePurchasing {
-        title
-        description
-    }
-    variants {
-        id
-        name
-        price
-        position
-    }
-    ... on ClassPackageProduct {
-        type
-    }
-    ... on GiftCard {
-        purchaseUrl
-    }
+    description
+  }
+  variants {
+    id
+    name
+    price
+    position
+  }
+  ... on ClassPackageProduct {
+    type
+  }
+  ... on GiftCard {
+    purchaseUrl
+  }
 }

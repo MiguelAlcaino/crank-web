@@ -1,3 +1,3 @@
 mutation GenerateMerchantReference($site: SiteEnum!) {
-    generateMerchantReference(site: $site)
+  generateMerchantReference(site: $site)
 }

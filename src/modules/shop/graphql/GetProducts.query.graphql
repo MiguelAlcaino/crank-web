@@ -1,5 +1,5 @@
 query GetProducts($site: SiteEnum!, $input: ProductsInput) {
-    products(site: $site, input: $input) {
-        ...ProductFields
-    }
+  products(site: $site, input: $input) {
+    ...ProductFields
+  }
 }

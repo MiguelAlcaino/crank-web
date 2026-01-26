@@ -1,18 +1,18 @@
 mutation UpdateItemInShoppingCart($site: SiteEnum!, $shoppingCartItemId: ID!, $quantity: Int!) {
-    updateItemInShoppingCart(
-        site: $site
-        shoppingCartItemId: $shoppingCartItemId
-        quantity: $quantity
-    ) {
-        __typename
-        ... on ShoppingCart {
-            ...ShoppingCartFields
-        }
-        ... on ShoppingCartItemNotFound {
-            code
-        }
-        ... on ShoppingCartNotFound {
-            code
-        }
+  updateItemInShoppingCart(
+    site: $site
+    shoppingCartItemId: $shoppingCartItemId
+    quantity: $quantity
+  ) {
+    __typename
+    ... on ShoppingCart {
+      ...ShoppingCartFields
     }
+    ... on ShoppingCartItemNotFound {
+      code
+    }
+    ... on ShoppingCartNotFound {
+      code
+    }
+  }
 }

@@ -1,32 +1,32 @@
 fragment ShoppingCartFields on ShoppingCart {
+  id
+  currency
+  discountCode
+  giftCardsCodes
+  total {
+    __typename
+    ... on ShoppingCartTotal {
+      total
+      subTotal
+      giftCardAmount
+      amountToPay
+    }
+    ... on GiftCardIsNotUsable {
+      code
+    }
+  }
+  items {
     id
-    currency
-    discountCode
-    giftCardsCodes
-    total {
-        __typename
-        ... on ShoppingCartTotal {
-            total
-            subTotal
-            giftCardAmount
-            amountToPay
-        }
-        ... on GiftCardIsNotUsable {
-            code
-        }
+    quantity
+    subtotal
+    variant {
+      id
+      name
+      position
+      price
+      product {
+        ...ProductBasicFields
+      }
     }
-    items {
-        id
-        quantity
-        subtotal
-        variant {
-            id
-            name
-            position
-            price
-            product {
-                ...ProductBasicFields
-            }
-        }
-    }
+  }
 }
