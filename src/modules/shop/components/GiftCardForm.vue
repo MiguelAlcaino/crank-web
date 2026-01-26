@@ -16,20 +16,26 @@ const handleApply = async () => {
   <div class="gift-card-section">
     <!-- List of Gift Cards already applied -->
     <div v-if="detailedCart?.giftCardsCodes.length" class="applied-list mb-3">
-      <div v-for="code in detailedCart.giftCardsCodes" :key="code" class="applied-item">
-        <span class="code-tag">
-          GIFT CARD: <strong>{{ code }}</strong>
-        </span>
+      <div v-for="code in detailedCart.giftCardsCodes" :key="code" class="applied-item-card">
+        <div class="applied-info">
+          <span class="label">GIFT CARD APPLIED:</span>
+          <strong class="applied-code">{{ code }}</strong>
+        </div>
+
         <button
+          type="button"
           @click="removeGiftCard(code)"
-          class="btn-remove-mini"
+          class="btn-remove-custom-mini"
           :disabled="isApplyingGiftCard"
         >
-          &times;
+          <span v-if="isApplyingGiftCard" class="spinner-border spinner-border-sm"></span>
+          <span v-else>REMOVE</span>
         </button>
       </div>
-      <div class="gift-total" v-if="detailedCart.formattedGiftCardAmount">
-        Total Gift Cards: -{{ detailedCart.formattedGiftCardAmount }}
+
+      <div class="gift-total-row" v-if="detailedCart.formattedGiftCardAmount">
+        <span>GIFT CARDS TOTAL:</span>
+        <span class="total-amount">{{ detailedCart.formattedGiftCardAmount }}</span>
       </div>
     </div>
 
@@ -57,6 +63,76 @@ const handleApply = async () => {
 <style lang="css" scoped src="@/assets/main.css"></style>
 
 <style scoped>
+.applied-item-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 140, 105, 0.3);
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.applied-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.label {
+  font-size: 0.65rem;
+  color: #adb5bd;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.applied-code {
+  font-family: 'BigJohn', sans-serif;
+  font-size: 1rem;
+  color: #ff8c69;
+  letter-spacing: 1px;
+}
+
+.btn-remove-custom-mini {
+  appearance: none;
+  background: transparent !important;
+  border: 1.5px solid #ff8c69 !important;
+  color: #ff8c69 !important;
+  padding: 4px 10px !important;
+  border-radius: 5px;
+  font-size: 0.7rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-remove-custom-mini:hover {
+  background-color: #ff8c69 !important;
+  color: white !important;
+}
+
+.gift-total-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-top: 10px;
+  color: #adb5bd;
+}
+
+.total-amount {
+  color: #ff8c69;
+}
+
+.apply-form {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
 .gift-card-section {
   padding: 10px 0;
   font-family: 'Avenir', sans-serif;
@@ -65,7 +141,7 @@ const handleApply = async () => {
 .applied-item {
   display: flex;
   justify-content: space-between;
-  background: #222; /* To make it stand out against the black background */
+  background: #222;
   padding: 5px 10px;
   border-radius: 4px;
   margin-bottom: 5px;

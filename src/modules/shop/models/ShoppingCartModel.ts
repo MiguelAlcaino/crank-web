@@ -1,6 +1,6 @@
 import type { ShoppingCart as GqlShoppingCart } from '@/gql/graphql'
-import { ShoppingCartItemModel } from './ShoppingCartItemModel'
 import { formatPrice } from '@/modules/shop/utils/shop-utils'
+import { ShoppingCartItemModel } from './ShoppingCartItemModel'
 
 type ShoppingCartTotal = {
   total: number | null
@@ -77,7 +77,10 @@ export class ShoppingCartModel {
    * @returns A string representing the formatted price.
    */
   public get formattedGiftCardAmount(): string {
-    return formatPrice(this.totals?.giftCardAmount, this.currency)
+    if (!this.totals?.giftCardAmount || this.totals.giftCardAmount === 0) {
+      return formatPrice(0, this.currency)
+    }
+    return `-${formatPrice(this.totals.giftCardAmount, this.currency)}`
   }
 
   /**
