@@ -2,8 +2,15 @@
 import { ref } from 'vue'
 import { useShoppingCart } from '../composables/useShoppingCart'
 
-const { detailedCart, giftCardError, isApplyingGiftCard, applyGiftCard, removeGiftCard } =
-  useShoppingCart()
+const {
+  detailedCart,
+  giftCardError,
+  isApplyingGiftCard,
+  applyGiftCard,
+  removeGiftCard,
+  isCodeUpdating,
+  isAnyGiftCardUpdating
+} = useShoppingCart()
 const codeInput = ref('')
 
 const handleApply = async () => {
@@ -25,10 +32,10 @@ const handleApply = async () => {
         <button
           type="button"
           @click="removeGiftCard(code)"
-          class="btn-remove-custom-mini"
-          :disabled="isApplyingGiftCard"
+          class="btn-remove-custom"
+          :disabled="isAnyGiftCardUpdating || isApplyingGiftCard"
         >
-          <span v-if="isApplyingGiftCard" class="spinner-border spinner-border-sm"></span>
+          <span v-if="isCodeUpdating(code).value" class="spinner-border spinner-border-sm"></span>
           <span v-else>REMOVE</span>
         </button>
       </div>
@@ -46,10 +53,14 @@ const handleApply = async () => {
         v-model="codeInput"
         placeholder="ENTER GIFT CARD"
         class="form-control"
-        :disabled="isApplyingGiftCard"
+        :disabled="isApplyingGiftCard || isAnyGiftCardUpdating"
         @keyup.enter="handleApply"
       />
-      <button @click="handleApply" class="btn-apply" :disabled="isApplyingGiftCard || !codeInput">
+      <button
+        @click="handleApply"
+        class="btn-apply"
+        :disabled="isApplyingGiftCard || isAnyGiftCardUpdating || !codeInput"
+      >
         <span v-if="isApplyingGiftCard" class="spinner-border spinner-border-sm"></span>
         <span v-else>ADD</span>
       </button>
@@ -63,6 +74,39 @@ const handleApply = async () => {
 <style lang="css" scoped src="@/assets/main.css"></style>
 
 <style scoped>
+.btn-remove-custom {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent !important;
+  border: 1.5px solid #ff8c69 !important;
+  color: #ff8c69 !important;
+  padding: 6px 15px !important;
+  border-radius: 6px;
+  font-family: 'Avenir', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  min-width: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-remove-custom:hover:not(:disabled) {
+  background-color: #ff8c69 !important;
+  color: white !important;
+}
+
+.btn-remove-custom:disabled {
+  border-color: #6c757d !important;
+  color: #6c757d !important;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .applied-item-card {
   display: flex;
   justify-content: space-between;

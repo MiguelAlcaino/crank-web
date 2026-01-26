@@ -23,6 +23,7 @@ const isApplyingGiftCard = ref<boolean>(false)
 const cartError = ref<string | null>(null)
 const discountError = ref<string | null>(null)
 const giftCardError = ref<string | null>(null)
+const updatingGiftCardCodes = ref<Set<string>>(new Set())
 
 /**
  * Checks if a specific shopping cart item is currently being updated.
@@ -164,11 +165,11 @@ export const useShoppingCart = () => {
 
   async function removeDiscountCode() {
     isApplyingDiscount.value = true
-    error.value = null
+    discountError.value = null
     try {
       cartState.value = await shopApi.removeDiscountCode(appStore().site)
     } catch (e: any) {
-      error.value = e.message || 'An error occurred.'
+      discountError.value = e.message || 'An error occurred.'
     } finally {
       isApplyingDiscount.value = false
     }
@@ -269,20 +270,20 @@ export const useShoppingCart = () => {
   }
 
   async function removeGiftCard(code: string) {
-    isApplyingGiftCard.value = true
-    error.value = null
+    updatingGiftCardCodes.value.add(code)
+    giftCardError.value = null
 
     try {
       const result = await shopApi.removeGiftCardFromCurrentShoppingCart(appStore().site, code)
       if (result.ok) {
         cartState.value = result.data
       } else {
-        error.value = result.message || 'Could not remove gift card'
+        giftCardError.value = result.message || 'Could not remove gift card'
       }
     } catch (e: any) {
-      error.value = 'An error occurred removing the gift card.'
+      giftCardError.value = 'An error occurred removing the gift card.'
     } finally {
-      isApplyingGiftCard.value = false
+      updatingGiftCardCodes.value.delete(code)
     }
   }
 
@@ -348,6 +349,10 @@ export const useShoppingCart = () => {
    */
   const isLoading = computed(() => isSummaryLoading.value || isDetailsLoading.value)
 
+  function isCodeUpdating(code: string) {
+    return computed(() => updatingGiftCardCodes.value.has(code))
+  }
+
   return {
     // --- State & Getters ---
     isLoading: readonly(isLoading),
@@ -362,6 +367,8 @@ export const useShoppingCart = () => {
     productIdsInCart,
     detailedCart,
     isItemUpdating,
+    isCodeUpdating,
+    isAnyGiftCardUpdating: computed(() => updatingGiftCardCodes.value.size > 0),
 
     // --- Methods ---
     fetchCartSummary,
