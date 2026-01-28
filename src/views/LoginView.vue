@@ -234,15 +234,15 @@ async function fetchSites(site?: string | null) {
                     <i v-else class="bi bi-eye-slash-fill"></i>
                   </span>
                 </div>
-                <small
-                  v-for="error in v$.password.$errors"
-                  :key="error.$uid"
-                  class="form-text"
-                  style="color: red"
-                >
-                  {{ error.$message }}
-                </small>
               </div>
+              <small
+                v-for="error in v$.password.$errors"
+                :key="error.$uid"
+                class="form-text"
+                style="color: red"
+              >
+                {{ error.$message }}
+              </small>
             </div>
           </div>
 
