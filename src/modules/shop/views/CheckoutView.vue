@@ -901,11 +901,17 @@ select.form-control {
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  width: 100%;
+  overflow: hidden;
 }
 
 .payment-logos img {
   max-height: 50px;
+  max-width: 100%;
   width: auto;
+  height: auto;
 }
 
 /* Utility */
