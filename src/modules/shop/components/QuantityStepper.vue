@@ -2,6 +2,8 @@
 import { ref, watch } from 'vue'
 import { debounce } from 'lodash'
 
+const DEBOUNCE_DELAY_MS = 800
+
 const props = withDefaults(
   defineProps<{
     modelValue: number
@@ -25,7 +27,7 @@ const localQuantity = ref(props.modelValue)
 
 const debouncedUpdate = debounce((newValue: number) => {
   emits('updateItem', newValue)
-}, 500)
+}, DEBOUNCE_DELAY_MS)
 
 const decrease = () => {
   if (localQuantity.value > props.min) {
