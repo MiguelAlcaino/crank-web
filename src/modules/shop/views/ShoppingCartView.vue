@@ -29,8 +29,14 @@ import type { IconName } from '@/modules/shop/models/types'
 //
 const router = useRouter()
 
-const { detailedCart, totalItemsInCart, isLoading, isItemUpdating, fetchCartDetails } =
-  useShoppingCart()
+const {
+  detailedCart,
+  totalItemsInCart,
+  isLoading,
+  isItemUpdating,
+  fetchCartDetails,
+  isCartMutating
+} = useShoppingCart()
 
 //
 // -----------------
@@ -110,7 +116,14 @@ const handleCheckout = () => {
         class="total-bar d-flex justify-content-between align-items-center text-white font-weight-bold p-3"
       >
         <span>TOTAL AMOUNT</span>
-        <span>{{ detailedCart?.formattedTotal }}</span>
+        <span v-if="isCartMutating">
+          <span
+            class="spinner-border spinner-border-sm text-white"
+            role="status"
+            aria-hidden="true"
+          ></span>
+        </span>
+        <span v-else>{{ detailedCart?.formattedTotal }}</span>
       </div>
       <div class="checkout-area p-4">
         <button

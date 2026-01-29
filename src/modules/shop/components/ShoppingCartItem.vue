@@ -78,7 +78,7 @@ const handleQuantityUpdate = (newQuantity: number) => {
         <div class="quantity-stepper-container">
           <QuantityStepper
             :model-value="item.quantity"
-            :min="0"
+            :min="1"
             :disabled="isUpdating"
             @update-item="handleQuantityUpdate"
           />

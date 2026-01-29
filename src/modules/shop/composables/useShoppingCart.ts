@@ -354,6 +354,19 @@ export const useShoppingCart = () => {
     return computed(() => updatingGiftCardCodes.value.has(code))
   }
 
+  /**
+   * @description Unify all load/update flags that indicate
+   * that the cart total is being recalculated in the backend.
+   */
+  const isCartMutating = computed(
+    () =>
+      isDetailsLoading.value ||
+      updatingItemIds.value.size > 0 ||
+      isApplyingDiscount.value ||
+      isApplyingGiftCard.value ||
+      updatingGiftCardCodes.value.size > 0
+  )
+
   return {
     // --- State & Getters ---
     isLoading: readonly(isLoading),
@@ -370,7 +383,8 @@ export const useShoppingCart = () => {
     isItemUpdating,
     isCodeUpdating,
     isAnyGiftCardUpdating: computed(() => updatingGiftCardCodes.value.size > 0),
-    itemsText,
+    itemsText: readonly(itemsText),
+    isCartMutating: readonly(isCartMutating),
 
     // --- Methods ---
     fetchCartSummary,
