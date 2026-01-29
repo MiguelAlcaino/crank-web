@@ -11,6 +11,8 @@ import {
   type AddGiftCardCodeToShoppingCartMutation,
   type AddGiftCardCodeToShoppingCartMutationVariables,
   AddItemToShoppingCartDocument,
+  AddItemToShoppingCartLightDocument,
+  type AddItemToShoppingCartLightMutation,
   type AddItemToShoppingCartMutation,
   type AddItemToShoppingCartMutationVariables,
   CalculateTotalForShoppingCartDocument,
@@ -30,6 +32,9 @@ import {
   type GetShoppingCartQuery,
   type GetShoppingCartQueryVariables,
   type ItemToShoppingCartInput,
+  NewLockShoppingCartDocument,
+  type NewLockShoppingCartMutation,
+  type NewLockShoppingCartMutationVariables,
   type PayfortFormInput,
   PaymentTransactionStatusDocument,
   PaymentTransactionStatusEnum,
@@ -49,10 +54,7 @@ import {
   type ShoppingCart as GqlShoppingCart,
   UpdateItemInShoppingCartDocument,
   type UpdateItemInShoppingCartMutation,
-  type UpdateItemInShoppingCartMutationVariables,
-  NewLockShoppingCartDocument,
-  type NewLockShoppingCartMutationVariables,
-  type NewLockShoppingCartMutation
+  type UpdateItemInShoppingCartMutationVariables
 } from '@/gql/graphql'
 import { ApiError } from '@/services/utils/ApiError'
 import { createShoppingCartModel } from '@/modules/shop/factories/shoppingCartFactory'
@@ -583,7 +585,7 @@ export class ShopApiService implements IShopApiService {
     }
   }
 
-  public async clearShoppingCart(site: SiteEnum): Promise<ShoppingCartModel> {
+  public async clearShoppingCart(site: SiteEnum): Promise<CartSummary> {
     try {
       const { data, errors } = await this.authApiClient.mutate<
         EmptyShoppingCartMutation,
@@ -607,8 +609,7 @@ export class ShopApiService implements IShopApiService {
       }
 
       if (result.__typename === 'ShoppingCart') {
-        // Success: The API returned the empty cart.
-        return createShoppingCartModel(result as unknown as GqlShoppingCart)
+        return result as CartSummary
       } else {
         const errorCode = (result as { code?: string }).code ?? 'UnknownBusinessError'
         throw new ApiError(
@@ -679,6 +680,41 @@ export class ShopApiService implements IShopApiService {
       }
     } catch (error) {
       console.error('ApiService.lockShoppingCart failed:', error)
+      throw error
+    }
+  }
+
+  async addItemToShoppingCartLight(
+    site: SiteEnum,
+    variantId: string,
+    quantity: number
+  ): Promise<CartSummary> {
+    const input: ItemToShoppingCartInput = { sellableProductId: variantId, quantity }
+
+    try {
+      const { data } = await this.authApiClient.mutate<
+        AddItemToShoppingCartLightMutation,
+        AddItemToShoppingCartMutationVariables
+      >({
+        mutation: AddItemToShoppingCartLightDocument,
+        variables: { site, input },
+        fetchPolicy: 'network-only'
+      })
+
+      const result = data?.addItemToShoppingCart
+
+      if (result && result.__typename === 'ShoppingCart') {
+        return result as CartSummary
+      } else if (result) {
+        const errorCode = (result as { code?: string }).code ?? 'UnknownBusinessError'
+        throw new ApiError(
+          `Failed to add item. API returned error: ${result.__typename}`,
+          errorCode
+        )
+      }
+
+      throw new Error('Did not receive a valid response from the server.')
+    } catch (error) {
       throw error
     }
   }

@@ -32,7 +32,7 @@ const props = defineProps<{
 // -----------------
 //
 const router = useRouter()
-const { addToCart, buyNow, isProcessingBuyNow } = useShoppingCart()
+const { buyNow, isProcessingBuyNow, addToCartLight } = useShoppingCart()
 
 //
 // -----------------
@@ -98,7 +98,7 @@ const executePendingAction = async () => {
   if (action === 'add') {
     isLocalAdding.value = true
     try {
-      await addToCart(variantId)
+      await addToCartLight(variantId)
     } finally {
       isLocalAdding.value = false
     }

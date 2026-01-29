@@ -95,15 +95,13 @@ export const useShoppingCart = () => {
    */
   const handleCartUpdate = async (
     itemId: string | null,
-    updatePromise: Promise<ShoppingCartModel | null>
+    updatePromise: Promise<ShoppingCartModel | CartSummary | null>
   ) => {
     if (itemId) updatingItemIds.value.add(itemId)
     error.value = null
 
     try {
-      const updatedCart = await updatePromise
-
-      cartState.value = updatedCart
+      cartState.value = await updatePromise
     } catch (e: any) {
       console.error('Cart update failed:', e)
       error.value =
@@ -114,12 +112,15 @@ export const useShoppingCart = () => {
   }
 
   /**
-   * Adds an item to the shopping cart and updates the local state.
-   * Manages loading and error states for the operation.
+   * Adds an item to the shopping cart using the lightweight API method and updates the local state.
+   * This method is intended for scenarios where a full cart refresh is unnecessary.
    * @param variantId The ID of the product to add.
    */
-  const addToCart = async (variantId: string) => {
-    await handleCartUpdate(variantId, shopApi.addItemToShoppingCart(appStore().site, variantId, 1))
+  const addToCartLight = async (variantId: string) => {
+    await handleCartUpdate(
+      variantId,
+      shopApi.addItemToShoppingCartLight(appStore().site, variantId, 1)
+    )
   }
 
   /**
@@ -231,7 +232,7 @@ export const useShoppingCart = () => {
       }
 
       // Action 2: Add the new item to the now-empty cart.
-      await addToCart(variantId)
+      await addToCartLight(variantId)
 
       // After the operations, check if any of them set an error in our state.
       if (error.value) {
@@ -369,19 +370,18 @@ export const useShoppingCart = () => {
     isItemUpdating,
     isCodeUpdating,
     isAnyGiftCardUpdating: computed(() => updatingGiftCardCodes.value.size > 0),
+    itemsText,
 
     // --- Methods ---
     fetchCartSummary,
     fetchCartDetails,
-    addToCart,
     removeFromCart,
     updateItemQuantity,
     applyDiscountCode,
     removeDiscountCode,
     buyNow,
-    clearCart,
     applyGiftCard,
     removeGiftCard,
-    itemsText
+    addToCartLight
   }
 }

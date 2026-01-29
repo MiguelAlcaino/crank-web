@@ -2293,6 +2293,36 @@ export type AddItemToShoppingCartMutation = {
     | { __typename: 'ShoppingCartNotFound'; code: string }
 }
 
+export type AddItemToShoppingCartLightMutationVariables = Exact<{
+  site: SiteEnum
+  input: ItemToShoppingCartInput
+}>
+
+export type AddItemToShoppingCartLightMutation = {
+  __typename: 'Mutation'
+  addItemToShoppingCart:
+    | { __typename: 'DiscountCodeIsEmpty' }
+    | { __typename: 'DiscountCodeIsInvalid' }
+    | { __typename: 'DontNeedMoreGiftCards' }
+    | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' }
+    | { __typename: 'GiftCardIsNotUsable' }
+    | { __typename: 'GiftCardNotRegisteredOnCurrentShoppingCart' }
+    | { __typename: 'ProductNotFound'; code: string }
+    | {
+        __typename: 'ShoppingCart'
+        id: string
+        items: Array<{
+          __typename: 'ShoppingCartItem'
+          id: string
+          quantity: number
+          variant: { __typename: 'Variant'; id: string }
+        }>
+      }
+    | { __typename: 'ShoppingCartIsEmpty' }
+    | { __typename: 'ShoppingCartItemNotFound' }
+    | { __typename: 'ShoppingCartNotFound'; code: string }
+}
+
 export type CalculateTotalForShoppingCartQueryVariables = Exact<{
   site: SiteEnum
 }>
@@ -2389,61 +2419,11 @@ export type EmptyShoppingCartMutation = {
     | {
         __typename: 'ShoppingCart'
         id: string
-        currency: string
-        discountCode?: string | null
-        giftCardsCodes?: Array<string | null> | null
-        total?:
-          | { __typename: 'GiftCardIsNotUsable'; code: string }
-          | {
-              __typename: 'ShoppingCartTotal'
-              total?: number | null
-              subTotal?: number | null
-              giftCardAmount?: number | null
-              amountToPay?: number | null
-            }
-          | { __typename: 'UserAlreadyHaveFirstTimerPackage' }
-          | { __typename: 'UserCanNotBuyFirstTimerPackage' }
-          | null
         items: Array<{
           __typename: 'ShoppingCartItem'
           id: string
           quantity: number
-          subtotal?: number | null
-          variant: {
-            __typename: 'Variant'
-            id: string
-            name?: string | null
-            position: number
-            price: number
-            product:
-              | {
-                  __typename: 'ClassPackageProduct'
-                  type?: ClassPackageTypeEnum | null
-                  doesItRequireSmsAuth?: boolean | null
-                  id: string
-                  title: string
-                  subtitle?: string | null
-                  currency: string
-                  alertBeforePurchasing?: {
-                    __typename: 'ProductAlertBeforePurchasing'
-                    title: string
-                    description: string
-                  } | null
-                }
-              | {
-                  __typename: 'GiftCard'
-                  purchaseUrl: string
-                  id: string
-                  title: string
-                  subtitle?: string | null
-                  currency: string
-                  alertBeforePurchasing?: {
-                    __typename: 'ProductAlertBeforePurchasing'
-                    title: string
-                    description: string
-                  } | null
-                }
-          }
+          variant: { __typename: 'Variant'; id: string }
         }>
       }
     | { __typename: 'ShoppingCartIsEmpty' }
@@ -3111,6 +3091,17 @@ export type ShoppingCartFieldsFragment = {
             } | null
           }
     }
+  }>
+}
+
+export type ShoppingCartSummaryFieldsFragment = {
+  __typename: 'ShoppingCart'
+  id: string
+  items: Array<{
+    __typename: 'ShoppingCartItem'
+    id: string
+    quantity: number
+    variant: { __typename: 'Variant'; id: string }
   }>
 }
 
@@ -4010,6 +4001,41 @@ export const ShoppingCartFieldsFragmentDoc = {
     ...ProductBasicFieldsFragmentDoc.definitions
   ]
 } as unknown as DocumentNode<ShoppingCartFieldsFragment, unknown>
+export const ShoppingCartSummaryFieldsFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'ShoppingCartSummaryFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'ShoppingCart' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'items' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'quantity' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'variant' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<ShoppingCartSummaryFieldsFragment, unknown>
 export const GetCurrentUserBasicInfoDocument = {
   kind: 'Document',
   definitions: [
@@ -4414,6 +4440,103 @@ export const AddItemToShoppingCartDocument = {
     ...ShoppingCartFieldsFragmentDoc.definitions
   ]
 } as unknown as DocumentNode<AddItemToShoppingCartMutation, AddItemToShoppingCartMutationVariables>
+export const AddItemToShoppingCartLightDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'AddItemToShoppingCartLight' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ItemToShoppingCartInput' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'addItemToShoppingCart' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCart' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'FragmentSpread',
+                        name: { kind: 'Name', value: 'ShoppingCartSummaryFields' }
+                      }
+                    ]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ProductNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    ...ShoppingCartSummaryFieldsFragmentDoc.definitions
+  ]
+} as unknown as DocumentNode<
+  AddItemToShoppingCartLightMutation,
+  AddItemToShoppingCartLightMutationVariables
+>
 export const CalculateTotalForShoppingCartDocument = {
   kind: 'Document',
   definitions: [
@@ -4554,7 +4677,7 @@ export const EmptyShoppingCartDocument = {
                     selections: [
                       {
                         kind: 'FragmentSpread',
-                        name: { kind: 'Name', value: 'ShoppingCartFields' }
+                        name: { kind: 'Name', value: 'ShoppingCartSummaryFields' }
                       }
                     ]
                   }
@@ -4576,7 +4699,7 @@ export const EmptyShoppingCartDocument = {
         ]
       }
     },
-    ...ShoppingCartFieldsFragmentDoc.definitions
+    ...ShoppingCartSummaryFieldsFragmentDoc.definitions
   ]
 } as unknown as DocumentNode<EmptyShoppingCartMutation, EmptyShoppingCartMutationVariables>
 export const GeneratePayfortFormDocument = {

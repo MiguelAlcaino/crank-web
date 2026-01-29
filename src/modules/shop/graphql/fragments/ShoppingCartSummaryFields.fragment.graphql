@@ -1,0 +1,10 @@
+fragment ShoppingCartSummaryFields on ShoppingCart {
+  id
+  items {
+    id
+    quantity
+    variant {
+      id
+    }
+  }
+}

@@ -1,8 +1,8 @@
-mutation AddItemToShoppingCart($site: SiteEnum!, $input: ItemToShoppingCartInput!) {
+mutation AddItemToShoppingCartLight($site: SiteEnum!, $input: ItemToShoppingCartInput!) {
   addItemToShoppingCart(site: $site, input: $input) {
     __typename
     ... on ShoppingCart {
-      ...ShoppingCartFields
+      ...ShoppingCartSummaryFields
     }
     ... on ProductNotFound {
       code

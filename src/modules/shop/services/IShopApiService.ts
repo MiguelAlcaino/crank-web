@@ -110,7 +110,7 @@ export interface IShopApiService {
    * @param site The site where the cart exists.
    * @returns A Promise that resolves with the empty ShoppingCartModel instance.
    */
-  clearShoppingCart(site: SiteEnum): Promise<ShoppingCartModel>
+  clearShoppingCart(site: SiteEnum): Promise<CartSummary>
 
   /**
    * Generates the HTML payment form from the Payfort payment gateway.
@@ -172,4 +172,18 @@ export interface IShopApiService {
    * @throws An ApiError if the operation fails.
    */
   lockShoppingCart(site: SiteEnum): Promise<{ isLocked: boolean; merchantReference: string }>
+
+  /**
+   * Adds an item to the shopping cart using a lightweight method that returns only summary information.
+   * This is useful for scenarios where full cart details are not required, improving performance.
+   *
+   * @param site The site where the purchase is being made.
+   * @param variantId The ID of the product to add.
+   * @param quantity The number of items to add.
+   */
+  addItemToShoppingCartLight(
+    site: SiteEnum,
+    variantId: string,
+    quantity: number
+  ): Promise<CartSummary>
 }

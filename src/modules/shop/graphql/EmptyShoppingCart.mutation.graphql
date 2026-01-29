@@ -2,7 +2,7 @@ mutation EmptyShoppingCart($site: SiteEnum!) {
   emptyShoppingCart(site: $site) {
     __typename
     ... on ShoppingCart {
-      ...ShoppingCartFields
+      ...ShoppingCartSummaryFields
     }
     ... on ShoppingCartNotFound {
       code
