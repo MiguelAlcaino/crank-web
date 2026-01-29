@@ -87,7 +87,7 @@ const handleCheckout = () => {
   <div class="cart-screen d-flex flex-column">
     <!-- Header -->
     <div class="cart-header text-center p-4">
-      <h1 class="font-weight-bold">MY WORKOUT WISHLIST</h1>
+      <h1 class="font-weight-bold">SHOPPING CART</h1>
       <p class="text-muted text-uppercase">{{ totalItemsInCart }} ITEMS IN YOUR BASKET</p>
     </div>
 
