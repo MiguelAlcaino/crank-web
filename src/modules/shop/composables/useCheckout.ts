@@ -43,36 +43,33 @@ export const useCheckout = () => {
     deviceFingerprint: string,
     options: { saveCard: boolean } = { saveCard: false }
   ): Promise<void> {
-    // 1. Set loading state and clear previous errors/data.
+    // Set loading state and clear previous errors/data.
     isLoading.value = true
     error.value = null
     payfortFormHtml.value = ''
 
     try {
-      // 2. Lock the cart to prevent modifications during payment.
-      const lockSuccess = await shopApi.lockShoppingCart(appStore().site)
+      // 1. Lock the shopping cart and get a merchant reference.
+      const { isLocked, merchantReference } = await shopApi.lockShoppingCart(appStore().site)
 
-      if (!lockSuccess) {
+      if (!isLocked) {
         // If the lock fails, we must stop the process immediately.
         throw new Error('Could not secure the shopping cart for payment. Please try again.')
       }
 
-      // 2. Generate a unique reference for this transaction.
-      const merchantRef = await shopApi.generateMerchantReference(appStore().site)
-
       const formInput: PayfortFormInput = {
-        merchantReference: merchantRef,
+        merchantReference: merchantReference,
         deviceFingerprint,
         savePaymentCard: options.saveCard
       }
 
-      // 3. Generate the final Payfort form HTML.
+      // 2. Generate the final Payfort form HTML.
       const formHtml = await shopApi.generatePayfortForm(appStore().site, formInput)
 
-      // 4. On success, update the state with the form HTML.
+      // 3. On success, update the state with the form HTML.
       payfortFormHtml.value = formHtml
     } catch (e) {
-      // 5. If any step fails, capture the error and expose it in the state.
+      // 4. If any step fails, capture the error and expose it in the state.
       const caughtError = e instanceof Error ? e : new Error('An unknown checkout error occurred')
       error.value = caughtError
       console.error('Failed to initiate payment:', caughtError)

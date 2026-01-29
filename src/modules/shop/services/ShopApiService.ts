@@ -19,9 +19,6 @@ import {
   EmptyShoppingCartDocument,
   type EmptyShoppingCartMutation,
   type EmptyShoppingCartMutationVariables,
-  GenerateMerchantReferenceDocument,
-  type GenerateMerchantReferenceMutation,
-  type GenerateMerchantReferenceMutationVariables,
   GeneratePayfortFormDocument,
   type GeneratePayfortFormMutation,
   type GeneratePayfortFormMutationVariables,
@@ -33,9 +30,6 @@ import {
   type GetShoppingCartQuery,
   type GetShoppingCartQueryVariables,
   type ItemToShoppingCartInput,
-  LockShoppingCartDocument,
-  type LockShoppingCartMutation,
-  type LockShoppingCartMutationVariables,
   type PayfortFormInput,
   PaymentTransactionStatusDocument,
   PaymentTransactionStatusEnum,
@@ -55,7 +49,10 @@ import {
   type ShoppingCart as GqlShoppingCart,
   UpdateItemInShoppingCartDocument,
   type UpdateItemInShoppingCartMutation,
-  type UpdateItemInShoppingCartMutationVariables
+  type UpdateItemInShoppingCartMutationVariables,
+  NewLockShoppingCartDocument,
+  type NewLockShoppingCartMutationVariables,
+  type NewLockShoppingCartMutation
 } from '@/gql/graphql'
 import { ApiError } from '@/services/utils/ApiError'
 import { createShoppingCartModel } from '@/modules/shop/factories/shoppingCartFactory'
@@ -316,38 +313,6 @@ export class ShopApiService implements IShopApiService {
     }
   }
 
-  async generateMerchantReference(site: SiteEnum): Promise<string> {
-    try {
-      const { data, errors } = await this.authApiClient.mutate<
-        GenerateMerchantReferenceMutation,
-        GenerateMerchantReferenceMutationVariables
-      >({
-        mutation: GenerateMerchantReferenceDocument,
-        variables: { site },
-        fetchPolicy: 'network-only'
-      })
-
-      if (errors && errors.length > 0) {
-        throw new ApiError(
-          `GraphQL error generating merchant reference: ${errors.map((e) => e.message).join(', ')}`
-        )
-      }
-
-      // A missing or empty reference is a critical failure.
-      if (!data?.generateMerchantReference) {
-        throw new Error('Did not receive a valid merchant reference from the server.')
-      }
-
-      // On success, return the reference string.
-      return data.generateMerchantReference
-    } catch (error) {
-      // Catch any error (our thrown errors or network errors) and re-throw it
-      // so the calling layer can handle the failure.
-      console.error('ApiService.generateMerchantReference failed:', error)
-      throw error
-    }
-  }
-
   async generatePayfortForm(site: SiteEnum, input: PayfortFormInput): Promise<string> {
     try {
       const { data, errors } = await this.authApiClient.mutate<
@@ -471,38 +436,6 @@ export class ShopApiService implements IShopApiService {
       // We log it and then re-throw it. This allows the calling code (e.g., a composable)
       // to catch the error and update the UI state (e.g., show an error message).
       console.error('ApiService: Failed to fetch products.', error)
-      throw error
-    }
-  }
-
-  async lockShoppingCart(site: SiteEnum): Promise<boolean> {
-    try {
-      const { data, errors } = await this.authApiClient.mutate<
-        LockShoppingCartMutation,
-        LockShoppingCartMutationVariables
-      >({
-        mutation: LockShoppingCartDocument,
-        variables: { site },
-        fetchPolicy: 'network-only'
-      })
-
-      if (errors && errors.length > 0) {
-        throw new ApiError(
-          `GraphQL error locking the cart: ${errors.map((e) => e.message).join(', ')}`
-        )
-      }
-
-      if (typeof data?.lockShoppingCart !== 'boolean') {
-        throw new Error(
-          'Did not receive a valid boolean response from the server when locking the cart.'
-        )
-      }
-
-      return data.lockShoppingCart
-    } catch (error) {
-      // --- Network/GraphQL Error Path ---
-      // Catch and re-throw any error for the calling function to handle.
-      console.error('ApiService.lockShoppingCart failed:', error)
       throw error
     }
   }
@@ -712,6 +645,41 @@ export class ShopApiService implements IShopApiService {
       ok: false,
       error: errorType,
       message: result.code
+    }
+  }
+
+  async lockShoppingCart(
+    site: SiteEnum
+  ): Promise<{ isLocked: boolean; merchantReference: string }> {
+    try {
+      const { data, errors } = await this.authApiClient.mutate<
+        NewLockShoppingCartMutation,
+        NewLockShoppingCartMutationVariables
+      >({
+        mutation: NewLockShoppingCartDocument,
+        variables: { site },
+        fetchPolicy: 'network-only'
+      })
+
+      if (errors && errors.length > 0) {
+        throw new ApiError(
+          `GraphQL error locking the cart: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      const result = data?.newLockShoppingCart
+
+      if (!result) {
+        throw new Error('Did not receive a valid response from the server when locking the cart.')
+      }
+
+      return {
+        isLocked: result.isLocked,
+        merchantReference: result.merchantReference
+      }
+    } catch (error) {
+      console.error('ApiService.lockShoppingCart failed:', error)
+      throw error
     }
   }
 }

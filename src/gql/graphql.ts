@@ -699,6 +699,12 @@ export type LateCancellationRequiredError = Error & {
   code: Scalars['String']
 }
 
+export type LockShoppingCartResponse = {
+  __typename?: 'LockShoppingCartResponse'
+  isLocked: Scalars['Boolean']
+  merchantReference: Scalars['ID']
+}
+
 export type MobilePhoneAlreadyVerifiedError = Error & {
   __typename?: 'MobilePhoneAlreadyVerifiedError'
   code: Scalars['String']
@@ -761,10 +767,18 @@ export type Mutation = {
   emptyShoppingCart: ShoppingCartResultUnion
   /** Enabled a spot in a class */
   enableSpot?: Maybe<DisableEnableSpotResultUnion>
-  /** Generate a unique Merchant Reference */
+  /**
+   * Generate a unique Merchant Reference
+   * @deprecated Use newLockShoppingCart instead
+   */
   generateMerchantReference: Scalars['ID']
-  /** To lock the shoppingcart when the user is in the payment process */
+  /**
+   * To lock the shoppingcart when the user is in the payment process
+   * @deprecated Use newLockShoppingCart instead
+   */
   lockShoppingCart: Scalars['Boolean']
+  /** Allows to lock shoppingcart and generate merchant reference */
+  newLockShoppingCart?: Maybe<LockShoppingCartResponse>
   /** Returns the html of a payment form to be used to pay */
   payfortForm: PayfortFormResult
   /** Registers a new user and returns an IdentifiableUser type */
@@ -960,6 +974,10 @@ export type MutationGenerateMerchantReferenceArgs = {
 }
 
 export type MutationLockShoppingCartArgs = {
+  site: SiteEnum
+}
+
+export type MutationNewLockShoppingCartArgs = {
   site: SiteEnum
 }
 
@@ -2433,15 +2451,6 @@ export type EmptyShoppingCartMutation = {
     | { __typename: 'ShoppingCartNotFound'; code: string }
 }
 
-export type GenerateMerchantReferenceMutationVariables = Exact<{
-  site: SiteEnum
-}>
-
-export type GenerateMerchantReferenceMutation = {
-  __typename: 'Mutation'
-  generateMerchantReference: string
-}
-
 export type GeneratePayfortFormMutationVariables = Exact<{
   site: SiteEnum
   input: PayfortFormInput
@@ -2599,11 +2608,18 @@ export type GetShoppingCartQuery = {
   } | null
 }
 
-export type LockShoppingCartMutationVariables = Exact<{
+export type NewLockShoppingCartMutationVariables = Exact<{
   site: SiteEnum
 }>
 
-export type LockShoppingCartMutation = { __typename: 'Mutation'; lockShoppingCart: boolean }
+export type NewLockShoppingCartMutation = {
+  __typename: 'Mutation'
+  newLockShoppingCart?: {
+    __typename: 'LockShoppingCartResponse'
+    isLocked: boolean
+    merchantReference: string
+  } | null
+}
 
 export type PaymentLinkQueryVariables = Exact<{
   id: Scalars['ID']
@@ -4563,45 +4579,6 @@ export const EmptyShoppingCartDocument = {
     ...ShoppingCartFieldsFragmentDoc.definitions
   ]
 } as unknown as DocumentNode<EmptyShoppingCartMutation, EmptyShoppingCartMutationVariables>
-export const GenerateMerchantReferenceDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'GenerateMerchantReference' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
-          }
-        }
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'generateMerchantReference' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'site' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
-              }
-            ]
-          }
-        ]
-      }
-    }
-  ]
-} as unknown as DocumentNode<
-  GenerateMerchantReferenceMutation,
-  GenerateMerchantReferenceMutationVariables
->
 export const GeneratePayfortFormDocument = {
   kind: 'Document',
   definitions: [
@@ -4833,13 +4810,13 @@ export const GetShoppingCartDocument = {
     ...ShoppingCartFieldsFragmentDoc.definitions
   ]
 } as unknown as DocumentNode<GetShoppingCartQuery, GetShoppingCartQueryVariables>
-export const LockShoppingCartDocument = {
+export const NewLockShoppingCartDocument = {
   kind: 'Document',
   definitions: [
     {
       kind: 'OperationDefinition',
       operation: 'mutation',
-      name: { kind: 'Name', value: 'LockShoppingCart' },
+      name: { kind: 'Name', value: 'NewLockShoppingCart' },
       variableDefinitions: [
         {
           kind: 'VariableDefinition',
@@ -4855,20 +4832,27 @@ export const LockShoppingCartDocument = {
         selections: [
           {
             kind: 'Field',
-            name: { kind: 'Name', value: 'lockShoppingCart' },
+            name: { kind: 'Name', value: 'newLockShoppingCart' },
             arguments: [
               {
                 kind: 'Argument',
                 name: { kind: 'Name', value: 'site' },
                 value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
               }
-            ]
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'isLocked' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'merchantReference' } }
+              ]
+            }
           }
         ]
       }
     }
   ]
-} as unknown as DocumentNode<LockShoppingCartMutation, LockShoppingCartMutationVariables>
+} as unknown as DocumentNode<NewLockShoppingCartMutation, NewLockShoppingCartMutationVariables>
 export const PaymentLinkDocument = {
   kind: 'Document',
   definitions: [

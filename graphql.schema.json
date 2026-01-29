@@ -5633,6 +5633,50 @@
       },
       {
         "kind": "OBJECT",
+        "name": "LockShoppingCartResponse",
+        "description": null,
+        "isOneOf": null,
+        "fields": [
+          {
+            "name": "isLocked",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "merchantReference",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ID",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
         "name": "MobilePhoneAlreadyVerifiedError",
         "description": null,
         "isOneOf": null,
@@ -6732,8 +6776,8 @@
                 "ofType": null
               }
             },
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "Use newLockShoppingCart instead"
           },
           {
             "name": "lockShoppingCart",
@@ -6764,6 +6808,35 @@
                 "name": "Boolean",
                 "ofType": null
               }
+            },
+            "isDeprecated": true,
+            "deprecationReason": "Use newLockShoppingCart instead"
+          },
+          {
+            "name": "newLockShoppingCart",
+            "description": "Allows to lock shoppingcart and generate merchant reference",
+            "args": [
+              {
+                "name": "site",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "ENUM",
+                    "name": "SiteEnum",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "OBJECT",
+              "name": "LockShoppingCartResponse",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null

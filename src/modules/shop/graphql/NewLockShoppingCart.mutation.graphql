@@ -1,0 +1,6 @@
+mutation NewLockShoppingCart($site: SiteEnum!) {
+  newLockShoppingCart(site: $site) {
+    isLocked
+    merchantReference
+  }
+}

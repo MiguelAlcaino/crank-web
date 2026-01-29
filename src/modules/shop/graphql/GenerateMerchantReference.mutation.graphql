@@ -1,3 +1,0 @@
-mutation GenerateMerchantReference($site: SiteEnum!) {
-  generateMerchantReference(site: $site)
-}

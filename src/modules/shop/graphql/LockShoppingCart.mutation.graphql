@@ -1,3 +1,0 @@
-mutation LockShoppingCart($site: SiteEnum!) {
-  lockShoppingCart(site: $site)
-}

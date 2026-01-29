@@ -113,14 +113,6 @@ export interface IShopApiService {
   clearShoppingCart(site: SiteEnum): Promise<ShoppingCartModel>
 
   /**
-   * Generates a unique merchant reference ID required for a payment transaction.
-   * @param site The site for which to generate the reference.
-   * @returns A Promise that resolves with the unique merchant reference string.
-   * @throws An ApiError or Error if the operation fails.
-   */
-  generateMerchantReference(site: SiteEnum): Promise<string>
-
-  /**
    * Generates the HTML payment form from the Payfort payment gateway.
    * @param site The site for which the payment is being made.
    * @param input The necessary input data, including the merchant reference.
@@ -174,9 +166,10 @@ export interface IShopApiService {
 
   /**
    * Locks the user's shopping cart to prevent modifications during payment.
+   * Returns both the lock status and a merchant reference for the transaction.
    * @param site The site where the cart exists.
-   * @returns A Promise that resolves with `true` on success.
+   * @returns A Promise that resolves with an object containing `isLocked` and `merchantReference`.
    * @throws An ApiError if the operation fails.
    */
-  lockShoppingCart(site: SiteEnum): Promise<boolean>
+  lockShoppingCart(site: SiteEnum): Promise<{ isLocked: boolean; merchantReference: string }>
 }
