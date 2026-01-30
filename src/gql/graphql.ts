@@ -2517,6 +2517,18 @@ export type GetProductsQuery = {
   >
 }
 
+export type GetRemainingCreditsQueryVariables = Exact<{ [key: string]: never }>
+
+export type GetRemainingCreditsQuery = {
+  __typename: 'Query'
+  currentUser?: {
+    __typename: 'User'
+    remainingCredits:
+      | { __typename: 'ClientNotFoundInMindbody'; code: string }
+      | { __typename: 'RemainingCreditsSuccess'; credits: number }
+  } | null
+}
+
 export type GetShoppingCartQueryVariables = Exact<{
   site: SiteEnum
 }>
@@ -4878,6 +4890,61 @@ export const GetProductsDocument = {
     ...ProductFieldsFragmentDoc.definitions
   ]
 } as unknown as DocumentNode<GetProductsQuery, GetProductsQueryVariables>
+export const GetRemainingCreditsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetRemainingCredits' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentUser' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'remainingCredits' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'InlineFragment',
+                        typeCondition: {
+                          kind: 'NamedType',
+                          name: { kind: 'Name', value: 'RemainingCreditsSuccess' }
+                        },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [{ kind: 'Field', name: { kind: 'Name', value: 'credits' } }]
+                        }
+                      },
+                      {
+                        kind: 'InlineFragment',
+                        typeCondition: {
+                          kind: 'NamedType',
+                          name: { kind: 'Name', value: 'ClientNotFoundInMindbody' }
+                        },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<GetRemainingCreditsQuery, GetRemainingCreditsQueryVariables>
 export const GetShoppingCartDocument = {
   kind: 'Document',
   definitions: [

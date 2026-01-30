@@ -1,0 +1,12 @@
+query GetRemainingCredits {
+  currentUser {
+    remainingCredits {
+      ... on RemainingCreditsSuccess {
+        credits
+      }
+      ... on ClientNotFoundInMindbody {
+        code
+      }
+    }
+  }
+}

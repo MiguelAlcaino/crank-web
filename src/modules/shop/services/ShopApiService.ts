@@ -28,6 +28,9 @@ import {
   GetProductsDocument,
   type GetProductsQuery,
   type GetProductsQueryVariables,
+  GetRemainingCreditsDocument,
+  type GetRemainingCreditsQuery,
+  type GetRemainingCreditsQueryVariables,
   GetShoppingCartDocument,
   type GetShoppingCartQuery,
   type GetShoppingCartQueryVariables,
@@ -716,6 +719,41 @@ export class ShopApiService implements IShopApiService {
       throw new Error('Did not receive a valid response from the server.')
     } catch (error) {
       throw error
+    }
+  }
+
+  async getRemainingCredits(): Promise<number> {
+    try {
+      const { data, errors } = await this.authApiClient.query<
+        GetRemainingCreditsQuery,
+        GetRemainingCreditsQueryVariables
+      >({
+        query: GetRemainingCreditsDocument,
+        fetchPolicy: 'network-only'
+      })
+
+      if (errors) {
+        throw new ApiError(
+          `GraphQL error fetching shopping cart: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      const result = data?.currentUser?.remainingCredits
+      if (!result) {
+        return 0
+      }
+
+      if (result.__typename === 'RemainingCreditsSuccess') {
+        return result.credits ?? 0
+      } else if (result.__typename === 'ClientNotFoundInMindbody') {
+        const errorCode = result.code ?? 'UnknownBusinessError'
+        throw new ApiError('Client not found in Mindbody', errorCode)
+      }
+
+      return 0
+    } catch (error) {
+      console.error('ApiService: Error fetching shopping cart:', error)
+      throw new Error('Failed to fetch shopping cart.')
     }
   }
 }

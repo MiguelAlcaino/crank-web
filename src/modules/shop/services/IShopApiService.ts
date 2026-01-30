@@ -186,4 +186,10 @@ export interface IShopApiService {
     variantId: string,
     quantity: number
   ): Promise<CartSummary>
+
+  /**
+   * Fetches the number of remaining credits for the current user.
+   * @return A promise that resolves to the number of remaining credits.   *
+   * */
+  getRemainingCredits(): Promise<number>
 }

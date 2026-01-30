@@ -17,6 +17,7 @@ import SiteSelector from '@/components/SiteSelector.vue'
 // Composables, Services & Utilities
 import { useProducts } from '../composables/useProducts'
 import { useShoppingCart } from '../composables/useShoppingCart'
+import CreditLeft from '@/modules/shop/components/CreditLeft.vue'
 
 //
 // -----------------
@@ -122,7 +123,7 @@ onMounted(() => {
 
       <div class="text-center mb-3">
         <h1 class="font-weight-bold">THE GREAT DEALS</h1>
-        <p class="text-muted">XX CREDITS LEFT</p>
+        <CreditLeft></CreditLeft>
       </div>
 
       <div v-if="isLoading" class="text-center mt-5">
