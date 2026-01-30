@@ -433,10 +433,8 @@ const onFingerprintError = (error: Error) => {
 
     <div v-show="currentStep === 'details'" class="main-container">
       <div class="main-container">
-        <a href="#" class="back-arrow"><i class="fas fa-chevron-left"></i></a>
-
         <!-- Header -->
-        <h2 class="header-title">PAYMENT DETAILS</h2>
+        <h2 :class="isInWebview ? 'header-title-mobile' : 'header-title'">PAYMENT DETAILS</h2>
         <p v-if="isAuthLoading" class="header-subtitle">LOADING USER...</p>
         <p v-else-if="isAuthenticated" class="header-subtitle">
           LOGGED IN AS {{ user?.firstName?.toUpperCase() }} {{ user?.lastName?.toUpperCase() }}
@@ -725,6 +723,14 @@ body {
   font-size: 2.5rem;
   text-align: center;
   margin-top: 2rem;
+}
+
+.header-title-mobile {
+  font-weight: 900;
+  color: #000;
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
+  font-size: 2.5rem;
+  text-align: center;
 }
 
 .header-subtitle {
