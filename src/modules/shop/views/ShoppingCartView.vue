@@ -115,15 +115,15 @@ const handleCheckout = () => {
       <div
         class="total-bar d-flex justify-content-between align-items-center text-white font-weight-bold p-3"
       >
-        <span>TOTAL AMOUNT</span>
+        <span class="total-amount-text">TOTAL AMOUNT</span>
         <span v-if="isCartMutating">
           <span
-            class="spinner-border spinner-border-sm text-white"
+            class="spinner-border spinner-border-sm text-orange"
             role="status"
             aria-hidden="true"
           ></span>
         </span>
-        <span v-else>{{ detailedCart?.formattedTotal }}</span>
+        <span v-else class="total-amount-text">{{ detailedCart?.formattedTotal }}</span>
       </div>
       <div class="checkout-area p-4">
         <button
@@ -202,5 +202,14 @@ h1,
   justify-content: center;
   align-items: center;
   height: 100%;
+}
+
+.text-orange {
+  color: #ff8c69;
+}
+
+.total-amount-text {
+  font-family: 'BigJohn', sans-serif;
+  color: #ff8c69;
 }
 </style>

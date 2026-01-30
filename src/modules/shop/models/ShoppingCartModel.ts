@@ -69,7 +69,8 @@ export class ShoppingCartModel {
    * @returns A string representing the formatted price.
    */
   public get formattedTotal(): string {
-    return formatPrice(this.totals?.amountToPay, this.currency)
+    if (this.totals?.amountToPay) return formatPrice(this.totals?.amountToPay, this.currency)
+    else return '-'
   }
 
   /**

@@ -68,7 +68,7 @@ const getIcon = (iconName: string) => {
     <div class="footer-area">
       <!-- Total Bar -->
       <div class="total-bar p-3 d-flex justify-content-between">
-        <span>TOTAL AMOUNT</span>
+        <span class="text-orange">TOTAL AMOUNT</span>
         <span class="text-orange"> {{ cart?.formattedTotal || '$0.00' }} </span>
       </div>
 
