@@ -132,17 +132,6 @@ export interface IShopApiService {
   checkTransactionStatus(merchantReference: string): Promise<PaymentTransactionStatusEnum>
 
   /**
-   * Recalculates the totals for the user's shopping cart and fetches the updated state.
-   * This is typically used after applying discounts or gift cards.
-   * On success, it returns the updated ShoppingCartModel instance.
-   * On failure, it throws an ApiError for business logic errors or a generic Error for network issues.
-   *
-   * @param site The site where the cart exists.
-   * @returns A Promise that resolves with the updated ShoppingCartModel instance.
-   */
-  calculateTotalForShoppingCart(site: SiteEnum): Promise<ShoppingCartModel>
-
-  /**
    * Adds a gift card code to the shopping cart.
    * @param giftCard The gift card code.
    * @param site The site where the cart exists.

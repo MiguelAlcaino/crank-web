@@ -15,9 +15,6 @@ import {
   type AddItemToShoppingCartLightMutation,
   type AddItemToShoppingCartMutation,
   type AddItemToShoppingCartMutationVariables,
-  CalculateTotalForShoppingCartDocument,
-  type CalculateTotalForShoppingCartQuery,
-  type CalculateTotalForShoppingCartQueryVariables,
   EmptyShoppingCartDocument,
   type EmptyShoppingCartMutation,
   type EmptyShoppingCartMutationVariables,
@@ -64,60 +61,12 @@ import { createShoppingCartModel } from '@/modules/shop/factories/shoppingCartFa
 import type { AppProductType } from '@/modules/shop/models/types'
 import { createProductModel } from '@/modules/shop/factories/productFactory'
 import type { CartSummary } from '@/modules/shop/interfaces/cart-summary'
-import {
-  SHOPPING_CART_ERROR_MAP,
-  type ShoppingCartBusinessError
-} from '@/modules/shop/interfaces/shopping-cart-errors'
+import { SHOPPING_CART_ERROR_MAP, type ShoppingCartBusinessError } from '@/modules/shop/interfaces/shopping-cart-errors'
 import type { ServiceResult } from '@/modules/shop/interfaces/service-result'
 import { handleInfrastructureErrors } from '@/modules/shop/services/utils/handleInfrastructureErrors'
 
 export class ShopApiService implements IShopApiService {
   constructor(private authApiClient: ApolloClient<any>) {}
-
-  async calculateTotalForShoppingCart(site: SiteEnum): Promise<ShoppingCartModel> {
-    try {
-      const { data, errors } = await this.authApiClient.query<
-        CalculateTotalForShoppingCartQuery,
-        CalculateTotalForShoppingCartQueryVariables
-      >({
-        query: CalculateTotalForShoppingCartDocument,
-        variables: {
-          site: site
-        },
-        fetchPolicy: 'network-only'
-      })
-
-      if (errors) {
-        throw new ApiError(
-          `GraphQL error calculating cart total: ${errors.map((e) => e.message).join(', ')}`
-        )
-      }
-
-      const result = data?.calculateTotalForShoppingCart
-
-      if (!result) {
-        throw new Error('Did not receive a valid response from the server when calculating total.')
-      }
-
-      if (result.__typename === 'ShoppingCart') {
-        // Success: The API returned the cart with updated totals.
-        // We map the raw DTO to our rich domain model.
-        return createShoppingCartModel(result as unknown as GqlShoppingCart)
-      } else {
-        // Business logic error (e.g., ShoppingCartIsEmpty, DiscountCodeIsInvalid).
-        // We throw a structured error for the UI layer to handle.
-        const errorCode = (result as { code?: string }).code ?? 'UnknownBusinessError'
-        throw new ApiError(
-          `Could not calculate total. API returned error: ${result.__typename}`,
-          errorCode
-        )
-      }
-    } catch (error) {
-      // Catch and re-throw any error for the calling function to handle.
-      console.error('ApiService.calculateTotalForShoppingCart failed:', error)
-      throw error
-    }
-  }
 
   async addGiftCardCodeToShoppingCart(
     giftCard: string,

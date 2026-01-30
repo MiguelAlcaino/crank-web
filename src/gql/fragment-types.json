@@ -8,7 +8,11 @@
       "PaymentRequiredError",
       "UnknownError"
     ],
-    "AdminUserResultUnion": ["AdminUser", "EmailAlreadyUsedError", "UsernameAlreadyUsedError"],
+    "AdminUserResultUnion": [
+      "AdminUser",
+      "EmailAlreadyUsedError",
+      "UsernameAlreadyUsedError"
+    ],
     "BookClassResultUnion": [
       "AddedToWaitlistSuccess",
       "BookClassSuccess",
@@ -29,31 +33,60 @@
       "LateCancellationRequiredError",
       "UnknownError"
     ],
-    "ChallengeInterface": ["DistanceChallenge"],
-    "CheckinResultUnion": ["CheckinSuccess", "EnrollmentNotFoundError"],
-    "CheckoutResultUnion": ["CheckoutSuccess", "EnrollmentNotFoundError"],
-    "ClassPackageUpdateResultUnion": ["ClassPackageProduct", "ProductNotFound", "UnknownError"],
-    "ClassPositionInterface": ["BookableSpot", "IconPosition"],
+    "ChallengeInterface": [
+      "DistanceChallenge"
+    ],
+    "CheckinResultUnion": [
+      "CheckinSuccess",
+      "EnrollmentNotFoundError"
+    ],
+    "CheckoutResultUnion": [
+      "CheckoutSuccess",
+      "EnrollmentNotFoundError"
+    ],
+    "ClassPackageUpdateResultUnion": [
+      "ClassPackageProduct",
+      "ProductNotFound",
+      "UnknownError"
+    ],
+    "ClassPositionInterface": [
+      "BookableSpot",
+      "IconPosition"
+    ],
     "CrankInstructorResultUnion": [
       "CrankInstructor",
       "InstructorNotFound",
       "UploadedFileIsNotAnImage"
     ],
-    "CreateCurrentUserInSiteUnion": ["CreateCurrentUserInSiteSuccess", "UserAlreadyExistsError"],
+    "CreateCurrentUserInSiteUnion": [
+      "CreateCurrentUserInSiteSuccess",
+      "UserAlreadyExistsError"
+    ],
     "DeleteCurrentUserAccountUnion": [
       "DeleteCurrentUserAccountSuccess",
       "UserPasswordDoesNotMatchError"
     ],
-    "DisableEnableSpotResultUnion": ["DisableEnableSpotResult", "SpotNotFoundError"],
-    "EditClassResultUnion": ["EditClassSuccessResult"],
+    "DisableEnableSpotResultUnion": [
+      "DisableEnableSpotResult",
+      "SpotNotFoundError"
+    ],
+    "EditClassResultUnion": [
+      "EditClassSuccessResult"
+    ],
     "EditEnrollmentResultUnion": [
       "ClientIsOutsideSchedulingWindowError",
       "Enrollment",
       "SpotAlreadyReservedError",
       "TryToSwitchToSameSpotError"
     ],
-    "EditUserResultUnion": ["IdentifiableUser", "OtherUserHasThisExternalIdError"],
-    "EnrollmentInfoInterface": ["EnrollmentInfo", "WaitlistEntry"],
+    "EditUserResultUnion": [
+      "IdentifiableUser",
+      "OtherUserHasThisExternalIdError"
+    ],
+    "EnrollmentInfoInterface": [
+      "EnrollmentInfo",
+      "WaitlistEntry"
+    ],
     "Error": [
       "BookedButInOtherSpotError",
       "BookingOverlapsAnotherOneError",
@@ -106,19 +139,35 @@
       "SMSCodeValidatedSuccessfully",
       "SMSValidationCodeError"
     ],
-    "PaginatedResult": ["PaginatedClassStats", "PaginatedEnrollments", "PaginatedPurchases"],
-    "PaymentTransactionUnion": ["PaymentTransactionStatus", "TemporalTransactionNotFound"],
+    "PaginatedResult": [
+      "PaginatedClassStats",
+      "PaginatedEnrollments",
+      "PaginatedPurchases"
+    ],
+    "PaymentTransactionUnion": [
+      "PaymentTransactionStatus",
+      "TemporalTransactionNotFound"
+    ],
     "RejectLateBookingResultUnion": [
       "PositionAlreadyTakenError",
       "RejectLateCancelledSpotInClassSuccess"
     ],
-    "RemainingCreditsResultUnion": ["ClientNotFoundInMindbody", "RemainingCreditsSuccess"],
+    "RemainingCreditsResultUnion": [
+      "ClientNotFoundInMindbody",
+      "RemainingCreditsSuccess"
+    ],
     "RemoveCurrentUserFromWaitlistUnion": [
       "RemoveFromWaitlistResult",
       "WaitlistEntryNotFoundError"
     ],
-    "RemoveUserFromWaitlistUnion": ["RemoveFromWaitlistResult", "WaitlistEntryNotFoundError"],
-    "ResetPasswordForCurrentUserUnion": ["PasswordsDontMatchError", "ResetPasswordSuccess"],
+    "RemoveUserFromWaitlistUnion": [
+      "RemoveFromWaitlistResult",
+      "WaitlistEntryNotFoundError"
+    ],
+    "ResetPasswordForCurrentUserUnion": [
+      "PasswordsDontMatchError",
+      "ResetPasswordSuccess"
+    ],
     "ResetPasswordLinkResultUnion": [
       "ResetPasswordLinkSentSuccessfully",
       "TooManyResetPasswordLinkRequestsError"
@@ -128,7 +177,10 @@
       "MobilePhoneNotValidError",
       "SuccessfulRequestSMSValidation"
     ],
-    "SellableProductInterface": ["ClassPackageProduct", "GiftCard"],
+    "SellableProductInterface": [
+      "ClassPackageProduct",
+      "GiftCard"
+    ],
     "ShoppingCartResultUnion": [
       "DiscountCodeIsEmpty",
       "DiscountCodeIsInvalid",
@@ -148,7 +200,14 @@
       "UserAlreadyHaveFirstTimerPackage",
       "UserCanNotBuyFirstTimerPackage"
     ],
-    "SwapSpotResultUnion": ["SwapSpotSuccess", "TryToSwitchToSameSpotError"],
-    "UpdateGiftcardResiltUnion": ["GiftCard", "ProductNotFound", "UnknownError"]
+    "SwapSpotResultUnion": [
+      "SwapSpotSuccess",
+      "TryToSwitchToSameSpotError"
+    ],
+    "UpdateGiftcardResiltUnion": [
+      "GiftCard",
+      "ProductNotFound",
+      "UnknownError"
+    ]
   }
 }
