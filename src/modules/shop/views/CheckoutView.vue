@@ -717,18 +717,16 @@ body {
 
 /* Header */
 .header-title {
-  font-weight: 900;
+  font-weight: 400;
   color: #000;
-  text-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
   font-size: 2.5rem;
   text-align: center;
   margin-top: 2rem;
 }
 
 .header-title-mobile {
-  font-weight: 900;
+  font-weight: 400;
   color: #000;
-  text-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
   font-size: 2.5rem;
   text-align: center;
 }

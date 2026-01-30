@@ -30,7 +30,7 @@ const getIcon = (iconName: string) => {
   <div class="confirmation-container">
     <!-- Header -->
     <div class="header text-center p-4">
-      <h1 class="font-weight-bold">SHOPPING CART</h1>
+      <h2 class="header-title">SHOPPING CART</h2>
       <p class="text-muted text-uppercase" v-if="cart">{{ cart.itemCount }} ITEMS IN YOUR BASKET</p>
     </div>
 
@@ -195,5 +195,13 @@ const getIcon = (iconName: string) => {
   text-transform: uppercase;
   letter-spacing: 1px;
   cursor: pointer;
+}
+
+.header-title {
+  font-weight: 400;
+  color: #000;
+  font-size: 2.5rem;
+  text-align: center;
+  margin-top: 2rem;
 }
 </style>
