@@ -35,6 +35,7 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
     for (const err of graphQLErrors) {
       switch (err.message) {
         case 'jwt.expired_access_token':
+        case 'Unable to verify the provided access token. Are you sure you created this access token in this server?':
           return new Observable<any>((observer) => {
             // used an annonymous function for using an async function
             ;(async () => {
