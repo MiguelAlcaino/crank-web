@@ -107,7 +107,7 @@ const goToShop = () => {
       <p>Your payment has been processed successfully.</p>
       <p class="text-muted small">We have sent a confirmation email with your order details.</p>
       <p class="text-muted small">Reference: {{ merchantReference }}</p>
-      <button @click="goToShop" class="btn-primary">Continue Shopping</button>
+      <button @click="goToShop" class="btn-primary">Continue</button>
     </div>
 
     <!-- 4. Pending/Waiting Confirmation -->
@@ -319,12 +319,12 @@ p {
 }
 
 .btn-primary {
-  background-color: #ff8c69;
-  color: white;
-  border: none;
+  background-color: #ff8c69 !important;
+  color: white !important;
+  border: none !important;
   border-radius: 10px;
   padding: 1rem 3rem;
-  font-family: 'Avenir', sans-serif;
+  font-family: 'BigJohn', sans-serif;
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 1.5px;
@@ -344,11 +344,12 @@ p {
 .btn-primary:focus,
 .btn-primary:focus-visible,
 .btn-primary:active {
-  background-color: #ff8c69;
-  color: white;
+  background-color: #ff8c69 !important;
+  border-color: #ff8c69 !important;
+  color: white !important;
   opacity: 0.9;
   transform: translateY(-2px);
   outline: none;
-  box-shadow: 0 0 0 4px rgba(255, 140, 105, 0.12);
+  box-shadow: 0 0 0 4px rgba(255, 140, 105, 0.12) !important;
 }
 </style>
