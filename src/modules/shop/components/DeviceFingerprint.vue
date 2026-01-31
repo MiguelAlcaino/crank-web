@@ -64,11 +64,30 @@ onUnmounted(() => {
  * Main logic to initialize the script and monitor for the session ID.
  */
 async function initializeAndMonitorScript() {
+  // Always pre-configure global variables, as the script needs them.
+  window.io_bbout_element_id = props.sessionIdInputId
+  window.io_install_stm = false
+  window.io_exclude_stm = 0
+  window.io_install_flash = false
+  window.io_enable_rip = true
+
   // Prevent re-loading the script if it already exists in the DOM.
   if (document.querySelector(`script[src*="iesnare.com"]`)) {
     console.warn('Snare.js script is already loaded. Skipping re-installation.')
+
     const inputElement = document.getElementById(props.sessionIdInputId) as HTMLInputElement
-    if (inputElement && inputElement.value) emit('ready', inputElement.value)
+
+    if (inputElement && inputElement.value) {
+      emit('ready', inputElement.value)
+      return
+    }
+
+    // If it has no value, we MUST monitor it in case it is generated now.
+    try {
+      await monitorForSessionId()
+    } catch (error) {
+      emit('error', error as Error)
+    }
     return
   }
 

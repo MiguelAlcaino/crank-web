@@ -141,7 +141,7 @@ const getIcon = (iconName: string) => {
 }
 
 .item-title {
-  font-family: 'BigJohn', sans-serif;
+  font-family: 'BigJohn', sans-serif !important;
   font-size: 0.9rem;
   line-height: 1.2;
 }
@@ -150,15 +150,20 @@ const getIcon = (iconName: string) => {
   background-color: #e0e0e0;
   width: 60px;
   min-width: 60px;
-  font-family: 'BigJohn', sans-serif;
+  font-family: 'BigJohn', sans-serif !important;
   font-size: 1.1rem;
 }
 
 .total-bar {
   background-color: black;
   color: white;
-  font-family: 'BigJohn', sans-serif;
+  font-family: 'BigJohn', sans-serif !important;
   letter-spacing: 1px;
+}
+
+.total-bar span {
+  font-family: 'BigJohn', sans-serif !important;
+  font-size: 1.1rem;
 }
 
 .text-orange {
@@ -171,7 +176,7 @@ const getIcon = (iconName: string) => {
   border: none;
   padding: 1rem;
   border-radius: 12px;
-  font-family: 'BigJohn', sans-serif;
+  font-family: 'BigJohn', sans-serif !important;
   font-size: 1.2rem;
   font-weight: bold;
   letter-spacing: 1px;
@@ -179,6 +184,10 @@ const getIcon = (iconName: string) => {
   width: 100%;
   margin-bottom: 1rem;
   transition: transform 0.1s;
+}
+
+.btn-confirm span {
+  font-family: 'BigJohn', sans-serif !important;
 }
 
 .btn-confirm:active {
@@ -195,6 +204,7 @@ const getIcon = (iconName: string) => {
   text-transform: uppercase;
   letter-spacing: 1px;
   cursor: pointer;
+  font-family: 'BigJohn', sans-serif !important;
 }
 
 .header-title {

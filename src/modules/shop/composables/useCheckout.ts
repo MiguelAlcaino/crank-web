@@ -64,10 +64,8 @@ export const useCheckout = () => {
       }
 
       // 2. Generate the final Payfort form HTML.
-      const formHtml = await shopApi.generatePayfortForm(appStore().site, formInput)
-
       // 3. On success, update the state with the form HTML.
-      payfortFormHtml.value = formHtml
+      payfortFormHtml.value = await shopApi.generatePayfortForm(appStore().site, formInput)
     } catch (e) {
       // 4. If any step fails, capture the error and expose it in the state.
       const caughtError = e instanceof Error ? e : new Error('An unknown checkout error occurred')
@@ -80,14 +78,12 @@ export const useCheckout = () => {
   }
 
   return {
-    // --- Exposed State (Read-only) ---
-    // The component can read this state but cannot modify it directly.
+    // --- State ---
     isLoading: readonly(isLoading),
     error: readonly(error),
     payfortFormHtml: readonly(payfortFormHtml),
 
-    // --- Exposed Methods (Actions) ---
-    // This is the only way for the component to trigger changes.
+    // --- Methods ---
     initiatePayment
   }
 }
