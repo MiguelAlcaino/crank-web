@@ -61,7 +61,10 @@ import { createShoppingCartModel } from '@/modules/shop/factories/shoppingCartFa
 import type { AppProductType } from '@/modules/shop/models/types'
 import { createProductModel } from '@/modules/shop/factories/productFactory'
 import type { CartSummary } from '@/modules/shop/interfaces/cart-summary'
-import { SHOPPING_CART_ERROR_MAP, type ShoppingCartBusinessError } from '@/modules/shop/interfaces/shopping-cart-errors'
+import {
+  SHOPPING_CART_ERROR_MAP,
+  type ShoppingCartBusinessError
+} from '@/modules/shop/interfaces/shopping-cart-errors'
 import type { ServiceResult } from '@/modules/shop/interfaces/service-result'
 import { handleInfrastructureErrors } from '@/modules/shop/services/utils/handleInfrastructureErrors'
 

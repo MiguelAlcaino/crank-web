@@ -36,7 +36,7 @@ export const ERROR_MESSAGES: Record<string, string> = {
   CART_EMPTY: 'Your shopping cart is empty.',
   CART_NOT_FOUND: 'No shopping cart found. Please start a new order.',
   ITEM_NOT_FOUND: 'The item was not found in your cart.',
-  GIFT_CARD_INVALID: 'This code is not valid for this purchase. Please remove it.',
+  GIFT_CARD_INVALID: 'The gift card cannot be used for this purchase. Please remove it.',
   GIFT_CARD_ALREADY_USED: 'This gift card has already been added to your cart.',
   GIFT_CARD_NOT_REGISTERED: 'The gift card code provided is not registered.',
   DISCOUNT_CODE_INVALID: 'The discount code is invalid or not applicable.',
