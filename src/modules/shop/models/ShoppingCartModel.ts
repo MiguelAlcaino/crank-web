@@ -1,6 +1,7 @@
 import type { ShoppingCart as GqlShoppingCart } from '@/gql/graphql'
 import { formatPrice } from '@/modules/shop/utils/shop-utils'
 import { ShoppingCartItemModel } from './ShoppingCartItemModel'
+import { SHOPPING_CART_ERROR_MAP } from '../interfaces/shopping-cart-errors'
 
 type ShoppingCartTotal = {
   total: number | null
@@ -20,6 +21,11 @@ export class ShoppingCartModel {
   public readonly items: ShoppingCartItemModel[]
   private readonly totals: ShoppingCartTotal | null
 
+  /**
+   * Represents any error preventing the calculation of the cart totals.
+   */
+  public readonly calculationError: { type: string; code: string } | null
+
   constructor(gqlCart: GqlShoppingCart) {
     this.id = gqlCart.id
     this.currency = gqlCart.currency
@@ -37,8 +43,23 @@ export class ShoppingCartModel {
         giftCardAmount: gqlCart.total.giftCardAmount ?? 0,
         amountToPay: gqlCart.total.amountToPay ?? 0
       }
+      this.calculationError = null
     } else {
       this.totals = null
+      // Capture the error details if the total is not of the expected type
+      if (gqlCart.total) {
+        const type = gqlCart.total.__typename ?? 'Unknown'
+        // Use the map to get the standard error code, or fall back to the raw code from the API if available, or UNKNOWN
+        const errorCode =
+          SHOPPING_CART_ERROR_MAP[type] ?? (gqlCart.total as any).code ?? 'UNKNOWN_ERROR'
+
+        this.calculationError = {
+          type: type,
+          code: errorCode
+        }
+      } else {
+        this.calculationError = null
+      }
     }
   }
 

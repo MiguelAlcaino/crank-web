@@ -385,6 +385,7 @@ export const useShoppingCart = () => {
     isAnyGiftCardUpdating: computed(() => updatingGiftCardCodes.value.size > 0),
     itemsText: readonly(itemsText),
     isCartMutating: readonly(isCartMutating),
+    cartCalculationError: computed(() => detailedCart.value?.calculationError),
 
     // --- Methods ---
     fetchCartSummary,

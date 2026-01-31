@@ -21,6 +21,7 @@ import IconSmoothie from '@/modules/shop/components/icons/IconSmoothie.vue'
 // Composables, Services & Utilities
 import { useShoppingCart } from '../composables/useShoppingCart'
 import type { IconName } from '@/modules/shop/models/types'
+import { ERROR_MESSAGES } from '../interfaces/shopping-cart-errors'
 
 //
 // -----------------
@@ -35,7 +36,8 @@ const {
   isLoading,
   isItemUpdating,
   fetchCartDetails,
-  isCartMutating
+  isCartMutating,
+  cartCalculationError
 } = useShoppingCart()
 
 //
@@ -112,6 +114,10 @@ const handleCheckout = () => {
 
     <!-- Fixed Footer -->
     <div class="cart-footer">
+      <div v-if="cartCalculationError" class="alert alert-danger m-3 text-center font-weight-bold">
+        {{ ERROR_MESSAGES[cartCalculationError.code] || ERROR_MESSAGES.UNKNOWN_ERROR }} 
+      </div>
+
       <div
         class="total-bar d-flex justify-content-between align-items-center text-white font-weight-bold p-3"
       >
@@ -129,7 +135,7 @@ const handleCheckout = () => {
         <button
           class="btn btn-checkout btn-block"
           @click="handleCheckout"
-          :disabled="(detailedCart?.isEmpty ?? true) || isLoading"
+          :disabled="(detailedCart?.isEmpty ?? true) || isLoading || !!cartCalculationError"
         >
           LET'S DO THAT!
         </button>
