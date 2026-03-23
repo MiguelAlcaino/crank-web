@@ -639,36 +639,37 @@ const onFingerprintError = (error: Error) => {
                   <label for="digitalWallet">PAY WITH</label>
                   <img :src="applePay" alt="Apple Pay" class="apple-pay-logo" />
                 </div>
+
+                <section class="payment-footer">
+                  <button
+                    class="pay-now-btn"
+                    @click="handleSubmit"
+                    :disabled="isSubmitting || selectedPaymentMethod === ''"
+                  >
+                    <span
+                      v-if="isSubmitting"
+                      class="spinner-border spinner-border-sm"
+                      role="status"
+                      aria-hidden="true"
+                    ></span>
+                    <span v-if="!isSubmitting">PAY NOW</span>
+                    <span v-else style="margin-left: 0.5rem">PROCESSING...</span>
+                  </button>
+                  <div class="footer-disclaimer">
+                    <span>
+                      WE ACCEPT PAYMENTS ONLINE USING VISA AND MASTERCARD CREDIT/DEBIT CARD IN AED
+                    </span>
+                  </div>
+                  <div class="payment-logos">
+                    <img :src="cardsAccepted" alt="Cards Accepted" />
+                    <img :src="protectedByPayfort" alt="Protected by Payfort" />
+                  </div>
+                </section>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      <!-- Sticky Footer for Action Button -->
-      <footer class="payment-footer">
-        <button
-          class="pay-now-btn"
-          @click="handleSubmit"
-          :disabled="isSubmitting || selectedPaymentMethod === ''"
-        >
-          <span
-            v-if="isSubmitting"
-            class="spinner-border spinner-border-sm"
-            role="status"
-            aria-hidden="true"
-          ></span>
-          <span v-if="!isSubmitting">PAY NOW</span>
-          <span v-else style="margin-left: 0.5rem">PROCESSING...</span>
-        </button>
-        <div class="footer-disclaimer">
-          <span>WE ACCEPT PAYMENTS ONLINE USING VISA AND MASTERCARD CREDIT/DEBIT CARD IN AED</span>
-        </div>
-        <div class="payment-logos">
-          <img :src="cardsAccepted" alt="Cards Accepted" />
-          <img :src="protectedByPayfort" alt="Protected by Payfort" />
-        </div>
-      </footer>
     </div>
     <div v-if="currentStep === 'confirmation'">
       <CheckoutConfirmation
@@ -704,7 +705,7 @@ body {
 <style scoped>
 /* Main Layout */
 .main-container {
-  padding: 1.5rem 1.5rem 250px;
+  padding: 1.5rem;
 }
 
 .back-arrow {
@@ -847,15 +848,12 @@ select.form-control {
 
 /* Footer */
 .payment-footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
   background-color: #ffffff;
-  padding: 1rem 1.5rem 1.5rem;
-  border-top: 1px solid #e0e0e0;
-  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
-  z-index: 1000;
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .pay-now-btn {
@@ -916,6 +914,12 @@ select.form-control {
   max-width: 100%;
   width: auto;
   height: auto;
+}
+
+@media (max-width: 768px) {
+  .payment-footer {
+    padding: 1.25rem;
+  }
 }
 
 /* Utility */
