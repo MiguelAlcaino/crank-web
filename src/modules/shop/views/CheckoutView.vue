@@ -200,6 +200,33 @@ const isCheckoutBlockedByMobile = computed(() => {
 })
 
 const giftCardsCount = computed(() => detailedCart.value?.giftCardsCodes?.length ?? 0)
+const cardFormErrors = computed(() => {
+  const fieldLabels = {
+    cardholderName: 'Cardholder name',
+    cardNumber: 'Card number',
+    expiryMonth: 'Month',
+    expiryYear: 'Year',
+    cvv: 'CVV'
+  } as const
+  const formatErrorMessage = (label: string, message: string) => {
+    if (message === 'Field is required') return `${label} is required`
+    if (message === 'Invalid card number') return `${label} is invalid`
+    return `${label} ${message.charAt(0).toLowerCase()}${message.slice(1)}`
+  }
+
+  return Object.entries(fieldLabels).reduce<{ key: string; message: string }[]>(
+    (errors, [field, label]) => {
+      const fieldErrors = v$.value[field as keyof typeof fieldLabels].$errors.map((error) => ({
+        key: `${field}-${error.$uid}`,
+        message: formatErrorMessage(label, String(error.$message))
+      }))
+
+      errors.push(...fieldErrors)
+      return errors
+    },
+    []
+  )
+})
 
 //
 // -----------------
@@ -510,14 +537,14 @@ const onFingerprintError = (error: Error) => {
                   </div>
 
                   <!-- Card Details Form (Conditional) -->
-                  <div v-if="selectedPaymentMethod === 'newCard'">
-                    <div class="form-row">
-                      <div class="form-group col-12">
+                  <div v-if="selectedPaymentMethod === 'newCard'" class="card-fields-wrapper">
+                    <div class="card-fields-grid">
+                      <div class="card-field card-field--full">
                         <input
                           id="cardholderName"
                           v-model="formData.cardholderName"
                           type="text"
-                          class="form-control"
+                          class="form-control card-block-input"
                           placeholder="CARDHOLDER NAME"
                           maxlength="26"
                           @input="
@@ -527,42 +554,26 @@ const onFingerprintError = (error: Error) => {
                           "
                           required
                         />
-                        <small
-                          v-for="error in v$.cardholderName.$errors"
-                          :key="error.$uid"
-                          class="form-text"
-                          style="color: red"
-                        >
-                          {{ error.$message }}
-                        </small>
                       </div>
-                    </div>
-                    <div class="form-group">
-                      <input
-                        id="cardNumber"
-                        v-model="formData.cardNumber"
-                        type="tel"
-                        inputmode="numeric"
-                        class="form-control"
-                        placeholder="CARD NUMBER"
-                        maxlength="19"
-                        @input="formatCardNumber"
-                        required
-                      />
-                      <small
-                        v-for="error in v$.cardNumber.$errors"
-                        :key="error.$uid"
-                        class="form-text"
-                        style="color: red"
-                      >
-                        {{ error.$message }}
-                      </small>
-                    </div>
-                    <div class="form-row">
-                      <div class="form-group col-4">
+
+                      <div class="card-field card-field--full">
+                        <input
+                          id="cardNumber"
+                          v-model="formData.cardNumber"
+                          type="tel"
+                          inputmode="numeric"
+                          class="form-control card-block-input"
+                          placeholder="CARD NUMBER"
+                          maxlength="19"
+                          @input="formatCardNumber"
+                          required
+                        />
+                      </div>
+
+                      <div class="card-field">
                         <select
                           id="expiryMonth"
-                          class="custom-select form-control"
+                          class="custom-select form-control card-block-input"
                           v-model="formData.expiryMonth"
                           required
                         >
@@ -571,19 +582,12 @@ const onFingerprintError = (error: Error) => {
                             {{ m.toString().padStart(2, '0') }}
                           </option>
                         </select>
-                        <small
-                          v-for="error in v$.expiryMonth.$errors"
-                          :key="error.$uid"
-                          class="form-text"
-                          style="color: red"
-                        >
-                          {{ error.$message }}
-                        </small>
                       </div>
-                      <div class="form-group col-4">
+
+                      <div class="card-field">
                         <select
                           id="expiryYear"
-                          class="custom-select form-control"
+                          class="custom-select form-control card-block-input"
                           v-model="formData.expiryYear"
                           required
                         >
@@ -592,19 +596,12 @@ const onFingerprintError = (error: Error) => {
                             {{ y }}
                           </option>
                         </select>
-                        <small
-                          v-for="error in v$.expiryYear.$errors"
-                          :key="error.$uid"
-                          class="form-text"
-                          style="color: red"
-                        >
-                          {{ error.$message }}
-                        </small>
                       </div>
-                      <div class="form-group col-4">
+
+                      <div class="card-field">
                         <input
                           id="cvv"
-                          class="form-control"
+                          class="form-control card-block-input"
                           placeholder="CVV"
                           v-model="formData.cvv"
                           type="tel"
@@ -613,16 +610,14 @@ const onFingerprintError = (error: Error) => {
                           required
                           @input="formatCVV"
                         />
-                        <small
-                          v-for="error in v$.cvv.$errors"
-                          :key="error.$uid"
-                          class="form-text"
-                          style="color: red"
-                        >
-                          {{ error.$message }}
-                        </small>
                       </div>
                     </div>
+
+                    <ul v-if="cardFormErrors.length" class="card-form-errors">
+                      <li v-for="error in cardFormErrors" :key="error.key">
+                        {{ error.message }}
+                      </li>
+                    </ul>
                   </div>
                 </div>
 
@@ -783,10 +778,10 @@ body {
 /* Section Title */
 .section-title {
   color: #ff8c69;
-  font-weight: bold;
   font-size: 0.9rem;
   letter-spacing: 1px;
   margin-bottom: 1rem;
+  font-family: 'BigJohn', sans-serif;
 }
 
 /* Form Containers */
@@ -803,7 +798,6 @@ body {
 .digital-wallet-container {
   display: flex;
   align-items: center;
-  font-weight: bold;
   margin-bottom: 0.75rem;
 }
 
@@ -811,6 +805,7 @@ body {
 .digital-wallet-container label {
   margin-bottom: 0;
   cursor: pointer;
+  font-family: 'BigJohn', sans-serif;
 }
 
 .payment-option-header input,
@@ -819,11 +814,6 @@ body {
   height: 20px;
   margin-right: 1rem;
   accent-color: #ff8c69;
-}
-
-/* Form Inputs */
-.form-group {
-  margin-bottom: 0.75rem;
 }
 
 .form-control {
@@ -838,6 +828,70 @@ body {
 select.form-control {
   padding: 0.78rem 1rem;
   height: auto;
+}
+
+.card-fields-wrapper {
+  margin-top: 1rem;
+}
+
+.card-fields-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  background-color: #ffffff;
+  border: 1px solid #1f1f1f;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.card-field {
+  border-right: 1px solid #1f1f1f;
+}
+
+.card-field--full {
+  grid-column: 1 / -1;
+  border-right: 0;
+}
+
+.card-field--full + .card-field--full,
+.card-field--full + .card-field,
+.card-field + .card-field {
+  border-top: 1px solid #1f1f1f;
+}
+
+.card-fields-grid .card-field:nth-child(3) {
+  border-right: 1px solid #1f1f1f;
+}
+
+.card-fields-grid .card-field:last-child {
+  border-right: 0;
+}
+
+.card-block-input,
+select.card-block-input {
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  box-shadow: none;
+  min-height: 68px;
+  padding: 0.85rem 1.25rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.03em;
+}
+
+.card-block-input:focus {
+  box-shadow: none;
+}
+
+.card-form-errors {
+  margin: 1rem 0 0;
+  padding-left: 0;
+  list-style: none;
+  color: #ff8c69;
+  font-size: 0.85rem;
+}
+
+.card-form-errors li + li {
+  margin-top: 0.35rem;
 }
 
 /* Digital Wallet */
@@ -917,6 +971,34 @@ select.form-control {
 }
 
 @media (max-width: 768px) {
+  .card-fields-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .card-field {
+    border-right: 1px solid #1f1f1f;
+  }
+
+  .card-field--full {
+    grid-column: 1 / -1;
+    border-right: 0;
+  }
+
+  .card-fields-grid .card-field:nth-child(3) {
+    border-right: 1px solid #1f1f1f;
+  }
+
+  .card-fields-grid .card-field:last-child {
+    border-right: 0;
+  }
+
+  .card-block-input,
+  select.card-block-input {
+    min-height: 60px;
+    padding: 0.75rem 0.9rem;
+    font-size: 0.88rem;
+  }
+
   .payment-footer {
     padding: 1.25rem;
   }
