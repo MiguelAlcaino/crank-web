@@ -115,7 +115,7 @@ const handleCheckout = () => {
     <!-- Fixed Footer -->
     <div class="cart-footer">
       <div v-if="cartCalculationError" class="alert alert-danger m-3 text-center font-weight-bold">
-        {{ ERROR_MESSAGES[cartCalculationError.code] || ERROR_MESSAGES.UNKNOWN_ERROR }} 
+        {{ ERROR_MESSAGES[cartCalculationError.code] || ERROR_MESSAGES.UNKNOWN_ERROR }}
       </div>
 
       <div
