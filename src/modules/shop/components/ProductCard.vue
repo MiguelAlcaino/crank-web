@@ -1,17 +1,10 @@
 <script setup lang="ts">
-//
-// -----------------
-// IMPORTS
-// -----------------
-//
-
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 // Local Components
 import TermsModal from './TermsModal.vue'
 import VariantSelectorModal from './VariantSelectorModal.vue'
-
 // Models, Composables & Services
 import type { ProductModel } from '../models/ProductModel'
 import { useShoppingCart } from '../composables/useShoppingCart'
@@ -58,6 +51,8 @@ const pendingActionContext = ref<{
 
 const showAddSpinner = computed(() => isLocalAdding.value)
 const showBuySpinner = computed(() => isLocalBuying.value)
+const primaryVariant = computed(() => props.product.variants[0] ?? null)
+const cardPrice = computed(() => primaryVariant.value?.formattedPrice ?? '')
 
 const isAddButtonDisabled = computed(() => {
   return props.isInCart || isLocalAdding.value || isLocalBuying.value || isProcessingBuyNow.value
@@ -150,48 +145,41 @@ const handleModalCancel = () => {
 </script>
 
 <template>
-  <div>
-    <div
-      class="card border-0 rounded-0 mb-2 product-card"
-      style="background-color: #f4f4f4; height: 130px"
-    >
-      <div class="d-flex h-100">
-        <div class="p-2 flex-grow-1 text-center d-flex flex-column justify-content-center">
-          <h6 class="font-weight-bold mb-2">
-            {{ product.title }}
-            {{ product.variants.length === 1 ? ' / ' + product.variants[0].formattedPrice : '' }}
-          </h6>
-          <p class="mb-1 small">{{ product.subtitle }}</p>
-          <p class="text-muted small mb-0">
-            {{ product.alert?.title.toUpperCase() }}
+  <div class="product-card-shell">
+    <div class="product-card">
+      <div class="product-card__main">
+        <div class="product-card__copy">
+          <h3 class="product-card__title">{{ product.title }}</h3>
+          <p v-if="cardPrice" class="product-card__price">{{ cardPrice }}</p>
+          <p v-if="product.subtitle" class="product-card__meta">{{ product.subtitle }}</p>
+          <p v-if="product.alert?.title" class="product-card__notice">
+            {{ product.alert.title.toUpperCase() }}
           </p>
         </div>
-        <div class="d-flex flex-column" style="width: 90px; height: 100%">
-          <button
-            class="btn btn-dark btn-sm font-weight-bold flex-fill rounded-0"
-            @click="handleAddClick"
-            :disabled="isAddButtonDisabled"
-          >
-            <div v-if="showAddSpinner" class="spinner-border spinner-border-sm" role="status">
-              <span class="sr-only">Adding...</span>
-            </div>
+      </div>
 
-            <span v-else-if="isInCart" class="button-text">ADDED</span>
-
-            <span v-else class="button-text">{{ product.buttonText || 'ADD' }}</span>
-          </button>
-          <button
-            class="btn btn-sm font-weight-bold flex-fill rounded-0"
-            style="background-color: #ff8a73; color: white"
-            @click="handleBuyNowClick"
-            :disabled="isBuyButtonDisabled"
-          >
-            <div v-if="showBuySpinner" class="spinner-border spinner-border-sm" role="status">
-              <span class="sr-only">Processing...</span>
-            </div>
-            <span v-else class="button-text">BUY</span>
-          </button>
-        </div>
+      <div class="product-card__actions">
+        <button
+          class="product-card__button product-card__button--add"
+          @click="handleAddClick"
+          :disabled="isAddButtonDisabled"
+        >
+          <div v-if="showAddSpinner" class="spinner-border spinner-border-sm" role="status">
+            <span class="sr-only">Adding...</span>
+          </div>
+          <span v-else-if="isInCart" class="button-text">ADDED</span>
+          <span v-else class="button-text">{{ product.buttonText || 'ADD' }}</span>
+        </button>
+        <button
+          class="product-card__button product-card__button--buy"
+          @click="handleBuyNowClick"
+          :disabled="isBuyButtonDisabled"
+        >
+          <div v-if="showBuySpinner" class="spinner-border spinner-border-sm" role="status">
+            <span class="sr-only">Processing...</span>
+          </div>
+          <span v-else class="button-text">BUY</span>
+        </button>
       </div>
     </div>
 
@@ -217,24 +205,137 @@ const handleModalCancel = () => {
 <style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
 <style lang="css" scoped src="@/assets/main.css"></style>
 <style scoped>
-.btn:disabled {
+.button-text {
+  font-family: 'BigJohn', sans-serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+}
+
+.product-card-shell {
+  margin-bottom: 18px;
+}
+
+.product-card {
+  display: flex;
+  min-height: 132px;
+  background: #ffffff;
+  border: 1px solid #ece8e3;
+  box-shadow: 0 6px 18px rgba(17, 17, 17, 0.08);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(17, 17, 17, 0.12);
+}
+
+.product-card__main {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 18px;
+  min-width: 0;
+  text-align: center;
+}
+
+.product-card__copy {
+  min-width: 0;
+}
+
+.product-card__title {
+  margin: 0 0 8px;
+  color: #111111;
+  font-family: 'BigJohn', sans-serif;
+  font-size: 1rem;
+  line-height: 1.22;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.product-card__price {
+  margin: 0 0 6px;
+  color: #111111;
+  font-family: 'BigJohn', sans-serif;
+  font-size: 0.96rem;
+  line-height: 1.15;
+  text-transform: uppercase;
+}
+
+.product-card__meta {
+  margin: 0;
+  color: #595959;
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.product-card__notice {
+  margin: 8px 0 0;
+  color: #a4a4a4;
+  font-size: 0.66rem;
+  line-height: 1.2;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.product-card__actions {
+  display: flex;
+  flex-direction: column;
+  width: 96px;
+  flex: 0 0 96px;
+}
+
+.product-card__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  flex: 1 1 50%;
+  padding: 0 10px;
+  border: 0;
+  color: #ffffff;
+  transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.product-card__button:hover:not(:disabled) {
+  filter: brightness(0.96);
+}
+
+.product-card__button:disabled {
   background-color: #6c757d;
   opacity: 0.65;
   cursor: not-allowed;
 }
 
-.button-text {
-  font-family: 'BigJohn', sans-serif;
-  font-size: 14px;
-  letter-spacing: 0.5px;
+.product-card__button--add {
+  background: #111111;
 }
 
-.product-card {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.3s ease;
+.product-card__button--buy {
+  background: #ff8a73;
 }
 
-.product-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+@media (max-width: 767.98px) {
+  .product-card__main {
+    padding: 18px 14px;
+  }
+
+  .product-card__title {
+    font-size: 0.92rem;
+  }
+
+  .product-card__meta {
+    font-size: 0.8rem;
+  }
+
+  .button-text {
+    font-size: 0.76rem;
+  }
+
+  .product-card__actions {
+    width: 88px;
+    flex-basis: 88px;
+  }
 }
 </style>

@@ -156,7 +156,7 @@ onMounted(() => {
               <h4>{{ group.title }}</h4>
             </div>
             <div
-              class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3"
+              class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4"
               v-for="product in group.products"
               :key="product.id"
             >
@@ -168,7 +168,7 @@ onMounted(() => {
         <div v-else-if="activeTab === 'GIFT_CARDS'">
           <div class="row mt-3">
             <div
-              class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3"
+              class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4"
               v-for="giftCard in giftCards"
               :key="giftCard.id"
             >
