@@ -6,7 +6,7 @@
 //
 
 // Libs & Frameworks
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 
 // Local Components
 import ProductCard from '@/modules/shop/components/ProductCard.vue'
@@ -45,6 +45,26 @@ const {
   fetchCartSummary
 } = useShoppingCart()
 
+const visibleTabs = computed(() => {
+  return [
+    {
+      key: 'SESSIONS' as const,
+      label: 'SESSIONS',
+      isVisible: sessionsProductGroups.value.length > 0
+    },
+    {
+      key: 'GIFT_CARDS' as const,
+      label: 'GIFT CARDS',
+      isVisible: giftCards.value.length > 0
+    },
+    {
+      key: 'FB' as const,
+      label: 'F&B',
+      isVisible: false
+    }
+  ].filter((tab) => tab.isVisible)
+})
+
 //
 // -----------------
 // METHODS
@@ -74,40 +94,25 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="d-flex" style="height: 100vh">
+  <div class="products-view d-flex">
     <!-- Tab Bar -->
-    <div
-      class="d-flex flex-column align-items-center py-3"
-      style="min-width: 70px; width: 60px; background-color: black; color: white; font-weight: bold"
-    >
-      <div
-        class="my-3 text-vertical tab-item"
-        :class="{ 'active-tab': activeTab === 'SESSIONS' }"
-        @click="setActiveTab('SESSIONS')"
-        v-if="sessionsProductGroups.length > 0"
-      >
-        SESSIONS
-      </div>
-      <div
-        class="my-3 text-vertical tab-item"
-        :class="{ 'active-tab': activeTab === 'GIFT_CARDS' }"
-        @click="setActiveTab('GIFT_CARDS')"
-        v-if="giftCards.length > 0"
-      >
-        GIFT CARDS
-      </div>
-      <div
-        class="my-3 text-vertical tab-item"
-        :class="{ 'active-tab': activeTab === 'FB' }"
-        @click="setActiveTab('FB')"
-        v-if="false"
-      >
-        F&B
-      </div>
-    </div>
+    <aside class="shop-sidebar">
+      <nav class="shop-sidebar__rail" aria-label="Shop categories">
+        <button
+          v-for="tab in visibleTabs"
+          :key="tab.key"
+          type="button"
+          class="shop-sidebar__tab"
+          :class="{ 'shop-sidebar__tab--active': activeTab === tab.key }"
+          @click="setActiveTab(tab.key)"
+        >
+          <span class="shop-sidebar__tab-label">{{ tab.label }}</span>
+        </button>
+      </nav>
+    </aside>
 
     <!-- Main Content -->
-    <div class="flex-grow-1 bg-light p-2 overflow-auto">
+    <div class="products-content flex-grow-1 bg-light p-2 overflow-auto">
       <div class="d-flex justify-content-end align-items-center mb-4 w-100">
         <div class="shopping-bag-icon">
           <ShoppingBagIcon></ShoppingBagIcon>
@@ -181,6 +186,15 @@ onMounted(() => {
 <style lang="css" scoped src="bootstrap/dist/css/bootstrap.min.css"></style>
 <style lang="css" scoped src="@/assets/main.css"></style>
 <style scoped>
+.products-view {
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+.products-content {
+  min-width: 0;
+}
+
 .shopping-bag-icon {
   top: 20px;
   right: 20px;
@@ -191,37 +205,116 @@ p {
   font-family: 'Avenir', sans-serif;
 }
 
-.text-vertical {
+.shop-sidebar {
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  height: 100vh;
+  padding: 10px 0 10px 10px;
+  background: #f5f5f5;
+}
+
+.shop-sidebar__rail {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 82px;
+  height: 100%;
+  padding: 28px 12px;
+  background: #050505;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.15);
+}
+
+.shop-sidebar__rail::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -2px;
+  width: 3px;
+  height: 100%;
+  background: #ff8b78;
+}
+
+.shop-sidebar__tab {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1 1 0;
+  width: 100%;
+  min-height: 128px;
+  padding: 8px 0;
+  color: rgba(255, 255, 255, 0.74);
+  background: transparent;
+  border: 0;
+  border-radius: 18px 0 0 18px;
+  cursor: pointer;
+  transition: color 0.25s ease, transform 0.25s ease, background-color 0.25s ease;
+}
+
+.shop-sidebar__tab:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateX(-1px);
+}
+
+.shop-sidebar__tab:focus-visible {
+  outline: 2px solid #ff8b78;
+  outline-offset: -2px;
+}
+
+.shop-sidebar__tab--active {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.shop-sidebar__tab--active::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -11px;
+  width: 12px;
+  height: 56px;
+  border-radius: 0 12px 12px 0;
+  background: #050505;
+  transform: translateY(-50%);
+}
+
+.shop-sidebar__tab-label {
   writing-mode: vertical-rl;
   transform: rotate(180deg);
-  letter-spacing: 2px;
+  letter-spacing: 3px;
   font-family: 'BigJohn', sans-serif;
+  font-size: 1.05rem;
+  line-height: 1;
 }
 
-.tab-item {
-  cursor: pointer;
-  transition: all 0.3s ease;
-  padding: 10px 0;
-}
+@media (max-width: 991.98px) {
+  .shop-sidebar {
+    padding-left: 0;
+  }
 
-.tab-item:hover {
-  color: #ccc;
-}
+  .shop-sidebar__rail {
+    width: 68px;
+    gap: 12px;
+    padding-block: 18px;
+  }
 
-.active-tab {
-  color: #f8f9fa;
-  text-decoration: underline;
-  text-decoration-thickness: 3px;
-  text-underline-offset: 4px;
-  font-weight: bolder;
-}
+  .shop-sidebar__tab {
+    min-height: 108px;
+  }
 
-/* Fallback for browsers that do not support text-decoration-thickness */
-@supports not (text-decoration-thickness: 1px) {
-  .active-tab {
-    text-decoration: none;
-    box-shadow: inset 0 -3px 0 #f8f9fa;
-    padding-bottom: 2px;
+  .shop-sidebar__tab--active::after {
+    right: -9px;
+    width: 10px;
+    height: 44px;
+  }
+
+  .shop-sidebar__tab-label {
+    font-size: 0.95rem;
+    letter-spacing: 2.6px;
   }
 }
 </style>
