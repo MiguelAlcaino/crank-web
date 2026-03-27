@@ -7,7 +7,7 @@
 
 // Libs & Frameworks
 import { computed, inject, onMounted, reactive, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 // Vuelidate Validators
 import useVuelidate from '@vuelidate/core'
@@ -23,6 +23,7 @@ import GiftCardForm from '@/modules/shop/components/GiftCardForm.vue'
 
 // Composables, Services & Utilities
 import { useCheckout } from '@/modules/shop/composables/useCheckout'
+import { useApplePay } from '@/modules/shop/composables/useApplePay'
 import { useAuth } from '@/modules/auth/composables/useAuth'
 import { useShoppingCart } from '@/modules/shop/composables/useShoppingCart'
 import { createPayfortFormManager } from '@/modules/shop/services/PayfortFormManager'
@@ -40,6 +41,7 @@ import applePay from '../assets/images/apple_pay_button_pay.png'
 import { appStore } from '@/stores/appStorage'
 import { SiteEnum } from '@/modules/shared/interfaces/site.enum'
 import { useFlutterBridge } from '@/modules/shop/composables/useFlutterBridge'
+import { useShopApiService } from '@/modules/shop/composables/useShopApiService'
 
 //
 // -----------------
@@ -49,10 +51,13 @@ import { useFlutterBridge } from '@/modules/shop/composables/useFlutterBridge'
 
 const apiService = inject<IApiService>('gqlApiService')!
 const { error: checkoutError, payfortFormHtml, initiatePayment } = useCheckout()
+const { isApplePayAvailable, fetchApplePayConfig, startApplePayPayment } = useApplePay()
 const { detailedCart, fetchCartDetails, isLoading, itemsText } = useShoppingCart()
 const { user, isAuthenticated, isLoading: isAuthLoading, fetchCurrentUser } = useAuth(apiService)
 const { isInWebview, webviewToken, sendFailure } = useFlutterBridge()
+const shopApi = useShopApiService()
 const route = useRoute()
+const router = useRouter()
 
 //
 // -----------------
@@ -266,7 +271,26 @@ const handleSubmit = async () => {
 
     window.scrollTo({ top: 0, behavior: 'smooth' })
   } else if (selectedPaymentMethod.value === 'digitalWallet') {
-    showErrorModal('Not Implemented', 'Digital wallet not supported yet.')
+    isSubmitting.value = true
+    try {
+      const { isLocked, merchantReference } = await shopApi.lockShoppingCart(appStore().site)
+      if (!isLocked) {
+        throw new Error('Could not secure the shopping cart for payment. Please try again.')
+      }
+
+      const amount = detailedCart.value?.amountToPay ?? 0
+      const description = itemsText.value || 'Purchase'
+      const success = await startApplePayPayment(merchantReference, amount, description)
+
+      if (success) {
+        router.push({ name: 'after-checkout', query: { merchantReference } })
+      }
+    } catch (e: any) {
+      if (isInWebview.value) sendFailure()
+      showErrorModal('Payment Error', e?.message || 'An unexpected error occurred.')
+    } finally {
+      isSubmitting.value = false
+    }
   }
 }
 
@@ -419,6 +443,7 @@ onMounted(() => {
 
   fetchCurrentUser()
   fetchCartDetails()
+  fetchApplePayConfig()
 })
 
 //
@@ -621,19 +646,21 @@ const onFingerprintError = (error: Error) => {
                   </div>
                 </div>
 
-                <!-- Digital Wallet Payment Option -->
-                <p class="section-title mt-4">PAY WITH YOUR DIGITAL WALLET</p>
-                <div class="digital-wallet-container">
-                  <input
-                    type="radio"
-                    id="digitalWallet"
-                    value="digitalWallet"
-                    name="paymentMethod"
-                    v-model="selectedPaymentMethod"
-                  />
-                  <label for="digitalWallet">PAY WITH</label>
-                  <img :src="applePay" alt="Apple Pay" class="apple-pay-logo" />
-                </div>
+                <!-- Digital Wallet Payment Option (Safari only) -->
+                <template v-if="isApplePayAvailable">
+                  <p class="section-title mt-4">PAY WITH YOUR DIGITAL WALLET</p>
+                  <div class="digital-wallet-container">
+                    <input
+                      type="radio"
+                      id="digitalWallet"
+                      value="digitalWallet"
+                      name="paymentMethod"
+                      v-model="selectedPaymentMethod"
+                    />
+                    <label for="digitalWallet">PAY WITH</label>
+                    <img :src="applePay" alt="Apple Pay" class="apple-pay-logo" />
+                  </div>
+                </template>
 
                 <section class="payment-footer">
                   <button

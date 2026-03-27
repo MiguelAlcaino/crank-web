@@ -18,6 +18,9 @@ import {
   EmptyShoppingCartDocument,
   type EmptyShoppingCartMutation,
   type EmptyShoppingCartMutationVariables,
+  GetApplePayConfigDocument,
+  type GetApplePayConfigQuery,
+  type GetApplePayConfigQueryVariables,
   GeneratePayfortFormDocument,
   type GeneratePayfortFormMutation,
   type GeneratePayfortFormMutationVariables,
@@ -706,6 +709,41 @@ export class ShopApiService implements IShopApiService {
     } catch (error) {
       console.error('ApiService: Error fetching shopping cart:', error)
       throw new Error('Failed to fetch shopping cart.')
+    }
+  }
+
+  async getApplePayConfig(
+    site: SiteEnum
+  ): Promise<{ currencyCode: string; countryCode: string; displayName: string }> {
+    try {
+      const { data, errors } = await this.authApiClient.query<
+        GetApplePayConfigQuery,
+        GetApplePayConfigQueryVariables
+      >({
+        query: GetApplePayConfigDocument,
+        variables: { site },
+        fetchPolicy: 'network-only'
+      })
+
+      if (errors && errors.length > 0) {
+        throw new ApiError(
+          `GraphQL error fetching Apple Pay config: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      const config = data?.applePayConfig
+      if (!config) {
+        throw new Error('Did not receive Apple Pay configuration from the server.')
+      }
+
+      return {
+        currencyCode: config.currencyCode,
+        countryCode: config.countryCode,
+        displayName: config.displayName
+      }
+    } catch (error) {
+      console.error('ApiService.getApplePayConfig failed:', error)
+      throw error
     }
   }
 }
