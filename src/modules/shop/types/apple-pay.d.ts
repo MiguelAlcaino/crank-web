@@ -44,6 +44,7 @@ declare global {
 
     constructor(version: number, paymentRequest: ApplePayPaymentRequest)
 
+    abort(): void
     begin(): void
     completeMerchantValidation(merchantSession: unknown): void
     completeShippingContactSelection(
