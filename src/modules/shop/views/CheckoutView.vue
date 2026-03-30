@@ -273,17 +273,12 @@ const handleSubmit = async () => {
   } else if (selectedPaymentMethod.value === 'digitalWallet') {
     isSubmitting.value = true
     try {
-      const { isLocked, merchantReference } = await shopApi.lockShoppingCart(appStore().site)
-      if (!isLocked) {
-        throw new Error('Could not secure the shopping cart for payment. Please try again.')
-      }
-
       const amount = detailedCart.value?.amountToPay ?? 0
       const description = itemsText.value || 'Purchase'
-      const success = await startApplePayPayment(merchantReference, amount, description)
+      const success = await startApplePayPayment(amount, description)
 
-      if (success) {
-        router.push({ name: 'after-checkout', query: { merchantReference } })
+      if (success.result) {
+        router.push({ name: 'after-checkout', query: { merchantReference: success.merchantReference } })
       }
     } catch (e: any) {
       if (isInWebview.value) sendFailure()

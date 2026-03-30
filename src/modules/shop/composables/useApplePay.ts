@@ -3,6 +3,11 @@ import { useShopApiService } from '@/modules/shop/composables/useShopApiService'
 import { appStore } from '@/stores/appStorage'
 import { useAuthenticationStore } from '@/stores/authToken'
 
+type ApplePayResult = {
+  result: boolean
+  merchantReference: string
+}
+
 type ApplePayConfigData = {
   currencyCode: string
   countryCode: string
@@ -30,11 +35,10 @@ export const useApplePay = () => {
     }
   }
 
-  async function startApplePayPayment(
-    merchantReference: string,
+  function startApplePayPayment(
     amount: number,
     itemDescription: string
-  ): Promise<boolean> {
+  ): Promise<ApplePayResult> {
     if (!config.value) {
       throw new Error('Apple Pay configuration not loaded.')
     }
@@ -45,25 +49,35 @@ export const useApplePay = () => {
     const applePayConfig = config.value
     const authStore = useAuthenticationStore()
 
-    return new Promise<boolean>((resolve) => {
-      const paymentRequest: ApplePayPaymentRequest = {
-        currencyCode: applePayConfig.currencyCode,
-        countryCode: applePayConfig.countryCode,
-        lineItems: [{ label: itemDescription, amount }],
-        total: {
-          label: applePayConfig.displayName,
-          amount
-        },
-        supportedNetworks: ['amex', 'masterCard', 'visa'],
-        merchantCapabilities: ['supports3DS']
-      }
+    // ApplePaySession must be created synchronously from a user gesture handler.
+    // Any async work (like locking the cart) must happen inside session callbacks.
+    const paymentRequest: ApplePayPaymentRequest = {
+      currencyCode: applePayConfig.currencyCode,
+      countryCode: applePayConfig.countryCode,
+      lineItems: [{ label: itemDescription, amount }],
+      total: {
+        label: applePayConfig.displayName,
+        amount
+      },
+      supportedNetworks: ['amex', 'masterCard', 'visa'],
+      merchantCapabilities: ['supports3DS']
+    }
 
-      const session = new ApplePaySession(1, paymentRequest)
+    const session = new ApplePaySession(1, paymentRequest)
 
-      let paymentProcessStarted = false
+    let paymentProcessStarted = false
+    let merchantReference = ''
 
+    return new Promise<ApplePayResult>((resolve) => {
       session.onvalidatemerchant = async (event) => {
         try {
+          // Lock the cart here (inside the async callback) to avoid breaking the user gesture chain
+          const lockResult = await shopApi.lockShoppingCart(appStore().site)
+          if (!lockResult.isLocked) {
+            throw new Error('Could not secure the shopping cart for payment. Please try again.')
+          }
+          merchantReference = lockResult.merchantReference
+
           const response = await fetch(
             `${paymentsBaseUrl}/apple-pay/verify-merchant?u=${encodeURIComponent(event.validationURL)}`,
             {
@@ -76,10 +90,10 @@ export const useApplePay = () => {
           session.completeMerchantValidation(merchantSession)
         } catch (e) {
           console.error('Merchant validation failed:', e)
-          error.value = 'Merchant validation failed.'
-          session.completePayment(ApplePaySession.STATUS_FAILURE)
+          error.value = e instanceof Error ? e.message : 'Merchant validation failed.'
+          session.abort()
           isProcessing.value = false
-          resolve(false)
+          resolve({ result: false, merchantReference })
         }
       }
 
@@ -151,27 +165,27 @@ export const useApplePay = () => {
           if (response.ok) {
             session.completePayment(ApplePaySession.STATUS_SUCCESS)
             isProcessing.value = false
-            resolve(true)
+            resolve({ result: true, merchantReference })
           } else {
             console.error('Payment processing failed:', data)
             session.completePayment(ApplePaySession.STATUS_FAILURE)
             error.value = 'Payment processing failed.'
             isProcessing.value = false
-            resolve(false)
+            resolve({ result: false, merchantReference })
           }
         } catch (e) {
           console.error('Error sending payment token:', e)
           session.completePayment(ApplePaySession.STATUS_FAILURE)
           error.value = 'An error occurred while processing the payment.'
           isProcessing.value = false
-          resolve(false)
+          resolve({ result: false, merchantReference })
         }
       }
 
       session.oncancel = () => {
         if (!paymentProcessStarted) {
           isProcessing.value = false
-          resolve(false)
+          resolve({ result: false, merchantReference })
         }
       }
 
