@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { debounce } from 'lodash'
 
 // Local Components
 import TermsModal from './TermsModal.vue'
+import QuantityStepper from './QuantityStepper.vue'
 import VariantSelectorModal from './VariantSelectorModal.vue'
 // Models, Composables & Services
 import type { ProductModel } from '../models/ProductModel'
@@ -25,7 +27,17 @@ const props = defineProps<{
 // -----------------
 //
 const router = useRouter()
-const { buyNow, isProcessingBuyNow, addToCartLight } = useShoppingCart()
+const {
+  buyNow,
+  isProcessingBuyNow,
+  addToCartLight,
+  cartItems,
+  isItemUpdating,
+  updateItemQuantity,
+  removeFromCart
+} = useShoppingCart()
+
+const DRAFT_SYNC_DELAY_MS = 800
 
 //
 // -----------------
@@ -35,6 +47,8 @@ const { buyNow, isProcessingBuyNow, addToCartLight } = useShoppingCart()
 
 const isLocalAdding = ref(false)
 const isLocalBuying = ref(false)
+const localDraftQuantity = ref<number | null>(null)
+const isLocalDraftSyncing = ref(false)
 
 const isAlertModalVisible = ref(false)
 const isVariantModalVisible = ref(false)
@@ -52,14 +66,68 @@ const pendingActionContext = ref<{
 const showAddSpinner = computed(() => isLocalAdding.value)
 const showBuySpinner = computed(() => isLocalBuying.value)
 const primaryVariant = computed(() => props.product.variants[0] ?? null)
+const primaryVariantId = computed(() => primaryVariant.value?.id ?? null)
 const cardPrice = computed(() => primaryVariant.value?.formattedPrice ?? '')
+const usesInlineDraftStepper = computed(() => props.product.variants.length === 1)
+const cartEntry = computed(() => {
+  if (!primaryVariantId.value) return null
+  return cartItems.value.find((item) => item.variant.id === primaryVariantId.value) ?? null
+})
+const selectedQuantity = computed(() => cartEntry.value?.quantity ?? 0)
+const displayedQuantity = computed(() => localDraftQuantity.value ?? selectedQuantity.value)
+const isQuantityUpdating = computed(() => {
+  if (isLocalDraftSyncing.value) return true
+  if (!cartEntry.value) return false
+  return isItemUpdating(cartEntry.value.id).value
+})
+const showQuantityMock = computed(() => {
+  return (
+    usesInlineDraftStepper.value &&
+    (displayedQuantity.value > 0 ||
+      localDraftQuantity.value !== null ||
+      isLocalDraftSyncing.value ||
+      isQuantityUpdating.value)
+  )
+})
 
 const isAddButtonDisabled = computed(() => {
-  return props.isInCart || isLocalAdding.value || isLocalBuying.value || isProcessingBuyNow.value
+  return (
+    showQuantityMock.value || isLocalAdding.value || isLocalBuying.value || isProcessingBuyNow.value
+  )
 })
 const isBuyButtonDisabled = computed(() => {
   return isLocalAdding.value || isLocalBuying.value || isProcessingBuyNow.value
 })
+
+const syncDraftQuantityWithServer = async (newQuantity: number) => {
+  if (!usesInlineDraftStepper.value || !primaryVariantId.value) return
+
+  const serverQuantity = selectedQuantity.value
+  if (newQuantity === serverQuantity) return
+
+  isLocalDraftSyncing.value = true
+
+  try {
+    if (newQuantity <= 0) {
+      if (cartEntry.value) {
+        await removeFromCart(cartEntry.value.id)
+      }
+      return
+    }
+
+    if (cartEntry.value) {
+      await updateItemQuantity({ itemId: cartEntry.value.id, newQuantity })
+    } else {
+      await addToCartLight(primaryVariantId.value, newQuantity)
+    }
+  } finally {
+    isLocalDraftSyncing.value = false
+  }
+}
+
+const debouncedSyncDraftQuantity = debounce((newQuantity: number) => {
+  void syncDraftQuantityWithServer(newQuantity)
+}, DRAFT_SYNC_DELAY_MS)
 
 //
 // -----------------
@@ -91,6 +159,11 @@ const executePendingAction = async () => {
   pendingActionContext.value = null
 
   if (action === 'add') {
+    if (usesInlineDraftStepper.value) {
+      queueDraftQuantityChange(Math.max(displayedQuantity.value, 0) + 1)
+      return
+    }
+
     isLocalAdding.value = true
     try {
       await addToCartLight(variantId)
@@ -100,7 +173,14 @@ const executePendingAction = async () => {
   } else if (action === 'buy') {
     isLocalBuying.value = true
     try {
-      const success = await buyNow(variantId)
+      debouncedSyncDraftQuantity.cancel()
+
+      const buyQuantity =
+        usesInlineDraftStepper.value && primaryVariantId.value === variantId
+          ? Math.max(displayedQuantity.value, 1)
+          : 1
+
+      const success = await buyNow(variantId, buyQuantity)
       if (success) {
         await router.push('/shop/checkout')
       }
@@ -118,6 +198,15 @@ const handleAddClick = () => {
 const handleBuyNowClick = () => {
   if (isBuyButtonDisabled.value) return
   startActionFlow('buy')
+}
+
+const queueDraftQuantityChange = (newQuantity: number) => {
+  localDraftQuantity.value = newQuantity
+  debouncedSyncDraftQuantity(newQuantity)
+}
+
+const handleQuantityChange = (newQuantity: number) => {
+  queueDraftQuantityChange(newQuantity)
 }
 
 const handleVariantSelected = (selectedVariantId: string) => {
@@ -142,6 +231,18 @@ const handleModalCancel = () => {
   isAlertModalVisible.value = false
   isVariantModalVisible.value = false
 }
+
+watch([selectedQuantity, isLocalDraftSyncing], ([newQuantity, syncing]) => {
+  if (localDraftQuantity.value === null || syncing) return
+
+  if (newQuantity === localDraftQuantity.value) {
+    localDraftQuantity.value = null
+  }
+})
+
+onBeforeUnmount(() => {
+  debouncedSyncDraftQuantity.cancel()
+})
 </script>
 
 <template>
@@ -159,7 +260,20 @@ const handleModalCancel = () => {
       </div>
 
       <div class="product-card__actions">
+        <div
+          v-if="showQuantityMock"
+          class="product-card__quantity-panel"
+          :class="{ 'product-card__quantity-panel--loading': isQuantityUpdating }"
+        >
+          <QuantityStepper
+            :model-value="displayedQuantity"
+            :min="0"
+            :disabled="isQuantityUpdating || isLocalBuying || isProcessingBuyNow"
+            @change="handleQuantityChange"
+          />
+        </div>
         <button
+          v-else
           class="product-card__button product-card__button--add"
           @click="handleAddClick"
           :disabled="isAddButtonDisabled"
@@ -167,8 +281,7 @@ const handleModalCancel = () => {
           <div v-if="showAddSpinner" class="spinner-border spinner-border-sm" role="status">
             <span class="sr-only">Adding...</span>
           </div>
-          <span v-else-if="isInCart" class="button-text">ADDED</span>
-          <span v-else class="button-text">{{ product.buttonText || 'ADD' }}</span>
+          <span v-else class="button-text">ADD</span>
         </button>
         <button
           class="product-card__button product-card__button--buy"
@@ -303,7 +416,6 @@ const handleModalCancel = () => {
 }
 
 .product-card__button:disabled {
-  background-color: #6c757d;
   opacity: 0.65;
   cursor: not-allowed;
 }
@@ -314,6 +426,48 @@ const handleModalCancel = () => {
 
 .product-card__button--buy {
   background: #ff8a73;
+}
+
+.product-card__button--add:disabled {
+  background: #111111;
+}
+
+.product-card__button--buy:disabled {
+  background: #ff8a73;
+}
+
+.product-card__quantity-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 50%;
+  padding: 0 8px;
+  background: #f8f4ef;
+  border-bottom: 1px solid #ece8e3;
+}
+
+.product-card__quantity-panel--loading {
+  opacity: 0.72;
+}
+
+.product-card__quantity-panel :deep(.quantity-stepper) {
+  height: 100%;
+  gap: 4px;
+}
+
+.product-card__quantity-panel :deep(.btn-stepper) {
+  min-width: 24px;
+  padding: 0.35rem 0.2rem;
+  color: #111111;
+  font-family: 'BigJohn', sans-serif;
+  font-size: 1.05rem;
+}
+
+.product-card__quantity-panel :deep(.quantity-display) {
+  min-width: 18px;
+  color: #111111;
+  font-family: 'BigJohn', sans-serif;
+  font-size: 0.9rem;
 }
 
 @media (max-width: 767.98px) {
@@ -336,6 +490,19 @@ const handleModalCancel = () => {
   .product-card__actions {
     width: 88px;
     flex-basis: 88px;
+  }
+
+  .product-card__quantity-panel {
+    padding-inline: 4px;
+  }
+
+  .product-card__quantity-panel :deep(.btn-stepper) {
+    min-width: 20px;
+    font-size: 0.95rem;
+  }
+
+  .product-card__quantity-panel :deep(.quantity-display) {
+    font-size: 0.82rem;
   }
 }
 </style>

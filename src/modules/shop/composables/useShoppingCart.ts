@@ -116,10 +116,10 @@ export const useShoppingCart = () => {
    * This method is intended for scenarios where a full cart refresh is unnecessary.
    * @param variantId The ID of the product to add.
    */
-  const addToCartLight = async (variantId: string) => {
+  const addToCartLight = async (variantId: string, quantity = 1) => {
     await handleCartUpdate(
       variantId,
-      shopApi.addItemToShoppingCartLight(appStore().site, variantId, 1)
+      shopApi.addItemToShoppingCartLight(appStore().site, variantId, quantity)
     )
   }
 
@@ -192,7 +192,7 @@ export const useShoppingCart = () => {
    * @param {string} variantId - The ID of the product to buy now.
    * @returns {Promise<boolean>} - True if the process completed successfully, false if the user cancelled or an error occurred.
    */
-  async function buyNow(variantId: string): Promise<boolean> {
+  async function buyNow(variantId: string, quantity = 1): Promise<boolean> {
     // Edge Case: Check if the product is already the only item in the cart.
     const isAlreadyTheOnlyItem =
       cartState.value?.items.length === 1 && cartState.value.items[0].variant.id === variantId
@@ -232,7 +232,7 @@ export const useShoppingCart = () => {
       }
 
       // Action 2: Add the new item to the now-empty cart.
-      await addToCartLight(variantId)
+      await addToCartLight(variantId, quantity)
 
       // After the operations, check if any of them set an error in our state.
       if (error.value) {
@@ -329,6 +329,24 @@ export const useShoppingCart = () => {
   })
 
   /**
+   * @description Exposes cart items in a normalized lightweight shape
+   * so product cards can reflect quantity state without needing the full cart page model.
+   */
+  const cartItems = computed(() => {
+    if (!cartState.value?.items) {
+      return [] as Array<{ id: string; quantity: number; variant: { id: string } }>
+    }
+
+    return cartState.value.items.map((item) => ({
+      id: item.id,
+      quantity: item.quantity,
+      variant: {
+        id: item.variant.id
+      }
+    }))
+  })
+
+  /**
    * @description Returns the full ShoppingCart class instance if available, otherwise null.
    * This is what the main cart page should use to display totals.
    */
@@ -379,6 +397,7 @@ export const useShoppingCart = () => {
     cartError: readonly(cartError),
     totalItemsInCart,
     productIdsInCart,
+    cartItems,
     detailedCart,
     isItemUpdating,
     isCodeUpdating,
