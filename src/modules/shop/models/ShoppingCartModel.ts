@@ -81,6 +81,10 @@ export class ShoppingCartModel {
    * Returns the calculated subtotal as a formatted string.
    * @returns A string representing the formatted price.
    */
+  public get amountToPay(): number {
+    return this.totals?.amountToPay ?? 0
+  }
+
   public get formattedSubtotal(): string {
     return formatPrice(this.totals?.subTotal, this.currency)
   }

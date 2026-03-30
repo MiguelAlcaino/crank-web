@@ -181,4 +181,15 @@ export interface IShopApiService {
    * @return A promise that resolves to the number of remaining credits.   *
    * */
   getRemainingCredits(): Promise<number>
+
+  /**
+   * Fetches the Apple Pay configuration for a given site.
+   * @param site The site to fetch the config for.
+   * @returns A promise that resolves with the Apple Pay config.
+   */
+  getApplePayConfig(site: SiteEnum): Promise<{
+    currencyCode: string
+    countryCode: string
+    displayName: string
+  }>
 }

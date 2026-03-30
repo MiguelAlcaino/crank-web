@@ -1,0 +1,7 @@
+query GetApplePayConfig($site: SiteEnum!) {
+  applePayConfig(site: $site) {
+    currencyCode
+    countryCode
+    displayName
+  }
+}
