@@ -6,6 +6,7 @@
 //
 
 // Libs & Framework
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 // Composables, Services & Utilities
@@ -36,7 +37,8 @@ const props = withDefaults(
 //
 
 const router = useRouter()
-const { totalItemsInCart, isLoading } = useShoppingCart()
+const { totalItemsInCart, isLoading, isCartMutating } = useShoppingCart()
+const showSpinner = computed(() => isLoading.value || isCartMutating.value)
 
 //
 // -----------------
@@ -80,7 +82,7 @@ const goToCart = () => {
     </div>
 
     <span class="number">
-      <template v-if="isLoading">
+      <template v-if="showSpinner">
         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
       </template>
       <template v-else>
