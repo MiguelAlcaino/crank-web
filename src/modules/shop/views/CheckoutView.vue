@@ -278,7 +278,10 @@ const handleSubmit = async () => {
       const success = await startApplePayPayment(amount, description)
 
       if (success.result) {
-        router.push({ name: 'after-checkout', query: { merchantReference: success.merchantReference } })
+        router.push({
+          name: 'after-checkout',
+          query: { merchantReference: success.merchantReference }
+        })
       }
     } catch (e: any) {
       if (isInWebview.value) sendFailure()

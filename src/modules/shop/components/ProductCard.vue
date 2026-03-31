@@ -32,9 +32,13 @@ const {
   isProcessingBuyNow,
   addToCartLight,
   cartItems,
+  isCartMutating,
   isItemUpdating,
   updateItemQuantity,
-  removeFromCart
+  removeFromCart,
+  activeDraftVariantId,
+  setActiveDraftVariant,
+  clearActiveDraftVariant
 } = useShoppingCart()
 
 const DRAFT_SYNC_DELAY_MS = 800
@@ -80,7 +84,13 @@ const isQuantityUpdating = computed(() => {
   if (!cartEntry.value) return false
   return isItemUpdating(cartEntry.value.id).value
 })
-const showQuantityMock = computed(() => {
+const isCurrentDraftCard = computed(() => {
+  return primaryVariantId.value !== null && activeDraftVariantId.value === primaryVariantId.value
+})
+const isAnotherDraftActive = computed(() => {
+  return activeDraftVariantId.value !== null && !isCurrentDraftCard.value
+})
+const showQuantityStepper = computed(() => {
   return (
     usesInlineDraftStepper.value &&
     (displayedQuantity.value > 0 ||
@@ -92,11 +102,22 @@ const showQuantityMock = computed(() => {
 
 const isAddButtonDisabled = computed(() => {
   return (
-    showQuantityMock.value || isLocalAdding.value || isLocalBuying.value || isProcessingBuyNow.value
+    showQuantityStepper.value ||
+    activeDraftVariantId.value !== null ||
+    isCartMutating.value ||
+    isLocalAdding.value ||
+    isLocalBuying.value ||
+    isProcessingBuyNow.value
   )
 })
 const isBuyButtonDisabled = computed(() => {
-  return isLocalAdding.value || isLocalBuying.value || isProcessingBuyNow.value
+  return (
+    activeDraftVariantId.value !== null ||
+    isCartMutating.value ||
+    isLocalAdding.value ||
+    isLocalBuying.value ||
+    isProcessingBuyNow.value
+  )
 })
 
 const syncDraftQuantityWithServer = async (newQuantity: number) => {
@@ -201,6 +222,9 @@ const handleBuyNowClick = () => {
 }
 
 const queueDraftQuantityChange = (newQuantity: number) => {
+  if (primaryVariantId.value) {
+    setActiveDraftVariant(primaryVariantId.value)
+  }
   localDraftQuantity.value = newQuantity
   debouncedSyncDraftQuantity(newQuantity)
 }
@@ -237,11 +261,13 @@ watch([selectedQuantity, isLocalDraftSyncing], ([newQuantity, syncing]) => {
 
   if (newQuantity === localDraftQuantity.value) {
     localDraftQuantity.value = null
+    clearActiveDraftVariant(primaryVariantId.value)
   }
 })
 
 onBeforeUnmount(() => {
   debouncedSyncDraftQuantity.cancel()
+  clearActiveDraftVariant(primaryVariantId.value)
 })
 </script>
 
@@ -261,14 +287,17 @@ onBeforeUnmount(() => {
 
       <div class="product-card__actions">
         <div
-          v-if="showQuantityMock"
+          v-if="showQuantityStepper"
           class="product-card__quantity-panel"
           :class="{ 'product-card__quantity-panel--loading': isQuantityUpdating }"
         >
           <QuantityStepper
             :model-value="displayedQuantity"
             :min="0"
-            :disabled="isQuantityUpdating || isLocalBuying || isProcessingBuyNow"
+            :loading="isQuantityUpdating"
+            :disabled="
+              isAnotherDraftActive || isCartMutating || isLocalBuying || isProcessingBuyNow
+            "
             @change="handleQuantityChange"
           />
         </div>

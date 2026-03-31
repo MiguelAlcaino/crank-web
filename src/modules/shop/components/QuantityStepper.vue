@@ -10,11 +10,13 @@ const props = withDefaults(
     min?: number
     max?: number
     step?: number
+    loading?: boolean
     disabled?: boolean
   }>(),
   {
     min: 0,
     step: 1,
+    loading: false,
     disabled: false
   }
 )
@@ -26,14 +28,15 @@ const emits = defineEmits<{
 
 const localQuantity = ref(props.modelValue)
 const isPending = ref(false)
-const isServerSyncing = computed(() => props.disabled)
+const isServerSyncing = computed(() => props.loading)
+const isInteractionDisabled = computed(() => props.disabled || props.loading)
 
 const debouncedUpdate = debounce((newValue: number) => {
   emits('updateItem', newValue)
 }, DEBOUNCE_DELAY_MS)
 
 const decrease = () => {
-  if (isServerSyncing.value) return
+  if (isInteractionDisabled.value) return
 
   if (localQuantity.value > props.min) {
     localQuantity.value -= props.step
@@ -44,7 +47,7 @@ const decrease = () => {
 }
 
 const increase = () => {
-  if (isServerSyncing.value) return
+  if (isInteractionDisabled.value) return
 
   if (props.max === undefined || localQuantity.value < props.max) {
     localQuantity.value += props.step
@@ -77,7 +80,7 @@ watch(
     <button
       class="btn-stepper"
       @click="decrease"
-      :disabled="isServerSyncing || localQuantity <= min"
+      :disabled="isInteractionDisabled || localQuantity <= min"
     >
       -
     </button>
@@ -94,7 +97,7 @@ watch(
     <button
       class="btn-stepper"
       @click="increase"
-      :disabled="isServerSyncing || (max !== undefined && localQuantity >= max)"
+      :disabled="isInteractionDisabled || (max !== undefined && localQuantity >= max)"
     >
       +
     </button>

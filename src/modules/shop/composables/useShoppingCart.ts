@@ -24,6 +24,7 @@ const cartError = ref<string | null>(null)
 const discountError = ref<string | null>(null)
 const giftCardError = ref<string | null>(null)
 const updatingGiftCardCodes = ref<Set<string>>(new Set())
+const activeDraftVariantId = ref<string | null>(null)
 
 /**
  * Checks if a specific shopping cart item is currently being updated.
@@ -372,6 +373,16 @@ export const useShoppingCart = () => {
     return computed(() => updatingGiftCardCodes.value.has(code))
   }
 
+  function setActiveDraftVariant(variantId: string | null) {
+    activeDraftVariantId.value = variantId
+  }
+
+  function clearActiveDraftVariant(variantId?: string | null) {
+    if (!variantId || activeDraftVariantId.value === variantId) {
+      activeDraftVariantId.value = null
+    }
+  }
+
   /**
    * @description Unify all load/update flags that indicate
    * that the cart total is being recalculated in the backend.
@@ -404,6 +415,7 @@ export const useShoppingCart = () => {
     isAnyGiftCardUpdating: computed(() => updatingGiftCardCodes.value.size > 0),
     itemsText: readonly(itemsText),
     isCartMutating: readonly(isCartMutating),
+    activeDraftVariantId: readonly(activeDraftVariantId),
     cartCalculationError: computed(() => detailedCart.value?.calculationError),
 
     // --- Methods ---
@@ -416,6 +428,8 @@ export const useShoppingCart = () => {
     buyNow,
     applyGiftCard,
     removeGiftCard,
-    addToCartLight
+    addToCartLight,
+    setActiveDraftVariant,
+    clearActiveDraftVariant
   }
 }
