@@ -1,0 +1,48 @@
+steps:
+  # Build Docker image with Vite build args
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '--build-arg'
+      - 'VITE_CRANK_REST_SERVER_URL=https://crank-payments-930523966479.me-central1.run.app'
+      - '--build-arg'
+      - 'VITE_CRANK_GRAPHQL_SERVER_URL=https://crank-payments-930523966479.me-central1.run.app/api/graphql/'
+      - '--build-arg'
+      - 'VITE_CRANK_PAYMENTS_URL=https://crank-payments-930523966479.me-central1.run.app'
+      - '-t'
+      - 'me-central1-docker.pkg.dev/$PROJECT_ID/crank-web/crank-web:$COMMIT_SHA'
+      - '-t'
+      - 'me-central1-docker.pkg.dev/$PROJECT_ID/crank-web/crank-web:latest'
+      - '.'
+
+  # Push Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'me-central1-docker.pkg.dev/$PROJECT_ID/crank-web/crank-web:$COMMIT_SHA'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'me-central1-docker.pkg.dev/$PROJECT_ID/crank-web/crank-web:latest'
+
+  # Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'crank-web'
+      - '--image'
+      - 'me-central1-docker.pkg.dev/$PROJECT_ID/crank-web/crank-web:$COMMIT_SHA'
+      - '--region'
+      - 'me-central1'
+      - '--platform'
+      - 'managed'
+
+images:
+  - 'me-central1-docker.pkg.dev/$PROJECT_ID/crank-web/crank-web:$COMMIT_SHA'
+  - 'me-central1-docker.pkg.dev/$PROJECT_ID/crank-web/crank-web:latest'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
