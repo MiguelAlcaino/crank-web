@@ -27,8 +27,8 @@ import {
   type PaymentLink,
   PaymentLinkDocument,
   type RegisterUserInput,
-  type RejectLateBookingResultUnion,
   type RejectLateCancelledSpotInClassInput,
+  type RejectLateCancelledSpotInClassSuccess,
   type RemoveCurrentUserFromWaitlistInput,
   type RemoveUserFromWaitlistInput,
   type RemoveUserFromWaitlistUnion,
@@ -508,19 +508,25 @@ export class ApiService implements IApiService {
     const UPDATE_CURRENT_USER_MUTATION = gql`
       mutation updateCurrentUser($input: UserInput!) {
         updateCurrentUser(input: $input) {
-          email
+          __typename
+          ... on User {
+            email
+          }
+          ... on UploadedFileIsNotAnImage {
+            code
+          }
         }
       }
     `
 
     try {
-      await this.authApiClient.mutate({
+      const result = await this.authApiClient.mutate({
         mutation: UPDATE_CURRENT_USER_MUTATION,
         variables: {
           input: input
         }
       })
-      return 'UpdateProfileSuccess'
+      return result.data.updateCurrentUser.__typename
     } catch (error) {
       return 'UnknownError'
     }
@@ -1031,7 +1037,7 @@ export class ApiService implements IApiService {
   async rejectLateCancelledSpotInClass(
     site: SiteEnum,
     waitlistEntryId: string
-  ): Promise<RejectLateBookingResultUnion> {
+  ): Promise<RejectLateCancelledSpotInClassSuccess> {
     const input = { waitlistEntryId: waitlistEntryId } as RejectLateCancelledSpotInClassInput
 
     const mutation = gql`
@@ -1040,16 +1046,7 @@ export class ApiService implements IApiService {
         $input: RejectLateCancelledSpotInClassInput!
       ) {
         rejectLateCancelledSpotInClass(site: $site, input: $input) {
-          __typename
-          ... on Error {
-            code
-          }
-          ... on PositionAlreadyTakenError {
-            code
-          }
-          ... on RejectLateCancelledSpotInClassSuccess {
-            success
-          }
+          success
         }
       }
     `
@@ -1063,7 +1060,7 @@ export class ApiService implements IApiService {
       fetchPolicy: 'network-only'
     })
 
-    return result.data.rejectLateCancelledSpotInClass as RejectLateBookingResultUnion
+    return result.data.rejectLateCancelledSpotInClass as RejectLateCancelledSpotInClassSuccess
   }
 
   async currentUserEnrollmentsPaginated(

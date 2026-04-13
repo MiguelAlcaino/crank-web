@@ -195,7 +195,7 @@ const submitForm = async () => {
     const response = await apiService.updateCurrentUser(input)
     isSaving.value = false
 
-    if (response === 'UpdateProfileSuccess') {
+    if (response === 'User') {
       successModalIsVisible.value = true
     } else {
       errorModalIsVisible.value = true

@@ -19,7 +19,7 @@ import type {
   PaginatedPurchases,
   PaginationInput,
   RegisterUserInput,
-  RejectLateBookingResultUnion,
+  RejectLateCancelledSpotInClassSuccess,
   RemoveCurrentUserFromWaitlistInput,
   RemoveUserFromWaitlistUnion,
   ResetPasswordForCurrentUserUnion,
@@ -280,7 +280,7 @@ export interface IApiService {
   rejectLateCancelledSpotInClass(
     site: SiteEnum,
     waitlistEntryId: string
-  ): Promise<RejectLateBookingResultUnion>
+  ): Promise<RejectLateCancelledSpotInClassSuccess>
 
   /**
    * Gets a paginated list of the current user's enrollments.

@@ -8,6 +8,10 @@
       "PaymentRequiredError",
       "UnknownError"
     ],
+    "AdminSendPushNotificationResult": [
+      "AdminSendPushNotificationSuccess",
+      "CustomerNotFoundError"
+    ],
     "AdminUserResultUnion": [
       "AdminUser",
       "EmailAlreadyUsedError",
@@ -31,6 +35,13 @@
     "CancelEnrollmentResultUnion": [
       "CancelUserEnrollmentSuccess",
       "LateCancellationRequiredError",
+      "UnknownError"
+    ],
+    "CancelSubscriptionResultUnion": [
+      "CancelSubscriptionSuccess",
+      "SubscriptionAlreadyCancelledError",
+      "SubscriptionDoesNotBelongToUserError",
+      "SubscriptionNotFoundError",
       "UnknownError"
     ],
     "ChallengeInterface": [
@@ -62,9 +73,25 @@
       "CreateCurrentUserInSiteSuccess",
       "UserAlreadyExistsError"
     ],
+    "CreateInstructorProfileResultUnion": [
+      "InstructorProfile",
+      "UploadedFileIsNotAnImage"
+    ],
+    "CreateSessionTypeResultUnion": [
+      "SessionType",
+      "UploadedFileIsNotAnImage"
+    ],
     "DeleteCurrentUserAccountUnion": [
       "DeleteCurrentUserAccountSuccess",
       "UserPasswordDoesNotMatchError"
+    ],
+    "DeleteNotificationResultUnion": [
+      "DeleteNotificationSuccess",
+      "NotificationNotFound"
+    ],
+    "DeleteRoomLayoutResultUnion": [
+      "DeleteRoomLayoutSuccess",
+      "RoomLayoutInUseError"
     ],
     "DisableEnableSpotResultUnion": [
       "DisableEnableSpotResult",
@@ -95,6 +122,7 @@
       "ClientIsAlreadyOnWaitlistError",
       "ClientIsOutsideSchedulingWindowError",
       "ClientNotFoundInMindbody",
+      "CustomerNotFoundError",
       "DiscountCodeIsEmpty",
       "DiscountCodeIsInvalid",
       "DontNeedMoreGiftCards",
@@ -104,22 +132,31 @@
       "GiftCardIsNotUsable",
       "GiftCardNotRegisteredOnCurrentShoppingCart",
       "InstructorNotFound",
+      "InstructorProfileNotFoundError",
+      "InvalidEmailError",
       "LateCancellationRequiredError",
       "MobilePhoneAlreadyVerifiedError",
       "MobilePhoneNotValidError",
+      "NotificationNotFound",
       "OtherUserHasThisExternalIdError",
       "PasswordsDontMatchError",
       "PaymentRequiredError",
       "PositionAlreadyTakenError",
       "ProductNotFound",
+      "ReactivateSubscriptionNotSupportedError",
       "RequestSMSValidationNeededError",
+      "RoomLayoutInUseError",
       "SMSValidationCodeError",
+      "SessionTypeNotFoundError",
       "ShoppingCartIsEmpty",
       "ShoppingCartItemNotFound",
       "ShoppingCartNotFound",
       "SpotAlreadyReservedError",
       "SpotIsDisabledError",
       "SpotNotFoundError",
+      "SubscriptionAlreadyCancelledError",
+      "SubscriptionDoesNotBelongToUserError",
+      "SubscriptionNotFoundError",
       "TemporalTransactionNotFound",
       "TooManyResetPasswordLinkRequestsError",
       "TryToSwitchToSameSpotError",
@@ -131,7 +168,9 @@
       "UserPasswordDoesNotMatchError",
       "UsernameAlreadyUsedError",
       "WaitlistEntryNotFoundError",
-      "WaitlistFullError"
+      "WaitlistFullError",
+      "WebhookEventNotFoundError",
+      "WebhookEventNotRetryableError"
     ],
     "IsSmsValidationCodeValidUnion": [
       "MobilePhoneAlreadyVerifiedError",
@@ -139,18 +178,36 @@
       "SMSCodeValidatedSuccessfully",
       "SMSValidationCodeError"
     ],
+    "MarkNotificationAsReadResultUnion": [
+      "NotificationNotFound",
+      "WaitlistBookingConfirmedNotification",
+      "WaitlistLateCancellationOfferNotification"
+    ],
+    "Notification": [
+      "WaitlistBookingConfirmedNotification",
+      "WaitlistLateCancellationOfferNotification"
+    ],
+    "NotificationResultUnion": [
+      "NotificationNotFound",
+      "WaitlistBookingConfirmedNotification",
+      "WaitlistLateCancellationOfferNotification"
+    ],
     "PaginatedResult": [
+      "CalendarClassesPaginatedResult",
       "PaginatedClassStats",
       "PaginatedEnrollments",
+      "PaginatedNotifications",
       "PaginatedPurchases"
     ],
     "PaymentTransactionUnion": [
       "PaymentTransactionStatus",
       "TemporalTransactionNotFound"
     ],
-    "RejectLateBookingResultUnion": [
-      "PositionAlreadyTakenError",
-      "RejectLateCancelledSpotInClassSuccess"
+    "ReactivateSubscriptionResultUnion": [
+      "ReactivateSubscriptionNotSupportedError",
+      "ReactivateSubscriptionSuccess",
+      "SubscriptionNotFoundError",
+      "UnknownError"
     ],
     "RemainingCreditsResultUnion": [
       "ClientNotFoundInMindbody",
@@ -171,6 +228,12 @@
     "ResetPasswordLinkResultUnion": [
       "ResetPasswordLinkSentSuccessfully",
       "TooManyResetPasswordLinkRequestsError"
+    ],
+    "RetryWebhookEventResultUnion": [
+      "InvalidEmailError",
+      "RetryWebhookEventSuccess",
+      "WebhookEventNotFoundError",
+      "WebhookEventNotRetryableError"
     ],
     "SMSValidationUnion": [
       "MobilePhoneAlreadyVerifiedError",
@@ -204,10 +267,24 @@
       "SwapSpotSuccess",
       "TryToSwitchToSameSpotError"
     ],
+    "UpdateCurrentUserResultUnion": [
+      "UploadedFileIsNotAnImage",
+      "User"
+    ],
     "UpdateGiftcardResiltUnion": [
       "GiftCard",
       "ProductNotFound",
       "UnknownError"
+    ],
+    "UpdateInstructorProfileResultUnion": [
+      "InstructorProfile",
+      "InstructorProfileNotFoundError",
+      "UploadedFileIsNotAnImage"
+    ],
+    "UpdateSessionTypeResultUnion": [
+      "SessionType",
+      "SessionTypeNotFoundError",
+      "UploadedFileIsNotAnImage"
     ]
   }
 }

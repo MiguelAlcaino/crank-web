@@ -33,6 +33,68 @@ export type AddedToWaitlistSuccess = {
   status: Scalars['Boolean'];
 };
 
+export type AdminCustomerVodPeriod = {
+  __typename?: 'AdminCustomerVodPeriod';
+  addedBy: Scalars['String'];
+  addedByAdmin?: Maybe<Scalars['String']>;
+  createdAt?: Maybe<Scalars['DateTime']>;
+  deletedAt?: Maybe<Scalars['DateTime']>;
+  end: Scalars['DateTime'];
+  id: Scalars['ID'];
+  isDeleted: Scalars['Boolean'];
+  start: Scalars['DateTime'];
+};
+
+export type AdminCustomersParams = {
+  registrationEndDate?: InputMaybe<Scalars['Date']>;
+  registrationStartDate?: InputMaybe<Scalars['Date']>;
+  search?: InputMaybe<Scalars['String']>;
+  vodEndDate?: InputMaybe<Scalars['Date']>;
+  vodStartDate?: InputMaybe<Scalars['Date']>;
+};
+
+export type AdminMindbodyClient = {
+  __typename?: 'AdminMindbodyClient';
+  clientId?: Maybe<Scalars['String']>;
+  createdAt?: Maybe<Scalars['DateTime']>;
+  email?: Maybe<Scalars['String']>;
+  firstName?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  lastName?: Maybe<Scalars['String']>;
+  mobilePhone?: Maybe<Scalars['String']>;
+};
+
+export type AdminMindbodyClientsParams = {
+  endDate?: InputMaybe<Scalars['Date']>;
+  search?: InputMaybe<Scalars['String']>;
+  startDate?: InputMaybe<Scalars['Date']>;
+};
+
+export type AdminSendLateCancellationNotificationInput = {
+  classId: Scalars['ID'];
+  className: Scalars['String'];
+  classStartsAt: Scalars['String'];
+  customerId: Scalars['ID'];
+  expiresAt: Scalars['String'];
+  instructorName: Scalars['String'];
+  site?: InputMaybe<SiteEnum>;
+  waitlistId: Scalars['ID'];
+};
+
+export type AdminSendPushNotificationResult = AdminSendPushNotificationSuccess | CustomerNotFoundError;
+
+export type AdminSendPushNotificationSuccess = {
+  __typename?: 'AdminSendPushNotificationSuccess';
+  customerId: Scalars['ID'];
+};
+
+export type AdminSendWaitlistBookingNotificationInput = {
+  className: Scalars['String'];
+  classStartsAt: Scalars['String'];
+  customerId: Scalars['ID'];
+  site?: InputMaybe<SiteEnum>;
+};
+
 export type AdminUser = {
   __typename?: 'AdminUser';
   email: Scalars['String'];
@@ -55,6 +117,23 @@ export type AdminUserDataInput = {
 };
 
 export type AdminUserResultUnion = AdminUser | EmailAlreadyUsedError | UsernameAlreadyUsedError;
+
+export type ApplePayConfig = {
+  __typename?: 'ApplePayConfig';
+  /** The ISO 3166-1 alpha-2 country code (e.g. AE) */
+  countryCode: Scalars['String'];
+  /** The ISO 4217 currency code (e.g. AED) */
+  currencyCode: Scalars['String'];
+  /** The display name shown on the Apple Pay sheet */
+  displayName: Scalars['String'];
+};
+
+export enum BillingIntervalEnum {
+  Daily = 'daily',
+  Monthly = 'monthly',
+  Weekly = 'weekly',
+  Yearly = 'yearly'
+}
 
 export type BookClassInput = {
   classId: Scalars['ID'];
@@ -114,6 +193,22 @@ export type BookingWindow = {
   startDateTime: Scalars['DateTime'];
 };
 
+export type BulkActivateVodInput = {
+  mindbodyIds: Array<Scalars['Int']>;
+  vodDays: Scalars['Int'];
+};
+
+export type BulkVodResult = {
+  __typename?: 'BulkVodResult';
+  processedCount: Scalars['Int'];
+};
+
+export type CalendarClassesPaginatedResult = PaginatedResult & {
+  __typename?: 'CalendarClassesPaginatedResult';
+  classes: Array<Class>;
+  total: Scalars['Int'];
+};
+
 /**
  * Filters for querying classes within a specific date range.
  *
@@ -122,6 +217,11 @@ export type BookingWindow = {
 export type CalendarClassesParams = {
   /** End date for the class search range (format: YYYY-MM-DD). If omitted, it defaults to +1 week from now. */
   endDate?: InputMaybe<Scalars['Date']>;
+  /** Filter classes by instructor profile (the instructor 'face' in the app). When provided, shows only classes taught by any MindbodyStaff linked to this profile. */
+  instructorProfileId?: InputMaybe<Scalars['ID']>;
+  meridiem?: InputMaybe<MeridiemEnum>;
+  /** Filter classes by session type. When provided, shows only classes that match the given SessionType. */
+  sessionTypeId?: InputMaybe<Scalars['ID']>;
   /** Start date for the class search range (format: YYYY-MM-DD). If omitted, defaults to current date. If provided and end date should also be provided. */
   startDate?: InputMaybe<Scalars['Date']>;
 };
@@ -132,6 +232,17 @@ export type CancelEnrollmentInput = {
 };
 
 export type CancelEnrollmentResultUnion = CancelUserEnrollmentSuccess | LateCancellationRequiredError | UnknownError;
+
+export type CancelSubscriptionInput = {
+  subscriptionId: Scalars['ID'];
+};
+
+export type CancelSubscriptionResultUnion = CancelSubscriptionSuccess | SubscriptionAlreadyCancelledError | SubscriptionDoesNotBelongToUserError | SubscriptionNotFoundError | UnknownError;
+
+export type CancelSubscriptionSuccess = {
+  __typename?: 'CancelSubscriptionSuccess';
+  success: Scalars['Boolean'];
+};
 
 export type CancelUserEnrollmentSuccess = {
   __typename?: 'CancelUserEnrollmentSuccess';
@@ -195,6 +306,8 @@ export type Class = {
   duration: Scalars['Int'];
   /** Whether performance statistics are available for this class */
   hasClassStats: Scalars['Boolean'];
+  /** Whether or not it has a Room Layout assigned */
+  hasRoomLayout: Scalars['Boolean'];
   /** Unique identifier for the class */
   id: Scalars['ID'];
   /** Full name of the instructor leading the class */
@@ -207,6 +320,8 @@ export type Class = {
   maxCapacity: Scalars['Int'];
   /** Name/type of the class (e.g., 'CRANK', 'RIDE', 'POWER') */
   name: Scalars['String'];
+  /** The session type associated with this class */
+  sessionTypes: Array<SessionType>;
   /** Whether this class should be displayed as disabled in the UI (typically for cancelled or past classes) */
   showAsDisabled: Scalars['Boolean'];
   /** Class start date and time with timezone (ISO 8601 format) */
@@ -241,9 +356,16 @@ export type ClassIsFullError = Error & {
   code: Scalars['String'];
 };
 
+export type ClassPackageOrder = {
+  classPackageId: Scalars['ID'];
+  position: Scalars['Int'];
+  type: ClassPackageTypeEnum;
+};
+
 export type ClassPackageProduct = SellableProductInterface & {
   __typename?: 'ClassPackageProduct';
   alertBeforePurchasing?: Maybe<ProductAlertBeforePurchasing>;
+  billingInterval?: Maybe<BillingIntervalEnum>;
   buttonText?: Maybe<Scalars['String']>;
   currency: Scalars['String'];
   doesItRequireSmsAuth?: Maybe<Scalars['Boolean']>;
@@ -312,6 +434,11 @@ export type ClassStatAdjustedChartPointsArgs = {
   amountOfPoints?: InputMaybe<Scalars['Int']>;
 };
 
+export type ClearNewNotificationsStatusSuccess = {
+  __typename?: 'ClearNewNotificationsStatusSuccess';
+  status: NotificationStatusEnum;
+};
+
 /** Error returned when a client is already booked in a class */
 export type ClientIsAlreadyBookedError = Error & {
   __typename?: 'ClientIsAlreadyBookedError';
@@ -341,6 +468,14 @@ export type Country = {
   states?: Maybe<Array<Maybe<State>>>;
 };
 
+export type CountryWithPhoneCode = {
+  __typename?: 'CountryWithPhoneCode';
+  formattedPhoneCode: Scalars['String'];
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  phoneCode: Scalars['String'];
+};
+
 export type CrankInstructor = {
   __typename?: 'CrankInstructor';
   firstName?: Maybe<Scalars['String']>;
@@ -358,6 +493,27 @@ export type CreateCurrentUserInSiteSuccess = {
 
 export type CreateCurrentUserInSiteUnion = CreateCurrentUserInSiteSuccess | UserAlreadyExistsError;
 
+export type CreateCustomerVodPeriodInput = {
+  end: Scalars['DateTime'];
+  start: Scalars['DateTime'];
+};
+
+export type CreateInstructorProfileInput = {
+  active?: InputMaybe<Scalars['Boolean']>;
+  description?: InputMaybe<Scalars['String']>;
+  linkedMindbodyStaffs?: InputMaybe<Array<Scalars['ID']>>;
+  name: Scalars['String'];
+  profilePictureFile?: InputMaybe<Scalars['File']>;
+  site: SiteEnum;
+};
+
+export type CreateInstructorProfileResultUnion = InstructorProfile | UploadedFileIsNotAnImage;
+
+export type CreateMobileNumberBlacklistInput = {
+  countryId: Scalars['ID'];
+  mobilePhoneNumber: Scalars['String'];
+};
+
 export type CreatePaymentLinkInput = {
   amount: Scalars['Int'];
   currency: Scalars['String'];
@@ -367,9 +523,23 @@ export type CreatePaymentLinkInput = {
   title: Scalars['String'];
 };
 
+export type CreateSessionTypeInput = {
+  active?: InputMaybe<Scalars['Boolean']>;
+  bannerImageFile?: InputMaybe<Scalars['File']>;
+  color?: InputMaybe<Scalars['String']>;
+  iconFile?: InputMaybe<Scalars['File']>;
+  mindbodySessionTypeIds?: InputMaybe<Array<Scalars['ID']>>;
+  name: Scalars['String'];
+  position?: InputMaybe<Scalars['Int']>;
+  site: SiteEnum;
+};
+
+export type CreateSessionTypeResultUnion = SessionType | UploadedFileIsNotAnImage;
+
 export type CurrentUserEnrollmentsParams = {
   endDate?: InputMaybe<Scalars['Date']>;
   enrollmentType?: InputMaybe<EnrollmentTypeEnum>;
+  excludeLateCancelled?: InputMaybe<Scalars['Boolean']>;
   startDate?: InputMaybe<Scalars['Date']>;
 };
 
@@ -379,6 +549,22 @@ export type CurrentUserPurchasesPaginatedParams = {
 
 export type CurrentUserWorkoutStatsPaginatedParams = {
   dateRange?: InputMaybe<DateRange>;
+};
+
+export type CustomerNotFoundError = Error & {
+  __typename?: 'CustomerNotFoundError';
+  code: Scalars['String'];
+};
+
+export type CustomerSubscription = {
+  __typename?: 'CustomerSubscription';
+  amountCents: Scalars['Int'];
+  billingInterval: Scalars['String'];
+  cancelledAt?: Maybe<Scalars['DateTime']>;
+  createdAt: Scalars['DateTime'];
+  creditCardLastFourDigits?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  status: Scalars['String'];
 };
 
 export type DateRange = {
@@ -392,6 +578,20 @@ export type DeleteCurrentUserAccountSuccess = {
 };
 
 export type DeleteCurrentUserAccountUnion = DeleteCurrentUserAccountSuccess | UserPasswordDoesNotMatchError;
+
+export type DeleteNotificationResultUnion = DeleteNotificationSuccess | NotificationNotFound;
+
+export type DeleteNotificationSuccess = {
+  __typename?: 'DeleteNotificationSuccess';
+  id: Scalars['ID'];
+};
+
+export type DeleteRoomLayoutResultUnion = DeleteRoomLayoutSuccess | RoomLayoutInUseError;
+
+export type DeleteRoomLayoutSuccess = {
+  __typename?: 'DeleteRoomLayoutSuccess';
+  success: Scalars['Boolean'];
+};
 
 export type DeviceTokenInput = {
   deviceToken: Scalars['String'];
@@ -654,6 +854,28 @@ export type InstructorNotFound = Error & {
   code: Scalars['String'];
 };
 
+export type InstructorProfile = {
+  __typename?: 'InstructorProfile';
+  active: Scalars['Boolean'];
+  createdAt: Scalars['DateTime'];
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  mindbodyStaffs: Array<MindbodyStaffInfo>;
+  name: Scalars['String'];
+  profilePictureUrl?: Maybe<Scalars['String']>;
+  updatedAt: Scalars['DateTime'];
+};
+
+export type InstructorProfileNotFoundError = Error & {
+  __typename?: 'InstructorProfileNotFoundError';
+  code: Scalars['String'];
+};
+
+export type InvalidEmailError = Error & {
+  __typename?: 'InvalidEmailError';
+  code: Scalars['String'];
+};
+
 export type IsSmsValidationCodeValidUnion = MobilePhoneAlreadyVerifiedError | RequestSmsValidationNeededError | SmsCodeValidatedSuccessfully | SmsValidationCodeError;
 
 export type ItemToShoppingCartInput = {
@@ -666,20 +888,41 @@ export type LateCancellationRequiredError = Error & {
   code: Scalars['String'];
 };
 
-export type ApplePayConfig = {
-  __typename?: 'ApplePayConfig';
-  /** The ISO 4217 currency code (e.g. AED) */
-  currencyCode: Scalars['String'];
-  /** The ISO 3166-1 alpha-2 country code (e.g. AE) */
-  countryCode: Scalars['String'];
-  /** The display name shown on the Apple Pay sheet */
-  displayName: Scalars['String'];
-};
-
 export type LockShoppingCartResponse = {
   __typename?: 'LockShoppingCartResponse';
   isLocked: Scalars['Boolean'];
   merchantReference: Scalars['ID'];
+};
+
+export type MarkNotificationAsReadResultUnion = NotificationNotFound | WaitlistBookingConfirmedNotification | WaitlistLateCancellationOfferNotification;
+
+export enum MeridiemEnum {
+  Am = 'am',
+  Pm = 'pm'
+}
+
+export type MindbodySessionTypeInfo = {
+  __typename?: 'MindbodySessionTypeInfo';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+};
+
+export type MindbodyStaffInfo = {
+  __typename?: 'MindbodyStaffInfo';
+  email?: Maybe<Scalars['String']>;
+  firstName: Scalars['String'];
+  id: Scalars['ID'];
+  lastName: Scalars['String'];
+};
+
+export type MobileNumberBlackListEntry = {
+  __typename?: 'MobileNumberBlackListEntry';
+  countryId: Scalars['ID'];
+  countryName: Scalars['String'];
+  countryPhoneCode: Scalars['String'];
+  fullPhoneNumber: Scalars['String'];
+  id: Scalars['ID'];
+  mobilePhoneNumber: Scalars['String'];
 };
 
 export type MobilePhoneAlreadyVerifiedError = Error & {
@@ -706,28 +949,62 @@ export type Mutation = {
   addGiftCardCodeToShoppingCart: ShoppingCartResultUnion;
   /** Allows to add item to shopping cart */
   addItemToShoppingCart: ShoppingCartResultUnion;
+  /** Admin-only: send a late-cancellation Firebase notification to a customer */
+  adminSendLateCancellationNotification: AdminSendPushNotificationResult;
+  /** Admin-only: send a waitlist-booking Firebase notification to a customer */
+  adminSendWaitlistBookingNotification: AdminSendPushNotificationResult;
   /** Books the current user in a class */
   bookClass: BookClassResultUnion;
   /** Adds a user into a given class */
   bookUserIntoClass: BookClassResultUnion;
+  /** Bulk activate VOD periods for multiple customers by Mindbody IDs */
+  bulkActivateVod: BulkVodResult;
+  /** Bulk deactivate VOD periods for multiple customers by Mindbody IDs */
+  bulkDeactivateVod: BulkVodResult;
   /** Cancels an enrollment done by the current user */
   cancelCurrentUserEnrollment?: Maybe<CancelEnrollmentResultUnion>;
+  /** Cancels a subscription for the current user */
+  cancelSubscription: CancelSubscriptionResultUnion;
   /** Checks in a user in a class */
   checkinUserInClass?: Maybe<CheckinResultUnion>;
   /** Checks out a user from a class */
   checkoutUserInClass?: Maybe<CheckoutResultUnion>;
+  /** Clears the new notifications badge — call when user acknowledges new notifications */
+  clearNewNotificationsStatusForCurrentUser: ClearNewNotificationsStatusSuccess;
+  /** Clears the system cache */
+  clearSystemCache: Scalars['Boolean'];
   /** Creates a copy of the current user in the given site */
   createCurrentUserInSite?: Maybe<CreateCurrentUserInSiteUnion>;
+  /** Creates a new VOD period for a customer */
+  createCustomerVodPeriod: AdminCustomerVodPeriod;
+  /** Creates a new instructor profile */
+  createInstructorProfile: CreateInstructorProfileResultUnion;
+  /** Creates a new blacklisted mobile number entry */
+  createMobileNumberBlacklistEntry: MobileNumberBlackListEntry;
   /** Creates a new payment link */
   createPaymentLink: PaymentLink;
   /** Creates a new room layout */
   createRoomLayout: RoomLayout;
+  /** Creates a new session type */
+  createSessionType: CreateSessionTypeResultUnion;
   /** It deletes the current user's account */
   deleteCurrentUserAccount?: Maybe<DeleteCurrentUserAccountUnion>;
+  /** Deletes a VOD period (soft delete) */
+  deleteCustomerVodPeriod: Scalars['Boolean'];
   /** Removes a devices token */
   deleteDeviceTokenToCurrentUser?: Maybe<Scalars['Boolean']>;
+  /** Deletes an instructor profile */
+  deleteInstructorProfile: Scalars['Boolean'];
+  /** Deletes a blacklisted mobile number entry */
+  deleteMobileNumberBlacklistEntry: Scalars['Boolean'];
+  /** Deletes (soft-deletes) a notification for the current user */
+  deleteNotification: DeleteNotificationResultUnion;
   /** Soft deletes a payment link */
   deletePaymentLink: Scalars['Boolean'];
+  /** Deletes a room layout (soft delete). Fails if the layout is in use by a class or schedule. */
+  deleteRoomLayout: DeleteRoomLayoutResultUnion;
+  /** Deletes a session type */
+  deleteSessionType: Scalars['Boolean'];
   /** Disables a spot in a class */
   disableSpot?: Maybe<DisableEnableSpotResultUnion>;
   /** Edits a class */
@@ -754,20 +1031,28 @@ export type Mutation = {
    * @deprecated Use newLockShoppingCart instead
    */
   lockShoppingCart: Scalars['Boolean'];
+  /** Marks a notification as read for the current user */
+  markNotificationAsRead: MarkNotificationAsReadResultUnion;
   /** Allows to lock shoppingcart and generate merchant reference */
   newLockShoppingCart?: Maybe<LockShoppingCartResponse>;
   /** Returns the html of a payment form to be used to pay */
   payfortForm: PayfortFormResult;
+  /** Reactivates a cancelled subscription for the current user */
+  reactivateSubscription: ReactivateSubscriptionResultUnion;
+  /** Refunds a transaction via Payfort */
+  refundTransaction: Scalars['Boolean'];
   /** Registers a new user and returns an IdentifiableUser type */
   registerIdentifiableUser?: Maybe<IdentifiableSiteUser>;
   /** Registers a new user */
   registerUser?: Maybe<User>;
   /** Rejects a late-cancelled spot in a class */
-  rejectLateCancelledSpotInClass?: Maybe<RejectLateBookingResultUnion>;
+  rejectLateCancelledSpotInClass?: Maybe<RejectLateCancelledSpotInClassSuccess>;
   /** Deletes an admin user */
   removeAdminUser: Scalars['Boolean'];
   /** Removes the current user's waitlist entry from a class */
   removeCurrentUserFromWaitlist?: Maybe<RemoveCurrentUserFromWaitlistUnion>;
+  /** Removes phone number verification for a customer */
+  removeCustomerPhoneVerification: Scalars['Boolean'];
   /** Remove discount code from current shopping cart */
   removeDiscountCodeForCurrentShoppingCart: ShoppingCartResultUnion;
   /** Allows to remove a GiftCard by code */
@@ -786,6 +1071,8 @@ export type Mutation = {
   resetAdminUserPassword: Scalars['Boolean'];
   /** Resets the current user's password */
   resetPasswordForCurrentUser?: Maybe<ResetPasswordForCurrentUserUnion>;
+  /** Retries sending a failed webhook event */
+  retryWebhookEvent: RetryWebhookEventResultUnion;
   /** Sends a single class stats to an email */
   sendClassStatsToEmail?: Maybe<Scalars['Boolean']>;
   /** Sends the class stats to the users booked in a class */
@@ -798,23 +1085,29 @@ export type Mutation = {
   syncAllClasses: Scalars['Boolean'];
   /** Sync all gift cards from Mindbody with the local database */
   syncAllGiftCards: Scalars['Boolean'];
+  /** Syncs all Mindbody staff members for a site */
+  syncAllMindbodyStaff: Scalars['Boolean'];
   /** Allows to syncronize all packages by site */
   syncAllPackagesBySite: Array<ClassPackageProduct>;
   /** Sync one class */
   syncClass: ClassInfo;
   /** Sync a class with PIQ */
   syncClassWithPIQ: ClassInfo;
+  /** Syncs a customer's data from Mindbody */
+  syncCustomerWithMindbody: Scalars['Boolean'];
   /** Updates an admin user */
   updateAdminUser: AdminUserResultUnion;
   /** Allows to update product */
   updateClassPackage?: Maybe<ClassPackageUpdateResultUnion>;
+  /** Updates the display order of class packages */
+  updateClassPackagesOrder: Scalars['Boolean'];
   /** Allows to update the current AdminUser */
   updateCurrentAdminUser: AdminUser;
   /** Allows to update the favorite site for a AdminUser */
   updateCurrentAdminUserFavoriteSite: AdminUser;
   updateCurrentAdminUserPassword?: Maybe<Scalars['Boolean']>;
   /** Updates the current user */
-  updateCurrentUser?: Maybe<User>;
+  updateCurrentUser?: Maybe<UpdateCurrentUserResultUnion>;
   /** Updates a user's password in all the sites */
   updateCurrentUserPassword?: Maybe<Scalars['Boolean']>;
   /** Updates a gift card */
@@ -823,11 +1116,23 @@ export type Mutation = {
   updateGiftCardNew?: Maybe<UpdateGiftcardResiltUnion>;
   /** Allows to update an Instructor */
   updateInstructor?: Maybe<CrankInstructorResultUnion>;
+  /** Updates an instructor profile */
+  updateInstructorProfile: UpdateInstructorProfileResultUnion;
   /** Allows to update an Item from Shopping Cart */
   updateItemInShoppingCart: ShoppingCartResultUnion;
+  /** Updates an existing blacklisted mobile number entry */
+  updateMobileNumberBlacklistEntry: MobileNumberBlackListEntry;
   /** Updates a payment link */
   updatePaymentLink: PaymentLink;
+  /** Updates a session type */
+  updateSessionType: UpdateSessionTypeResultUnion;
+  /** Updates the Mindbody ID for a site customer */
+  updateSiteCustomerMindbodyId: Scalars['Boolean'];
+  /** Updates system settings */
+  updateSystemSettings: SystemSettings;
   updateUserPassword?: Maybe<Scalars['Boolean']>;
+  /** Manually verifies a customer's phone number */
+  verifyCustomerPhoneNumber: Scalars['Boolean'];
 };
 
 
@@ -866,6 +1171,16 @@ export type MutationAddItemToShoppingCartArgs = {
 };
 
 
+export type MutationAdminSendLateCancellationNotificationArgs = {
+  input: AdminSendLateCancellationNotificationInput;
+};
+
+
+export type MutationAdminSendWaitlistBookingNotificationArgs = {
+  input: AdminSendWaitlistBookingNotificationInput;
+};
+
+
 export type MutationBookClassArgs = {
   input: BookClassInput;
   site: SiteEnum;
@@ -877,9 +1192,24 @@ export type MutationBookUserIntoClassArgs = {
 };
 
 
+export type MutationBulkActivateVodArgs = {
+  input: BulkActivateVodInput;
+};
+
+
+export type MutationBulkDeactivateVodArgs = {
+  mindbodyIds: Array<Scalars['Int']>;
+};
+
+
 export type MutationCancelCurrentUserEnrollmentArgs = {
   input: CancelEnrollmentInput;
   site: SiteEnum;
+};
+
+
+export type MutationCancelSubscriptionArgs = {
+  input: CancelSubscriptionInput;
 };
 
 
@@ -901,6 +1231,22 @@ export type MutationCreateCurrentUserInSiteArgs = {
 };
 
 
+export type MutationCreateCustomerVodPeriodArgs = {
+  customerId: Scalars['ID'];
+  input: CreateCustomerVodPeriodInput;
+};
+
+
+export type MutationCreateInstructorProfileArgs = {
+  input: CreateInstructorProfileInput;
+};
+
+
+export type MutationCreateMobileNumberBlacklistEntryArgs = {
+  input: CreateMobileNumberBlacklistInput;
+};
+
+
 export type MutationCreatePaymentLinkArgs = {
   input: CreatePaymentLinkInput;
 };
@@ -912,9 +1258,19 @@ export type MutationCreateRoomLayoutArgs = {
 };
 
 
+export type MutationCreateSessionTypeArgs = {
+  input: CreateSessionTypeInput;
+};
+
+
 export type MutationDeleteCurrentUserAccountArgs = {
   site: SiteEnum;
   userPassword: Scalars['String'];
+};
+
+
+export type MutationDeleteCustomerVodPeriodArgs = {
+  id: Scalars['ID'];
 };
 
 
@@ -924,7 +1280,32 @@ export type MutationDeleteDeviceTokenToCurrentUserArgs = {
 };
 
 
+export type MutationDeleteInstructorProfileArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationDeleteMobileNumberBlacklistEntryArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationDeleteNotificationArgs = {
+  notificationId: Scalars['ID'];
+};
+
+
 export type MutationDeletePaymentLinkArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationDeleteRoomLayoutArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationDeleteSessionTypeArgs = {
   id: Scalars['ID'];
 };
 
@@ -982,6 +1363,11 @@ export type MutationLockShoppingCartArgs = {
 };
 
 
+export type MutationMarkNotificationAsReadArgs = {
+  notificationId: Scalars['ID'];
+};
+
+
 export type MutationNewLockShoppingCartArgs = {
   site: SiteEnum;
 };
@@ -990,6 +1376,16 @@ export type MutationNewLockShoppingCartArgs = {
 export type MutationPayfortFormArgs = {
   input: PayfortFormInput;
   site: SiteEnum;
+};
+
+
+export type MutationReactivateSubscriptionArgs = {
+  input: ReactivateSubscriptionInput;
+};
+
+
+export type MutationRefundTransactionArgs = {
+  id: Scalars['ID'];
 };
 
 
@@ -1019,6 +1415,11 @@ export type MutationRemoveAdminUserArgs = {
 export type MutationRemoveCurrentUserFromWaitlistArgs = {
   input: RemoveCurrentUserFromWaitlistInput;
   site: SiteEnum;
+};
+
+
+export type MutationRemoveCustomerPhoneVerificationArgs = {
+  customerId: Scalars['ID'];
 };
 
 
@@ -1069,6 +1470,11 @@ export type MutationResetPasswordForCurrentUserArgs = {
 };
 
 
+export type MutationRetryWebhookEventArgs = {
+  input: RetryWebhookEventInput;
+};
+
+
 export type MutationSendClassStatsToEmailArgs = {
   input: SendClassStatsToEmailInput;
 };
@@ -1095,6 +1501,11 @@ export type MutationSyncAllClassesArgs = {
 };
 
 
+export type MutationSyncAllMindbodyStaffArgs = {
+  site: SiteEnum;
+};
+
+
 export type MutationSyncAllPackagesBySiteArgs = {
   site?: InputMaybe<SiteEnum>;
 };
@@ -1112,6 +1523,12 @@ export type MutationSyncClassWithPiqArgs = {
 };
 
 
+export type MutationSyncCustomerWithMindbodyArgs = {
+  customerId: Scalars['ID'];
+  site: SiteEnum;
+};
+
+
 export type MutationUpdateAdminUserArgs = {
   input: UpdateAdminUserInput;
 };
@@ -1120,6 +1537,11 @@ export type MutationUpdateAdminUserArgs = {
 export type MutationUpdateClassPackageArgs = {
   id: Scalars['ID'];
   input: ProductInput;
+};
+
+
+export type MutationUpdateClassPackagesOrderArgs = {
+  input: UpdateClassPackagesOrderInput;
 };
 
 
@@ -1166,10 +1588,22 @@ export type MutationUpdateInstructorArgs = {
 };
 
 
+export type MutationUpdateInstructorProfileArgs = {
+  id: Scalars['ID'];
+  input: UpdateInstructorProfileInput;
+};
+
+
 export type MutationUpdateItemInShoppingCartArgs = {
   quantity?: InputMaybe<Scalars['Int']>;
   shoppingCartItemId: Scalars['ID'];
   site: SiteEnum;
+};
+
+
+export type MutationUpdateMobileNumberBlacklistEntryArgs = {
+  id: Scalars['ID'];
+  input: UpdateMobileNumberBlacklistInput;
 };
 
 
@@ -1178,14 +1612,94 @@ export type MutationUpdatePaymentLinkArgs = {
 };
 
 
+export type MutationUpdateSessionTypeArgs = {
+  id: Scalars['ID'];
+  input: UpdateSessionTypeInput;
+};
+
+
+export type MutationUpdateSiteCustomerMindbodyIdArgs = {
+  newMindbodyId: Scalars['String'];
+  siteCustomerId: Scalars['ID'];
+};
+
+
+export type MutationUpdateSystemSettingsArgs = {
+  input: UpdateSystemSettingsInput;
+};
+
+
 export type MutationUpdateUserPasswordArgs = {
   input: UpdateUserPasswordInput;
+};
+
+
+export type MutationVerifyCustomerPhoneNumberArgs = {
+  customerId: Scalars['ID'];
+};
+
+export type Notification = {
+  body: Scalars['String'];
+  channel: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  id: Scalars['ID'];
+  readAt?: Maybe<Scalars['DateTime']>;
+  site?: Maybe<SiteEnum>;
+  title: Scalars['String'];
+  type: Scalars['String'];
+};
+
+export enum NotificationLifecycleStatusEnum {
+  Accepted = 'accepted',
+  Rejected = 'rejected',
+  Sent = 'sent'
+}
+
+export type NotificationNotFound = Error & {
+  __typename?: 'NotificationNotFound';
+  code: Scalars['String'];
+};
+
+export type NotificationResultUnion = NotificationNotFound | WaitlistBookingConfirmedNotification | WaitlistLateCancellationOfferNotification;
+
+export enum NotificationStatusEnum {
+  HasNew = 'hasNew',
+  NoNew = 'noNew'
+}
+
+export type NotificationsInfo = {
+  __typename?: 'NotificationsInfo';
+  amountOfUnreadNotifications: Scalars['Int'];
+  notifications: PaginatedNotifications;
+  notificationsStatus: NotificationStatusEnum;
+};
+
+
+export type NotificationsInfoNotificationsArgs = {
+  dateRange?: InputMaybe<DateRange>;
+  pagination?: InputMaybe<PaginationInput>;
 };
 
 export type OtherUserHasThisExternalIdError = Error & {
   __typename?: 'OtherUserHasThisExternalIdError';
   code: Scalars['String'];
   siteUser: IdentifiableSiteUser;
+};
+
+export type PaginatedAdminCustomers = {
+  __typename?: 'PaginatedAdminCustomers';
+  items: Array<IdentifiableUser>;
+  limit: Scalars['Int'];
+  page: Scalars['Int'];
+  totalCount: Scalars['Int'];
+};
+
+export type PaginatedAdminMindbodyClients = {
+  __typename?: 'PaginatedAdminMindbodyClients';
+  items: Array<AdminMindbodyClient>;
+  limit: Scalars['Int'];
+  page: Scalars['Int'];
+  totalCount: Scalars['Int'];
 };
 
 export type PaginatedClassStats = PaginatedResult & {
@@ -1200,6 +1714,12 @@ export type PaginatedEnrollments = PaginatedResult & {
   total: Scalars['Int'];
 };
 
+export type PaginatedNotifications = PaginatedResult & {
+  __typename?: 'PaginatedNotifications';
+  notifications: Array<Notification>;
+  total: Scalars['Int'];
+};
+
 export type PaginatedPurchases = PaginatedResult & {
   __typename?: 'PaginatedPurchases';
   purchases: Array<Purchase>;
@@ -1208,6 +1728,14 @@ export type PaginatedPurchases = PaginatedResult & {
 
 export type PaginatedResult = {
   total: Scalars['Int'];
+};
+
+export type PaginatedTransactionRecords = {
+  __typename?: 'PaginatedTransactionRecords';
+  items: Array<TransactionRecord>;
+  limit: Scalars['Int'];
+  page: Scalars['Int'];
+  totalCount: Scalars['Int'];
 };
 
 export type PaginationInput = {
@@ -1296,6 +1824,7 @@ export type ProductAlertBeforePurchasingInput = {
 
 export type ProductInput = {
   alertBeforePurchasing?: InputMaybe<ProductAlertBeforePurchasingInput>;
+  billingInterval?: InputMaybe<BillingIntervalEnum>;
   buttonText?: InputMaybe<Scalars['String']>;
   currency?: InputMaybe<Scalars['String']>;
   doesItRequiredSmsAuth?: InputMaybe<Scalars['Boolean']>;
@@ -1342,6 +1871,8 @@ export type Query = {
   adminUser?: Maybe<AdminUser>;
   /** Lists all the admin users */
   adminUsers: Array<AdminUser>;
+  /** Returns the Apple Pay configuration for a site */
+  applePayConfig: ApplePayConfig;
   /** Returns a list of all the available class types for a given site */
   availableClassTypes: Array<Scalars['String']>;
   /** Returns a list of all the available instructors */
@@ -1357,12 +1888,16 @@ export type Query = {
    * duration, capacity, and booking availability. Results are ordered chronologically by class start time.
    */
   calendarClasses: Array<Class>;
+  /** Get paginated calendar classes for a given site */
+  calendarClassesPaginated: CalendarClassesPaginatedResult;
   /** Get a single class information */
   classInfo?: Maybe<ClassInfo>;
   /** Returns a list of all the class schedules for a given site */
   classSchedules: Array<ClassSchedule>;
   /** Returns the list of all available countries */
   countries?: Maybe<Array<Maybe<Country>>>;
+  /** Returns all countries with phone codes for the blacklist form */
+  countriesWithPhoneCodes: Array<CountryWithPhoneCode>;
   /** Returns a specific country by a given country code */
   country?: Maybe<Country>;
   /** Returns the current AdminUser */
@@ -1390,12 +1925,30 @@ export type Query = {
    */
   currentUserWorkoutStats: Array<Maybe<ClassStat>>;
   currentUserWorkoutStatsPaginated: PaginatedClassStats;
+  /** Returns VOD periods for a customer. Admin only. */
+  customerVodPeriods: Array<AdminCustomerVodPeriod>;
+  /** Returns a paginated list of customers. Admin only. */
+  customers: PaginatedAdminCustomers;
   /** Returns the list of all the available gift cards */
   giftCards: Array<GiftCard>;
+  /** Returns a single instructor profile by ID */
+  instructorProfile?: Maybe<InstructorProfile>;
+  /** Returns a list of all instructor profiles */
+  instructorProfiles: Array<InstructorProfile>;
   /** Verifies whether an sms validation code is valid */
   isSMSValidationCodeValid?: Maybe<IsSmsValidationCodeValidUnion>;
-  /** Returns the Apple Pay configuration for a site */
-  applePayConfig: ApplePayConfig;
+  /** Returns a single Mindbody client. Admin only. */
+  mindbodyClient?: Maybe<AdminMindbodyClient>;
+  /** Returns a paginated list of Mindbody clients. Admin only. */
+  mindbodyClients: PaginatedAdminMindbodyClients;
+  /** Returns a list of all MindbodySessionType records for a site */
+  mindbodySessionTypes: Array<MindbodySessionTypeInfo>;
+  /** Returns a list of all MindbodyStaff records */
+  mindbodyStaffs: Array<MindbodyStaffInfo>;
+  /** Returns all blacklisted mobile numbers */
+  mobileNumberBlacklist: Array<MobileNumberBlackListEntry>;
+  /** Returns a single notification for the current user */
+  notification: NotificationResultUnion;
   /** Returns a single payment link by ID */
   paymentLink?: Maybe<PaymentLink>;
   /** Returns a list of payment links */
@@ -1410,12 +1963,22 @@ export type Query = {
   roomLayouts: Array<RoomLayout>;
   /** Returns the matched users given the query provided */
   searchSiteUser?: Maybe<Array<Maybe<IdentifiableSiteUser>>>;
+  /** Returns matched users given the query provided (global, not site-scoped) */
+  searchUser: Array<IdentifiableUser>;
+  /** Returns a list of all session types for a site */
+  sessionTypes: Array<SessionType>;
   /** Returns a single workout stat */
   singleWorkoutStat?: Maybe<ClassStat>;
   /** Settings of a site */
   siteSettings: SiteSetting;
   /** Returns a user in a specific site */
   siteUser?: Maybe<IdentifiableSiteUser>;
+  /** Returns the system settings */
+  systemSettings: SystemSettings;
+  /** Returns a single transaction record by ID. Admin only. */
+  transactionRecord?: Maybe<TransactionRecord>;
+  /** Returns a paginated list of transaction records. Admin only. */
+  transactionRecords: PaginatedTransactionRecords;
   /** Returns a user */
   user?: Maybe<IdentifiableUser>;
   /** Returns the ranking of a user in a specific class */
@@ -1423,11 +1986,20 @@ export type Query = {
   /** Returns a list of workhout stats */
   userWorkoutStats: Array<Maybe<ClassStat>>;
   userWorkoutStatsPaginated: PaginatedClassStats;
+  /** Returns a single webhook event by ID */
+  webhookEvent?: Maybe<WebhookEvent>;
+  /** Returns a paginated list of webhook events from the subscription service */
+  webhookEvents: WebhookEventList;
 };
 
 
 export type QueryAdminUserArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QueryApplePayConfigArgs = {
+  site: SiteEnum;
 };
 
 
@@ -1442,6 +2014,13 @@ export type QueryCalculateTotalForShoppingCartArgs = {
 
 
 export type QueryCalendarClassesArgs = {
+  params?: InputMaybe<CalendarClassesParams>;
+  site: SiteEnum;
+};
+
+
+export type QueryCalendarClassesPaginatedArgs = {
+  pagination?: InputMaybe<PaginationInput>;
   params?: InputMaybe<CalendarClassesParams>;
   site: SiteEnum;
 };
@@ -1511,13 +2090,56 @@ export type QueryCurrentUserWorkoutStatsPaginatedArgs = {
 };
 
 
+export type QueryCustomerVodPeriodsArgs = {
+  customerId: Scalars['ID'];
+};
+
+
+export type QueryCustomersArgs = {
+  pagination?: InputMaybe<PaginationInput>;
+  params?: InputMaybe<AdminCustomersParams>;
+};
+
+
+export type QueryInstructorProfileArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryInstructorProfilesArgs = {
+  activeOnly?: InputMaybe<Scalars['Boolean']>;
+  site: SiteEnum;
+};
+
+
 export type QueryIsSmsValidationCodeValidArgs = {
   smsCode: Scalars['String'];
 };
 
 
-export type QueryApplePayConfigArgs = {
+export type QueryMindbodyClientArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryMindbodyClientsArgs = {
+  pagination?: InputMaybe<PaginationInput>;
+  params?: InputMaybe<AdminMindbodyClientsParams>;
+};
+
+
+export type QueryMindbodySessionTypesArgs = {
   site: SiteEnum;
+};
+
+
+export type QueryMindbodyStaffsArgs = {
+  site: SiteEnum;
+};
+
+
+export type QueryNotificationArgs = {
+  id: Scalars['ID'];
 };
 
 
@@ -1560,6 +2182,17 @@ export type QuerySearchSiteUserArgs = {
 };
 
 
+export type QuerySearchUserArgs = {
+  query?: InputMaybe<Scalars['String']>;
+};
+
+
+export type QuerySessionTypesArgs = {
+  activeOnly?: InputMaybe<Scalars['Boolean']>;
+  site: SiteEnum;
+};
+
+
 export type QuerySingleWorkoutStatArgs = {
   enrollmentId: Scalars['ID'];
 };
@@ -1572,6 +2205,17 @@ export type QuerySiteSettingsArgs = {
 
 export type QuerySiteUserArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QueryTransactionRecordArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryTransactionRecordsArgs = {
+  filter?: InputMaybe<TransactionRecordFilterInput>;
+  pagination?: InputMaybe<PaginationInput>;
 };
 
 
@@ -1598,6 +2242,35 @@ export type QueryUserWorkoutStatsPaginatedArgs = {
   userId: Scalars['ID'];
 };
 
+
+export type QueryWebhookEventArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryWebhookEventsArgs = {
+  cursor?: InputMaybe<Scalars['String']>;
+  limit?: InputMaybe<Scalars['Int']>;
+  status?: InputMaybe<Scalars['String']>;
+};
+
+export type ReactivateSubscriptionInput = {
+  subscriptionId: Scalars['ID'];
+};
+
+/** Reactivation is not yet supported by the subscription service */
+export type ReactivateSubscriptionNotSupportedError = Error & {
+  __typename?: 'ReactivateSubscriptionNotSupportedError';
+  code: Scalars['String'];
+};
+
+export type ReactivateSubscriptionResultUnion = ReactivateSubscriptionNotSupportedError | ReactivateSubscriptionSuccess | SubscriptionNotFoundError | UnknownError;
+
+export type ReactivateSubscriptionSuccess = {
+  __typename?: 'ReactivateSubscriptionSuccess';
+  success: Scalars['Boolean'];
+};
+
 export type RegisterUserInput = {
   address1?: InputMaybe<Scalars['String']>;
   address2?: InputMaybe<Scalars['String']>;
@@ -1618,8 +2291,6 @@ export type RegisterUserInput = {
   weight?: InputMaybe<Scalars['Float']>;
   zipCode: Scalars['String'];
 };
-
-export type RejectLateBookingResultUnion = PositionAlreadyTakenError | RejectLateCancelledSpotInClassSuccess;
 
 export type RejectLateCancelledSpotInClassInput = {
   waitlistEntryId: Scalars['ID'];
@@ -1687,6 +2358,18 @@ export type ResetPasswordSuccess = {
   status: Scalars['Boolean'];
 };
 
+export type RetryWebhookEventInput = {
+  email: Scalars['String'];
+  id: Scalars['ID'];
+};
+
+export type RetryWebhookEventResultUnion = InvalidEmailError | RetryWebhookEventSuccess | WebhookEventNotFoundError | WebhookEventNotRetryableError;
+
+export type RetryWebhookEventSuccess = {
+  __typename?: 'RetryWebhookEventSuccess';
+  webhookEvent: WebhookEvent;
+};
+
 export type RoomLayout = {
   __typename?: 'RoomLayout';
   capacity: Scalars['Int'];
@@ -1695,6 +2378,11 @@ export type RoomLayout = {
   matrix?: Maybe<Array<ClassPositionInterface>>;
   name: Scalars['String'];
   rows: Scalars['Int'];
+};
+
+export type RoomLayoutInUseError = Error & {
+  __typename?: 'RoomLayoutInUseError';
+  code: Scalars['String'];
 };
 
 export type RoomLayoutInput = {
@@ -1743,6 +2431,24 @@ export enum ServiceStatusEnum {
   All = 'all',
   ExpiredOnly = 'expiredOnly'
 }
+
+export type SessionType = {
+  __typename?: 'SessionType';
+  active: Scalars['Boolean'];
+  bannerImagePath?: Maybe<Scalars['String']>;
+  color?: Maybe<Scalars['String']>;
+  icon?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  mindbodySessionTypes: Array<MindbodySessionTypeInfo>;
+  name: Scalars['String'];
+  position?: Maybe<Scalars['Int']>;
+};
+
+export type SessionTypeNotFoundError = Error & {
+  __typename?: 'SessionTypeNotFoundError';
+  code: Scalars['String'];
+  id: Scalars['ID'];
+};
 
 export type SetRoomLayoutForClassSchedulesInput = {
   classSchedulesIds: Array<Scalars['ID']>;
@@ -1861,6 +2567,21 @@ export type State = {
   name: Scalars['String'];
 };
 
+export type SubscriptionAlreadyCancelledError = Error & {
+  __typename?: 'SubscriptionAlreadyCancelledError';
+  code: Scalars['String'];
+};
+
+export type SubscriptionDoesNotBelongToUserError = Error & {
+  __typename?: 'SubscriptionDoesNotBelongToUserError';
+  code: Scalars['String'];
+};
+
+export type SubscriptionNotFoundError = Error & {
+  __typename?: 'SubscriptionNotFoundError';
+  code: Scalars['String'];
+};
+
 export type SuccessfulRequestSmsValidation = {
   __typename?: 'SuccessfulRequestSMSValidation';
   success: Scalars['Boolean'];
@@ -1874,6 +2595,13 @@ export type SwapSpotSuccess = {
   selectedEnrollment: EnrollmentInfoInterface;
 };
 
+export type SystemSettings = {
+  __typename?: 'SystemSettings';
+  id: Scalars['ID'];
+  sendSuccessfulPurchaseEmail: Scalars['Boolean'];
+  textBottomIndexPage?: Maybe<Scalars['String']>;
+};
+
 export type TemporalTransactionNotFound = Error & {
   __typename?: 'TemporalTransactionNotFound';
   code: Scalars['String'];
@@ -1883,6 +2611,44 @@ export type TooManyResetPasswordLinkRequestsError = Error & {
   __typename?: 'TooManyResetPasswordLinkRequestsError';
   availableAgainAt?: Maybe<Scalars['DateTime']>;
   code: Scalars['String'];
+};
+
+export type TransactionItem = {
+  __typename?: 'TransactionItem';
+  amount?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['ID']>;
+  name?: Maybe<Scalars['String']>;
+  quantity?: Maybe<Scalars['Int']>;
+};
+
+export type TransactionRecord = {
+  __typename?: 'TransactionRecord';
+  amount?: Maybe<Scalars['String']>;
+  authorizationCode?: Maybe<Scalars['String']>;
+  created?: Maybe<Scalars['DateTime']>;
+  creditCardChargeId?: Maybe<Scalars['String']>;
+  creditCardHolderName?: Maybe<Scalars['String']>;
+  creditCardLastFourDigits?: Maybe<Scalars['String']>;
+  customerEmail?: Maybe<Scalars['String']>;
+  customerName?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  installments?: Maybe<Scalars['Int']>;
+  isRefundable: Scalars['Boolean'];
+  items: Array<TransactionItem>;
+  merchantPurchaseId?: Maybe<Scalars['Int']>;
+  refundDate?: Maybe<Scalars['DateTime']>;
+  siteName?: Maybe<Scalars['String']>;
+  status?: Maybe<Scalars['String']>;
+  subTotal?: Maybe<Scalars['String']>;
+  taxAmount?: Maybe<Scalars['String']>;
+};
+
+export type TransactionRecordFilterInput = {
+  endDate?: InputMaybe<Scalars['Date']>;
+  paymentMethod?: InputMaybe<Scalars['String']>;
+  search?: InputMaybe<Scalars['String']>;
+  site?: InputMaybe<Scalars['String']>;
+  startDate?: InputMaybe<Scalars['Date']>;
 };
 
 export type TryToSwitchToSameSpotError = Error & {
@@ -1900,6 +2666,10 @@ export type UpdateAdminUserInput = {
   userDataInput: AdminUserDataInput;
 };
 
+export type UpdateClassPackagesOrderInput = {
+  orders: Array<ClassPackageOrder>;
+};
+
 export type UpdateCurrentAdminUserFavoriteSiteInput = {
   favoriteSite?: InputMaybe<SiteEnum>;
 };
@@ -1912,6 +2682,8 @@ export type UpdateCurrentUserPasswordInput = {
   currentPassword: Scalars['String'];
   newPassword: Scalars['String'];
 };
+
+export type UpdateCurrentUserResultUnion = UploadedFileIsNotAnImage | User;
 
 export type UpdateGiftCardInput = {
   grandTotal?: InputMaybe<Scalars['Float']>;
@@ -1926,6 +2698,21 @@ export type UpdateInstructorInput = {
   profilePictureFile?: InputMaybe<Scalars['File']>;
 };
 
+export type UpdateInstructorProfileInput = {
+  active?: InputMaybe<Scalars['Boolean']>;
+  description?: InputMaybe<Scalars['String']>;
+  linkedMindbodyStaffs?: InputMaybe<Array<Scalars['ID']>>;
+  name?: InputMaybe<Scalars['String']>;
+  profilePictureFile?: InputMaybe<Scalars['File']>;
+};
+
+export type UpdateInstructorProfileResultUnion = InstructorProfile | InstructorProfileNotFoundError | UploadedFileIsNotAnImage;
+
+export type UpdateMobileNumberBlacklistInput = {
+  countryId: Scalars['ID'];
+  mobilePhoneNumber: Scalars['String'];
+};
+
 export type UpdatePaymentLinkInput = {
   amount?: InputMaybe<Scalars['Int']>;
   currency?: InputMaybe<Scalars['String']>;
@@ -1934,6 +2721,23 @@ export type UpdatePaymentLinkInput = {
   notificationEmailAddress: Scalars['String'];
   site?: InputMaybe<SiteEnum>;
   title?: InputMaybe<Scalars['String']>;
+};
+
+export type UpdateSessionTypeInput = {
+  active?: InputMaybe<Scalars['Boolean']>;
+  bannerImageFile?: InputMaybe<Scalars['File']>;
+  color?: InputMaybe<Scalars['String']>;
+  iconFile?: InputMaybe<Scalars['File']>;
+  mindbodySessionTypeIds?: InputMaybe<Array<Scalars['ID']>>;
+  name?: InputMaybe<Scalars['String']>;
+  position?: InputMaybe<Scalars['Int']>;
+};
+
+export type UpdateSessionTypeResultUnion = SessionType | SessionTypeNotFoundError | UploadedFileIsNotAnImage;
+
+export type UpdateSystemSettingsInput = {
+  sendSuccessfulPurchaseEmail: Scalars['Boolean'];
+  textBottomIndexPage?: InputMaybe<Scalars['String']>;
 };
 
 export type UpdateUserPasswordInput = {
@@ -1967,13 +2771,16 @@ export type User = {
   isMobilePhoneVerified: Scalars['Boolean'];
   lastName: Scalars['String'];
   leaderboardUsername?: Maybe<Scalars['String']>;
+  notificationsInfo: NotificationsInfo;
   phone: Scalars['String'];
+  profilePictureUrl?: Maybe<Scalars['String']>;
   /** Allows to get remaining credits for current user for all sites */
   remainingCredits: RemainingCreditsResultUnion;
   remainingCreditsBySite?: Maybe<RemainingCreditsResultUnion>;
   shoppingCart: ShoppingCart;
   siteUsers: Array<SimpleSiteUser>;
   state?: Maybe<State>;
+  subscriptions: Array<CustomerSubscription>;
   weight?: Maybe<Scalars['Float']>;
   zipCode: Scalars['String'];
 };
@@ -2038,6 +2845,7 @@ export type UserInput = {
   lastName?: InputMaybe<Scalars['String']>;
   leaderboardUsername?: InputMaybe<Scalars['String']>;
   phone?: InputMaybe<Scalars['String']>;
+  profilePicture?: InputMaybe<Scalars['File']>;
   state?: InputMaybe<Scalars['String']>;
   weight?: InputMaybe<Scalars['Float']>;
   zipCode?: InputMaybe<Scalars['String']>;
@@ -2078,6 +2886,20 @@ export type Variant = {
   product: SellableProductInterface;
 };
 
+export type WaitlistBookingConfirmedNotification = Notification & {
+  __typename?: 'WaitlistBookingConfirmedNotification';
+  body: Scalars['String'];
+  channel: Scalars['String'];
+  className?: Maybe<Scalars['String']>;
+  classStartsAt?: Maybe<Scalars['DateTime']>;
+  createdAt: Scalars['DateTime'];
+  id: Scalars['ID'];
+  readAt?: Maybe<Scalars['DateTime']>;
+  site?: Maybe<SiteEnum>;
+  title: Scalars['String'];
+  type: Scalars['String'];
+};
+
 export type WaitlistEntry = EnrollmentInfoInterface & {
   __typename?: 'WaitlistEntry';
   canBeTurnedIntoEnrollment: Scalars['Boolean'];
@@ -2095,6 +2917,62 @@ export type WaitlistEntryNotFoundError = Error & {
 
 export type WaitlistFullError = Error & {
   __typename?: 'WaitlistFullError';
+  code: Scalars['String'];
+};
+
+export type WaitlistLateCancellationOfferNotification = Notification & {
+  __typename?: 'WaitlistLateCancellationOfferNotification';
+  body: Scalars['String'];
+  channel: Scalars['String'];
+  className?: Maybe<Scalars['String']>;
+  classStartsAt?: Maybe<Scalars['DateTime']>;
+  createdAt: Scalars['DateTime'];
+  expiresAt?: Maybe<Scalars['DateTime']>;
+  id: Scalars['ID'];
+  instructorName?: Maybe<Scalars['String']>;
+  lifecycleStatus: NotificationLifecycleStatusEnum;
+  mindbodyClassId?: Maybe<Scalars['Int']>;
+  mindbodyWaitlistEntryId?: Maybe<Scalars['Int']>;
+  readAt?: Maybe<Scalars['DateTime']>;
+  site?: Maybe<SiteEnum>;
+  title: Scalars['String'];
+  type: Scalars['String'];
+};
+
+export type WebhookEvent = {
+  __typename?: 'WebhookEvent';
+  attempts: Scalars['Int'];
+  createdAt: Scalars['String'];
+  destinationUrl?: Maybe<Scalars['String']>;
+  eventType: Scalars['String'];
+  id: Scalars['ID'];
+  lastAttemptAt?: Maybe<Scalars['String']>;
+  lastError?: Maybe<Scalars['String']>;
+  nextRetryAt?: Maybe<Scalars['String']>;
+  parentEventId?: Maybe<Scalars['String']>;
+  payload: Scalars['String'];
+  resolvedByEventId?: Maybe<Scalars['String']>;
+  status: Scalars['String'];
+  subscriptionId?: Maybe<Scalars['String']>;
+  triggeredBy?: Maybe<Scalars['String']>;
+  updatedAt?: Maybe<Scalars['String']>;
+};
+
+export type WebhookEventList = {
+  __typename?: 'WebhookEventList';
+  events: Array<WebhookEvent>;
+  hasMore: Scalars['Boolean'];
+  limit: Scalars['Int'];
+  nextCursor?: Maybe<Scalars['String']>;
+};
+
+export type WebhookEventNotFoundError = Error & {
+  __typename?: 'WebhookEventNotFoundError';
+  code: Scalars['String'];
+};
+
+export type WebhookEventNotRetryableError = Error & {
+  __typename?: 'WebhookEventNotRetryableError';
   code: Scalars['String'];
 };
 
@@ -2150,6 +3028,13 @@ export type GeneratePayfortFormMutationVariables = Exact<{
 
 export type GeneratePayfortFormMutation = { __typename: 'Mutation', payfortForm: { __typename: 'PayfortFormResult', htmlForm: string } };
 
+export type GetApplePayConfigQueryVariables = Exact<{
+  site: SiteEnum;
+}>;
+
+
+export type GetApplePayConfigQuery = { __typename: 'Query', applePayConfig: { __typename: 'ApplePayConfig', currencyCode: string, countryCode: string, displayName: string } };
+
 export type GetCartSummaryQueryVariables = Exact<{
   site: SiteEnum;
 }>;
@@ -2169,13 +3054,6 @@ export type GetRemainingCreditsQueryVariables = Exact<{ [key: string]: never; }>
 
 
 export type GetRemainingCreditsQuery = { __typename: 'Query', currentUser?: { __typename: 'User', remainingCredits: { __typename: 'ClientNotFoundInMindbody', code: string } | { __typename: 'RemainingCreditsSuccess', credits: number } } | null };
-
-export type GetApplePayConfigQueryVariables = Exact<{
-  site: SiteEnum;
-}>;
-
-
-export type GetApplePayConfigQuery = { __typename: 'Query', applePayConfig: { __typename: 'ApplePayConfig', currencyCode: string, countryCode: string, displayName: string } };
 
 export type GetShoppingCartQueryVariables = Exact<{
   site: SiteEnum;
@@ -2330,7 +3208,7 @@ export type UpdateCurrentUserMutationVariables = Exact<{
 }>;
 
 
-export type UpdateCurrentUserMutation = { __typename: 'Mutation', updateCurrentUser?: { __typename: 'User', email: string } | null };
+export type UpdateCurrentUserMutation = { __typename: 'Mutation', updateCurrentUser?: { __typename: 'UploadedFileIsNotAnImage', code: string } | { __typename: 'User', email: string } | null };
 
 export type BookClassMutationVariables = Exact<{
   site: SiteEnum;
@@ -2457,7 +3335,7 @@ export type RejectLateCancelledSpotInClassMutationVariables = Exact<{
 }>;
 
 
-export type RejectLateCancelledSpotInClassMutation = { __typename: 'Mutation', rejectLateCancelledSpotInClass?: { __typename: 'PositionAlreadyTakenError', code: string } | { __typename: 'RejectLateCancelledSpotInClassSuccess', success: boolean } | null };
+export type RejectLateCancelledSpotInClassMutation = { __typename: 'Mutation', rejectLateCancelledSpotInClass?: { __typename: 'RejectLateCancelledSpotInClassSuccess', success: boolean } | null };
 
 export type CurrentUserEnrollmentsPaginatedQueryVariables = Exact<{
   site: SiteEnum;
@@ -2525,10 +3403,10 @@ export const AddItemToShoppingCartDocument = {"kind":"Document", "definitions":[
 export const AddItemToShoppingCartLightDocument = {"kind":"Document", "definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AddItemToShoppingCartLight"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ItemToShoppingCartInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"addItemToShoppingCart"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCart"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ShoppingCartSummaryFields"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ProductNotFound"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCartNotFound"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}},...ShoppingCartSummaryFieldsFragmentDoc.definitions]} as unknown as DocumentNode<AddItemToShoppingCartLightMutation, AddItemToShoppingCartLightMutationVariables>;
 export const EmptyShoppingCartDocument = {"kind":"Document", "definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"EmptyShoppingCart"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"emptyShoppingCart"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCart"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ShoppingCartSummaryFields"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCartNotFound"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}},...ShoppingCartSummaryFieldsFragmentDoc.definitions]} as unknown as DocumentNode<EmptyShoppingCartMutation, EmptyShoppingCartMutationVariables>;
 export const GeneratePayfortFormDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"GeneratePayfortForm"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PayfortFormInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payfortForm"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"htmlForm"}}]}}]}}]} as unknown as DocumentNode<GeneratePayfortFormMutation, GeneratePayfortFormMutationVariables>;
+export const GetApplePayConfigDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetApplePayConfig"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"applePayConfig"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}},{"kind":"Field","name":{"kind":"Name","value":"countryCode"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}}]}}]} as unknown as DocumentNode<GetApplePayConfigQuery, GetApplePayConfigQueryVariables>;
 export const GetCartSummaryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCartSummary"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"shoppingCart"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"variant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetCartSummaryQuery, GetCartSummaryQueryVariables>;
 export const GetProductsDocument = {"kind":"Document", "definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetProducts"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"ProductsInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"products"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProductFields"}}]}}]}},...ProductFieldsFragmentDoc.definitions]} as unknown as DocumentNode<GetProductsQuery, GetProductsQueryVariables>;
 export const GetRemainingCreditsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetRemainingCredits"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"remainingCredits"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RemainingCreditsSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"credits"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ClientNotFoundInMindbody"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetRemainingCreditsQuery, GetRemainingCreditsQueryVariables>;
-export const GetApplePayConfigDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetApplePayConfig"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"applePayConfig"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}},{"kind":"Field","name":{"kind":"Name","value":"countryCode"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}}]}}]} as unknown as DocumentNode<GetApplePayConfigQuery, GetApplePayConfigQueryVariables>;
 export const GetShoppingCartDocument = {"kind":"Document", "definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetShoppingCart"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"shoppingCart"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ShoppingCartFields"}}]}}]}}]}},...ShoppingCartFieldsFragmentDoc.definitions]} as unknown as DocumentNode<GetShoppingCartQuery, GetShoppingCartQueryVariables>;
 export const NewLockShoppingCartDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"NewLockShoppingCart"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"newLockShoppingCart"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"isLocked"}},{"kind":"Field","name":{"kind":"Name","value":"merchantReference"}}]}}]}}]} as unknown as DocumentNode<NewLockShoppingCartMutation, NewLockShoppingCartMutationVariables>;
 export const PaymentLinkDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"PaymentLink"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"paymentLink"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"notificationEmailAddress"}},{"kind":"Field","name":{"kind":"Name","value":"site"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}}]} as unknown as DocumentNode<PaymentLinkQuery, PaymentLinkQueryVariables>;
@@ -2547,7 +3425,7 @@ export const CalendarClassesDocument = {"kind":"Document","definitions":[{"kind"
 export const CustomCalendarClassesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"customCalendarClasses"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"params"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CalendarClassesParams"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"enrollmentsWaitlistParams"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CurrentUserEnrollmentsParams"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"enrollmentsUpcomingParams"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CurrentUserEnrollmentsParams"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"siteSettings"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"siteDateTimeNow"}},{"kind":"Field","name":{"kind":"Name","value":"siteTimezone"}}]}},{"kind":"Field","name":{"kind":"Name","value":"calendarClasses"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"params"},"value":{"kind":"Variable","name":{"kind":"Name","value":"params"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"instructorName"}},{"kind":"Field","name":{"kind":"Name","value":"start"}},{"kind":"Field","name":{"kind":"Name","value":"startWithNoTimeZone"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"waitListAvailable"}},{"kind":"Field","name":{"kind":"Name","value":"isSubstitute"}},{"kind":"Field","name":{"kind":"Name","value":"bookingWindow"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"endDateTime"}}]}},{"kind":"Field","name":{"kind":"Name","value":"showAsDisabled"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"enrollmentsWaitlist"},"name":{"kind":"Name","value":"currentUserEnrollments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"params"},"value":{"kind":"Variable","name":{"kind":"Name","value":"enrollmentsWaitlistParams"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"enrollmentInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"enrollmentStatus"}},{"kind":"Field","name":{"kind":"Name","value":"enrollmentDateTime"}}]}},{"kind":"Field","name":{"kind":"Name","value":"class"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"instructorName"}},{"kind":"Field","name":{"kind":"Name","value":"isSubstitute"}},{"kind":"Field","name":{"kind":"Name","value":"start"}},{"kind":"Field","name":{"kind":"Name","value":"startWithNoTimeZone"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"waitListAvailable"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"enrollmentsUpcoming"},"name":{"kind":"Name","value":"currentUserEnrollments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"params"},"value":{"kind":"Variable","name":{"kind":"Name","value":"enrollmentsUpcomingParams"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"enrollmentInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"enrollmentStatus"}},{"kind":"Field","name":{"kind":"Name","value":"enrollmentDateTime"}}]}},{"kind":"Field","name":{"kind":"Name","value":"class"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"instructorName"}},{"kind":"Field","name":{"kind":"Name","value":"isSubstitute"}},{"kind":"Field","name":{"kind":"Name","value":"start"}},{"kind":"Field","name":{"kind":"Name","value":"startWithNoTimeZone"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"waitListAvailable"}}]}}]}}]}}]} as unknown as DocumentNode<CustomCalendarClassesQuery, CustomCalendarClassesQueryVariables>;
 export const ClassInfoDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"classInfo"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"classInfo"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"class"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"instructorName"}},{"kind":"Field","name":{"kind":"Name","value":"start"}},{"kind":"Field","name":{"kind":"Name","value":"startWithNoTimeZone"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"waitListAvailable"}}]}},{"kind":"Field","name":{"kind":"Name","value":"usedSpots"}},{"kind":"Field","name":{"kind":"Name","value":"roomLayout"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"matrix"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"x"}},{"kind":"Field","name":{"kind":"Name","value":"y"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BookableSpot"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"spotNumber"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<ClassInfoQuery, ClassInfoQueryVariables>;
 export const RegisterUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"registerUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RegisterUserInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerUser"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]} as unknown as DocumentNode<RegisterUserMutation, RegisterUserMutationVariables>;
-export const UpdateCurrentUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateCurrentUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UserInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateCurrentUser"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]} as unknown as DocumentNode<UpdateCurrentUserMutation, UpdateCurrentUserMutationVariables>;
+export const UpdateCurrentUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateCurrentUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UserInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateCurrentUser"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UploadedFileIsNotAnImage"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateCurrentUserMutation, UpdateCurrentUserMutationVariables>;
 export const BookClassDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"bookClass"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BookClassInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bookClass"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}}]}}]} as unknown as DocumentNode<BookClassMutation, BookClassMutationVariables>;
 export const CancelCurrentUserEnrollmentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"cancelCurrentUserEnrollment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CancelEnrollmentInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cancelCurrentUserEnrollment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}}]}}]} as unknown as DocumentNode<CancelCurrentUserEnrollmentMutation, CancelCurrentUserEnrollmentMutationVariables>;
 export const RemoveCurrentUserFromWaitlistDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"removeCurrentUserFromWaitlist"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RemoveCurrentUserFromWaitlistInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"removeCurrentUserFromWaitlist"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RemoveFromWaitlistResult"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"WaitlistEntryNotFoundError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}}]} as unknown as DocumentNode<RemoveCurrentUserFromWaitlistMutation, RemoveCurrentUserFromWaitlistMutationVariables>;
@@ -2564,7 +3442,7 @@ export const EditEnrollmentDocument = {"kind":"Document","definitions":[{"kind":
 export const CurrentUserSitesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"currentUserSites"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"siteUsers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"site"}}]}}]}}]}}]} as unknown as DocumentNode<CurrentUserSitesQuery, CurrentUserSitesQueryVariables>;
 export const CurrentUserRankingInClassDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"currentUserRankingInClass"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"params"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"UserInRankingParams"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUserRankingInClass"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"params"},"value":{"kind":"Variable","name":{"kind":"Name","value":"params"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalRanking"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"positionInRanking"}},{"kind":"Field","name":{"kind":"Name","value":"totalMembersInRanking"}}]}},{"kind":"Field","name":{"kind":"Name","value":"genderRanking"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"gender"}},{"kind":"Field","name":{"kind":"Name","value":"ranking"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"positionInRanking"}},{"kind":"Field","name":{"kind":"Name","value":"totalMembersInRanking"}}]}}]}}]}}]}}]} as unknown as DocumentNode<CurrentUserRankingInClassQuery, CurrentUserRankingInClassQueryVariables>;
 export const AcceptLateCancelledSpotInClassDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"acceptLateCancelledSpotInClass"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"AcceptLateCancelledSpotInClassInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"acceptLateCancelledSpotInClass"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"AcceptLateCancelledSpotInClassSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]}}]} as unknown as DocumentNode<AcceptLateCancelledSpotInClassMutation, AcceptLateCancelledSpotInClassMutationVariables>;
-export const RejectLateCancelledSpotInClassDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"rejectLateCancelledSpotInClass"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RejectLateCancelledSpotInClassInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"rejectLateCancelledSpotInClass"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Error"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PositionAlreadyTakenError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RejectLateCancelledSpotInClassSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]}}]} as unknown as DocumentNode<RejectLateCancelledSpotInClassMutation, RejectLateCancelledSpotInClassMutationVariables>;
+export const RejectLateCancelledSpotInClassDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"rejectLateCancelledSpotInClass"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RejectLateCancelledSpotInClassInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"rejectLateCancelledSpotInClass"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<RejectLateCancelledSpotInClassMutation, RejectLateCancelledSpotInClassMutationVariables>;
 export const CurrentUserEnrollmentsPaginatedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"currentUserEnrollmentsPaginated"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"params"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CurrentUserEnrollmentsParams"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"PaginationInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUserEnrollmentsPaginated"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"params"},"value":{"kind":"Variable","name":{"kind":"Name","value":"params"}}},{"kind":"Argument","name":{"kind":"Name","value":"pagination"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"enrollments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"enrollmentInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"enrollmentStatus"}},{"kind":"Field","name":{"kind":"Name","value":"enrollmentDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"enrollmentDateTimeWithNoTimeZone"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EnrollmentInfo"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"spotNumber"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"WaitlistEntry"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"canBeTurnedIntoEnrollment"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"class"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"instructorName"}},{"kind":"Field","name":{"kind":"Name","value":"start"}},{"kind":"Field","name":{"kind":"Name","value":"startWithNoTimeZone"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"waitListAvailable"}},{"kind":"Field","name":{"kind":"Name","value":"showAsDisabled"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"total"}}]}}]}}]} as unknown as DocumentNode<CurrentUserEnrollmentsPaginatedQuery, CurrentUserEnrollmentsPaginatedQueryVariables>;
 export const CurrentUserWorkoutStatsPaginatedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"currentUserWorkoutStatsPaginated"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"PaginationInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUserWorkoutStatsPaginated"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"pagination"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"classStats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"enrollment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"enrollmentInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EnrollmentInfo"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"spotNumber"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"class"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"start"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalEnergy"}}]}},{"kind":"Field","name":{"kind":"Name","value":"total"}}]}}]}}]} as unknown as DocumentNode<CurrentUserWorkoutStatsPaginatedQuery, CurrentUserWorkoutStatsPaginatedQueryVariables>;
 export const CurrentUserPurchasesPaginatedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"currentUserPurchasesPaginated"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"PaginationInput"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"params"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CurrentUserPurchasesPaginatedParams"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUserPurchasesPaginated"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"params"},"value":{"kind":"Variable","name":{"kind":"Name","value":"params"}}},{"kind":"Argument","name":{"kind":"Name","value":"pagination"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"purchases"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"packageName"}},{"kind":"Field","name":{"kind":"Name","value":"allowanceObtained"}},{"kind":"Field","name":{"kind":"Name","value":"allowanceRemaining"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"activationDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"expirationDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"current"}}]}},{"kind":"Field","name":{"kind":"Name","value":"total"}}]}}]}}]} as unknown as DocumentNode<CurrentUserPurchasesPaginatedQuery, CurrentUserPurchasesPaginatedQueryVariables>;
