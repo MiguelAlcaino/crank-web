@@ -266,7 +266,7 @@ function onChangeCountry() {
 
     <!-- profile picture -->
     <div class="form-row align-items-center justify-content-center mb-4">
-      <div class="col-auto">
+      <div class="col-auto" style="position: relative">
         <div
           class="profile-picture-wrapper"
           @click="onPickPicture"
@@ -287,6 +287,10 @@ function onChangeCountry() {
           <div v-if="isUploadingPicture" class="profile-picture-uploading">
             <span class="spinner-border spinner-border-sm text-light"></span>
           </div>
+        </div>
+        <div class="profile-picture-badge">
+          <i v-if="picturePreviewUrl || profilePictureUrl" class="bi bi-pencil-fill"></i>
+          <span v-else class="profile-picture-badge-plus">+</span>
         </div>
         <input
           ref="pictureInput"
@@ -758,17 +762,17 @@ h3 {
 
 .profile-picture-wrapper {
   position: relative;
-  width: 96px;
-  height: 96px;
+  width: 120px;
+  height: 120px;
   cursor: pointer;
   border-radius: 50%;
   overflow: hidden;
-  box-shadow: 0 0 0 5px #ff8a73;
+  box-shadow: 0 0 0 8px #ff8a73;
 }
 
 .profile-picture {
-  width: 96px;
-  height: 96px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   object-fit: cover;
   display: block;
@@ -779,14 +783,14 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 3rem;
+  font-size: 4rem;
   color: #9e9e9e;
 }
 
 .profile-picture-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -798,6 +802,28 @@ h3 {
 
 .profile-picture-wrapper:hover .profile-picture-overlay {
   opacity: 1;
+}
+
+.profile-picture-badge {
+  position: absolute;
+  bottom: 4px;
+  right: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: #4db6ac;
+  color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  pointer-events: none;
+}
+
+.profile-picture-badge-plus {
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .profile-picture-uploading {
