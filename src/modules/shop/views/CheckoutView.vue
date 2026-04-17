@@ -40,6 +40,7 @@ import applePay from '../assets/images/apple_pay_button_pay.png'
 
 import { appStore } from '@/stores/appStorage'
 import { SiteEnum } from '@/modules/shared/interfaces/site.enum'
+import { ClassPackageTypeEnum } from '@/gql/graphql'
 import { useFlutterBridge } from '@/modules/shop/composables/useFlutterBridge'
 import { useShopApiService } from '@/modules/shop/composables/useShopApiService'
 
@@ -204,6 +205,13 @@ const isCheckoutBlockedByMobile = computed(() => {
   return cartRequiresMobile.value && !user.value?.isMobilePhoneVerified
 })
 
+const cartContainsSubscription = computed(() => {
+  if (!detailedCart.value?.items) return false
+  return detailedCart.value.items.some(
+    (item) => item.variant.product.classPackageType === ClassPackageTypeEnum.Membership
+  )
+})
+
 const giftCardsCount = computed(() => detailedCart.value?.giftCardsCodes?.length ?? 0)
 const cardFormErrors = computed(() => {
   const fieldLabels = {
@@ -297,7 +305,7 @@ const handleFinalPayment = async () => {
 
   try {
     await initiatePayment(fingerprintSessionId.value, {
-      saveCard: formData.saveForFuture
+      saveCard: cartContainsSubscription.value || formData.saveForFuture
     })
 
     if (checkoutError.value) throw checkoutError.value
@@ -309,7 +317,7 @@ const handleFinalPayment = async () => {
         expiryDate: `${formData.expiryMonth}/${formData.expiryYear}`,
         cvv: formData.cvv,
         cardholderName: formData.cardholderName,
-        saveForFuture: formData.saveForFuture
+        saveForFuture: cartContainsSubscription.value || formData.saveForFuture
       } as CardData
 
       formManager.addCardData(cardData)
@@ -347,7 +355,9 @@ const handleNewCardPayment = async () => {
 
   try {
     // 3. Initiate payment with the backend to get the Payfort form
-    await initiatePayment(fingerprintSessionId.value)
+    await initiatePayment(fingerprintSessionId.value, {
+      saveCard: cartContainsSubscription.value || formData.saveForFuture
+    })
 
     // Stop if the composable reported an error (e.g., network issue)
     if (checkoutError.value) throw checkoutError.value
@@ -360,7 +370,7 @@ const handleNewCardPayment = async () => {
         expiryDate: `${formData.expiryMonth}/${formData.expiryYear}`,
         cvv: formData.cvv,
         cardholderName: formData.cardholderName,
-        saveForFuture: formData.saveForFuture
+        saveForFuture: cartContainsSubscription.value || formData.saveForFuture
       } as CardData
 
       formManager.addCardData(cardData)
