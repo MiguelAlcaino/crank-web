@@ -7,6 +7,7 @@ import ProfileView from '../views/ProfileView.vue'
 import ClassView from '../views/ClassView.vue'
 import BookingsView from '../views/BookingsView.vue'
 import PurchasesView from '../views/PurchasesView.vue'
+import SubscriptionsView from '@/modules/subscriptions/views/SubscriptionsView.vue'
 import ChangePasswordView from '../views/ChangePasswordView.vue'
 import ForgotPasswordView from '../views/ForgotPasswordView.vue'
 import ChangeSpotView from '../views/ChangeSpotView.vue'
@@ -42,6 +43,11 @@ const router = createRouter({
           path: '/purchases',
           name: 'purchases',
           component: PurchasesView
+        },
+        {
+          path: '/subscriptions',
+          name: 'subscriptions',
+          component: SubscriptionsView
         },
         {
           path: '/workout-stats',

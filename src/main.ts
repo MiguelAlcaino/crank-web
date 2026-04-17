@@ -30,6 +30,7 @@ import { appStore } from './stores/appStorage'
 import { hackSquarespaceMenu } from '@/utils/hack-squarespace-menu'
 import { SiteEnum } from './modules/shared/interfaces/site.enum'
 import { ShopApiService } from '@/modules/shop/services/ShopApiService'
+import { SubscriptionsApiService } from '@/modules/subscriptions/services/SubscriptionsApiService'
 
 /* add icons to the library */
 library.add(faStepBackward, faStepForward, faLeftLong)
@@ -46,11 +47,13 @@ async function startApp() {
 
   const apiService = new ApiService(authClient, anonClient)
   const shopApiService = new ShopApiService(authClient)
+  const subscriptionsApiService = new SubscriptionsApiService(authClient)
 
   const app = createApp({
     setup() {
       provide('gqlApiService', apiService)
       provide('shopApiService', shopApiService)
+      provide('subscriptionsApiService', subscriptionsApiService)
     },
     render: () => h(App)
   }).component('font-awesome-icon', FontAwesomeIcon)

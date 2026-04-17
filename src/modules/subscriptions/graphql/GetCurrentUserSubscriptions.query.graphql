@@ -1,0 +1,14 @@
+query GetCurrentUserSubscriptions {
+  currentUser {
+    subscriptions {
+      id
+      amountCents
+      billingInterval
+      creditCardLastFourDigits
+      createdAt
+      cancelledAt
+      status
+      nextBillingAt
+    }
+  }
+}

@@ -1,0 +1,19 @@
+mutation CancelSubscription($input: CancelSubscriptionInput!) {
+  cancelSubscription(input: $input) {
+    ... on CancelSubscriptionSuccess {
+      success
+    }
+    ... on SubscriptionNotFoundError {
+      code
+    }
+    ... on SubscriptionDoesNotBelongToUserError {
+      code
+    }
+    ... on SubscriptionAlreadyCancelledError {
+      code
+    }
+    ... on UnknownError {
+      code
+    }
+  }
+}

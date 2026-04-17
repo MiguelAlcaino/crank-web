@@ -24,6 +24,7 @@ import { appStore } from './stores/appStorage'
 import { default as AppRoot } from '@/App.vue'
 import { SiteEnum } from './modules/shared/interfaces/site.enum'
 import { ShopApiService } from '@/modules/shop/services/ShopApiService'
+import { SubscriptionsApiService } from '@/modules/subscriptions/services/SubscriptionsApiService'
 
 // Initial configuration
 library.add(faStepBackward, faStepForward, faLeftLong)
@@ -40,11 +41,13 @@ const createBaseApp = (gqlUrl: string) => {
 
   const apiService = new ApiService(authClient, anonClient)
   const shopApiService = new ShopApiService(authClient)
+  const subscriptionsApiService = new SubscriptionsApiService(authClient)
 
   const app = createApp({
     setup() {
       provide('gqlApiService', apiService)
       provide('shopApiService', shopApiService)
+      provide('subscriptionsApiService', subscriptionsApiService)
     },
     render: () => h(AppRoot)
   })
@@ -57,7 +60,7 @@ const createBaseApp = (gqlUrl: string) => {
     .component('Popper', Popper)
     .component('VueDatePicker', VueDatePicker)
 
-  return { app, apiService, shopApiService }
+  return { app, apiService, shopApiService, subscriptionsApiService }
 }
 
 // --- HELPER 3: Site Logic and Authentication ---
