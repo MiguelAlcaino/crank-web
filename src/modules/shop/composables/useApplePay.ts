@@ -35,10 +35,7 @@ export const useApplePay = () => {
     }
   }
 
-  function startApplePayPayment(
-    amount: number,
-    itemDescription: string
-  ): Promise<ApplePayResult> {
+  function startApplePayPayment(amount: number, itemDescription: string): Promise<ApplePayResult> {
     if (!config.value) {
       throw new Error('Apple Pay configuration not loaded.')
     }
@@ -79,7 +76,9 @@ export const useApplePay = () => {
           merchantReference = lockResult.merchantReference
 
           const response = await fetch(
-            `${paymentsBaseUrl}/apple-pay/verify-merchant?u=${encodeURIComponent(event.validationURL)}`,
+            `${paymentsBaseUrl}/apple-pay/verify-merchant?u=${encodeURIComponent(
+              event.validationURL
+            )}`,
             {
               headers: {
                 Authorization: `Bearer ${authStore.token}`
@@ -103,9 +102,7 @@ export const useApplePay = () => {
           label: applePayConfig.displayName,
           amount
         }
-        const newLineItems: ApplePayLineItem[] = [
-          { type: 'final', label: itemDescription, amount }
-        ]
+        const newLineItems: ApplePayLineItem[] = [{ type: 'final', label: itemDescription, amount }]
         session.completeShippingContactSelection(
           ApplePaySession.STATUS_SUCCESS,
           '',
@@ -120,9 +117,7 @@ export const useApplePay = () => {
           label: applePayConfig.displayName,
           amount
         }
-        const newLineItems: ApplePayLineItem[] = [
-          { type: 'final', label: itemDescription, amount }
-        ]
+        const newLineItems: ApplePayLineItem[] = [{ type: 'final', label: itemDescription, amount }]
         session.completeShippingMethodSelection(
           ApplePaySession.STATUS_SUCCESS,
           newTotal,
@@ -136,29 +131,24 @@ export const useApplePay = () => {
           label: applePayConfig.displayName,
           amount
         }
-        const newLineItems: ApplePayLineItem[] = [
-          { type: 'final', label: itemDescription, amount }
-        ]
+        const newLineItems: ApplePayLineItem[] = [{ type: 'final', label: itemDescription, amount }]
         session.completePaymentMethodSelection(newTotal, newLineItems)
       }
 
       session.onpaymentauthorized = async (event) => {
         paymentProcessStarted = true
         try {
-          const response = await fetch(
-            `${paymentsBaseUrl}/payfort/apple-pay-process-purchase`,
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${authStore.token}`
-              },
-              body: JSON.stringify({
-                applePayment: event.payment.token,
-                merchantReference
-              })
-            }
-          )
+          const response = await fetch(`${paymentsBaseUrl}/payfort/apple-pay-process-purchase`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${authStore.token}`
+            },
+            body: JSON.stringify({
+              applePayment: event.payment.token,
+              merchantReference
+            })
+          })
 
           const data = await response.json()
 
