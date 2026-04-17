@@ -128,6 +128,7 @@ export class ApiService implements IApiService {
           hideMetrics
           weight
           leaderboardUsername
+          profilePictureUrl
         }
       }
     `
@@ -524,6 +525,34 @@ export class ApiService implements IApiService {
         mutation: UPDATE_CURRENT_USER_MUTATION,
         variables: {
           input: input
+        }
+      })
+      return result.data.updateCurrentUser.__typename
+    } catch (error) {
+      return 'UnknownError'
+    }
+  }
+
+  async updateProfilePicture(profilePicture: File): Promise<string> {
+    const UPDATE_PROFILE_PICTURE_MUTATION = gql`
+      mutation updateProfilePicture($input: UserInput!) {
+        updateCurrentUser(input: $input) {
+          __typename
+          ... on User {
+            profilePictureUrl
+          }
+          ... on UploadedFileIsNotAnImage {
+            code
+          }
+        }
+      }
+    `
+
+    try {
+      const result = await this.authApiClient.mutate({
+        mutation: UPDATE_PROFILE_PICTURE_MUTATION,
+        variables: {
+          input: { profilePicture }
         }
       })
       return result.data.updateCurrentUser.__typename

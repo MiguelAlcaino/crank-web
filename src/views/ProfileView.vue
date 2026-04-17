@@ -32,6 +32,12 @@ const successModalIsVisible = ref(false)
 const errorModalIsVisible = ref(false)
 const weightInputMessageIsVisible = ref(false)
 
+const profilePictureUrl = ref<string | null>(null)
+const picturePreviewUrl = ref<string | null>(null)
+const isUploadingPicture = ref(false)
+const pictureInput = ref<HTMLInputElement | null>(null)
+const pictureErrorModalIsVisible = ref(false)
+
 const countries = ref([] as Country[])
 const countryStates = ref([] as State[])
 
@@ -156,6 +162,32 @@ async function getMyself(): Promise<void> {
     formData.emergencyContactRelationship = user.emergencyContactRelationship!
     formData.leaderboardUsername = user.leaderboardUsername!
     formData.joinTheLeaderboard = user.hideMetrics !== null ? !user.hideMetrics! : false
+    profilePictureUrl.value = user.profilePictureUrl ?? null
+  }
+}
+
+function onPickPicture() {
+  pictureInput.value?.click()
+}
+
+async function onPictureSelected(event: Event) {
+  const file = (event.target as HTMLInputElement).files?.[0]
+  if (!file) return
+
+  picturePreviewUrl.value = URL.createObjectURL(file)
+  isUploadingPicture.value = true
+
+  const result = await apiService.updateProfilePicture(file)
+  isUploadingPicture.value = false
+
+  if (result === 'User') {
+    profilePictureUrl.value = picturePreviewUrl.value
+  } else if (result === 'UploadedFileIsNotAnImage') {
+    picturePreviewUrl.value = null
+    pictureErrorModalIsVisible.value = true
+  } else {
+    picturePreviewUrl.value = null
+    errorModalIsVisible.value = true
   }
 }
 
@@ -231,6 +263,40 @@ function onChangeCountry() {
       </RouterLink>
     </div>
     <hr />
+
+    <!-- profile picture -->
+    <div class="form-row align-items-center justify-content-center mb-4">
+      <div class="col-auto">
+        <div
+          class="profile-picture-wrapper"
+          @click="onPickPicture"
+          :title="'Change profile picture'"
+        >
+          <img
+            v-if="picturePreviewUrl || profilePictureUrl"
+            :src="picturePreviewUrl ?? profilePictureUrl!"
+            class="profile-picture"
+            alt="Profile picture"
+          />
+          <div v-else class="profile-picture profile-picture--placeholder">
+            <i class="bi bi-person-fill"></i>
+          </div>
+          <div class="profile-picture-overlay">
+            <i class="bi bi-camera-fill"></i>
+          </div>
+          <div v-if="isUploadingPicture" class="profile-picture-uploading">
+            <span class="spinner-border spinner-border-sm text-light"></span>
+          </div>
+        </div>
+        <input
+          ref="pictureInput"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          class="d-none"
+          @change="onPictureSelected"
+        />
+      </div>
+    </div>
 
     <!-- joinTheLeaderboard -->
     <div class="form-row">
@@ -617,7 +683,7 @@ function onChangeCountry() {
     <!--submit button-->
     <div class="form-row justify-content-md-center">
       <div class="col-md-3 mb-3">
-        <button class="btn btn-primary" type="submit" :disabled="isSaving">
+        <button class="btn btn-primary" type="submit" :disabled="isSaving || isUploadingPicture">
           Save Profile
           <span class="spinner-border spinner-border-sm" v-if="isSaving"></span>
         </button>
@@ -643,6 +709,17 @@ function onChangeCountry() {
     :closable="false"
     v-if="errorModalIsVisible"
     @on-ok="errorModalIsVisible = false"
+  >
+  </ModalComponent>
+
+  <!-- Picture Error Modal -->
+  <ModalComponent
+    title="Invalid image"
+    message="The uploaded file is not a valid image. Please upload a JPEG, PNG or WebP file."
+    :closable="false"
+    v-if="pictureErrorModalIsVisible"
+    @on-ok="pictureErrorModalIsVisible = false"
+    :cancel-text="null"
   >
   </ModalComponent>
 </template>
@@ -677,6 +754,59 @@ function onChangeCountry() {
 
 h3 {
   color: #737373;
+}
+
+.profile-picture-wrapper {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  cursor: pointer;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 0 0 5px #ff8a73;
+}
+
+.profile-picture {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.profile-picture--placeholder {
+  background-color: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: #9e9e9e;
+}
+
+.profile-picture-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+  color: white;
+  font-size: 1.4rem;
+}
+
+.profile-picture-wrapper:hover .profile-picture-overlay {
+  opacity: 1;
+}
+
+.profile-picture-uploading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
 }
 </style>
 

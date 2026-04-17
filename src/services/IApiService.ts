@@ -128,6 +128,7 @@ export interface IApiService {
    * @returns A promise that resolves with a string indicating the result.
    */
   updateCurrentUser(input: UserInput): Promise<string>
+  updateProfilePicture(profilePicture: File): Promise<string>
 
   /**
    * Books the current user into a class.

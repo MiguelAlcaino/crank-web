@@ -1,132 +1,140 @@
-import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
-export type Maybe<T> = T | null;
-export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core'
+export type Maybe<T> = T | null
+export type InputMaybe<T> = Maybe<T>
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] }
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> }
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> }
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: string;
-  String: string;
-  Boolean: boolean;
-  Int: number;
-  Float: number;
-  Date: any;
-  DateTime: any;
-  DateTimeWithoutTimeZone: any;
-  File: any;
-};
+  ID: string
+  String: string
+  Boolean: boolean
+  Int: number
+  Float: number
+  Date: any
+  DateTime: any
+  DateTimeWithoutTimeZone: any
+  File: any
+}
 
 export type AcceptLateCancelledSpotInClassInput = {
-  waitlistEntryId: Scalars['ID'];
-};
+  waitlistEntryId: Scalars['ID']
+}
 
-export type AcceptLateCancelledSpotInClassResultUnion = AcceptLateCancelledSpotInClassSuccess | ClassIsFullError | ClientIsAlreadyBookedError | ClientIsOutsideSchedulingWindowError | PaymentRequiredError | UnknownError;
+export type AcceptLateCancelledSpotInClassResultUnion =
+  | AcceptLateCancelledSpotInClassSuccess
+  | ClassIsFullError
+  | ClientIsAlreadyBookedError
+  | ClientIsOutsideSchedulingWindowError
+  | PaymentRequiredError
+  | UnknownError
 
 export type AcceptLateCancelledSpotInClassSuccess = {
-  __typename?: 'AcceptLateCancelledSpotInClassSuccess';
-  success: Scalars['Boolean'];
-};
+  __typename?: 'AcceptLateCancelledSpotInClassSuccess'
+  success: Scalars['Boolean']
+}
 
 export type AddedToWaitlistSuccess = {
-  __typename?: 'AddedToWaitlistSuccess';
-  status: Scalars['Boolean'];
-};
+  __typename?: 'AddedToWaitlistSuccess'
+  status: Scalars['Boolean']
+}
 
 export type AdminCustomerVodPeriod = {
-  __typename?: 'AdminCustomerVodPeriod';
-  addedBy: Scalars['String'];
-  addedByAdmin?: Maybe<Scalars['String']>;
-  createdAt?: Maybe<Scalars['DateTime']>;
-  deletedAt?: Maybe<Scalars['DateTime']>;
-  end: Scalars['DateTime'];
-  id: Scalars['ID'];
-  isDeleted: Scalars['Boolean'];
-  start: Scalars['DateTime'];
-};
+  __typename?: 'AdminCustomerVodPeriod'
+  addedBy: Scalars['String']
+  addedByAdmin?: Maybe<Scalars['String']>
+  createdAt?: Maybe<Scalars['DateTime']>
+  deletedAt?: Maybe<Scalars['DateTime']>
+  end: Scalars['DateTime']
+  id: Scalars['ID']
+  isDeleted: Scalars['Boolean']
+  start: Scalars['DateTime']
+}
 
 export type AdminCustomersParams = {
-  registrationEndDate?: InputMaybe<Scalars['Date']>;
-  registrationStartDate?: InputMaybe<Scalars['Date']>;
-  search?: InputMaybe<Scalars['String']>;
-  vodEndDate?: InputMaybe<Scalars['Date']>;
-  vodStartDate?: InputMaybe<Scalars['Date']>;
-};
+  registrationEndDate?: InputMaybe<Scalars['Date']>
+  registrationStartDate?: InputMaybe<Scalars['Date']>
+  search?: InputMaybe<Scalars['String']>
+  vodEndDate?: InputMaybe<Scalars['Date']>
+  vodStartDate?: InputMaybe<Scalars['Date']>
+}
 
 export type AdminMindbodyClient = {
-  __typename?: 'AdminMindbodyClient';
-  clientId?: Maybe<Scalars['String']>;
-  createdAt?: Maybe<Scalars['DateTime']>;
-  email?: Maybe<Scalars['String']>;
-  firstName?: Maybe<Scalars['String']>;
-  id: Scalars['ID'];
-  lastName?: Maybe<Scalars['String']>;
-  mobilePhone?: Maybe<Scalars['String']>;
-};
+  __typename?: 'AdminMindbodyClient'
+  clientId?: Maybe<Scalars['String']>
+  createdAt?: Maybe<Scalars['DateTime']>
+  email?: Maybe<Scalars['String']>
+  firstName?: Maybe<Scalars['String']>
+  id: Scalars['ID']
+  lastName?: Maybe<Scalars['String']>
+  mobilePhone?: Maybe<Scalars['String']>
+}
 
 export type AdminMindbodyClientsParams = {
-  endDate?: InputMaybe<Scalars['Date']>;
-  search?: InputMaybe<Scalars['String']>;
-  startDate?: InputMaybe<Scalars['Date']>;
-};
+  endDate?: InputMaybe<Scalars['Date']>
+  search?: InputMaybe<Scalars['String']>
+  startDate?: InputMaybe<Scalars['Date']>
+}
 
 export type AdminSendLateCancellationNotificationInput = {
-  classId: Scalars['ID'];
-  className: Scalars['String'];
-  classStartsAt: Scalars['String'];
-  customerId: Scalars['ID'];
-  expiresAt: Scalars['String'];
-  instructorName: Scalars['String'];
-  site?: InputMaybe<SiteEnum>;
-  waitlistId: Scalars['ID'];
-};
+  classId: Scalars['ID']
+  className: Scalars['String']
+  classStartsAt: Scalars['String']
+  customerId: Scalars['ID']
+  expiresAt: Scalars['String']
+  instructorName: Scalars['String']
+  site?: InputMaybe<SiteEnum>
+  waitlistId: Scalars['ID']
+}
 
-export type AdminSendPushNotificationResult = AdminSendPushNotificationSuccess | CustomerNotFoundError;
+export type AdminSendPushNotificationResult =
+  | AdminSendPushNotificationSuccess
+  | CustomerNotFoundError
 
 export type AdminSendPushNotificationSuccess = {
-  __typename?: 'AdminSendPushNotificationSuccess';
-  customerId: Scalars['ID'];
-};
+  __typename?: 'AdminSendPushNotificationSuccess'
+  customerId: Scalars['ID']
+}
 
 export type AdminSendWaitlistBookingNotificationInput = {
-  className: Scalars['String'];
-  classStartsAt: Scalars['String'];
-  customerId: Scalars['ID'];
-  site?: InputMaybe<SiteEnum>;
-};
+  className: Scalars['String']
+  classStartsAt: Scalars['String']
+  customerId: Scalars['ID']
+  site?: InputMaybe<SiteEnum>
+}
 
 export type AdminUser = {
-  __typename?: 'AdminUser';
-  email: Scalars['String'];
-  favoriteSite: Site;
-  id: Scalars['ID'];
-  linkedInstructors?: Maybe<Array<Instructor>>;
-  linkedSites?: Maybe<Array<Site>>;
-  roles?: Maybe<Array<Scalars['String']>>;
-  showCancelledClasses: Scalars['Boolean'];
-  username: Scalars['String'];
-};
+  __typename?: 'AdminUser'
+  email: Scalars['String']
+  favoriteSite: Site
+  id: Scalars['ID']
+  linkedInstructors?: Maybe<Array<Instructor>>
+  linkedSites?: Maybe<Array<Site>>
+  roles?: Maybe<Array<Scalars['String']>>
+  showCancelledClasses: Scalars['Boolean']
+  username: Scalars['String']
+}
 
 export type AdminUserDataInput = {
-  email: Scalars['String'];
-  favoriteSite?: InputMaybe<SiteEnum>;
-  linkedInstructorIds?: InputMaybe<Array<Scalars['ID']>>;
-  linkedSiteCodes?: InputMaybe<Array<SiteEnum>>;
-  role: Scalars['String'];
-  username: Scalars['String'];
-};
+  email: Scalars['String']
+  favoriteSite?: InputMaybe<SiteEnum>
+  linkedInstructorIds?: InputMaybe<Array<Scalars['ID']>>
+  linkedSiteCodes?: InputMaybe<Array<SiteEnum>>
+  role: Scalars['String']
+  username: Scalars['String']
+}
 
-export type AdminUserResultUnion = AdminUser | EmailAlreadyUsedError | UsernameAlreadyUsedError;
+export type AdminUserResultUnion = AdminUser | EmailAlreadyUsedError | UsernameAlreadyUsedError
 
 export type ApplePayConfig = {
-  __typename?: 'ApplePayConfig';
+  __typename?: 'ApplePayConfig'
   /** The ISO 3166-1 alpha-2 country code (e.g. AE) */
-  countryCode: Scalars['String'];
+  countryCode: Scalars['String']
   /** The ISO 4217 currency code (e.g. AED) */
-  currencyCode: Scalars['String'];
+  currencyCode: Scalars['String']
   /** The display name shown on the Apple Pay sheet */
-  displayName: Scalars['String'];
-};
+  displayName: Scalars['String']
+}
 
 export enum BillingIntervalEnum {
   Daily = 'daily',
@@ -136,48 +144,61 @@ export enum BillingIntervalEnum {
 }
 
 export type BookClassInput = {
-  classId: Scalars['ID'];
-  isWaitlistBooking?: InputMaybe<Scalars['Boolean']>;
-  spotNumber?: InputMaybe<Scalars['Int']>;
-};
+  classId: Scalars['ID']
+  isWaitlistBooking?: InputMaybe<Scalars['Boolean']>
+  spotNumber?: InputMaybe<Scalars['Int']>
+}
 
-export type BookClassResultUnion = AddedToWaitlistSuccess | BookClassSuccess | BookedButInOtherSpotError | BookingOverlapsAnotherOneError | ClassIsFullError | ClientIsAlreadyBookedError | ClientIsAlreadyOnWaitlistError | ClientIsOutsideSchedulingWindowError | PaymentRequiredError | SpotAlreadyReservedError | SpotIsDisabledError | UnknownError | WaitlistFullError;
+export type BookClassResultUnion =
+  | AddedToWaitlistSuccess
+  | BookClassSuccess
+  | BookedButInOtherSpotError
+  | BookingOverlapsAnotherOneError
+  | ClassIsFullError
+  | ClientIsAlreadyBookedError
+  | ClientIsAlreadyOnWaitlistError
+  | ClientIsOutsideSchedulingWindowError
+  | PaymentRequiredError
+  | SpotAlreadyReservedError
+  | SpotIsDisabledError
+  | UnknownError
+  | WaitlistFullError
 
 export type BookClassSuccess = {
-  __typename?: 'BookClassSuccess';
-  status: Scalars['Boolean'];
-};
+  __typename?: 'BookClassSuccess'
+  status: Scalars['Boolean']
+}
 
 export type BookUserIntoClassInput = {
-  classId: Scalars['ID'];
-  isPaymentRequired?: InputMaybe<Scalars['Boolean']>;
-  isWaitlistBooking?: InputMaybe<Scalars['Boolean']>;
-  siteUserId: Scalars['ID'];
-  spotNumber?: InputMaybe<Scalars['Int']>;
-};
+  classId: Scalars['ID']
+  isPaymentRequired?: InputMaybe<Scalars['Boolean']>
+  isWaitlistBooking?: InputMaybe<Scalars['Boolean']>
+  siteUserId: Scalars['ID']
+  spotNumber?: InputMaybe<Scalars['Int']>
+}
 
 export type BookableSpot = ClassPositionInterface & {
-  __typename?: 'BookableSpot';
-  enabled?: Maybe<Scalars['Boolean']>;
-  icon: PositionIconEnum;
+  __typename?: 'BookableSpot'
+  enabled?: Maybe<Scalars['Boolean']>
+  icon: PositionIconEnum
   /** @deprecated isBooked should be moved somewhere else and spotNumber has been moved to the root. */
-  spotInfo: SpotInfo;
-  spotNumber: Scalars['Int'];
-  x: Scalars['Int'];
-  y: Scalars['Int'];
-};
+  spotInfo: SpotInfo
+  spotNumber: Scalars['Int']
+  x: Scalars['Int']
+  y: Scalars['Int']
+}
 
 export type BookedButInOtherSpotError = Error & {
-  __typename?: 'BookedButInOtherSpotError';
-  code: Scalars['String'];
-  givenSpot: Scalars['Int'];
-  requiredSpot: Scalars['Int'];
-};
+  __typename?: 'BookedButInOtherSpotError'
+  code: Scalars['String']
+  givenSpot: Scalars['Int']
+  requiredSpot: Scalars['Int']
+}
 
 export type BookingOverlapsAnotherOneError = Error & {
-  __typename?: 'BookingOverlapsAnotherOneError';
-  code: Scalars['String'];
-};
+  __typename?: 'BookingOverlapsAnotherOneError'
+  code: Scalars['String']
+}
 
 /**
  * Defines the time window during which a class can be booked or cancelled.
@@ -186,28 +207,28 @@ export type BookingOverlapsAnotherOneError = Error & {
  * before the class and closes a few hours before the class starts.
  */
 export type BookingWindow = {
-  __typename?: 'BookingWindow';
+  __typename?: 'BookingWindow'
   /** The latest date and time when booking is allowed for this class */
-  endDateTime: Scalars['DateTime'];
+  endDateTime: Scalars['DateTime']
   /** The earliest date and time when booking becomes available for this class */
-  startDateTime: Scalars['DateTime'];
-};
+  startDateTime: Scalars['DateTime']
+}
 
 export type BulkActivateVodInput = {
-  mindbodyIds: Array<Scalars['Int']>;
-  vodDays: Scalars['Int'];
-};
+  mindbodyIds: Array<Scalars['Int']>
+  vodDays: Scalars['Int']
+}
 
 export type BulkVodResult = {
-  __typename?: 'BulkVodResult';
-  processedCount: Scalars['Int'];
-};
+  __typename?: 'BulkVodResult'
+  processedCount: Scalars['Int']
+}
 
 export type CalendarClassesPaginatedResult = PaginatedResult & {
-  __typename?: 'CalendarClassesPaginatedResult';
-  classes: Array<Class>;
-  total: Scalars['Int'];
-};
+  __typename?: 'CalendarClassesPaginatedResult'
+  classes: Array<Class>
+  total: Scalars['Int']
+}
 
 /**
  * Filters for querying classes within a specific date range.
@@ -216,79 +237,87 @@ export type CalendarClassesPaginatedResult = PaginatedResult & {
  */
 export type CalendarClassesParams = {
   /** End date for the class search range (format: YYYY-MM-DD). If omitted, it defaults to +1 week from now. */
-  endDate?: InputMaybe<Scalars['Date']>;
+  endDate?: InputMaybe<Scalars['Date']>
   /** Filter classes by instructor profile (the instructor 'face' in the app). When provided, shows only classes taught by any MindbodyStaff linked to this profile. */
-  instructorProfileId?: InputMaybe<Scalars['ID']>;
-  meridiem?: InputMaybe<MeridiemEnum>;
+  instructorProfileId?: InputMaybe<Scalars['ID']>
+  meridiem?: InputMaybe<MeridiemEnum>
   /** Filter classes by session type. When provided, shows only classes that match the given SessionType. */
-  sessionTypeId?: InputMaybe<Scalars['ID']>;
+  sessionTypeId?: InputMaybe<Scalars['ID']>
   /** Start date for the class search range (format: YYYY-MM-DD). If omitted, defaults to current date. If provided and end date should also be provided. */
-  startDate?: InputMaybe<Scalars['Date']>;
-};
+  startDate?: InputMaybe<Scalars['Date']>
+}
 
 export type CancelEnrollmentInput = {
-  enrollmentId: Scalars['ID'];
-  lateCancel?: InputMaybe<Scalars['Boolean']>;
-};
+  enrollmentId: Scalars['ID']
+  lateCancel?: InputMaybe<Scalars['Boolean']>
+}
 
-export type CancelEnrollmentResultUnion = CancelUserEnrollmentSuccess | LateCancellationRequiredError | UnknownError;
+export type CancelEnrollmentResultUnion =
+  | CancelUserEnrollmentSuccess
+  | LateCancellationRequiredError
+  | UnknownError
 
 export type CancelSubscriptionInput = {
-  subscriptionId: Scalars['ID'];
-};
+  subscriptionId: Scalars['ID']
+}
 
-export type CancelSubscriptionResultUnion = CancelSubscriptionSuccess | SubscriptionAlreadyCancelledError | SubscriptionDoesNotBelongToUserError | SubscriptionNotFoundError | UnknownError;
+export type CancelSubscriptionResultUnion =
+  | CancelSubscriptionSuccess
+  | SubscriptionAlreadyCancelledError
+  | SubscriptionDoesNotBelongToUserError
+  | SubscriptionNotFoundError
+  | UnknownError
 
 export type CancelSubscriptionSuccess = {
-  __typename?: 'CancelSubscriptionSuccess';
-  success: Scalars['Boolean'];
-};
+  __typename?: 'CancelSubscriptionSuccess'
+  success: Scalars['Boolean']
+}
 
 export type CancelUserEnrollmentSuccess = {
-  __typename?: 'CancelUserEnrollmentSuccess';
-  status?: Maybe<Scalars['Boolean']>;
-};
+  __typename?: 'CancelUserEnrollmentSuccess'
+  status?: Maybe<Scalars['Boolean']>
+}
 
 export type ChallengeDisplay = {
-  __typename?: 'ChallengeDisplay';
-  firstLine?: Maybe<Scalars['String']>;
-  secondLine?: Maybe<Scalars['String']>;
-  thirdLine?: Maybe<Scalars['String']>;
-};
+  __typename?: 'ChallengeDisplay'
+  firstLine?: Maybe<Scalars['String']>
+  secondLine?: Maybe<Scalars['String']>
+  thirdLine?: Maybe<Scalars['String']>
+}
 
 export type ChallengeInterface = {
-  challengeDisplay: ChallengeDisplay;
-  id: Scalars['ID'];
-};
+  challengeDisplay: ChallengeDisplay
+  id: Scalars['ID']
+}
 
 export type ChartPoint = {
-  __typename?: 'ChartPoint';
-  power?: Maybe<Scalars['Int']>;
-  rpm?: Maybe<Scalars['Int']>;
-  time?: Maybe<Scalars['Int']>;
-};
+  __typename?: 'ChartPoint'
+  power?: Maybe<Scalars['Int']>
+  rpm?: Maybe<Scalars['Int']>
+  time?: Maybe<Scalars['Int']>
+}
 
-export type CheckinResultUnion = CheckinSuccess | EnrollmentNotFoundError;
+export type CheckinResultUnion = CheckinSuccess | EnrollmentNotFoundError
 
 export type CheckinSuccess = {
-  __typename?: 'CheckinSuccess';
-  success: Scalars['Boolean'];
-};
+  __typename?: 'CheckinSuccess'
+  success: Scalars['Boolean']
+}
 
 export type CheckinUserInClass = {
-  enrollmentId: Scalars['ID'];
-};
+  enrollmentId: Scalars['ID']
+}
 
-export type CheckoutResultUnion = CheckoutSuccess | EnrollmentNotFoundError;
+export type CheckoutResultUnion = CheckoutSuccess | EnrollmentNotFoundError
 
 export type CheckoutSuccess = {
-  __typename?: 'CheckoutSuccess';
-  success: Scalars['Boolean'];
-};
+  __typename?: 'CheckoutSuccess'
+  success: Scalars['Boolean']
+}
 
 export type CheckoutUserInClass = {
-  enrollmentId: Scalars['ID'];
-};
+  enrollmentId: Scalars['ID']
+}
 
 /**
  * Represents a fitness class session with booking and scheduling information.
@@ -297,91 +326,90 @@ export type CheckoutUserInClass = {
  * timing, capacity, and booking rules.
  */
 export type Class = {
-  __typename?: 'Class';
+  __typename?: 'Class'
   /** Time window during which users can book or cancel this class */
-  bookingWindow: BookingWindow;
+  bookingWindow: BookingWindow
   /** Detailed description of the class */
-  description: Scalars['String'];
+  description: Scalars['String']
   /** Duration of the class in minutes */
-  duration: Scalars['Int'];
+  duration: Scalars['Int']
   /** Whether performance statistics are available for this class */
-  hasClassStats: Scalars['Boolean'];
+  hasClassStats: Scalars['Boolean']
   /** Whether or not it has a Room Layout assigned */
-  hasRoomLayout: Scalars['Boolean'];
+  hasRoomLayout: Scalars['Boolean']
   /** Unique identifier for the class */
-  id: Scalars['ID'];
+  id: Scalars['ID']
   /** Full name of the instructor leading the class */
-  instructorName: Scalars['String'];
+  instructorName: Scalars['String']
   /** Whether this class has a substitute instructor (different from the regularly scheduled instructor) */
-  isSubstitute: Scalars['Boolean'];
+  isSubstitute: Scalars['Boolean']
   /** Whether this class is currently being synchronized with external systems */
-  isSynchronizing: Scalars['Boolean'];
+  isSynchronizing: Scalars['Boolean']
   /** Maximum number of participants that can book this class */
-  maxCapacity: Scalars['Int'];
+  maxCapacity: Scalars['Int']
   /** Name/type of the class (e.g., 'CRANK', 'RIDE', 'POWER') */
-  name: Scalars['String'];
+  name: Scalars['String']
   /** The session type associated with this class */
-  sessionTypes: Array<SessionType>;
+  sessionTypes: Array<SessionType>
   /** Whether this class should be displayed as disabled in the UI (typically for cancelled or past classes) */
-  showAsDisabled: Scalars['Boolean'];
+  showAsDisabled: Scalars['Boolean']
   /** Class start date and time with timezone (ISO 8601 format) */
-  start: Scalars['DateTime'];
+  start: Scalars['DateTime']
   /** Same as start but without timezone. If start is 2023-11-04T10:15:00+04:00 then this value will be 2023-11-04T10:15:00 */
-  startWithNoTimeZone: Scalars['DateTimeWithoutTimeZone'];
+  startWithNoTimeZone: Scalars['DateTimeWithoutTimeZone']
   /** Current number of participants booked in this class */
-  totalBooked: Scalars['Int'];
+  totalBooked: Scalars['Int']
   /** Number of spots marked as under maintenance or disabled */
-  totalUnderMaintenanceSpots: Scalars['Int'];
+  totalUnderMaintenanceSpots: Scalars['Int']
   /** Whether the waitlist is available for this class when it's full */
-  waitListAvailable: Scalars['Boolean'];
-};
+  waitListAvailable: Scalars['Boolean']
+}
 
 export type ClassInfo = {
-  __typename?: 'ClassInfo';
-  class: Class;
-  enrollments: Array<EnrollmentInfoInterface>;
-  onHoldSpots: Scalars['Int'];
-  orphanedClassStatsSpots: Array<Scalars['Int']>;
-  roomLayout?: Maybe<RoomLayout>;
-  usedSpots?: Maybe<Array<Scalars['Int']>>;
-};
-
+  __typename?: 'ClassInfo'
+  class: Class
+  enrollments: Array<EnrollmentInfoInterface>
+  onHoldSpots: Scalars['Int']
+  orphanedClassStatsSpots: Array<Scalars['Int']>
+  roomLayout?: Maybe<RoomLayout>
+  usedSpots?: Maybe<Array<Scalars['Int']>>
+}
 
 export type ClassInfoEnrollmentsArgs = {
-  status?: InputMaybe<EnrollmentStatusEnum>;
-};
+  status?: InputMaybe<EnrollmentStatusEnum>
+}
 
 export type ClassIsFullError = Error & {
-  __typename?: 'ClassIsFullError';
-  code: Scalars['String'];
-};
+  __typename?: 'ClassIsFullError'
+  code: Scalars['String']
+}
 
 export type ClassPackageOrder = {
-  classPackageId: Scalars['ID'];
-  position: Scalars['Int'];
-  type: ClassPackageTypeEnum;
-};
+  classPackageId: Scalars['ID']
+  position: Scalars['Int']
+  type: ClassPackageTypeEnum
+}
 
 export type ClassPackageProduct = SellableProductInterface & {
-  __typename?: 'ClassPackageProduct';
-  alertBeforePurchasing?: Maybe<ProductAlertBeforePurchasing>;
-  billingInterval?: Maybe<BillingIntervalEnum>;
-  buttonText?: Maybe<Scalars['String']>;
-  currency: Scalars['String'];
-  doesItRequireSmsAuth?: Maybe<Scalars['Boolean']>;
-  doestItActivateVodForClients?: Maybe<Scalars['Boolean']>;
-  id: Scalars['ID'];
-  isCLassPassPackage?: Maybe<Scalars['Boolean']>;
-  isMembership?: Maybe<Scalars['Boolean']>;
-  isTrialPackage?: Maybe<Scalars['Boolean']>;
-  isVisible: Scalars['Boolean'];
-  position?: Maybe<Scalars['Int']>;
-  subtitle?: Maybe<Scalars['String']>;
-  title: Scalars['String'];
-  type?: Maybe<ClassPackageTypeEnum>;
-  variants: Array<Variant>;
-  vodAmountOfDays?: Maybe<Scalars['Int']>;
-};
+  __typename?: 'ClassPackageProduct'
+  alertBeforePurchasing?: Maybe<ProductAlertBeforePurchasing>
+  billingInterval?: Maybe<BillingIntervalEnum>
+  buttonText?: Maybe<Scalars['String']>
+  currency: Scalars['String']
+  doesItRequireSmsAuth?: Maybe<Scalars['Boolean']>
+  doestItActivateVodForClients?: Maybe<Scalars['Boolean']>
+  id: Scalars['ID']
+  isCLassPassPackage?: Maybe<Scalars['Boolean']>
+  isMembership?: Maybe<Scalars['Boolean']>
+  isTrialPackage?: Maybe<Scalars['Boolean']>
+  isVisible: Scalars['Boolean']
+  position?: Maybe<Scalars['Int']>
+  subtitle?: Maybe<Scalars['String']>
+  title: Scalars['String']
+  type?: Maybe<ClassPackageTypeEnum>
+  variants: Array<Variant>
+  vodAmountOfDays?: Maybe<Scalars['Int']>
+}
 
 export enum ClassPackageTypeEnum {
   Membership = 'membership',
@@ -391,348 +419,356 @@ export enum ClassPackageTypeEnum {
   Vod = 'vod'
 }
 
-export type ClassPackageUpdateResultUnion = ClassPackageProduct | ProductNotFound | UnknownError;
+export type ClassPackageUpdateResultUnion = ClassPackageProduct | ProductNotFound | UnknownError
 
 export type ClassPositionInterface = {
-  icon: PositionIconEnum;
-  x: Scalars['Int'];
-  y: Scalars['Int'];
-};
+  icon: PositionIconEnum
+  x: Scalars['Int']
+  y: Scalars['Int']
+}
 
 export type ClassSchedule = {
-  __typename?: 'ClassSchedule';
-  capacity: Scalars['Int'];
-  dayOfWeek: Scalars['String'];
-  end: Scalars['DateTime'];
-  endWithNoTimeZone: Scalars['DateTimeWithoutTimeZone'];
-  id: Scalars['ID'];
-  instructorName: Scalars['String'];
-  roomLayout?: Maybe<RoomLayout>;
-  start: Scalars['DateTime'];
-  startWithNoTimeZone: Scalars['DateTimeWithoutTimeZone'];
-  type: Scalars['String'];
-};
+  __typename?: 'ClassSchedule'
+  capacity: Scalars['Int']
+  dayOfWeek: Scalars['String']
+  end: Scalars['DateTime']
+  endWithNoTimeZone: Scalars['DateTimeWithoutTimeZone']
+  id: Scalars['ID']
+  instructorName: Scalars['String']
+  roomLayout?: Maybe<RoomLayout>
+  start: Scalars['DateTime']
+  startWithNoTimeZone: Scalars['DateTimeWithoutTimeZone']
+  type: Scalars['String']
+}
 
 export type ClassStat = {
-  __typename?: 'ClassStat';
+  __typename?: 'ClassStat'
   /** Amount of chart points adjusted to the amount of the requested ones. Values for each points are the average of each interval */
-  adjustedChartPoints: Array<ChartPoint>;
-  averagePower?: Maybe<Scalars['Float']>;
-  averageRpm?: Maybe<Scalars['Float']>;
-  calories?: Maybe<Scalars['Float']>;
-  chartPoints: Array<ChartPoint>;
-  distance?: Maybe<Scalars['Float']>;
-  distanceUnit?: Maybe<Scalars['String']>;
-  enrollment: Enrollment;
-  highPower?: Maybe<Scalars['Float']>;
-  highRpm?: Maybe<Scalars['Float']>;
-  totalEnergy?: Maybe<Scalars['Float']>;
-};
-
+  adjustedChartPoints: Array<ChartPoint>
+  averagePower?: Maybe<Scalars['Float']>
+  averageRpm?: Maybe<Scalars['Float']>
+  calories?: Maybe<Scalars['Float']>
+  chartPoints: Array<ChartPoint>
+  distance?: Maybe<Scalars['Float']>
+  distanceUnit?: Maybe<Scalars['String']>
+  enrollment: Enrollment
+  highPower?: Maybe<Scalars['Float']>
+  highRpm?: Maybe<Scalars['Float']>
+  totalEnergy?: Maybe<Scalars['Float']>
+}
 
 export type ClassStatAdjustedChartPointsArgs = {
-  amountOfPoints?: InputMaybe<Scalars['Int']>;
-};
+  amountOfPoints?: InputMaybe<Scalars['Int']>
+}
 
 export type ClearNewNotificationsStatusSuccess = {
-  __typename?: 'ClearNewNotificationsStatusSuccess';
-  status: NotificationStatusEnum;
-};
+  __typename?: 'ClearNewNotificationsStatusSuccess'
+  status: NotificationStatusEnum
+}
 
 /** Error returned when a client is already booked in a class */
 export type ClientIsAlreadyBookedError = Error & {
-  __typename?: 'ClientIsAlreadyBookedError';
-  code: Scalars['String'];
-};
+  __typename?: 'ClientIsAlreadyBookedError'
+  code: Scalars['String']
+}
 
 export type ClientIsAlreadyOnWaitlistError = Error & {
-  __typename?: 'ClientIsAlreadyOnWaitlistError';
-  code: Scalars['String'];
-};
+  __typename?: 'ClientIsAlreadyOnWaitlistError'
+  code: Scalars['String']
+}
 
 /** Error returned when a client tries to book a class which is not permitted to book any longer. The booking window has passed. */
 export type ClientIsOutsideSchedulingWindowError = Error & {
-  __typename?: 'ClientIsOutsideSchedulingWindowError';
-  code: Scalars['String'];
-};
+  __typename?: 'ClientIsOutsideSchedulingWindowError'
+  code: Scalars['String']
+}
 
 export type ClientNotFoundInMindbody = Error & {
-  __typename?: 'ClientNotFoundInMindbody';
-  code: Scalars['String'];
-};
+  __typename?: 'ClientNotFoundInMindbody'
+  code: Scalars['String']
+}
 
 export type Country = {
-  __typename?: 'Country';
-  code: Scalars['String'];
-  name: Scalars['String'];
-  states?: Maybe<Array<Maybe<State>>>;
-};
+  __typename?: 'Country'
+  code: Scalars['String']
+  name: Scalars['String']
+  states?: Maybe<Array<Maybe<State>>>
+}
 
 export type CountryWithPhoneCode = {
-  __typename?: 'CountryWithPhoneCode';
-  formattedPhoneCode: Scalars['String'];
-  id: Scalars['ID'];
-  name: Scalars['String'];
-  phoneCode: Scalars['String'];
-};
+  __typename?: 'CountryWithPhoneCode'
+  formattedPhoneCode: Scalars['String']
+  id: Scalars['ID']
+  name: Scalars['String']
+  phoneCode: Scalars['String']
+}
 
 export type CrankInstructor = {
-  __typename?: 'CrankInstructor';
-  firstName?: Maybe<Scalars['String']>;
-  id: Scalars['ID'];
-  lastName?: Maybe<Scalars['String']>;
-  profilePictureFile?: Maybe<Scalars['String']>;
-};
+  __typename?: 'CrankInstructor'
+  firstName?: Maybe<Scalars['String']>
+  id: Scalars['ID']
+  lastName?: Maybe<Scalars['String']>
+  profilePictureFile?: Maybe<Scalars['String']>
+}
 
-export type CrankInstructorResultUnion = CrankInstructor | InstructorNotFound | UploadedFileIsNotAnImage;
+export type CrankInstructorResultUnion =
+  | CrankInstructor
+  | InstructorNotFound
+  | UploadedFileIsNotAnImage
 
 export type CreateCurrentUserInSiteSuccess = {
-  __typename?: 'CreateCurrentUserInSiteSuccess';
-  result: Scalars['Boolean'];
-};
+  __typename?: 'CreateCurrentUserInSiteSuccess'
+  result: Scalars['Boolean']
+}
 
-export type CreateCurrentUserInSiteUnion = CreateCurrentUserInSiteSuccess | UserAlreadyExistsError;
+export type CreateCurrentUserInSiteUnion = CreateCurrentUserInSiteSuccess | UserAlreadyExistsError
 
 export type CreateCustomerVodPeriodInput = {
-  end: Scalars['DateTime'];
-  start: Scalars['DateTime'];
-};
+  end: Scalars['DateTime']
+  start: Scalars['DateTime']
+}
 
 export type CreateInstructorProfileInput = {
-  active?: InputMaybe<Scalars['Boolean']>;
-  description?: InputMaybe<Scalars['String']>;
-  linkedMindbodyStaffs?: InputMaybe<Array<Scalars['ID']>>;
-  name: Scalars['String'];
-  profilePictureFile?: InputMaybe<Scalars['File']>;
-  site: SiteEnum;
-};
+  active?: InputMaybe<Scalars['Boolean']>
+  description?: InputMaybe<Scalars['String']>
+  linkedMindbodyStaffs?: InputMaybe<Array<Scalars['ID']>>
+  name: Scalars['String']
+  profilePictureFile?: InputMaybe<Scalars['File']>
+  site: SiteEnum
+}
 
-export type CreateInstructorProfileResultUnion = InstructorProfile | UploadedFileIsNotAnImage;
+export type CreateInstructorProfileResultUnion = InstructorProfile | UploadedFileIsNotAnImage
 
 export type CreateMobileNumberBlacklistInput = {
-  countryId: Scalars['ID'];
-  mobilePhoneNumber: Scalars['String'];
-};
+  countryId: Scalars['ID']
+  mobilePhoneNumber: Scalars['String']
+}
 
 export type CreatePaymentLinkInput = {
-  amount: Scalars['Int'];
-  currency: Scalars['String'];
+  amount: Scalars['Int']
+  currency: Scalars['String']
   /** After a successful purchase an email will be sent to this email address with details about the payment (meant to be used by admins) */
-  notificationEmailAddress: Scalars['String'];
-  site: SiteEnum;
-  title: Scalars['String'];
-};
+  notificationEmailAddress: Scalars['String']
+  site: SiteEnum
+  title: Scalars['String']
+}
 
 export type CreateSessionTypeInput = {
-  active?: InputMaybe<Scalars['Boolean']>;
-  bannerImageFile?: InputMaybe<Scalars['File']>;
-  color?: InputMaybe<Scalars['String']>;
-  iconFile?: InputMaybe<Scalars['File']>;
-  mindbodySessionTypeIds?: InputMaybe<Array<Scalars['ID']>>;
-  name: Scalars['String'];
-  position?: InputMaybe<Scalars['Int']>;
-  site: SiteEnum;
-};
+  active?: InputMaybe<Scalars['Boolean']>
+  bannerImageFile?: InputMaybe<Scalars['File']>
+  color?: InputMaybe<Scalars['String']>
+  iconFile?: InputMaybe<Scalars['File']>
+  mindbodySessionTypeIds?: InputMaybe<Array<Scalars['ID']>>
+  name: Scalars['String']
+  position?: InputMaybe<Scalars['Int']>
+  site: SiteEnum
+}
 
-export type CreateSessionTypeResultUnion = SessionType | UploadedFileIsNotAnImage;
+export type CreateSessionTypeResultUnion = SessionType | UploadedFileIsNotAnImage
 
 export type CurrentUserEnrollmentsParams = {
-  endDate?: InputMaybe<Scalars['Date']>;
-  enrollmentType?: InputMaybe<EnrollmentTypeEnum>;
-  excludeLateCancelled?: InputMaybe<Scalars['Boolean']>;
-  startDate?: InputMaybe<Scalars['Date']>;
-};
+  endDate?: InputMaybe<Scalars['Date']>
+  enrollmentType?: InputMaybe<EnrollmentTypeEnum>
+  excludeLateCancelled?: InputMaybe<Scalars['Boolean']>
+  startDate?: InputMaybe<Scalars['Date']>
+}
 
 export type CurrentUserPurchasesPaginatedParams = {
-  filter?: InputMaybe<ServiceStatusEnum>;
-};
+  filter?: InputMaybe<ServiceStatusEnum>
+}
 
 export type CurrentUserWorkoutStatsPaginatedParams = {
-  dateRange?: InputMaybe<DateRange>;
-};
+  dateRange?: InputMaybe<DateRange>
+}
 
 export type CustomerNotFoundError = Error & {
-  __typename?: 'CustomerNotFoundError';
-  code: Scalars['String'];
-};
+  __typename?: 'CustomerNotFoundError'
+  code: Scalars['String']
+}
 
 export type CustomerSubscription = {
-  __typename?: 'CustomerSubscription';
-  amountCents: Scalars['Int'];
-  billingInterval: Scalars['String'];
-  cancelledAt?: Maybe<Scalars['DateTime']>;
-  createdAt: Scalars['DateTime'];
-  creditCardLastFourDigits?: Maybe<Scalars['String']>;
-  id: Scalars['ID'];
-  nextBillingAt?: Maybe<Scalars['DateTime']>;
-  status: Scalars['String'];
-  transactions: Array<TransactionRecord>;
-};
+  __typename?: 'CustomerSubscription'
+  amountCents: Scalars['Int']
+  billingInterval: Scalars['String']
+  cancelledAt?: Maybe<Scalars['DateTime']>
+  createdAt: Scalars['DateTime']
+  creditCardLastFourDigits?: Maybe<Scalars['String']>
+  id: Scalars['ID']
+  nextBillingAt?: Maybe<Scalars['DateTime']>
+  status: Scalars['String']
+  transactions: Array<TransactionRecord>
+}
 
 export type DateRange = {
-  endDate?: InputMaybe<Scalars['Date']>;
-  startDate?: InputMaybe<Scalars['Date']>;
-};
+  endDate?: InputMaybe<Scalars['Date']>
+  startDate?: InputMaybe<Scalars['Date']>
+}
 
 export type DeleteCurrentUserAccountSuccess = {
-  __typename?: 'DeleteCurrentUserAccountSuccess';
-  success: Scalars['Boolean'];
-};
+  __typename?: 'DeleteCurrentUserAccountSuccess'
+  success: Scalars['Boolean']
+}
 
-export type DeleteCurrentUserAccountUnion = DeleteCurrentUserAccountSuccess | UserPasswordDoesNotMatchError;
+export type DeleteCurrentUserAccountUnion =
+  | DeleteCurrentUserAccountSuccess
+  | UserPasswordDoesNotMatchError
 
-export type DeleteNotificationResultUnion = DeleteNotificationSuccess | NotificationNotFound;
+export type DeleteNotificationResultUnion = DeleteNotificationSuccess | NotificationNotFound
 
 export type DeleteNotificationSuccess = {
-  __typename?: 'DeleteNotificationSuccess';
-  id: Scalars['ID'];
-};
+  __typename?: 'DeleteNotificationSuccess'
+  id: Scalars['ID']
+}
 
-export type DeleteRoomLayoutResultUnion = DeleteRoomLayoutSuccess | RoomLayoutInUseError;
+export type DeleteRoomLayoutResultUnion = DeleteRoomLayoutSuccess | RoomLayoutInUseError
 
 export type DeleteRoomLayoutSuccess = {
-  __typename?: 'DeleteRoomLayoutSuccess';
-  success: Scalars['Boolean'];
-};
+  __typename?: 'DeleteRoomLayoutSuccess'
+  success: Scalars['Boolean']
+}
 
 export type DeviceTokenInput = {
-  deviceToken: Scalars['String'];
-};
+  deviceToken: Scalars['String']
+}
 
 export type DisableEnableSpotInput = {
-  classId: Scalars['ID'];
-  spotNumber?: InputMaybe<Scalars['Int']>;
-};
+  classId: Scalars['ID']
+  spotNumber?: InputMaybe<Scalars['Int']>
+}
 
 export type DisableEnableSpotResult = {
-  __typename?: 'DisableEnableSpotResult';
-  result?: Maybe<Scalars['Boolean']>;
-};
+  __typename?: 'DisableEnableSpotResult'
+  result?: Maybe<Scalars['Boolean']>
+}
 
-export type DisableEnableSpotResultUnion = DisableEnableSpotResult | SpotNotFoundError;
+export type DisableEnableSpotResultUnion = DisableEnableSpotResult | SpotNotFoundError
 
 export type DiscountCodeIsEmpty = Error & {
-  __typename?: 'DiscountCodeIsEmpty';
-  code: Scalars['String'];
-};
+  __typename?: 'DiscountCodeIsEmpty'
+  code: Scalars['String']
+}
 
 export type DiscountCodeIsInvalid = Error & {
-  __typename?: 'DiscountCodeIsInvalid';
-  code: Scalars['String'];
-};
+  __typename?: 'DiscountCodeIsInvalid'
+  code: Scalars['String']
+}
 
 export type DistanceChallenge = ChallengeInterface & {
-  __typename?: 'DistanceChallenge';
-  challengeDisplay: ChallengeDisplay;
-  goalInKM: Scalars['Int'];
-  id: Scalars['ID'];
-  ranking?: Maybe<DistanceRanking>;
-};
+  __typename?: 'DistanceChallenge'
+  challengeDisplay: ChallengeDisplay
+  goalInKM: Scalars['Int']
+  id: Scalars['ID']
+  ranking?: Maybe<DistanceRanking>
+}
 
 export type DistanceChallengeRankingPosition = {
-  __typename?: 'DistanceChallengeRankingPosition';
-  totalKm: Scalars['Float'];
-  userPositionInRanking: UserPositionInRanking;
-};
+  __typename?: 'DistanceChallengeRankingPosition'
+  totalKm: Scalars['Float']
+  userPositionInRanking: UserPositionInRanking
+}
 
 export type DistanceRanking = {
-  __typename?: 'DistanceRanking';
-  amountOfUsersInRanking: Scalars['Int'];
-  rankingPositions: Array<DistanceChallengeRankingPosition>;
-};
+  __typename?: 'DistanceRanking'
+  amountOfUsersInRanking: Scalars['Int']
+  rankingPositions: Array<DistanceChallengeRankingPosition>
+}
 
 export type DontNeedMoreGiftCards = Error & {
-  __typename?: 'DontNeedMoreGiftCards';
-  code: Scalars['String'];
-};
+  __typename?: 'DontNeedMoreGiftCards'
+  code: Scalars['String']
+}
 
 export type EditClassInput = {
-  classId: Scalars['ID'];
-  onHoldSpots?: InputMaybe<Scalars['Int']>;
-  roomLayoutId?: InputMaybe<Scalars['ID']>;
-};
+  classId: Scalars['ID']
+  onHoldSpots?: InputMaybe<Scalars['Int']>
+  roomLayoutId?: InputMaybe<Scalars['ID']>
+}
 
-export type EditClassResultUnion = EditClassSuccessResult;
+export type EditClassResultUnion = EditClassSuccessResult
 
 export type EditClassSuccessResult = {
-  __typename?: 'EditClassSuccessResult';
+  __typename?: 'EditClassSuccessResult'
   /** Whether the class was updated or not */
-  updated: Scalars['Boolean'];
-};
+  updated: Scalars['Boolean']
+}
 
 export type EditEnrollmentInput = {
-  enrollmentId: Scalars['ID'];
-  newSpotNumber: Scalars['Int'];
-};
+  enrollmentId: Scalars['ID']
+  newSpotNumber: Scalars['Int']
+}
 
-export type EditEnrollmentResultUnion = ClientIsOutsideSchedulingWindowError | Enrollment | SpotAlreadyReservedError | TryToSwitchToSameSpotError;
+export type EditEnrollmentResultUnion =
+  | ClientIsOutsideSchedulingWindowError
+  | Enrollment
+  | SpotAlreadyReservedError
+  | TryToSwitchToSameSpotError
 
 export type EditRoomLayoutInput = {
-  roomLayoutId: Scalars['ID'];
-  roomLayoutInput: RoomLayoutInput;
-};
+  roomLayoutId: Scalars['ID']
+  roomLayoutInput: RoomLayoutInput
+}
 
 export type EditUserInput = {
-  siteUserInput?: InputMaybe<Array<SiteUserInput>>;
-  userDataInput?: InputMaybe<UserInput>;
+  siteUserInput?: InputMaybe<Array<SiteUserInput>>
+  userDataInput?: InputMaybe<UserInput>
   /** This is not the same ID as the IdentifiableUser. This is the ID of the user not linked to any site */
-  userId: Scalars['ID'];
-};
+  userId: Scalars['ID']
+}
 
-export type EditUserResultUnion = IdentifiableUser | OtherUserHasThisExternalIdError;
+export type EditUserResultUnion = IdentifiableUser | OtherUserHasThisExternalIdError
 
 export type EmailAlreadyUsedError = Error & {
-  __typename?: 'EmailAlreadyUsedError';
-  code: Scalars['String'];
-};
+  __typename?: 'EmailAlreadyUsedError'
+  code: Scalars['String']
+}
 
 export type Enrollment = {
-  __typename?: 'Enrollment';
-  class: Class;
-  enrollmentInfo: EnrollmentInfoInterface;
-};
+  __typename?: 'Enrollment'
+  class: Class
+  enrollmentInfo: EnrollmentInfoInterface
+}
 
 export type EnrollmentInfo = EnrollmentInfoInterface & {
-  __typename?: 'EnrollmentInfo';
+  __typename?: 'EnrollmentInfo'
   /** Returns true if the user was booked via ClassPass */
-  bookedViaClassPass: Scalars['Boolean'];
-  enrollmentDateTime: Scalars['DateTime'];
-  enrollmentDateTimeWithNoTimeZone: Scalars['DateTimeWithoutTimeZone'];
-  enrollmentStatus: EnrollmentStatusEnum;
+  bookedViaClassPass: Scalars['Boolean']
+  enrollmentDateTime: Scalars['DateTime']
+  enrollmentDateTimeWithNoTimeZone: Scalars['DateTimeWithoutTimeZone']
+  enrollmentStatus: EnrollmentStatusEnum
   /**
    * Whether this enrollment has stats or not. If null, it means that the class that the enrollment belongs to
    * has not received stats yet. If the result is false, it means that the class has received stats but the enrollment
    * has not.
    */
-  hasStats?: Maybe<Scalars['Boolean']>;
-  id: Scalars['ID'];
-  identifiableSiteUser?: Maybe<IdentifiableSiteUser>;
-  isBookedForFree: Scalars['Boolean'];
-  isCheckedIn: Scalars['Boolean'];
-  isFirstTimeInThisTypeOfClass: Scalars['Boolean'];
+  hasStats?: Maybe<Scalars['Boolean']>
+  id: Scalars['ID']
+  identifiableSiteUser?: Maybe<IdentifiableSiteUser>
+  isBookedForFree: Scalars['Boolean']
+  isCheckedIn: Scalars['Boolean']
+  isFirstTimeInThisTypeOfClass: Scalars['Boolean']
   /** Whether this is the first time of this Enrollment's user with this class' instructor */
-  isFirstTimeWithThisInstructor: Scalars['Boolean'];
+  isFirstTimeWithThisInstructor: Scalars['Boolean']
   /** Returns true if today is the user's birthday */
-  isTodayUserBirthday: Scalars['Boolean'];
+  isTodayUserBirthday: Scalars['Boolean']
   /** Whether the user leaderboard is enabled */
-  isUserLeaderboardEnabled: Scalars['Boolean'];
+  isUserLeaderboardEnabled: Scalars['Boolean']
   /** @deprecated Use spotNumber instead. */
-  spotInfo?: Maybe<SpotInfo>;
-  spotNumber?: Maybe<Scalars['Int']>;
-};
+  spotInfo?: Maybe<SpotInfo>
+  spotNumber?: Maybe<Scalars['Int']>
+}
 
 export type EnrollmentInfoInterface = {
-  enrollmentDateTime: Scalars['DateTime'];
-  enrollmentDateTimeWithNoTimeZone: Scalars['DateTimeWithoutTimeZone'];
-  enrollmentStatus: EnrollmentStatusEnum;
-  id: Scalars['ID'];
-  identifiableSiteUser?: Maybe<IdentifiableSiteUser>;
-};
+  enrollmentDateTime: Scalars['DateTime']
+  enrollmentDateTimeWithNoTimeZone: Scalars['DateTimeWithoutTimeZone']
+  enrollmentStatus: EnrollmentStatusEnum
+  id: Scalars['ID']
+  identifiableSiteUser?: Maybe<IdentifiableSiteUser>
+}
 
 export type EnrollmentNotFoundError = Error & {
-  __typename?: 'EnrollmentNotFoundError';
-  code: Scalars['String'];
-};
+  __typename?: 'EnrollmentNotFoundError'
+  code: Scalars['String']
+}
 
 export enum EnrollmentStatusEnum {
   Active = 'active',
@@ -750,8 +786,8 @@ export enum EnrollmentTypeEnum {
 }
 
 export type Error = {
-  code: Scalars['String'];
-};
+  code: Scalars['String']
+}
 
 export enum GenderEnum {
   /** Feminine */
@@ -763,140 +799,147 @@ export enum GenderEnum {
 }
 
 export type GenderRanking = {
-  __typename?: 'GenderRanking';
-  gender?: Maybe<GenderEnum>;
-  ranking?: Maybe<UserRanking>;
-};
+  __typename?: 'GenderRanking'
+  gender?: Maybe<GenderEnum>
+  ranking?: Maybe<UserRanking>
+}
 
 export type GiftCard = SellableProductInterface & {
-  __typename?: 'GiftCard';
-  alertBeforePurchasing?: Maybe<ProductAlertBeforePurchasing>;
-  buttonText?: Maybe<Scalars['String']>;
-  currency: Scalars['String'];
+  __typename?: 'GiftCard'
+  alertBeforePurchasing?: Maybe<ProductAlertBeforePurchasing>
+  buttonText?: Maybe<Scalars['String']>
+  currency: Scalars['String']
   /** @deprecated Use title instead */
-  description: Scalars['String'];
+  description: Scalars['String']
   /** @deprecated Use price instead */
-  grandTotal: Scalars['Float'];
-  id: Scalars['ID'];
-  isVisible: Scalars['Boolean'];
-  position?: Maybe<Scalars['Int']>;
-  purchaseUrl: Scalars['String'];
+  grandTotal: Scalars['Float']
+  id: Scalars['ID']
+  isVisible: Scalars['Boolean']
+  position?: Maybe<Scalars['Int']>
+  purchaseUrl: Scalars['String']
   /** @deprecated Use price instead */
-  salePrice: Scalars['Float'];
-  site: Site;
-  subtitle?: Maybe<Scalars['String']>;
+  salePrice: Scalars['Float']
+  site: Site
+  subtitle?: Maybe<Scalars['String']>
   /** @deprecated Use alertBeforePurchasing instead */
-  terms: Scalars['String'];
-  title: Scalars['String'];
-  variants: Array<Variant>;
-};
+  terms: Scalars['String']
+  title: Scalars['String']
+  variants: Array<Variant>
+}
 
 export type GiftCardAlreadyRegisteredForCurrentShoppingCart = Error & {
-  __typename?: 'GiftCardAlreadyRegisteredForCurrentShoppingCart';
-  code: Scalars['String'];
-};
+  __typename?: 'GiftCardAlreadyRegisteredForCurrentShoppingCart'
+  code: Scalars['String']
+}
 
 export type GiftCardIsNotUsable = Error & {
-  __typename?: 'GiftCardIsNotUsable';
-  code: Scalars['String'];
-};
+  __typename?: 'GiftCardIsNotUsable'
+  code: Scalars['String']
+}
 
 export type GiftCardNotRegisteredOnCurrentShoppingCart = Error & {
-  __typename?: 'GiftCardNotRegisteredOnCurrentShoppingCart';
-  code: Scalars['String'];
-};
+  __typename?: 'GiftCardNotRegisteredOnCurrentShoppingCart'
+  code: Scalars['String']
+}
 
 export type GiftcardInput = {
-  alertBeforePurchasing?: InputMaybe<ProductAlertBeforePurchasingInput>;
-  buttonText?: InputMaybe<Scalars['String']>;
-  currency?: InputMaybe<Scalars['String']>;
-  isVisible?: InputMaybe<Scalars['Boolean']>;
-  position?: InputMaybe<Scalars['Int']>;
-  purchaseUrl?: InputMaybe<Scalars['String']>;
-  subtitle?: InputMaybe<Scalars['String']>;
-  title?: InputMaybe<Scalars['String']>;
-};
+  alertBeforePurchasing?: InputMaybe<ProductAlertBeforePurchasingInput>
+  buttonText?: InputMaybe<Scalars['String']>
+  currency?: InputMaybe<Scalars['String']>
+  isVisible?: InputMaybe<Scalars['Boolean']>
+  position?: InputMaybe<Scalars['Int']>
+  purchaseUrl?: InputMaybe<Scalars['String']>
+  subtitle?: InputMaybe<Scalars['String']>
+  title?: InputMaybe<Scalars['String']>
+}
 
 export type IconPosition = ClassPositionInterface & {
-  __typename?: 'IconPosition';
-  icon: PositionIconEnum;
-  x: Scalars['Int'];
-  y: Scalars['Int'];
-};
+  __typename?: 'IconPosition'
+  icon: PositionIconEnum
+  x: Scalars['Int']
+  y: Scalars['Int']
+}
 
 export type IconPositionInput = {
-  icon: PositionIconEnum;
-  spotNumber?: InputMaybe<Scalars['Int']>;
-  x: Scalars['Int'];
-  y: Scalars['Int'];
-};
+  icon: PositionIconEnum
+  spotNumber?: InputMaybe<Scalars['Int']>
+  x: Scalars['Int']
+  y: Scalars['Int']
+}
 
 export type IdentifiableSiteUser = {
-  __typename?: 'IdentifiableSiteUser';
-  id?: Maybe<Scalars['ID']>;
-  identifiableUser?: Maybe<IdentifiableUser>;
-  siteUserInfo?: Maybe<SimpleSiteUser>;
-};
+  __typename?: 'IdentifiableSiteUser'
+  id?: Maybe<Scalars['ID']>
+  identifiableUser?: Maybe<IdentifiableUser>
+  siteUserInfo?: Maybe<SimpleSiteUser>
+}
 
 export type IdentifiableUser = {
-  __typename?: 'IdentifiableUser';
-  id?: Maybe<Scalars['ID']>;
-  user?: Maybe<User>;
-};
+  __typename?: 'IdentifiableUser'
+  id?: Maybe<Scalars['ID']>
+  user?: Maybe<User>
+}
 
 export type Instructor = {
-  __typename?: 'Instructor';
-  id: Scalars['ID'];
-  name: Scalars['String'];
-  site: Site;
-};
+  __typename?: 'Instructor'
+  id: Scalars['ID']
+  name: Scalars['String']
+  site: Site
+}
 
 export type InstructorNotFound = Error & {
-  __typename?: 'InstructorNotFound';
-  code: Scalars['String'];
-};
+  __typename?: 'InstructorNotFound'
+  code: Scalars['String']
+}
 
 export type InstructorProfile = {
-  __typename?: 'InstructorProfile';
-  active: Scalars['Boolean'];
-  createdAt: Scalars['DateTime'];
-  description?: Maybe<Scalars['String']>;
-  id: Scalars['ID'];
-  mindbodyStaffs: Array<MindbodyStaffInfo>;
-  name: Scalars['String'];
-  profilePictureUrl?: Maybe<Scalars['String']>;
-  updatedAt: Scalars['DateTime'];
-};
+  __typename?: 'InstructorProfile'
+  active: Scalars['Boolean']
+  createdAt: Scalars['DateTime']
+  description?: Maybe<Scalars['String']>
+  id: Scalars['ID']
+  mindbodyStaffs: Array<MindbodyStaffInfo>
+  name: Scalars['String']
+  profilePictureUrl?: Maybe<Scalars['String']>
+  updatedAt: Scalars['DateTime']
+}
 
 export type InstructorProfileNotFoundError = Error & {
-  __typename?: 'InstructorProfileNotFoundError';
-  code: Scalars['String'];
-};
+  __typename?: 'InstructorProfileNotFoundError'
+  code: Scalars['String']
+}
 
 export type InvalidEmailError = Error & {
-  __typename?: 'InvalidEmailError';
-  code: Scalars['String'];
-};
+  __typename?: 'InvalidEmailError'
+  code: Scalars['String']
+}
 
-export type IsSmsValidationCodeValidUnion = MobilePhoneAlreadyVerifiedError | RequestSmsValidationNeededError | SmsCodeValidatedSuccessfully | SmsValidationCodeError;
+export type IsSmsValidationCodeValidUnion =
+  | MobilePhoneAlreadyVerifiedError
+  | RequestSmsValidationNeededError
+  | SmsCodeValidatedSuccessfully
+  | SmsValidationCodeError
 
 export type ItemToShoppingCartInput = {
-  quantity: Scalars['Int'];
-  sellableProductId: Scalars['ID'];
-};
+  quantity: Scalars['Int']
+  sellableProductId: Scalars['ID']
+}
 
 export type LateCancellationRequiredError = Error & {
-  __typename?: 'LateCancellationRequiredError';
-  code: Scalars['String'];
-};
+  __typename?: 'LateCancellationRequiredError'
+  code: Scalars['String']
+}
 
 export type LockShoppingCartResponse = {
-  __typename?: 'LockShoppingCartResponse';
-  isLocked: Scalars['Boolean'];
-  merchantReference: Scalars['ID'];
-};
+  __typename?: 'LockShoppingCartResponse'
+  isLocked: Scalars['Boolean']
+  merchantReference: Scalars['ID']
+}
 
-export type MarkNotificationAsReadResultUnion = NotificationNotFound | WaitlistBookingConfirmedNotification | WaitlistLateCancellationOfferNotification;
+export type MarkNotificationAsReadResultUnion =
+  | NotificationNotFound
+  | WaitlistBookingConfirmedNotification
+  | WaitlistLateCancellationOfferNotification
 
 export enum MeridiemEnum {
   Am = 'am',
@@ -904,752 +947,659 @@ export enum MeridiemEnum {
 }
 
 export type MindbodySessionTypeInfo = {
-  __typename?: 'MindbodySessionTypeInfo';
-  id: Scalars['ID'];
-  name: Scalars['String'];
-};
+  __typename?: 'MindbodySessionTypeInfo'
+  id: Scalars['ID']
+  name: Scalars['String']
+}
 
 export type MindbodyStaffInfo = {
-  __typename?: 'MindbodyStaffInfo';
-  email?: Maybe<Scalars['String']>;
-  firstName: Scalars['String'];
-  id: Scalars['ID'];
-  lastName: Scalars['String'];
-};
+  __typename?: 'MindbodyStaffInfo'
+  email?: Maybe<Scalars['String']>
+  firstName: Scalars['String']
+  id: Scalars['ID']
+  lastName: Scalars['String']
+}
 
 export type MobileNumberBlackListEntry = {
-  __typename?: 'MobileNumberBlackListEntry';
-  countryId: Scalars['ID'];
-  countryName: Scalars['String'];
-  countryPhoneCode: Scalars['String'];
-  fullPhoneNumber: Scalars['String'];
-  id: Scalars['ID'];
-  mobilePhoneNumber: Scalars['String'];
-};
+  __typename?: 'MobileNumberBlackListEntry'
+  countryId: Scalars['ID']
+  countryName: Scalars['String']
+  countryPhoneCode: Scalars['String']
+  fullPhoneNumber: Scalars['String']
+  id: Scalars['ID']
+  mobilePhoneNumber: Scalars['String']
+}
 
 export type MobilePhoneAlreadyVerifiedError = Error & {
-  __typename?: 'MobilePhoneAlreadyVerifiedError';
-  code: Scalars['String'];
-};
+  __typename?: 'MobilePhoneAlreadyVerifiedError'
+  code: Scalars['String']
+}
 
 export type MobilePhoneNotValidError = Error & {
-  __typename?: 'MobilePhoneNotValidError';
-  code: Scalars['String'];
-};
+  __typename?: 'MobilePhoneNotValidError'
+  code: Scalars['String']
+}
 
 export type Mutation = {
-  __typename?: 'Mutation';
+  __typename?: 'Mutation'
   /** Accepts a late-cancelled spot in a class */
-  acceptLateCancelledSpotInClass?: Maybe<AcceptLateCancelledSpotInClassResultUnion>;
+  acceptLateCancelledSpotInClass?: Maybe<AcceptLateCancelledSpotInClassResultUnion>
   /** Creates a new admin user */
-  addAdminUser: AdminUserResultUnion;
+  addAdminUser: AdminUserResultUnion
   /** Adds a new device token to be used for device notifications */
-  addDeviceTokenToCurrentUser?: Maybe<Scalars['Boolean']>;
+  addDeviceTokenToCurrentUser?: Maybe<Scalars['Boolean']>
   /** Allows to add a discount code code to a shopping cart for current user */
-  addDiscountCodeToShoppingCart: ShoppingCartResultUnion;
+  addDiscountCodeToShoppingCart: ShoppingCartResultUnion
   /** Allows to add a giftcard code to a shopping cart for current user */
-  addGiftCardCodeToShoppingCart: ShoppingCartResultUnion;
+  addGiftCardCodeToShoppingCart: ShoppingCartResultUnion
   /** Allows to add item to shopping cart */
-  addItemToShoppingCart: ShoppingCartResultUnion;
+  addItemToShoppingCart: ShoppingCartResultUnion
   /** Admin-only: send a late-cancellation Firebase notification to a customer */
-  adminSendLateCancellationNotification: AdminSendPushNotificationResult;
+  adminSendLateCancellationNotification: AdminSendPushNotificationResult
   /** Admin-only: send a waitlist-booking Firebase notification to a customer */
-  adminSendWaitlistBookingNotification: AdminSendPushNotificationResult;
+  adminSendWaitlistBookingNotification: AdminSendPushNotificationResult
   /** Books the current user in a class */
-  bookClass: BookClassResultUnion;
+  bookClass: BookClassResultUnion
   /** Adds a user into a given class */
-  bookUserIntoClass: BookClassResultUnion;
+  bookUserIntoClass: BookClassResultUnion
   /** Bulk activate VOD periods for multiple customers by Mindbody IDs */
-  bulkActivateVod: BulkVodResult;
+  bulkActivateVod: BulkVodResult
   /** Bulk deactivate VOD periods for multiple customers by Mindbody IDs */
-  bulkDeactivateVod: BulkVodResult;
+  bulkDeactivateVod: BulkVodResult
   /** Cancels an enrollment done by the current user */
-  cancelCurrentUserEnrollment?: Maybe<CancelEnrollmentResultUnion>;
+  cancelCurrentUserEnrollment?: Maybe<CancelEnrollmentResultUnion>
   /** Cancels a subscription for the current user */
-  cancelSubscription: CancelSubscriptionResultUnion;
+  cancelSubscription: CancelSubscriptionResultUnion
   /** Checks in a user in a class */
-  checkinUserInClass?: Maybe<CheckinResultUnion>;
+  checkinUserInClass?: Maybe<CheckinResultUnion>
   /** Checks out a user from a class */
-  checkoutUserInClass?: Maybe<CheckoutResultUnion>;
+  checkoutUserInClass?: Maybe<CheckoutResultUnion>
   /** Clears the new notifications badge — call when user acknowledges new notifications */
-  clearNewNotificationsStatusForCurrentUser: ClearNewNotificationsStatusSuccess;
+  clearNewNotificationsStatusForCurrentUser: ClearNewNotificationsStatusSuccess
   /** Clears the system cache */
-  clearSystemCache: Scalars['Boolean'];
+  clearSystemCache: Scalars['Boolean']
   /** Creates a copy of the current user in the given site */
-  createCurrentUserInSite?: Maybe<CreateCurrentUserInSiteUnion>;
+  createCurrentUserInSite?: Maybe<CreateCurrentUserInSiteUnion>
   /** Creates a new VOD period for a customer */
-  createCustomerVodPeriod: AdminCustomerVodPeriod;
+  createCustomerVodPeriod: AdminCustomerVodPeriod
   /** Creates a new instructor profile */
-  createInstructorProfile: CreateInstructorProfileResultUnion;
+  createInstructorProfile: CreateInstructorProfileResultUnion
   /** Creates a new blacklisted mobile number entry */
-  createMobileNumberBlacklistEntry: MobileNumberBlackListEntry;
+  createMobileNumberBlacklistEntry: MobileNumberBlackListEntry
   /** Creates a new payment link */
-  createPaymentLink: PaymentLink;
+  createPaymentLink: PaymentLink
   /** Creates a new room layout */
-  createRoomLayout: RoomLayout;
+  createRoomLayout: RoomLayout
   /** Creates a new session type */
-  createSessionType: CreateSessionTypeResultUnion;
+  createSessionType: CreateSessionTypeResultUnion
   /** It deletes the current user's account */
-  deleteCurrentUserAccount?: Maybe<DeleteCurrentUserAccountUnion>;
+  deleteCurrentUserAccount?: Maybe<DeleteCurrentUserAccountUnion>
   /** Deletes a VOD period (soft delete) */
-  deleteCustomerVodPeriod: Scalars['Boolean'];
+  deleteCustomerVodPeriod: Scalars['Boolean']
   /** Removes a devices token */
-  deleteDeviceTokenToCurrentUser?: Maybe<Scalars['Boolean']>;
+  deleteDeviceTokenToCurrentUser?: Maybe<Scalars['Boolean']>
   /** Deletes an instructor profile */
-  deleteInstructorProfile: Scalars['Boolean'];
+  deleteInstructorProfile: Scalars['Boolean']
   /** Deletes a blacklisted mobile number entry */
-  deleteMobileNumberBlacklistEntry: Scalars['Boolean'];
+  deleteMobileNumberBlacklistEntry: Scalars['Boolean']
   /** Deletes (soft-deletes) a notification for the current user */
-  deleteNotification: DeleteNotificationResultUnion;
+  deleteNotification: DeleteNotificationResultUnion
   /** Soft deletes a payment link */
-  deletePaymentLink: Scalars['Boolean'];
+  deletePaymentLink: Scalars['Boolean']
   /** Deletes a room layout (soft delete). Fails if the layout is in use by a class or schedule. */
-  deleteRoomLayout: DeleteRoomLayoutResultUnion;
+  deleteRoomLayout: DeleteRoomLayoutResultUnion
   /** Deletes a session type */
-  deleteSessionType: Scalars['Boolean'];
+  deleteSessionType: Scalars['Boolean']
   /** Disables a spot in a class */
-  disableSpot?: Maybe<DisableEnableSpotResultUnion>;
+  disableSpot?: Maybe<DisableEnableSpotResultUnion>
   /** Edits a class */
-  editClass: EditClassResultUnion;
+  editClass: EditClassResultUnion
   /** Edits an enrollment made by the current user */
-  editCurrentUserEnrollment?: Maybe<EditEnrollmentResultUnion>;
+  editCurrentUserEnrollment?: Maybe<EditEnrollmentResultUnion>
   /** Edits an enrollment */
-  editEnrollment?: Maybe<EditEnrollmentResultUnion>;
+  editEnrollment?: Maybe<EditEnrollmentResultUnion>
   /** Edits a room layout */
-  editRoomLayout: RoomLayout;
+  editRoomLayout: RoomLayout
   /** Edits a user */
-  editUser?: Maybe<EditUserResultUnion>;
+  editUser?: Maybe<EditUserResultUnion>
   /** Allows to remove all items from the shoppingcart */
-  emptyShoppingCart: ShoppingCartResultUnion;
+  emptyShoppingCart: ShoppingCartResultUnion
   /** Enabled a spot in a class */
-  enableSpot?: Maybe<DisableEnableSpotResultUnion>;
+  enableSpot?: Maybe<DisableEnableSpotResultUnion>
   /**
    * Generate a unique Merchant Reference
    * @deprecated Use newLockShoppingCart instead
    */
-  generateMerchantReference: Scalars['ID'];
+  generateMerchantReference: Scalars['ID']
   /**
    * To lock the shoppingcart when the user is in the payment process
    * @deprecated Use newLockShoppingCart instead
    */
-  lockShoppingCart: Scalars['Boolean'];
+  lockShoppingCart: Scalars['Boolean']
   /** Marks a notification as read for the current user */
-  markNotificationAsRead: MarkNotificationAsReadResultUnion;
+  markNotificationAsRead: MarkNotificationAsReadResultUnion
   /** Allows to lock shoppingcart and generate merchant reference */
-  newLockShoppingCart?: Maybe<LockShoppingCartResponse>;
+  newLockShoppingCart?: Maybe<LockShoppingCartResponse>
   /** Returns the html of a payment form to be used to pay */
-  payfortForm: PayfortFormResult;
+  payfortForm: PayfortFormResult
   /** Reactivates a cancelled subscription for the current user */
-  reactivateSubscription: ReactivateSubscriptionResultUnion;
+  reactivateSubscription: ReactivateSubscriptionResultUnion
   /** Refunds a transaction via Payfort */
-  refundTransaction: Scalars['Boolean'];
+  refundTransaction: Scalars['Boolean']
   /** Registers a new user and returns an IdentifiableUser type */
-  registerIdentifiableUser?: Maybe<IdentifiableSiteUser>;
+  registerIdentifiableUser?: Maybe<IdentifiableSiteUser>
   /** Registers a new user */
-  registerUser?: Maybe<User>;
+  registerUser?: Maybe<User>
   /** Rejects a late-cancelled spot in a class */
-  rejectLateCancelledSpotInClass?: Maybe<RejectLateCancelledSpotInClassSuccess>;
+  rejectLateCancelledSpotInClass?: Maybe<RejectLateCancelledSpotInClassSuccess>
   /** Deletes an admin user */
-  removeAdminUser: Scalars['Boolean'];
+  removeAdminUser: Scalars['Boolean']
   /** Removes the current user's waitlist entry from a class */
-  removeCurrentUserFromWaitlist?: Maybe<RemoveCurrentUserFromWaitlistUnion>;
+  removeCurrentUserFromWaitlist?: Maybe<RemoveCurrentUserFromWaitlistUnion>
   /** Removes phone number verification for a customer */
-  removeCustomerPhoneVerification: Scalars['Boolean'];
+  removeCustomerPhoneVerification: Scalars['Boolean']
   /** Remove discount code from current shopping cart */
-  removeDiscountCodeForCurrentShoppingCart: ShoppingCartResultUnion;
+  removeDiscountCodeForCurrentShoppingCart: ShoppingCartResultUnion
   /** Allows to remove a GiftCard by code */
-  removeGiftCardFromCurrentShoppingCart: ShoppingCartResultUnion;
+  removeGiftCardFromCurrentShoppingCart: ShoppingCartResultUnion
   /** Remove Item from shopping cart */
-  removeItemFromShoppingCart: ShoppingCartResultUnion;
+  removeItemFromShoppingCart: ShoppingCartResultUnion
   /** Removes a user from a class */
-  removeUserFromClass: CancelEnrollmentResultUnion;
+  removeUserFromClass: CancelEnrollmentResultUnion
   /** Removes a waitlist entry */
-  removeUserFromWaitlist: RemoveUserFromWaitlistUnion;
+  removeUserFromWaitlist: RemoveUserFromWaitlistUnion
   /** Request a reset password link */
-  requestPasswordLink?: Maybe<ResetPasswordLinkResultUnion>;
+  requestPasswordLink?: Maybe<ResetPasswordLinkResultUnion>
   /** Requests an SMS validation code */
-  requestSMSValidation?: Maybe<SmsValidationUnion>;
+  requestSMSValidation?: Maybe<SmsValidationUnion>
   /** Resets the password of an admin user and sends an email with the new password */
-  resetAdminUserPassword: Scalars['Boolean'];
+  resetAdminUserPassword: Scalars['Boolean']
   /** Resets the current user's password */
-  resetPasswordForCurrentUser?: Maybe<ResetPasswordForCurrentUserUnion>;
+  resetPasswordForCurrentUser?: Maybe<ResetPasswordForCurrentUserUnion>
   /** Retries sending a failed webhook event */
-  retryWebhookEvent: RetryWebhookEventResultUnion;
+  retryWebhookEvent: RetryWebhookEventResultUnion
   /** Sends a single class stats to an email */
-  sendClassStatsToEmail?: Maybe<Scalars['Boolean']>;
+  sendClassStatsToEmail?: Maybe<Scalars['Boolean']>
   /** Sends the class stats to the users booked in a class */
-  sendClassStatsToUsers?: Maybe<Scalars['Boolean']>;
+  sendClassStatsToUsers?: Maybe<Scalars['Boolean']>
   /** Sets a room layout for a list of class schedules */
-  setRoomLayoutForClassSchedules: Array<ClassSchedule>;
+  setRoomLayoutForClassSchedules: Array<ClassSchedule>
   /** Swaps a spot in a class */
-  swapSpot?: Maybe<SwapSpotResultUnion>;
+  swapSpot?: Maybe<SwapSpotResultUnion>
   /** Sync all classes */
-  syncAllClasses: Scalars['Boolean'];
+  syncAllClasses: Scalars['Boolean']
   /** Sync all gift cards from Mindbody with the local database */
-  syncAllGiftCards: Scalars['Boolean'];
+  syncAllGiftCards: Scalars['Boolean']
   /** Syncs all Mindbody staff members for a site */
-  syncAllMindbodyStaff: Scalars['Boolean'];
+  syncAllMindbodyStaff: Scalars['Boolean']
   /** Allows to syncronize all packages by site */
-  syncAllPackagesBySite: Array<ClassPackageProduct>;
+  syncAllPackagesBySite: Array<ClassPackageProduct>
   /** Sync one class */
-  syncClass: ClassInfo;
+  syncClass: ClassInfo
   /** Sync a class with PIQ */
-  syncClassWithPIQ: ClassInfo;
+  syncClassWithPIQ: ClassInfo
   /** Syncs a customer's data from Mindbody */
-  syncCustomerWithMindbody: Scalars['Boolean'];
+  syncCustomerWithMindbody: Scalars['Boolean']
   /** Updates an admin user */
-  updateAdminUser: AdminUserResultUnion;
+  updateAdminUser: AdminUserResultUnion
   /** Allows to update product */
-  updateClassPackage?: Maybe<ClassPackageUpdateResultUnion>;
+  updateClassPackage?: Maybe<ClassPackageUpdateResultUnion>
   /** Updates the display order of class packages */
-  updateClassPackagesOrder: Scalars['Boolean'];
+  updateClassPackagesOrder: Scalars['Boolean']
   /** Allows to update the current AdminUser */
-  updateCurrentAdminUser: AdminUser;
+  updateCurrentAdminUser: AdminUser
   /** Allows to update the favorite site for a AdminUser */
-  updateCurrentAdminUserFavoriteSite: AdminUser;
-  updateCurrentAdminUserPassword?: Maybe<Scalars['Boolean']>;
+  updateCurrentAdminUserFavoriteSite: AdminUser
+  updateCurrentAdminUserPassword?: Maybe<Scalars['Boolean']>
   /** Updates the current user */
-  updateCurrentUser?: Maybe<UpdateCurrentUserResultUnion>;
+  updateCurrentUser?: Maybe<UpdateCurrentUserResultUnion>
   /** Updates a user's password in all the sites */
-  updateCurrentUserPassword?: Maybe<Scalars['Boolean']>;
+  updateCurrentUserPassword?: Maybe<Scalars['Boolean']>
   /** Updates a gift card */
-  updateGiftCard: GiftCard;
+  updateGiftCard: GiftCard
   /** Allows to update variant */
-  updateGiftCardNew?: Maybe<UpdateGiftcardResiltUnion>;
+  updateGiftCardNew?: Maybe<UpdateGiftcardResiltUnion>
   /** Allows to update an Instructor */
-  updateInstructor?: Maybe<CrankInstructorResultUnion>;
+  updateInstructor?: Maybe<CrankInstructorResultUnion>
   /** Updates an instructor profile */
-  updateInstructorProfile: UpdateInstructorProfileResultUnion;
+  updateInstructorProfile: UpdateInstructorProfileResultUnion
   /** Allows to update an Item from Shopping Cart */
-  updateItemInShoppingCart: ShoppingCartResultUnion;
+  updateItemInShoppingCart: ShoppingCartResultUnion
   /** Updates an existing blacklisted mobile number entry */
-  updateMobileNumberBlacklistEntry: MobileNumberBlackListEntry;
+  updateMobileNumberBlacklistEntry: MobileNumberBlackListEntry
   /** Updates a payment link */
-  updatePaymentLink: PaymentLink;
+  updatePaymentLink: PaymentLink
   /** Updates a session type */
-  updateSessionType: UpdateSessionTypeResultUnion;
+  updateSessionType: UpdateSessionTypeResultUnion
   /** Updates the Mindbody ID for a site customer */
-  updateSiteCustomerMindbodyId: Scalars['Boolean'];
+  updateSiteCustomerMindbodyId: Scalars['Boolean']
   /** Updates system settings */
-  updateSystemSettings: SystemSettings;
-  updateUserPassword?: Maybe<Scalars['Boolean']>;
+  updateSystemSettings: SystemSettings
+  updateUserPassword?: Maybe<Scalars['Boolean']>
   /** Manually verifies a customer's phone number */
-  verifyCustomerPhoneNumber: Scalars['Boolean'];
-};
-
+  verifyCustomerPhoneNumber: Scalars['Boolean']
+}
 
 export type MutationAcceptLateCancelledSpotInClassArgs = {
-  input: AcceptLateCancelledSpotInClassInput;
-  site?: InputMaybe<SiteEnum>;
-};
-
+  input: AcceptLateCancelledSpotInClassInput
+  site?: InputMaybe<SiteEnum>
+}
 
 export type MutationAddAdminUserArgs = {
-  input: AdminUserDataInput;
-};
-
+  input: AdminUserDataInput
+}
 
 export type MutationAddDeviceTokenToCurrentUserArgs = {
-  input?: InputMaybe<DeviceTokenInput>;
-  site?: InputMaybe<SiteEnum>;
-};
-
+  input?: InputMaybe<DeviceTokenInput>
+  site?: InputMaybe<SiteEnum>
+}
 
 export type MutationAddDiscountCodeToShoppingCartArgs = {
-  discountCode: Scalars['String'];
-  site: SiteEnum;
-};
-
+  discountCode: Scalars['String']
+  site: SiteEnum
+}
 
 export type MutationAddGiftCardCodeToShoppingCartArgs = {
-  giftcard: Scalars['ID'];
-  site: SiteEnum;
-};
-
+  giftcard: Scalars['ID']
+  site: SiteEnum
+}
 
 export type MutationAddItemToShoppingCartArgs = {
-  input?: InputMaybe<ItemToShoppingCartInput>;
-  site: SiteEnum;
-};
-
+  input?: InputMaybe<ItemToShoppingCartInput>
+  site: SiteEnum
+}
 
 export type MutationAdminSendLateCancellationNotificationArgs = {
-  input: AdminSendLateCancellationNotificationInput;
-};
-
+  input: AdminSendLateCancellationNotificationInput
+}
 
 export type MutationAdminSendWaitlistBookingNotificationArgs = {
-  input: AdminSendWaitlistBookingNotificationInput;
-};
-
+  input: AdminSendWaitlistBookingNotificationInput
+}
 
 export type MutationBookClassArgs = {
-  input: BookClassInput;
-  site: SiteEnum;
-};
-
+  input: BookClassInput
+  site: SiteEnum
+}
 
 export type MutationBookUserIntoClassArgs = {
-  input: BookUserIntoClassInput;
-};
-
+  input: BookUserIntoClassInput
+}
 
 export type MutationBulkActivateVodArgs = {
-  input: BulkActivateVodInput;
-};
-
+  input: BulkActivateVodInput
+}
 
 export type MutationBulkDeactivateVodArgs = {
-  mindbodyIds: Array<Scalars['Int']>;
-};
-
+  mindbodyIds: Array<Scalars['Int']>
+}
 
 export type MutationCancelCurrentUserEnrollmentArgs = {
-  input: CancelEnrollmentInput;
-  site: SiteEnum;
-};
-
+  input: CancelEnrollmentInput
+  site: SiteEnum
+}
 
 export type MutationCancelSubscriptionArgs = {
-  input: CancelSubscriptionInput;
-};
-
+  input: CancelSubscriptionInput
+}
 
 export type MutationCheckinUserInClassArgs = {
-  input: CheckinUserInClass;
-  site: SiteEnum;
-};
-
+  input: CheckinUserInClass
+  site: SiteEnum
+}
 
 export type MutationCheckoutUserInClassArgs = {
-  input: CheckoutUserInClass;
-  site: SiteEnum;
-};
-
+  input: CheckoutUserInClass
+  site: SiteEnum
+}
 
 export type MutationCreateCurrentUserInSiteArgs = {
-  fromSite: SiteEnum;
-  toSite: SiteEnum;
-};
-
+  fromSite: SiteEnum
+  toSite: SiteEnum
+}
 
 export type MutationCreateCustomerVodPeriodArgs = {
-  customerId: Scalars['ID'];
-  input: CreateCustomerVodPeriodInput;
-};
-
+  customerId: Scalars['ID']
+  input: CreateCustomerVodPeriodInput
+}
 
 export type MutationCreateInstructorProfileArgs = {
-  input: CreateInstructorProfileInput;
-};
-
+  input: CreateInstructorProfileInput
+}
 
 export type MutationCreateMobileNumberBlacklistEntryArgs = {
-  input: CreateMobileNumberBlacklistInput;
-};
-
+  input: CreateMobileNumberBlacklistInput
+}
 
 export type MutationCreatePaymentLinkArgs = {
-  input: CreatePaymentLinkInput;
-};
-
+  input: CreatePaymentLinkInput
+}
 
 export type MutationCreateRoomLayoutArgs = {
-  input: RoomLayoutInput;
-  site: SiteEnum;
-};
-
+  input: RoomLayoutInput
+  site: SiteEnum
+}
 
 export type MutationCreateSessionTypeArgs = {
-  input: CreateSessionTypeInput;
-};
-
+  input: CreateSessionTypeInput
+}
 
 export type MutationDeleteCurrentUserAccountArgs = {
-  site: SiteEnum;
-  userPassword: Scalars['String'];
-};
-
+  site: SiteEnum
+  userPassword: Scalars['String']
+}
 
 export type MutationDeleteCustomerVodPeriodArgs = {
-  id: Scalars['ID'];
-};
-
+  id: Scalars['ID']
+}
 
 export type MutationDeleteDeviceTokenToCurrentUserArgs = {
-  input?: InputMaybe<DeviceTokenInput>;
-  site?: InputMaybe<SiteEnum>;
-};
-
+  input?: InputMaybe<DeviceTokenInput>
+  site?: InputMaybe<SiteEnum>
+}
 
 export type MutationDeleteInstructorProfileArgs = {
-  id: Scalars['ID'];
-};
-
+  id: Scalars['ID']
+}
 
 export type MutationDeleteMobileNumberBlacklistEntryArgs = {
-  id: Scalars['ID'];
-};
-
+  id: Scalars['ID']
+}
 
 export type MutationDeleteNotificationArgs = {
-  notificationId: Scalars['ID'];
-};
-
+  notificationId: Scalars['ID']
+}
 
 export type MutationDeletePaymentLinkArgs = {
-  id: Scalars['ID'];
-};
-
+  id: Scalars['ID']
+}
 
 export type MutationDeleteRoomLayoutArgs = {
-  id: Scalars['ID'];
-};
-
+  id: Scalars['ID']
+}
 
 export type MutationDeleteSessionTypeArgs = {
-  id: Scalars['ID'];
-};
-
+  id: Scalars['ID']
+}
 
 export type MutationDisableSpotArgs = {
-  input?: InputMaybe<DisableEnableSpotInput>;
-};
-
+  input?: InputMaybe<DisableEnableSpotInput>
+}
 
 export type MutationEditClassArgs = {
-  input: EditClassInput;
-};
-
+  input: EditClassInput
+}
 
 export type MutationEditCurrentUserEnrollmentArgs = {
-  input: EditEnrollmentInput;
-  site: SiteEnum;
-};
-
+  input: EditEnrollmentInput
+  site: SiteEnum
+}
 
 export type MutationEditEnrollmentArgs = {
-  input: EditEnrollmentInput;
-  site: SiteEnum;
-};
-
+  input: EditEnrollmentInput
+  site: SiteEnum
+}
 
 export type MutationEditRoomLayoutArgs = {
-  input: EditRoomLayoutInput;
-  site: SiteEnum;
-};
-
+  input: EditRoomLayoutInput
+  site: SiteEnum
+}
 
 export type MutationEditUserArgs = {
-  input: EditUserInput;
-};
-
+  input: EditUserInput
+}
 
 export type MutationEmptyShoppingCartArgs = {
-  site: SiteEnum;
-};
-
+  site: SiteEnum
+}
 
 export type MutationEnableSpotArgs = {
-  input?: InputMaybe<DisableEnableSpotInput>;
-};
-
+  input?: InputMaybe<DisableEnableSpotInput>
+}
 
 export type MutationGenerateMerchantReferenceArgs = {
-  site: SiteEnum;
-};
-
+  site: SiteEnum
+}
 
 export type MutationLockShoppingCartArgs = {
-  site: SiteEnum;
-};
-
+  site: SiteEnum
+}
 
 export type MutationMarkNotificationAsReadArgs = {
-  notificationId: Scalars['ID'];
-};
-
+  notificationId: Scalars['ID']
+}
 
 export type MutationNewLockShoppingCartArgs = {
-  site: SiteEnum;
-};
-
+  site: SiteEnum
+}
 
 export type MutationPayfortFormArgs = {
-  input: PayfortFormInput;
-  site: SiteEnum;
-};
-
+  input: PayfortFormInput
+  site: SiteEnum
+}
 
 export type MutationReactivateSubscriptionArgs = {
-  input: ReactivateSubscriptionInput;
-};
-
+  input: ReactivateSubscriptionInput
+}
 
 export type MutationRefundTransactionArgs = {
-  id: Scalars['ID'];
-};
-
+  id: Scalars['ID']
+}
 
 export type MutationRegisterIdentifiableUserArgs = {
-  input: RegisterUserInput;
-  site: SiteEnum;
-};
-
+  input: RegisterUserInput
+  site: SiteEnum
+}
 
 export type MutationRegisterUserArgs = {
-  input: RegisterUserInput;
-  site: SiteEnum;
-};
-
+  input: RegisterUserInput
+  site: SiteEnum
+}
 
 export type MutationRejectLateCancelledSpotInClassArgs = {
-  input: RejectLateCancelledSpotInClassInput;
-  site?: InputMaybe<SiteEnum>;
-};
-
+  input: RejectLateCancelledSpotInClassInput
+  site?: InputMaybe<SiteEnum>
+}
 
 export type MutationRemoveAdminUserArgs = {
-  id: Scalars['ID'];
-};
-
+  id: Scalars['ID']
+}
 
 export type MutationRemoveCurrentUserFromWaitlistArgs = {
-  input: RemoveCurrentUserFromWaitlistInput;
-  site: SiteEnum;
-};
-
+  input: RemoveCurrentUserFromWaitlistInput
+  site: SiteEnum
+}
 
 export type MutationRemoveCustomerPhoneVerificationArgs = {
-  customerId: Scalars['ID'];
-};
-
+  customerId: Scalars['ID']
+}
 
 export type MutationRemoveDiscountCodeForCurrentShoppingCartArgs = {
-  site: SiteEnum;
-};
-
+  site: SiteEnum
+}
 
 export type MutationRemoveGiftCardFromCurrentShoppingCartArgs = {
-  giftCardCode: Scalars['String'];
-  site: SiteEnum;
-};
-
+  giftCardCode: Scalars['String']
+  site: SiteEnum
+}
 
 export type MutationRemoveItemFromShoppingCartArgs = {
-  shoppingCartItemId: Scalars['ID'];
-  site: SiteEnum;
-};
-
+  shoppingCartItemId: Scalars['ID']
+  site: SiteEnum
+}
 
 export type MutationRemoveUserFromClassArgs = {
-  input: CancelEnrollmentInput;
-};
-
+  input: CancelEnrollmentInput
+}
 
 export type MutationRemoveUserFromWaitlistArgs = {
-  input: RemoveUserFromWaitlistInput;
-};
-
+  input: RemoveUserFromWaitlistInput
+}
 
 export type MutationRequestPasswordLinkArgs = {
-  input?: InputMaybe<RequestPasswordLinkInput>;
-};
-
+  input?: InputMaybe<RequestPasswordLinkInput>
+}
 
 export type MutationRequestSmsValidationArgs = {
-  input: RequestSmsValidationInput;
-};
-
+  input: RequestSmsValidationInput
+}
 
 export type MutationResetAdminUserPasswordArgs = {
-  id: Scalars['ID'];
-};
-
+  id: Scalars['ID']
+}
 
 export type MutationResetPasswordForCurrentUserArgs = {
-  input?: InputMaybe<ResetPasswordForCurrentUserInput>;
-};
-
+  input?: InputMaybe<ResetPasswordForCurrentUserInput>
+}
 
 export type MutationRetryWebhookEventArgs = {
-  input: RetryWebhookEventInput;
-};
-
+  input: RetryWebhookEventInput
+}
 
 export type MutationSendClassStatsToEmailArgs = {
-  input: SendClassStatsToEmailInput;
-};
-
+  input: SendClassStatsToEmailInput
+}
 
 export type MutationSendClassStatsToUsersArgs = {
-  classId: Scalars['ID'];
-};
-
+  classId: Scalars['ID']
+}
 
 export type MutationSetRoomLayoutForClassSchedulesArgs = {
-  input: SetRoomLayoutForClassSchedulesInput;
-};
-
+  input: SetRoomLayoutForClassSchedulesInput
+}
 
 export type MutationSwapSpotArgs = {
-  input: EditEnrollmentInput;
-  site: SiteEnum;
-};
-
+  input: EditEnrollmentInput
+  site: SiteEnum
+}
 
 export type MutationSyncAllClassesArgs = {
-  site: SiteEnum;
-};
-
+  site: SiteEnum
+}
 
 export type MutationSyncAllMindbodyStaffArgs = {
-  site: SiteEnum;
-};
-
+  site: SiteEnum
+}
 
 export type MutationSyncAllPackagesBySiteArgs = {
-  site?: InputMaybe<SiteEnum>;
-};
-
+  site?: InputMaybe<SiteEnum>
+}
 
 export type MutationSyncClassArgs = {
-  classId: Scalars['ID'];
-  site: SiteEnum;
-};
-
+  classId: Scalars['ID']
+  site: SiteEnum
+}
 
 export type MutationSyncClassWithPiqArgs = {
-  classId: Scalars['ID'];
-  site: SiteEnum;
-};
-
+  classId: Scalars['ID']
+  site: SiteEnum
+}
 
 export type MutationSyncCustomerWithMindbodyArgs = {
-  customerId: Scalars['ID'];
-  site: SiteEnum;
-};
-
+  customerId: Scalars['ID']
+  site: SiteEnum
+}
 
 export type MutationUpdateAdminUserArgs = {
-  input: UpdateAdminUserInput;
-};
-
+  input: UpdateAdminUserInput
+}
 
 export type MutationUpdateClassPackageArgs = {
-  id: Scalars['ID'];
-  input: ProductInput;
-};
-
+  id: Scalars['ID']
+  input: ProductInput
+}
 
 export type MutationUpdateClassPackagesOrderArgs = {
-  input: UpdateClassPackagesOrderInput;
-};
-
+  input: UpdateClassPackagesOrderInput
+}
 
 export type MutationUpdateCurrentAdminUserArgs = {
-  input: UpdateCurrentAdminUserInput;
-};
-
+  input: UpdateCurrentAdminUserInput
+}
 
 export type MutationUpdateCurrentAdminUserFavoriteSiteArgs = {
-  input?: InputMaybe<UpdateCurrentAdminUserFavoriteSiteInput>;
-};
-
+  input?: InputMaybe<UpdateCurrentAdminUserFavoriteSiteInput>
+}
 
 export type MutationUpdateCurrentAdminUserPasswordArgs = {
-  input: UpdateCurrentUserPasswordInput;
-};
-
+  input: UpdateCurrentUserPasswordInput
+}
 
 export type MutationUpdateCurrentUserArgs = {
-  input: UserInput;
-};
-
+  input: UserInput
+}
 
 export type MutationUpdateCurrentUserPasswordArgs = {
-  input: UpdateCurrentUserPasswordInput;
-  site: SiteEnum;
-};
-
+  input: UpdateCurrentUserPasswordInput
+  site: SiteEnum
+}
 
 export type MutationUpdateGiftCardArgs = {
-  input: UpdateGiftCardInput;
-};
-
+  input: UpdateGiftCardInput
+}
 
 export type MutationUpdateGiftCardNewArgs = {
-  id: Scalars['ID'];
-  input: GiftcardInput;
-};
-
+  id: Scalars['ID']
+  input: GiftcardInput
+}
 
 export type MutationUpdateInstructorArgs = {
-  id: Scalars['ID'];
-  input: UpdateInstructorInput;
-};
-
+  id: Scalars['ID']
+  input: UpdateInstructorInput
+}
 
 export type MutationUpdateInstructorProfileArgs = {
-  id: Scalars['ID'];
-  input: UpdateInstructorProfileInput;
-};
-
+  id: Scalars['ID']
+  input: UpdateInstructorProfileInput
+}
 
 export type MutationUpdateItemInShoppingCartArgs = {
-  quantity?: InputMaybe<Scalars['Int']>;
-  shoppingCartItemId: Scalars['ID'];
-  site: SiteEnum;
-};
-
+  quantity?: InputMaybe<Scalars['Int']>
+  shoppingCartItemId: Scalars['ID']
+  site: SiteEnum
+}
 
 export type MutationUpdateMobileNumberBlacklistEntryArgs = {
-  id: Scalars['ID'];
-  input: UpdateMobileNumberBlacklistInput;
-};
-
+  id: Scalars['ID']
+  input: UpdateMobileNumberBlacklistInput
+}
 
 export type MutationUpdatePaymentLinkArgs = {
-  input: UpdatePaymentLinkInput;
-};
-
+  input: UpdatePaymentLinkInput
+}
 
 export type MutationUpdateSessionTypeArgs = {
-  id: Scalars['ID'];
-  input: UpdateSessionTypeInput;
-};
-
+  id: Scalars['ID']
+  input: UpdateSessionTypeInput
+}
 
 export type MutationUpdateSiteCustomerMindbodyIdArgs = {
-  newMindbodyId: Scalars['String'];
-  siteCustomerId: Scalars['ID'];
-};
-
+  newMindbodyId: Scalars['String']
+  siteCustomerId: Scalars['ID']
+}
 
 export type MutationUpdateSystemSettingsArgs = {
-  input: UpdateSystemSettingsInput;
-};
-
+  input: UpdateSystemSettingsInput
+}
 
 export type MutationUpdateUserPasswordArgs = {
-  input: UpdateUserPasswordInput;
-};
-
+  input: UpdateUserPasswordInput
+}
 
 export type MutationVerifyCustomerPhoneNumberArgs = {
-  customerId: Scalars['ID'];
-};
+  customerId: Scalars['ID']
+}
 
 export type Notification = {
-  body: Scalars['String'];
-  channel: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  id: Scalars['ID'];
-  readAt?: Maybe<Scalars['DateTime']>;
-  site?: Maybe<SiteEnum>;
-  title: Scalars['String'];
-  type: Scalars['String'];
-};
+  body: Scalars['String']
+  channel: Scalars['String']
+  createdAt: Scalars['DateTime']
+  id: Scalars['ID']
+  readAt?: Maybe<Scalars['DateTime']>
+  site?: Maybe<SiteEnum>
+  title: Scalars['String']
+  type: Scalars['String']
+}
 
 export enum NotificationLifecycleStatusEnum {
   Accepted = 'accepted',
@@ -1658,11 +1608,14 @@ export enum NotificationLifecycleStatusEnum {
 }
 
 export type NotificationNotFound = Error & {
-  __typename?: 'NotificationNotFound';
-  code: Scalars['String'];
-};
+  __typename?: 'NotificationNotFound'
+  code: Scalars['String']
+}
 
-export type NotificationResultUnion = NotificationNotFound | WaitlistBookingConfirmedNotification | WaitlistLateCancellationOfferNotification;
+export type NotificationResultUnion =
+  | NotificationNotFound
+  | WaitlistBookingConfirmedNotification
+  | WaitlistLateCancellationOfferNotification
 
 export enum NotificationStatusEnum {
   HasNew = 'hasNew',
@@ -1670,118 +1623,117 @@ export enum NotificationStatusEnum {
 }
 
 export type NotificationsInfo = {
-  __typename?: 'NotificationsInfo';
-  amountOfUnreadNotifications: Scalars['Int'];
-  notifications: PaginatedNotifications;
-  notificationsStatus: NotificationStatusEnum;
-};
-
+  __typename?: 'NotificationsInfo'
+  amountOfUnreadNotifications: Scalars['Int']
+  notifications: PaginatedNotifications
+  notificationsStatus: NotificationStatusEnum
+}
 
 export type NotificationsInfoNotificationsArgs = {
-  dateRange?: InputMaybe<DateRange>;
-  pagination?: InputMaybe<PaginationInput>;
-};
+  dateRange?: InputMaybe<DateRange>
+  pagination?: InputMaybe<PaginationInput>
+}
 
 export type OtherUserHasThisExternalIdError = Error & {
-  __typename?: 'OtherUserHasThisExternalIdError';
-  code: Scalars['String'];
-  siteUser: IdentifiableSiteUser;
-};
+  __typename?: 'OtherUserHasThisExternalIdError'
+  code: Scalars['String']
+  siteUser: IdentifiableSiteUser
+}
 
 export type PaginatedAdminCustomers = {
-  __typename?: 'PaginatedAdminCustomers';
-  items: Array<IdentifiableUser>;
-  limit: Scalars['Int'];
-  page: Scalars['Int'];
-  totalCount: Scalars['Int'];
-};
+  __typename?: 'PaginatedAdminCustomers'
+  items: Array<IdentifiableUser>
+  limit: Scalars['Int']
+  page: Scalars['Int']
+  totalCount: Scalars['Int']
+}
 
 export type PaginatedAdminMindbodyClients = {
-  __typename?: 'PaginatedAdminMindbodyClients';
-  items: Array<AdminMindbodyClient>;
-  limit: Scalars['Int'];
-  page: Scalars['Int'];
-  totalCount: Scalars['Int'];
-};
+  __typename?: 'PaginatedAdminMindbodyClients'
+  items: Array<AdminMindbodyClient>
+  limit: Scalars['Int']
+  page: Scalars['Int']
+  totalCount: Scalars['Int']
+}
 
 export type PaginatedClassStats = PaginatedResult & {
-  __typename?: 'PaginatedClassStats';
-  classStats: Array<ClassStat>;
-  total: Scalars['Int'];
-};
+  __typename?: 'PaginatedClassStats'
+  classStats: Array<ClassStat>
+  total: Scalars['Int']
+}
 
 export type PaginatedEnrollments = PaginatedResult & {
-  __typename?: 'PaginatedEnrollments';
-  enrollments: Array<Enrollment>;
-  total: Scalars['Int'];
-};
+  __typename?: 'PaginatedEnrollments'
+  enrollments: Array<Enrollment>
+  total: Scalars['Int']
+}
 
 export type PaginatedNotifications = PaginatedResult & {
-  __typename?: 'PaginatedNotifications';
-  notifications: Array<Notification>;
-  total: Scalars['Int'];
-};
+  __typename?: 'PaginatedNotifications'
+  notifications: Array<Notification>
+  total: Scalars['Int']
+}
 
 export type PaginatedPurchases = PaginatedResult & {
-  __typename?: 'PaginatedPurchases';
-  purchases: Array<Purchase>;
-  total: Scalars['Int'];
-};
+  __typename?: 'PaginatedPurchases'
+  purchases: Array<Purchase>
+  total: Scalars['Int']
+}
 
 export type PaginatedResult = {
-  total: Scalars['Int'];
-};
+  total: Scalars['Int']
+}
 
 export type PaginatedTransactionRecords = {
-  __typename?: 'PaginatedTransactionRecords';
-  items: Array<TransactionRecord>;
-  limit: Scalars['Int'];
-  page: Scalars['Int'];
-  totalCount: Scalars['Int'];
-};
+  __typename?: 'PaginatedTransactionRecords'
+  items: Array<TransactionRecord>
+  limit: Scalars['Int']
+  page: Scalars['Int']
+  totalCount: Scalars['Int']
+}
 
 export type PaginationInput = {
-  limit?: InputMaybe<Scalars['Int']>;
-  page?: InputMaybe<Scalars['Int']>;
-};
+  limit?: InputMaybe<Scalars['Int']>
+  page?: InputMaybe<Scalars['Int']>
+}
 
 export type PasswordsDontMatchError = Error & {
-  __typename?: 'PasswordsDontMatchError';
-  code: Scalars['String'];
-};
+  __typename?: 'PasswordsDontMatchError'
+  code: Scalars['String']
+}
 
 export type PayfortFormInput = {
-  deviceFingerprint: Scalars['String'];
-  merchantReference: Scalars['ID'];
-  savePaymentCard: Scalars['Boolean'];
-};
+  deviceFingerprint: Scalars['String']
+  merchantReference: Scalars['ID']
+  savePaymentCard: Scalars['Boolean']
+}
 
 export type PayfortFormResult = {
-  __typename?: 'PayfortFormResult';
-  htmlForm: Scalars['String'];
-};
+  __typename?: 'PayfortFormResult'
+  htmlForm: Scalars['String']
+}
 
 export type PaymentLink = {
-  __typename?: 'PaymentLink';
-  amount: Scalars['Int'];
-  currency: Scalars['String'];
-  id: Scalars['ID'];
-  notificationEmailAddress: Scalars['String'];
-  site: Site;
-  title: Scalars['String'];
-  url: Scalars['String'];
-};
+  __typename?: 'PaymentLink'
+  amount: Scalars['Int']
+  currency: Scalars['String']
+  id: Scalars['ID']
+  notificationEmailAddress: Scalars['String']
+  site: Site
+  title: Scalars['String']
+  url: Scalars['String']
+}
 
 /** Error returned when a client does not have enough credit or allowance to book a class */
 export type PaymentRequiredError = Error & {
-  __typename?: 'PaymentRequiredError';
-  code: Scalars['String'];
-};
+  __typename?: 'PaymentRequiredError'
+  code: Scalars['String']
+}
 
 export type PaymentTransactionStatus = {
-  __typename?: 'PaymentTransactionStatus';
-  status: PaymentTransactionStatusEnum;
-};
+  __typename?: 'PaymentTransactionStatus'
+  status: PaymentTransactionStatusEnum
+}
 
 export enum PaymentTransactionStatusEnum {
   Refunded = 'refunded',
@@ -1791,15 +1743,15 @@ export enum PaymentTransactionStatusEnum {
 }
 
 export type PaymentTransactionStatusInput = {
-  merchantReference: Scalars['ID'];
-};
+  merchantReference: Scalars['ID']
+}
 
-export type PaymentTransactionUnion = PaymentTransactionStatus | TemporalTransactionNotFound;
+export type PaymentTransactionUnion = PaymentTransactionStatus | TemporalTransactionNotFound
 
 export type PositionAlreadyTakenError = Error & {
-  __typename?: 'PositionAlreadyTakenError';
-  code: Scalars['String'];
-};
+  __typename?: 'PositionAlreadyTakenError'
+  code: Scalars['String']
+}
 
 export enum PositionIconEnum {
   BenchSpot = 'benchSpot',
@@ -1814,37 +1766,37 @@ export enum PositionIconEnum {
 }
 
 export type ProductAlertBeforePurchasing = {
-  __typename?: 'ProductAlertBeforePurchasing';
-  description: Scalars['String'];
-  title: Scalars['String'];
-};
+  __typename?: 'ProductAlertBeforePurchasing'
+  description: Scalars['String']
+  title: Scalars['String']
+}
 
 export type ProductAlertBeforePurchasingInput = {
-  description: Scalars['String'];
-  title: Scalars['String'];
-};
+  description: Scalars['String']
+  title: Scalars['String']
+}
 
 export type ProductInput = {
-  alertBeforePurchasing?: InputMaybe<ProductAlertBeforePurchasingInput>;
-  billingInterval?: InputMaybe<BillingIntervalEnum>;
-  buttonText?: InputMaybe<Scalars['String']>;
-  currency?: InputMaybe<Scalars['String']>;
-  doesItRequiredSmsAuth?: InputMaybe<Scalars['Boolean']>;
-  doestItActivateVodForClients?: InputMaybe<Scalars['Boolean']>;
-  isCLassPassPackage?: InputMaybe<Scalars['Boolean']>;
-  isMembership?: InputMaybe<Scalars['Boolean']>;
-  isTrialPackage?: InputMaybe<Scalars['Boolean']>;
-  isVisible?: InputMaybe<Scalars['Boolean']>;
-  position?: InputMaybe<Scalars['Int']>;
-  subtitle?: InputMaybe<Scalars['String']>;
-  title?: InputMaybe<Scalars['String']>;
-  vodAmountOfDays?: InputMaybe<Scalars['Int']>;
-};
+  alertBeforePurchasing?: InputMaybe<ProductAlertBeforePurchasingInput>
+  billingInterval?: InputMaybe<BillingIntervalEnum>
+  buttonText?: InputMaybe<Scalars['String']>
+  currency?: InputMaybe<Scalars['String']>
+  doesItRequiredSmsAuth?: InputMaybe<Scalars['Boolean']>
+  doestItActivateVodForClients?: InputMaybe<Scalars['Boolean']>
+  isCLassPassPackage?: InputMaybe<Scalars['Boolean']>
+  isMembership?: InputMaybe<Scalars['Boolean']>
+  isTrialPackage?: InputMaybe<Scalars['Boolean']>
+  isVisible?: InputMaybe<Scalars['Boolean']>
+  position?: InputMaybe<Scalars['Int']>
+  subtitle?: InputMaybe<Scalars['String']>
+  title?: InputMaybe<Scalars['String']>
+  vodAmountOfDays?: InputMaybe<Scalars['Int']>
+}
 
 export type ProductNotFound = Error & {
-  __typename?: 'ProductNotFound';
-  code: Scalars['String'];
-};
+  __typename?: 'ProductNotFound'
+  code: Scalars['String']
+}
 
 export enum ProductType {
   ClassPackage = 'classPackage',
@@ -1852,588 +1804,555 @@ export enum ProductType {
 }
 
 export type ProductsInput = {
-  type?: InputMaybe<ProductType>;
-};
+  type?: InputMaybe<ProductType>
+}
 
 export type Purchase = {
-  __typename?: 'Purchase';
-  activationDateTime: Scalars['DateTime'];
-  allowanceObtained: Scalars['Int'];
-  allowanceRemaining: Scalars['Int'];
+  __typename?: 'Purchase'
+  activationDateTime: Scalars['DateTime']
+  allowanceObtained: Scalars['Int']
+  allowanceRemaining: Scalars['Int']
   /** Whether a package can be used or not */
-  current: Scalars['Boolean'];
-  expirationDateTime: Scalars['DateTime'];
-  packageName: Scalars['String'];
-  paymentDateTime: Scalars['DateTime'];
-};
+  current: Scalars['Boolean']
+  expirationDateTime: Scalars['DateTime']
+  packageName: Scalars['String']
+  paymentDateTime: Scalars['DateTime']
+}
 
 export type Query = {
-  __typename?: 'Query';
+  __typename?: 'Query'
   /** Returns a single admin user */
-  adminUser?: Maybe<AdminUser>;
+  adminUser?: Maybe<AdminUser>
   /** Lists all the admin users */
-  adminUsers: Array<AdminUser>;
+  adminUsers: Array<AdminUser>
   /** Returns the Apple Pay configuration for a site */
-  applePayConfig: ApplePayConfig;
+  applePayConfig: ApplePayConfig
   /** Returns a list of all the available class types for a given site */
-  availableClassTypes: Array<Scalars['String']>;
+  availableClassTypes: Array<Scalars['String']>
   /** Returns a list of all the available instructors */
-  availableInstructors: Array<Instructor>;
+  availableInstructors: Array<Instructor>
   /** Returns a list of all the available sites */
-  availableSites?: Maybe<Array<Site>>;
+  availableSites?: Maybe<Array<Site>>
   /** Return the total for the current shoppingCart for the current user */
-  calculateTotalForShoppingCart: ShoppingCartResultUnion;
+  calculateTotalForShoppingCart: ShoppingCartResultUnion
   /**
    * Returns a list of upcoming fitness classes for a specific site within an optional date range.
    *
    * Use this query to retrieve the class schedule, including details like instructor name, start time,
    * duration, capacity, and booking availability. Results are ordered chronologically by class start time.
    */
-  calendarClasses: Array<Class>;
+  calendarClasses: Array<Class>
   /** Get paginated calendar classes for a given site */
-  calendarClassesPaginated: CalendarClassesPaginatedResult;
+  calendarClassesPaginated: CalendarClassesPaginatedResult
   /** Get a single class information */
-  classInfo?: Maybe<ClassInfo>;
+  classInfo?: Maybe<ClassInfo>
   /** Returns a list of all the class schedules for a given site */
-  classSchedules: Array<ClassSchedule>;
+  classSchedules: Array<ClassSchedule>
   /** Returns the list of all available countries */
-  countries?: Maybe<Array<Maybe<Country>>>;
+  countries?: Maybe<Array<Maybe<Country>>>
   /** Returns all countries with phone codes for the blacklist form */
-  countriesWithPhoneCodes: Array<CountryWithPhoneCode>;
+  countriesWithPhoneCodes: Array<CountryWithPhoneCode>
   /** Returns a specific country by a given country code */
-  country?: Maybe<Country>;
+  country?: Maybe<Country>
   /** Returns the current AdminUser */
-  currentAdminUser: AdminUser;
+  currentAdminUser: AdminUser
   /** Returns information of the current CRANK challenge */
-  currentCRANKChallenge: ChallengeInterface;
+  currentCRANKChallenge: ChallengeInterface
   /** Returns the current user by the given Authentication header */
-  currentUser?: Maybe<User>;
+  currentUser?: Maybe<User>
   /**
    * List of classes where the user is already enrolled
    * @deprecated Use currentUserEnrollmentsPaginated instead
    */
-  currentUserEnrollments: Array<Enrollment>;
-  currentUserEnrollmentsPaginated: PaginatedEnrollments;
+  currentUserEnrollments: Array<Enrollment>
+  currentUserEnrollmentsPaginated: PaginatedEnrollments
   /** List of purchases made by the current */
-  currentUserPurchases?: Maybe<Array<Maybe<Purchase>>>;
-  currentUserPurchasesPaginated: PaginatedPurchases;
+  currentUserPurchases?: Maybe<Array<Maybe<Purchase>>>
+  currentUserPurchasesPaginated: PaginatedPurchases
   /** Get current user's ranking on a specific class */
-  currentUserRankingInClass: UserInClassRanking;
+  currentUserRankingInClass: UserInClassRanking
   /** Get current user's workout stats for a specific enrollment */
-  currentUserSingleWorkoutStat?: Maybe<ClassStat>;
+  currentUserSingleWorkoutStat?: Maybe<ClassStat>
   /**
    * Get current user's workout stats
    * @deprecated Use currentUserWorkoutStatsPaginated instead
    */
-  currentUserWorkoutStats: Array<Maybe<ClassStat>>;
-  currentUserWorkoutStatsPaginated: PaginatedClassStats;
+  currentUserWorkoutStats: Array<Maybe<ClassStat>>
+  currentUserWorkoutStatsPaginated: PaginatedClassStats
   /** Returns a single customer subscription by ID. Admin only. */
-  customerSubscription?: Maybe<CustomerSubscription>;
+  customerSubscription?: Maybe<CustomerSubscription>
   /** Returns VOD periods for a customer. Admin only. */
-  customerVodPeriods: Array<AdminCustomerVodPeriod>;
+  customerVodPeriods: Array<AdminCustomerVodPeriod>
   /** Returns a paginated list of customers. Admin only. */
-  customers: PaginatedAdminCustomers;
+  customers: PaginatedAdminCustomers
   /** Returns the list of all the available gift cards */
-  giftCards: Array<GiftCard>;
+  giftCards: Array<GiftCard>
   /** Returns a single instructor profile by ID */
-  instructorProfile?: Maybe<InstructorProfile>;
+  instructorProfile?: Maybe<InstructorProfile>
   /** Returns a list of all instructor profiles */
-  instructorProfiles: Array<InstructorProfile>;
+  instructorProfiles: Array<InstructorProfile>
   /** Verifies whether an sms validation code is valid */
-  isSMSValidationCodeValid?: Maybe<IsSmsValidationCodeValidUnion>;
+  isSMSValidationCodeValid?: Maybe<IsSmsValidationCodeValidUnion>
   /** Returns a single Mindbody client. Admin only. */
-  mindbodyClient?: Maybe<AdminMindbodyClient>;
+  mindbodyClient?: Maybe<AdminMindbodyClient>
   /** Returns a paginated list of Mindbody clients. Admin only. */
-  mindbodyClients: PaginatedAdminMindbodyClients;
+  mindbodyClients: PaginatedAdminMindbodyClients
   /** Returns a list of all MindbodySessionType records for a site */
-  mindbodySessionTypes: Array<MindbodySessionTypeInfo>;
+  mindbodySessionTypes: Array<MindbodySessionTypeInfo>
   /** Returns a list of all MindbodyStaff records */
-  mindbodyStaffs: Array<MindbodyStaffInfo>;
+  mindbodyStaffs: Array<MindbodyStaffInfo>
   /** Returns all blacklisted mobile numbers */
-  mobileNumberBlacklist: Array<MobileNumberBlackListEntry>;
+  mobileNumberBlacklist: Array<MobileNumberBlackListEntry>
   /** Returns a single notification for the current user */
-  notification: NotificationResultUnion;
+  notification: NotificationResultUnion
   /** Returns a single payment link by ID */
-  paymentLink?: Maybe<PaymentLink>;
+  paymentLink?: Maybe<PaymentLink>
   /** Returns a list of payment links */
-  paymentLinks: Array<PaymentLink>;
+  paymentLinks: Array<PaymentLink>
   /** Allows to get the status of a transaction  */
-  paymentTransactionStatus: PaymentTransactionUnion;
+  paymentTransactionStatus: PaymentTransactionUnion
   /** Returns a list of available products for a specific site */
-  products: Array<SellableProductInterface>;
+  products: Array<SellableProductInterface>
   /** Returns a specific room layout */
-  roomLayout?: Maybe<RoomLayout>;
+  roomLayout?: Maybe<RoomLayout>
   /** Returns a list of available RoomLayouts for a site */
-  roomLayouts: Array<RoomLayout>;
+  roomLayouts: Array<RoomLayout>
   /** Returns the matched users given the query provided */
-  searchSiteUser?: Maybe<Array<Maybe<IdentifiableSiteUser>>>;
+  searchSiteUser?: Maybe<Array<Maybe<IdentifiableSiteUser>>>
   /** Returns matched users given the query provided (global, not site-scoped) */
-  searchUser: Array<IdentifiableUser>;
+  searchUser: Array<IdentifiableUser>
   /** Returns a list of all session types for a site */
-  sessionTypes: Array<SessionType>;
+  sessionTypes: Array<SessionType>
   /** Returns a single workout stat */
-  singleWorkoutStat?: Maybe<ClassStat>;
+  singleWorkoutStat?: Maybe<ClassStat>
   /** Settings of a site */
-  siteSettings: SiteSetting;
+  siteSettings: SiteSetting
   /** Returns a user in a specific site */
-  siteUser?: Maybe<IdentifiableSiteUser>;
+  siteUser?: Maybe<IdentifiableSiteUser>
   /** Returns the system settings */
-  systemSettings: SystemSettings;
+  systemSettings: SystemSettings
   /** Returns a single transaction record by ID. Admin only. */
-  transactionRecord?: Maybe<TransactionRecord>;
+  transactionRecord?: Maybe<TransactionRecord>
   /** Returns a paginated list of transaction records. Admin only. */
-  transactionRecords: PaginatedTransactionRecords;
+  transactionRecords: PaginatedTransactionRecords
   /** Returns a user */
-  user?: Maybe<IdentifiableUser>;
+  user?: Maybe<IdentifiableUser>
   /** Returns the ranking of a user in a specific class */
-  userRankingInClass?: Maybe<UserInClassRanking>;
+  userRankingInClass?: Maybe<UserInClassRanking>
   /** Returns a list of workhout stats */
-  userWorkoutStats: Array<Maybe<ClassStat>>;
-  userWorkoutStatsPaginated: PaginatedClassStats;
+  userWorkoutStats: Array<Maybe<ClassStat>>
+  userWorkoutStatsPaginated: PaginatedClassStats
   /** Returns a single webhook event by ID */
-  webhookEvent?: Maybe<WebhookEvent>;
+  webhookEvent?: Maybe<WebhookEvent>
   /** Returns a paginated list of webhook events from the subscription service */
-  webhookEvents: WebhookEventList;
-};
-
+  webhookEvents: WebhookEventList
+}
 
 export type QueryAdminUserArgs = {
-  id: Scalars['ID'];
-};
-
+  id: Scalars['ID']
+}
 
 export type QueryApplePayConfigArgs = {
-  site: SiteEnum;
-};
-
+  site: SiteEnum
+}
 
 export type QueryAvailableClassTypesArgs = {
-  site?: InputMaybe<SiteEnum>;
-};
-
+  site?: InputMaybe<SiteEnum>
+}
 
 export type QueryCalculateTotalForShoppingCartArgs = {
-  site: SiteEnum;
-};
-
+  site: SiteEnum
+}
 
 export type QueryCalendarClassesArgs = {
-  params?: InputMaybe<CalendarClassesParams>;
-  site: SiteEnum;
-};
-
+  params?: InputMaybe<CalendarClassesParams>
+  site: SiteEnum
+}
 
 export type QueryCalendarClassesPaginatedArgs = {
-  pagination?: InputMaybe<PaginationInput>;
-  params?: InputMaybe<CalendarClassesParams>;
-  site: SiteEnum;
-};
-
+  pagination?: InputMaybe<PaginationInput>
+  params?: InputMaybe<CalendarClassesParams>
+  site: SiteEnum
+}
 
 export type QueryClassInfoArgs = {
-  id: Scalars['ID'];
-  site: SiteEnum;
-};
-
+  id: Scalars['ID']
+  site: SiteEnum
+}
 
 export type QueryClassSchedulesArgs = {
-  site: SiteEnum;
-};
-
+  site: SiteEnum
+}
 
 export type QueryCountryArgs = {
-  countryCode: Scalars['String'];
-};
-
+  countryCode: Scalars['String']
+}
 
 export type QueryCurrentUserEnrollmentsArgs = {
-  params?: InputMaybe<CurrentUserEnrollmentsParams>;
-  site?: InputMaybe<SiteEnum>;
-};
-
+  params?: InputMaybe<CurrentUserEnrollmentsParams>
+  site?: InputMaybe<SiteEnum>
+}
 
 export type QueryCurrentUserEnrollmentsPaginatedArgs = {
-  pagination?: InputMaybe<PaginationInput>;
-  params?: InputMaybe<CurrentUserEnrollmentsParams>;
-  site?: InputMaybe<SiteEnum>;
-};
-
+  pagination?: InputMaybe<PaginationInput>
+  params?: InputMaybe<CurrentUserEnrollmentsParams>
+  site?: InputMaybe<SiteEnum>
+}
 
 export type QueryCurrentUserPurchasesArgs = {
-  site?: InputMaybe<SiteEnum>;
-};
-
+  site?: InputMaybe<SiteEnum>
+}
 
 export type QueryCurrentUserPurchasesPaginatedArgs = {
-  pagination?: InputMaybe<PaginationInput>;
-  params: CurrentUserPurchasesPaginatedParams;
-  site?: InputMaybe<SiteEnum>;
-};
-
+  pagination?: InputMaybe<PaginationInput>
+  params: CurrentUserPurchasesPaginatedParams
+  site?: InputMaybe<SiteEnum>
+}
 
 export type QueryCurrentUserRankingInClassArgs = {
-  params?: InputMaybe<UserInRankingParams>;
-  site: SiteEnum;
-};
-
+  params?: InputMaybe<UserInRankingParams>
+  site: SiteEnum
+}
 
 export type QueryCurrentUserSingleWorkoutStatArgs = {
-  enrollmentId: Scalars['ID'];
-};
-
+  enrollmentId: Scalars['ID']
+}
 
 export type QueryCurrentUserWorkoutStatsArgs = {
-  site: SiteEnum;
-};
-
+  site: SiteEnum
+}
 
 export type QueryCurrentUserWorkoutStatsPaginatedArgs = {
-  pagination?: InputMaybe<PaginationInput>;
-  params?: InputMaybe<CurrentUserWorkoutStatsPaginatedParams>;
-  site: SiteEnum;
-};
-
+  pagination?: InputMaybe<PaginationInput>
+  params?: InputMaybe<CurrentUserWorkoutStatsPaginatedParams>
+  site: SiteEnum
+}
 
 export type QueryCustomerSubscriptionArgs = {
-  id: Scalars['ID'];
-};
-
+  id: Scalars['ID']
+}
 
 export type QueryCustomerVodPeriodsArgs = {
-  customerId: Scalars['ID'];
-};
-
+  customerId: Scalars['ID']
+}
 
 export type QueryCustomersArgs = {
-  pagination?: InputMaybe<PaginationInput>;
-  params?: InputMaybe<AdminCustomersParams>;
-};
-
+  pagination?: InputMaybe<PaginationInput>
+  params?: InputMaybe<AdminCustomersParams>
+}
 
 export type QueryInstructorProfileArgs = {
-  id: Scalars['ID'];
-};
-
+  id: Scalars['ID']
+}
 
 export type QueryInstructorProfilesArgs = {
-  activeOnly?: InputMaybe<Scalars['Boolean']>;
-  site: SiteEnum;
-};
-
+  activeOnly?: InputMaybe<Scalars['Boolean']>
+  site: SiteEnum
+}
 
 export type QueryIsSmsValidationCodeValidArgs = {
-  smsCode: Scalars['String'];
-};
-
+  smsCode: Scalars['String']
+}
 
 export type QueryMindbodyClientArgs = {
-  id: Scalars['ID'];
-};
-
+  id: Scalars['ID']
+}
 
 export type QueryMindbodyClientsArgs = {
-  pagination?: InputMaybe<PaginationInput>;
-  params?: InputMaybe<AdminMindbodyClientsParams>;
-};
-
+  pagination?: InputMaybe<PaginationInput>
+  params?: InputMaybe<AdminMindbodyClientsParams>
+}
 
 export type QueryMindbodySessionTypesArgs = {
-  site: SiteEnum;
-};
-
+  site: SiteEnum
+}
 
 export type QueryMindbodyStaffsArgs = {
-  site: SiteEnum;
-};
-
+  site: SiteEnum
+}
 
 export type QueryNotificationArgs = {
-  id: Scalars['ID'];
-};
-
+  id: Scalars['ID']
+}
 
 export type QueryPaymentLinkArgs = {
-  id: Scalars['ID'];
-};
-
+  id: Scalars['ID']
+}
 
 export type QueryPaymentLinksArgs = {
-  site?: InputMaybe<SiteEnum>;
-};
-
+  site?: InputMaybe<SiteEnum>
+}
 
 export type QueryPaymentTransactionStatusArgs = {
-  input?: InputMaybe<PaymentTransactionStatusInput>;
-};
-
+  input?: InputMaybe<PaymentTransactionStatusInput>
+}
 
 export type QueryProductsArgs = {
-  input?: InputMaybe<ProductsInput>;
-  site: SiteEnum;
-};
-
+  input?: InputMaybe<ProductsInput>
+  site: SiteEnum
+}
 
 export type QueryRoomLayoutArgs = {
-  id: Scalars['ID'];
-  site: SiteEnum;
-};
-
+  id: Scalars['ID']
+  site: SiteEnum
+}
 
 export type QueryRoomLayoutsArgs = {
-  params?: InputMaybe<RoomLayoutsInput>;
-  site: SiteEnum;
-};
-
+  params?: InputMaybe<RoomLayoutsInput>
+  site: SiteEnum
+}
 
 export type QuerySearchSiteUserArgs = {
-  query?: InputMaybe<Scalars['String']>;
-  site?: InputMaybe<SiteEnum>;
-};
-
+  query?: InputMaybe<Scalars['String']>
+  site?: InputMaybe<SiteEnum>
+}
 
 export type QuerySearchUserArgs = {
-  query?: InputMaybe<Scalars['String']>;
-};
-
+  query?: InputMaybe<Scalars['String']>
+}
 
 export type QuerySessionTypesArgs = {
-  activeOnly?: InputMaybe<Scalars['Boolean']>;
-  site: SiteEnum;
-};
-
+  activeOnly?: InputMaybe<Scalars['Boolean']>
+  site: SiteEnum
+}
 
 export type QuerySingleWorkoutStatArgs = {
-  enrollmentId: Scalars['ID'];
-};
-
+  enrollmentId: Scalars['ID']
+}
 
 export type QuerySiteSettingsArgs = {
-  site?: InputMaybe<SiteEnum>;
-};
-
+  site?: InputMaybe<SiteEnum>
+}
 
 export type QuerySiteUserArgs = {
-  id: Scalars['ID'];
-};
-
+  id: Scalars['ID']
+}
 
 export type QueryTransactionRecordArgs = {
-  id: Scalars['ID'];
-};
-
+  id: Scalars['ID']
+}
 
 export type QueryTransactionRecordsArgs = {
-  filter?: InputMaybe<TransactionRecordFilterInput>;
-  pagination?: InputMaybe<PaginationInput>;
-};
-
+  filter?: InputMaybe<TransactionRecordFilterInput>
+  pagination?: InputMaybe<PaginationInput>
+}
 
 export type QueryUserArgs = {
-  id: Scalars['ID'];
-};
-
+  id: Scalars['ID']
+}
 
 export type QueryUserRankingInClassArgs = {
-  classId: Scalars['ID'];
-  userId: Scalars['ID'];
-};
-
+  classId: Scalars['ID']
+  userId: Scalars['ID']
+}
 
 export type QueryUserWorkoutStatsArgs = {
-  site: SiteEnum;
-  userId: Scalars['ID'];
-};
-
+  site: SiteEnum
+  userId: Scalars['ID']
+}
 
 export type QueryUserWorkoutStatsPaginatedArgs = {
-  pagination?: InputMaybe<PaginationInput>;
-  site: SiteEnum;
-  userId: Scalars['ID'];
-};
-
+  pagination?: InputMaybe<PaginationInput>
+  site: SiteEnum
+  userId: Scalars['ID']
+}
 
 export type QueryWebhookEventArgs = {
-  id: Scalars['ID'];
-};
-
+  id: Scalars['ID']
+}
 
 export type QueryWebhookEventsArgs = {
-  cursor?: InputMaybe<Scalars['String']>;
-  limit?: InputMaybe<Scalars['Int']>;
-  status?: InputMaybe<Scalars['String']>;
-};
+  cursor?: InputMaybe<Scalars['String']>
+  limit?: InputMaybe<Scalars['Int']>
+  status?: InputMaybe<Scalars['String']>
+}
 
 export type ReactivateSubscriptionInput = {
-  subscriptionId: Scalars['ID'];
-};
+  subscriptionId: Scalars['ID']
+}
 
 /** Reactivation is not yet supported by the subscription service */
 export type ReactivateSubscriptionNotSupportedError = Error & {
-  __typename?: 'ReactivateSubscriptionNotSupportedError';
-  code: Scalars['String'];
-};
+  __typename?: 'ReactivateSubscriptionNotSupportedError'
+  code: Scalars['String']
+}
 
-export type ReactivateSubscriptionResultUnion = ReactivateSubscriptionNotSupportedError | ReactivateSubscriptionSuccess | SubscriptionNotFoundError | UnknownError;
+export type ReactivateSubscriptionResultUnion =
+  | ReactivateSubscriptionNotSupportedError
+  | ReactivateSubscriptionSuccess
+  | SubscriptionNotFoundError
+  | UnknownError
 
 export type ReactivateSubscriptionSuccess = {
-  __typename?: 'ReactivateSubscriptionSuccess';
-  success: Scalars['Boolean'];
-};
+  __typename?: 'ReactivateSubscriptionSuccess'
+  success: Scalars['Boolean']
+}
 
 export type RegisterUserInput = {
-  address1?: InputMaybe<Scalars['String']>;
-  address2?: InputMaybe<Scalars['String']>;
-  birthdate: Scalars['Date'];
-  city?: InputMaybe<Scalars['String']>;
-  country: Scalars['String'];
-  email: Scalars['String'];
-  emergencyContactName: Scalars['String'];
-  emergencyContactPhone: Scalars['String'];
-  emergencyContactRelationship?: InputMaybe<Scalars['String']>;
-  firstName: Scalars['String'];
-  gender: GenderEnum;
-  lastName: Scalars['String'];
-  leaderboardUsername: Scalars['String'];
-  password: Scalars['String'];
-  phone: Scalars['String'];
-  state?: InputMaybe<Scalars['String']>;
-  weight?: InputMaybe<Scalars['Float']>;
-  zipCode: Scalars['String'];
-};
+  address1?: InputMaybe<Scalars['String']>
+  address2?: InputMaybe<Scalars['String']>
+  birthdate: Scalars['Date']
+  city?: InputMaybe<Scalars['String']>
+  country: Scalars['String']
+  email: Scalars['String']
+  emergencyContactName: Scalars['String']
+  emergencyContactPhone: Scalars['String']
+  emergencyContactRelationship?: InputMaybe<Scalars['String']>
+  firstName: Scalars['String']
+  gender: GenderEnum
+  lastName: Scalars['String']
+  leaderboardUsername: Scalars['String']
+  password: Scalars['String']
+  phone: Scalars['String']
+  state?: InputMaybe<Scalars['String']>
+  weight?: InputMaybe<Scalars['Float']>
+  zipCode: Scalars['String']
+}
 
 export type RejectLateCancelledSpotInClassInput = {
-  waitlistEntryId: Scalars['ID'];
-};
+  waitlistEntryId: Scalars['ID']
+}
 
 export type RejectLateCancelledSpotInClassSuccess = {
-  __typename?: 'RejectLateCancelledSpotInClassSuccess';
-  success: Scalars['Boolean'];
-};
+  __typename?: 'RejectLateCancelledSpotInClassSuccess'
+  success: Scalars['Boolean']
+}
 
-export type RemainingCreditsResultUnion = ClientNotFoundInMindbody | RemainingCreditsSuccess;
+export type RemainingCreditsResultUnion = ClientNotFoundInMindbody | RemainingCreditsSuccess
 
 export type RemainingCreditsSuccess = {
-  __typename?: 'RemainingCreditsSuccess';
-  credits: Scalars['Int'];
-};
+  __typename?: 'RemainingCreditsSuccess'
+  credits: Scalars['Int']
+}
 
 export type RemoveCurrentUserFromWaitlistInput = {
-  waitlistEntryId: Scalars['ID'];
-};
+  waitlistEntryId: Scalars['ID']
+}
 
-export type RemoveCurrentUserFromWaitlistUnion = RemoveFromWaitlistResult | WaitlistEntryNotFoundError;
+export type RemoveCurrentUserFromWaitlistUnion =
+  | RemoveFromWaitlistResult
+  | WaitlistEntryNotFoundError
 
 export type RemoveFromWaitlistResult = {
-  __typename?: 'RemoveFromWaitlistResult';
-  success: Scalars['Boolean'];
-};
+  __typename?: 'RemoveFromWaitlistResult'
+  success: Scalars['Boolean']
+}
 
 export type RemoveUserFromWaitlistInput = {
-  waitlistEntryId: Scalars['ID'];
-};
+  waitlistEntryId: Scalars['ID']
+}
 
-export type RemoveUserFromWaitlistUnion = RemoveFromWaitlistResult | WaitlistEntryNotFoundError;
+export type RemoveUserFromWaitlistUnion = RemoveFromWaitlistResult | WaitlistEntryNotFoundError
 
 export type RequestPasswordLinkInput = {
-  email: Scalars['String'];
-};
+  email: Scalars['String']
+}
 
 export type RequestSmsValidationInput = {
-  countryCode: Scalars['String'];
-  mobilePhone: Scalars['String'];
-};
+  countryCode: Scalars['String']
+  mobilePhone: Scalars['String']
+}
 
 export type RequestSmsValidationNeededError = Error & {
-  __typename?: 'RequestSMSValidationNeededError';
-  code: Scalars['String'];
-};
+  __typename?: 'RequestSMSValidationNeededError'
+  code: Scalars['String']
+}
 
 export type ResetPasswordForCurrentUserInput = {
-  password: Scalars['String'];
-  repeatedPassword: Scalars['String'];
-};
+  password: Scalars['String']
+  repeatedPassword: Scalars['String']
+}
 
-export type ResetPasswordForCurrentUserUnion = PasswordsDontMatchError | ResetPasswordSuccess;
+export type ResetPasswordForCurrentUserUnion = PasswordsDontMatchError | ResetPasswordSuccess
 
-export type ResetPasswordLinkResultUnion = ResetPasswordLinkSentSuccessfully | TooManyResetPasswordLinkRequestsError;
+export type ResetPasswordLinkResultUnion =
+  | ResetPasswordLinkSentSuccessfully
+  | TooManyResetPasswordLinkRequestsError
 
 export type ResetPasswordLinkSentSuccessfully = {
-  __typename?: 'ResetPasswordLinkSentSuccessfully';
-  status: Scalars['Boolean'];
-};
+  __typename?: 'ResetPasswordLinkSentSuccessfully'
+  status: Scalars['Boolean']
+}
 
 export type ResetPasswordSuccess = {
-  __typename?: 'ResetPasswordSuccess';
-  status: Scalars['Boolean'];
-};
+  __typename?: 'ResetPasswordSuccess'
+  status: Scalars['Boolean']
+}
 
 export type RetryWebhookEventInput = {
-  email: Scalars['String'];
-  id: Scalars['ID'];
-};
+  email: Scalars['String']
+  id: Scalars['ID']
+}
 
-export type RetryWebhookEventResultUnion = InvalidEmailError | RetryWebhookEventSuccess | WebhookEventNotFoundError | WebhookEventNotRetryableError;
+export type RetryWebhookEventResultUnion =
+  | InvalidEmailError
+  | RetryWebhookEventSuccess
+  | WebhookEventNotFoundError
+  | WebhookEventNotRetryableError
 
 export type RetryWebhookEventSuccess = {
-  __typename?: 'RetryWebhookEventSuccess';
-  webhookEvent: WebhookEvent;
-};
+  __typename?: 'RetryWebhookEventSuccess'
+  webhookEvent: WebhookEvent
+}
 
 export type RoomLayout = {
-  __typename?: 'RoomLayout';
-  capacity: Scalars['Int'];
-  columns: Scalars['Int'];
-  id: Scalars['ID'];
-  matrix?: Maybe<Array<ClassPositionInterface>>;
-  name: Scalars['String'];
-  rows: Scalars['Int'];
-};
+  __typename?: 'RoomLayout'
+  capacity: Scalars['Int']
+  columns: Scalars['Int']
+  id: Scalars['ID']
+  matrix?: Maybe<Array<ClassPositionInterface>>
+  name: Scalars['String']
+  rows: Scalars['Int']
+}
 
 export type RoomLayoutInUseError = Error & {
-  __typename?: 'RoomLayoutInUseError';
-  code: Scalars['String'];
-};
+  __typename?: 'RoomLayoutInUseError'
+  code: Scalars['String']
+}
 
 export type RoomLayoutInput = {
-  columns: Scalars['Int'];
-  matrix: Array<IconPositionInput>;
-  name: Scalars['String'];
-  rows: Scalars['Int'];
-};
+  columns: Scalars['Int']
+  matrix: Array<IconPositionInput>
+  name: Scalars['String']
+  rows: Scalars['Int']
+}
 
 export type RoomLayoutsInput = {
   /** Amount of usable spots in the class */
-  usersCapacity?: InputMaybe<Scalars['Int']>;
-};
+  usersCapacity?: InputMaybe<Scalars['Int']>
+}
 
 export type SmsCodeValidatedSuccessfully = {
-  __typename?: 'SMSCodeValidatedSuccessfully';
-  success: Scalars['Boolean'];
-};
+  __typename?: 'SMSCodeValidatedSuccessfully'
+  success: Scalars['Boolean']
+}
 
 export type SmsValidationCodeError = Error & {
-  __typename?: 'SMSValidationCodeError';
-  code: Scalars['String'];
-};
+  __typename?: 'SMSValidationCodeError'
+  code: Scalars['String']
+}
 
-export type SmsValidationUnion = MobilePhoneAlreadyVerifiedError | MobilePhoneNotValidError | SuccessfulRequestSmsValidation;
+export type SmsValidationUnion =
+  | MobilePhoneAlreadyVerifiedError
+  | MobilePhoneNotValidError
+  | SuccessfulRequestSmsValidation
 
 export type SellableProductInterface = {
-  alertBeforePurchasing?: Maybe<ProductAlertBeforePurchasing>;
-  buttonText?: Maybe<Scalars['String']>;
-  currency: Scalars['String'];
-  id: Scalars['ID'];
-  isVisible: Scalars['Boolean'];
-  position?: Maybe<Scalars['Int']>;
-  subtitle?: Maybe<Scalars['String']>;
-  title: Scalars['String'];
-  variants: Array<Variant>;
-};
+  alertBeforePurchasing?: Maybe<ProductAlertBeforePurchasing>
+  buttonText?: Maybe<Scalars['String']>
+  currency: Scalars['String']
+  id: Scalars['ID']
+  isVisible: Scalars['Boolean']
+  position?: Maybe<Scalars['Int']>
+  subtitle?: Maybe<Scalars['String']>
+  title: Scalars['String']
+  variants: Array<Variant>
+}
 
 export type SendClassStatsToEmailInput = {
-  email: Scalars['String'];
-  enrollmentId: Scalars['ID'];
-};
+  email: Scalars['String']
+  enrollmentId: Scalars['ID']
+}
 
 export enum ServiceStatusEnum {
   ActiveOnly = 'activeOnly',
@@ -2442,84 +2361,99 @@ export enum ServiceStatusEnum {
 }
 
 export type SessionType = {
-  __typename?: 'SessionType';
-  active: Scalars['Boolean'];
-  bannerImagePath?: Maybe<Scalars['String']>;
-  color?: Maybe<Scalars['String']>;
-  icon?: Maybe<Scalars['String']>;
-  id: Scalars['ID'];
-  mindbodySessionTypes: Array<MindbodySessionTypeInfo>;
-  name: Scalars['String'];
-  position?: Maybe<Scalars['Int']>;
-};
+  __typename?: 'SessionType'
+  active: Scalars['Boolean']
+  bannerImagePath?: Maybe<Scalars['String']>
+  color?: Maybe<Scalars['String']>
+  icon?: Maybe<Scalars['String']>
+  id: Scalars['ID']
+  mindbodySessionTypes: Array<MindbodySessionTypeInfo>
+  name: Scalars['String']
+  position?: Maybe<Scalars['Int']>
+}
 
 export type SessionTypeNotFoundError = Error & {
-  __typename?: 'SessionTypeNotFoundError';
-  code: Scalars['String'];
-  id: Scalars['ID'];
-};
+  __typename?: 'SessionTypeNotFoundError'
+  code: Scalars['String']
+  id: Scalars['ID']
+}
 
 export type SetRoomLayoutForClassSchedulesInput = {
-  classSchedulesIds: Array<Scalars['ID']>;
-  roomLayoutId?: InputMaybe<Scalars['ID']>;
-};
+  classSchedulesIds: Array<Scalars['ID']>
+  roomLayoutId?: InputMaybe<Scalars['ID']>
+}
 
 export type ShoppingCart = {
-  __typename?: 'ShoppingCart';
-  currency: Scalars['String'];
-  discountCode?: Maybe<Scalars['String']>;
-  giftCardsCodes?: Maybe<Array<Maybe<Scalars['String']>>>;
-  id: Scalars['ID'];
-  items: Array<ShoppingCartItem>;
-  total?: Maybe<ShoppingCartTotalResultUnion>;
-};
+  __typename?: 'ShoppingCart'
+  currency: Scalars['String']
+  discountCode?: Maybe<Scalars['String']>
+  giftCardsCodes?: Maybe<Array<Maybe<Scalars['String']>>>
+  id: Scalars['ID']
+  items: Array<ShoppingCartItem>
+  total?: Maybe<ShoppingCartTotalResultUnion>
+}
 
 export type ShoppingCartIsEmpty = Error & {
-  __typename?: 'ShoppingCartIsEmpty';
-  code: Scalars['String'];
-};
+  __typename?: 'ShoppingCartIsEmpty'
+  code: Scalars['String']
+}
 
 export type ShoppingCartItem = {
-  __typename?: 'ShoppingCartItem';
-  id: Scalars['ID'];
-  quantity: Scalars['Int'];
-  subtotal?: Maybe<Scalars['Float']>;
-  variant: Variant;
-};
+  __typename?: 'ShoppingCartItem'
+  id: Scalars['ID']
+  quantity: Scalars['Int']
+  subtotal?: Maybe<Scalars['Float']>
+  variant: Variant
+}
 
 export type ShoppingCartItemNotFound = Error & {
-  __typename?: 'ShoppingCartItemNotFound';
-  code: Scalars['String'];
-};
+  __typename?: 'ShoppingCartItemNotFound'
+  code: Scalars['String']
+}
 
 export type ShoppingCartNotFound = Error & {
-  __typename?: 'ShoppingCartNotFound';
-  code: Scalars['String'];
-};
+  __typename?: 'ShoppingCartNotFound'
+  code: Scalars['String']
+}
 
-export type ShoppingCartResultUnion = DiscountCodeIsEmpty | DiscountCodeIsInvalid | DontNeedMoreGiftCards | GiftCardAlreadyRegisteredForCurrentShoppingCart | GiftCardIsNotUsable | GiftCardNotRegisteredOnCurrentShoppingCart | ProductNotFound | ShoppingCart | ShoppingCartIsEmpty | ShoppingCartItemNotFound | ShoppingCartNotFound;
+export type ShoppingCartResultUnion =
+  | DiscountCodeIsEmpty
+  | DiscountCodeIsInvalid
+  | DontNeedMoreGiftCards
+  | GiftCardAlreadyRegisteredForCurrentShoppingCart
+  | GiftCardIsNotUsable
+  | GiftCardNotRegisteredOnCurrentShoppingCart
+  | ProductNotFound
+  | ShoppingCart
+  | ShoppingCartIsEmpty
+  | ShoppingCartItemNotFound
+  | ShoppingCartNotFound
 
 export type ShoppingCartTotal = {
-  __typename?: 'ShoppingCartTotal';
-  amountToPay?: Maybe<Scalars['Float']>;
-  giftCardAmount?: Maybe<Scalars['Float']>;
-  subTotal?: Maybe<Scalars['Float']>;
-  total?: Maybe<Scalars['Float']>;
-};
+  __typename?: 'ShoppingCartTotal'
+  amountToPay?: Maybe<Scalars['Float']>
+  giftCardAmount?: Maybe<Scalars['Float']>
+  subTotal?: Maybe<Scalars['Float']>
+  total?: Maybe<Scalars['Float']>
+}
 
-export type ShoppingCartTotalResultUnion = GiftCardIsNotUsable | ShoppingCartTotal | UserAlreadyHaveFirstTimerPackage | UserCanNotBuyFirstTimerPackage;
+export type ShoppingCartTotalResultUnion =
+  | GiftCardIsNotUsable
+  | ShoppingCartTotal
+  | UserAlreadyHaveFirstTimerPackage
+  | UserCanNotBuyFirstTimerPackage
 
 export type SimpleSiteUser = {
-  __typename?: 'SimpleSiteUser';
-  externalUserId: Scalars['ID'];
-  site: SiteEnum;
-};
+  __typename?: 'SimpleSiteUser'
+  externalUserId: Scalars['ID']
+  site: SiteEnum
+}
 
 export type Site = {
-  __typename?: 'Site';
-  code: SiteEnum;
-  name: Scalars['String'];
-};
+  __typename?: 'Site'
+  code: SiteEnum
+  name: Scalars['String']
+}
 
 /**
  * Available CRANK fitness studio locations.
@@ -2536,943 +2470,6828 @@ export enum SiteEnum {
 }
 
 export type SiteSetting = {
-  __typename?: 'SiteSetting';
-  isSynchronizingClasses: Scalars['Boolean'];
-  siteDateTimeNow?: Maybe<Scalars['DateTime']>;
-  siteTimezone?: Maybe<Scalars['String']>;
-};
+  __typename?: 'SiteSetting'
+  isSynchronizingClasses: Scalars['Boolean']
+  siteDateTimeNow?: Maybe<Scalars['DateTime']>
+  siteTimezone?: Maybe<Scalars['String']>
+}
 
 export type SiteUserInput = {
-  externalUserId: Scalars['ID'];
-  site: SiteEnum;
-};
+  externalUserId: Scalars['ID']
+  site: SiteEnum
+}
 
 /** Error returned when trying to book a class with a spot that is already booked */
 export type SpotAlreadyReservedError = Error & {
-  __typename?: 'SpotAlreadyReservedError';
-  code: Scalars['String'];
-};
+  __typename?: 'SpotAlreadyReservedError'
+  code: Scalars['String']
+}
 
 export type SpotInfo = {
-  __typename?: 'SpotInfo';
+  __typename?: 'SpotInfo'
   /** @deprecated Array of booked spots should be returned by other query to reduce complexity of creating SpotInfo instances. */
-  isBooked: Scalars['Boolean'];
-  spotNumber: Scalars['Int'];
-};
+  isBooked: Scalars['Boolean']
+  spotNumber: Scalars['Int']
+}
 
 export type SpotIsDisabledError = Error & {
-  __typename?: 'SpotIsDisabledError';
-  code: Scalars['String'];
-};
+  __typename?: 'SpotIsDisabledError'
+  code: Scalars['String']
+}
 
 export type SpotNotFoundError = Error & {
-  __typename?: 'SpotNotFoundError';
-  code: Scalars['String'];
-};
+  __typename?: 'SpotNotFoundError'
+  code: Scalars['String']
+}
 
 export type State = {
-  __typename?: 'State';
-  code: Scalars['String'];
-  name: Scalars['String'];
-};
+  __typename?: 'State'
+  code: Scalars['String']
+  name: Scalars['String']
+}
 
 export type SubscriptionAlreadyCancelledError = Error & {
-  __typename?: 'SubscriptionAlreadyCancelledError';
-  code: Scalars['String'];
-};
+  __typename?: 'SubscriptionAlreadyCancelledError'
+  code: Scalars['String']
+}
 
 export type SubscriptionDoesNotBelongToUserError = Error & {
-  __typename?: 'SubscriptionDoesNotBelongToUserError';
-  code: Scalars['String'];
-};
+  __typename?: 'SubscriptionDoesNotBelongToUserError'
+  code: Scalars['String']
+}
 
 export type SubscriptionNotFoundError = Error & {
-  __typename?: 'SubscriptionNotFoundError';
-  code: Scalars['String'];
-};
+  __typename?: 'SubscriptionNotFoundError'
+  code: Scalars['String']
+}
 
 export type SuccessfulRequestSmsValidation = {
-  __typename?: 'SuccessfulRequestSMSValidation';
-  success: Scalars['Boolean'];
-};
+  __typename?: 'SuccessfulRequestSMSValidation'
+  success: Scalars['Boolean']
+}
 
-export type SwapSpotResultUnion = SwapSpotSuccess | TryToSwitchToSameSpotError;
+export type SwapSpotResultUnion = SwapSpotSuccess | TryToSwitchToSameSpotError
 
 export type SwapSpotSuccess = {
-  __typename?: 'SwapSpotSuccess';
-  affectedEnrollment?: Maybe<EnrollmentInfoInterface>;
-  selectedEnrollment: EnrollmentInfoInterface;
-};
+  __typename?: 'SwapSpotSuccess'
+  affectedEnrollment?: Maybe<EnrollmentInfoInterface>
+  selectedEnrollment: EnrollmentInfoInterface
+}
 
 export type SystemSettings = {
-  __typename?: 'SystemSettings';
-  id: Scalars['ID'];
-  sendSuccessfulPurchaseEmail: Scalars['Boolean'];
-  textBottomIndexPage?: Maybe<Scalars['String']>;
-};
+  __typename?: 'SystemSettings'
+  id: Scalars['ID']
+  sendSuccessfulPurchaseEmail: Scalars['Boolean']
+  textBottomIndexPage?: Maybe<Scalars['String']>
+}
 
 export type TemporalTransactionNotFound = Error & {
-  __typename?: 'TemporalTransactionNotFound';
-  code: Scalars['String'];
-};
+  __typename?: 'TemporalTransactionNotFound'
+  code: Scalars['String']
+}
 
 export type TooManyResetPasswordLinkRequestsError = Error & {
-  __typename?: 'TooManyResetPasswordLinkRequestsError';
-  availableAgainAt?: Maybe<Scalars['DateTime']>;
-  code: Scalars['String'];
-};
+  __typename?: 'TooManyResetPasswordLinkRequestsError'
+  availableAgainAt?: Maybe<Scalars['DateTime']>
+  code: Scalars['String']
+}
 
 export type TransactionItem = {
-  __typename?: 'TransactionItem';
-  amount?: Maybe<Scalars['String']>;
-  id?: Maybe<Scalars['ID']>;
-  name?: Maybe<Scalars['String']>;
-  quantity?: Maybe<Scalars['Int']>;
-};
+  __typename?: 'TransactionItem'
+  amount?: Maybe<Scalars['String']>
+  id?: Maybe<Scalars['ID']>
+  name?: Maybe<Scalars['String']>
+  quantity?: Maybe<Scalars['Int']>
+}
 
 export type TransactionRecord = {
-  __typename?: 'TransactionRecord';
-  amount?: Maybe<Scalars['String']>;
-  authorizationCode?: Maybe<Scalars['String']>;
-  created?: Maybe<Scalars['DateTime']>;
-  creditCardChargeId?: Maybe<Scalars['String']>;
-  creditCardHolderName?: Maybe<Scalars['String']>;
-  creditCardLastFourDigits?: Maybe<Scalars['String']>;
-  customerEmail?: Maybe<Scalars['String']>;
-  customerName?: Maybe<Scalars['String']>;
-  id: Scalars['ID'];
-  installments?: Maybe<Scalars['Int']>;
-  isRefundable: Scalars['Boolean'];
-  items: Array<TransactionItem>;
-  merchantPurchaseId?: Maybe<Scalars['Int']>;
-  refundDate?: Maybe<Scalars['DateTime']>;
-  shoppingCart?: Maybe<ShoppingCart>;
-  siteCustomer?: Maybe<IdentifiableSiteUser>;
-  siteName?: Maybe<Scalars['String']>;
-  status?: Maybe<Scalars['String']>;
-  subTotal?: Maybe<Scalars['String']>;
-  taxAmount?: Maybe<Scalars['String']>;
-};
+  __typename?: 'TransactionRecord'
+  amount?: Maybe<Scalars['String']>
+  authorizationCode?: Maybe<Scalars['String']>
+  created?: Maybe<Scalars['DateTime']>
+  creditCardChargeId?: Maybe<Scalars['String']>
+  creditCardHolderName?: Maybe<Scalars['String']>
+  creditCardLastFourDigits?: Maybe<Scalars['String']>
+  customerEmail?: Maybe<Scalars['String']>
+  customerName?: Maybe<Scalars['String']>
+  id: Scalars['ID']
+  installments?: Maybe<Scalars['Int']>
+  isRefundable: Scalars['Boolean']
+  items: Array<TransactionItem>
+  merchantPurchaseId?: Maybe<Scalars['Int']>
+  refundDate?: Maybe<Scalars['DateTime']>
+  shoppingCart?: Maybe<ShoppingCart>
+  siteCustomer?: Maybe<IdentifiableSiteUser>
+  siteName?: Maybe<Scalars['String']>
+  status?: Maybe<Scalars['String']>
+  subTotal?: Maybe<Scalars['String']>
+  taxAmount?: Maybe<Scalars['String']>
+}
 
 export type TransactionRecordFilterInput = {
-  endDate?: InputMaybe<Scalars['Date']>;
-  paymentMethod?: InputMaybe<Scalars['String']>;
-  search?: InputMaybe<Scalars['String']>;
-  site?: InputMaybe<Scalars['String']>;
-  startDate?: InputMaybe<Scalars['Date']>;
-};
+  endDate?: InputMaybe<Scalars['Date']>
+  paymentMethod?: InputMaybe<Scalars['String']>
+  search?: InputMaybe<Scalars['String']>
+  site?: InputMaybe<Scalars['String']>
+  startDate?: InputMaybe<Scalars['Date']>
+}
 
 export type TryToSwitchToSameSpotError = Error & {
-  __typename?: 'TryToSwitchToSameSpotError';
-  code: Scalars['String'];
-};
+  __typename?: 'TryToSwitchToSameSpotError'
+  code: Scalars['String']
+}
 
 export type UnknownError = Error & {
-  __typename?: 'UnknownError';
-  code: Scalars['String'];
-};
+  __typename?: 'UnknownError'
+  code: Scalars['String']
+}
 
 export type UpdateAdminUserInput = {
-  adminUserId: Scalars['ID'];
-  userDataInput: AdminUserDataInput;
-};
+  adminUserId: Scalars['ID']
+  userDataInput: AdminUserDataInput
+}
 
 export type UpdateClassPackagesOrderInput = {
-  orders: Array<ClassPackageOrder>;
-};
+  orders: Array<ClassPackageOrder>
+}
 
 export type UpdateCurrentAdminUserFavoriteSiteInput = {
-  favoriteSite?: InputMaybe<SiteEnum>;
-};
+  favoriteSite?: InputMaybe<SiteEnum>
+}
 
 export type UpdateCurrentAdminUserInput = {
-  showCancelledClasses: Scalars['Boolean'];
-};
+  showCancelledClasses: Scalars['Boolean']
+}
 
 export type UpdateCurrentUserPasswordInput = {
-  currentPassword: Scalars['String'];
-  newPassword: Scalars['String'];
-};
+  currentPassword: Scalars['String']
+  newPassword: Scalars['String']
+}
 
-export type UpdateCurrentUserResultUnion = UploadedFileIsNotAnImage | User;
+export type UpdateCurrentUserResultUnion = UploadedFileIsNotAnImage | User
 
 export type UpdateGiftCardInput = {
-  grandTotal?: InputMaybe<Scalars['Float']>;
-  id: Scalars['ID'];
-};
+  grandTotal?: InputMaybe<Scalars['Float']>
+  id: Scalars['ID']
+}
 
-export type UpdateGiftcardResiltUnion = GiftCard | ProductNotFound | UnknownError;
+export type UpdateGiftcardResiltUnion = GiftCard | ProductNotFound | UnknownError
 
 export type UpdateInstructorInput = {
-  firstName?: InputMaybe<Scalars['String']>;
-  lastName?: InputMaybe<Scalars['String']>;
-  profilePictureFile?: InputMaybe<Scalars['File']>;
-};
+  firstName?: InputMaybe<Scalars['String']>
+  lastName?: InputMaybe<Scalars['String']>
+  profilePictureFile?: InputMaybe<Scalars['File']>
+}
 
 export type UpdateInstructorProfileInput = {
-  active?: InputMaybe<Scalars['Boolean']>;
-  description?: InputMaybe<Scalars['String']>;
-  linkedMindbodyStaffs?: InputMaybe<Array<Scalars['ID']>>;
-  name?: InputMaybe<Scalars['String']>;
-  profilePictureFile?: InputMaybe<Scalars['File']>;
-};
+  active?: InputMaybe<Scalars['Boolean']>
+  description?: InputMaybe<Scalars['String']>
+  linkedMindbodyStaffs?: InputMaybe<Array<Scalars['ID']>>
+  name?: InputMaybe<Scalars['String']>
+  profilePictureFile?: InputMaybe<Scalars['File']>
+}
 
-export type UpdateInstructorProfileResultUnion = InstructorProfile | InstructorProfileNotFoundError | UploadedFileIsNotAnImage;
+export type UpdateInstructorProfileResultUnion =
+  | InstructorProfile
+  | InstructorProfileNotFoundError
+  | UploadedFileIsNotAnImage
 
 export type UpdateMobileNumberBlacklistInput = {
-  countryId: Scalars['ID'];
-  mobilePhoneNumber: Scalars['String'];
-};
+  countryId: Scalars['ID']
+  mobilePhoneNumber: Scalars['String']
+}
 
 export type UpdatePaymentLinkInput = {
-  amount?: InputMaybe<Scalars['Int']>;
-  currency?: InputMaybe<Scalars['String']>;
-  id: Scalars['ID'];
+  amount?: InputMaybe<Scalars['Int']>
+  currency?: InputMaybe<Scalars['String']>
+  id: Scalars['ID']
   /** After a successful purchase an email will be sent to this email address with details about the payment (meant to be used by admins) */
-  notificationEmailAddress: Scalars['String'];
-  site?: InputMaybe<SiteEnum>;
-  title?: InputMaybe<Scalars['String']>;
-};
+  notificationEmailAddress: Scalars['String']
+  site?: InputMaybe<SiteEnum>
+  title?: InputMaybe<Scalars['String']>
+}
 
 export type UpdateSessionTypeInput = {
-  active?: InputMaybe<Scalars['Boolean']>;
-  bannerImageFile?: InputMaybe<Scalars['File']>;
-  color?: InputMaybe<Scalars['String']>;
-  iconFile?: InputMaybe<Scalars['File']>;
-  mindbodySessionTypeIds?: InputMaybe<Array<Scalars['ID']>>;
-  name?: InputMaybe<Scalars['String']>;
-  position?: InputMaybe<Scalars['Int']>;
-};
+  active?: InputMaybe<Scalars['Boolean']>
+  bannerImageFile?: InputMaybe<Scalars['File']>
+  color?: InputMaybe<Scalars['String']>
+  iconFile?: InputMaybe<Scalars['File']>
+  mindbodySessionTypeIds?: InputMaybe<Array<Scalars['ID']>>
+  name?: InputMaybe<Scalars['String']>
+  position?: InputMaybe<Scalars['Int']>
+}
 
-export type UpdateSessionTypeResultUnion = SessionType | SessionTypeNotFoundError | UploadedFileIsNotAnImage;
+export type UpdateSessionTypeResultUnion =
+  | SessionType
+  | SessionTypeNotFoundError
+  | UploadedFileIsNotAnImage
 
 export type UpdateSystemSettingsInput = {
-  sendSuccessfulPurchaseEmail: Scalars['Boolean'];
-  textBottomIndexPage?: InputMaybe<Scalars['String']>;
-};
+  sendSuccessfulPurchaseEmail: Scalars['Boolean']
+  textBottomIndexPage?: InputMaybe<Scalars['String']>
+}
 
 export type UpdateUserPasswordInput = {
-  newPassword: Scalars['String'];
-  userId: Scalars['ID'];
-};
+  newPassword: Scalars['String']
+  userId: Scalars['ID']
+}
 
 export type UploadedFileIsNotAnImage = Error & {
-  __typename?: 'UploadedFileIsNotAnImage';
-  code: Scalars['String'];
-};
+  __typename?: 'UploadedFileIsNotAnImage'
+  code: Scalars['String']
+}
 
 export type User = {
-  __typename?: 'User';
-  address1: Scalars['String'];
-  address2?: Maybe<Scalars['String']>;
-  birthdate?: Maybe<Scalars['Date']>;
-  city: Scalars['String'];
-  country?: Maybe<Country>;
-  doesExistInSite: Scalars['Boolean'];
-  email: Scalars['String'];
-  emergencyContactName: Scalars['String'];
-  emergencyContactPhone: Scalars['String'];
-  emergencyContactRelationship?: Maybe<Scalars['String']>;
-  enrollmentInClass?: Maybe<EnrollmentInfoInterface>;
+  __typename?: 'User'
+  address1: Scalars['String']
+  address2?: Maybe<Scalars['String']>
+  birthdate?: Maybe<Scalars['Date']>
+  city: Scalars['String']
+  country?: Maybe<Country>
+  doesExistInSite: Scalars['Boolean']
+  email: Scalars['String']
+  emergencyContactName: Scalars['String']
+  emergencyContactPhone: Scalars['String']
+  emergencyContactRelationship?: Maybe<Scalars['String']>
+  enrollmentInClass?: Maybe<EnrollmentInfoInterface>
   /** @deprecated Use siteUsers instead */
-  existsInSites: Array<SiteEnum>;
-  firstName: Scalars['String'];
-  gender?: Maybe<GenderEnum>;
-  hideMetrics?: Maybe<Scalars['Boolean']>;
-  isMobilePhoneVerified: Scalars['Boolean'];
-  lastName: Scalars['String'];
-  leaderboardUsername?: Maybe<Scalars['String']>;
-  notificationsInfo: NotificationsInfo;
-  phone: Scalars['String'];
-  profilePictureUrl?: Maybe<Scalars['String']>;
+  existsInSites: Array<SiteEnum>
+  firstName: Scalars['String']
+  gender?: Maybe<GenderEnum>
+  hideMetrics?: Maybe<Scalars['Boolean']>
+  isMobilePhoneVerified: Scalars['Boolean']
+  lastName: Scalars['String']
+  leaderboardUsername?: Maybe<Scalars['String']>
+  notificationsInfo: NotificationsInfo
+  phone: Scalars['String']
+  profilePictureUrl?: Maybe<Scalars['String']>
   /** Allows to get remaining credits for current user for all sites */
-  remainingCredits: RemainingCreditsResultUnion;
-  remainingCreditsBySite?: Maybe<RemainingCreditsResultUnion>;
-  shoppingCart: ShoppingCart;
-  siteUsers: Array<SimpleSiteUser>;
-  state?: Maybe<State>;
-  subscriptions: Array<CustomerSubscription>;
-  weight?: Maybe<Scalars['Float']>;
-  zipCode: Scalars['String'];
-};
-
+  remainingCredits: RemainingCreditsResultUnion
+  remainingCreditsBySite?: Maybe<RemainingCreditsResultUnion>
+  shoppingCart: ShoppingCart
+  siteUsers: Array<SimpleSiteUser>
+  state?: Maybe<State>
+  subscriptions: Array<CustomerSubscription>
+  weight?: Maybe<Scalars['Float']>
+  zipCode: Scalars['String']
+}
 
 export type UserDoesExistInSiteArgs = {
-  site: SiteEnum;
-};
-
+  site: SiteEnum
+}
 
 export type UserEnrollmentInClassArgs = {
-  classId: Scalars['ID'];
-};
-
+  classId: Scalars['ID']
+}
 
 export type UserRemainingCreditsBySiteArgs = {
-  site: SiteEnum;
-};
-
+  site: SiteEnum
+}
 
 export type UserShoppingCartArgs = {
-  site: SiteEnum;
-};
+  site: SiteEnum
+}
 
 export type UserAlreadyExistsError = Error & {
-  __typename?: 'UserAlreadyExistsError';
-  code: Scalars['String'];
-};
+  __typename?: 'UserAlreadyExistsError'
+  code: Scalars['String']
+}
 
 export type UserAlreadyHaveFirstTimerPackage = Error & {
-  __typename?: 'UserAlreadyHaveFirstTimerPackage';
-  code: Scalars['String'];
-};
+  __typename?: 'UserAlreadyHaveFirstTimerPackage'
+  code: Scalars['String']
+}
 
 export type UserCanNotBuyFirstTimerPackage = Error & {
-  __typename?: 'UserCanNotBuyFirstTimerPackage';
-  code: Scalars['String'];
-};
+  __typename?: 'UserCanNotBuyFirstTimerPackage'
+  code: Scalars['String']
+}
 
 export type UserInClassRanking = {
-  __typename?: 'UserInClassRanking';
-  genderRanking?: Maybe<GenderRanking>;
-  totalRanking?: Maybe<UserRanking>;
-};
+  __typename?: 'UserInClassRanking'
+  genderRanking?: Maybe<GenderRanking>
+  totalRanking?: Maybe<UserRanking>
+}
 
 export type UserInRankingParams = {
-  classId?: InputMaybe<Scalars['ID']>;
-};
+  classId?: InputMaybe<Scalars['ID']>
+}
 
 export type UserInput = {
-  address1?: InputMaybe<Scalars['String']>;
-  address2?: InputMaybe<Scalars['String']>;
-  birthdate?: InputMaybe<Scalars['Date']>;
-  city?: InputMaybe<Scalars['String']>;
-  country?: InputMaybe<Scalars['String']>;
-  emergencyContactName?: InputMaybe<Scalars['String']>;
-  emergencyContactPhone?: InputMaybe<Scalars['String']>;
-  emergencyContactRelationship?: InputMaybe<Scalars['String']>;
-  firstName?: InputMaybe<Scalars['String']>;
-  gender?: InputMaybe<GenderEnum>;
-  hideMetrics?: InputMaybe<Scalars['Boolean']>;
-  lastName?: InputMaybe<Scalars['String']>;
-  leaderboardUsername?: InputMaybe<Scalars['String']>;
-  phone?: InputMaybe<Scalars['String']>;
-  profilePicture?: InputMaybe<Scalars['File']>;
-  state?: InputMaybe<Scalars['String']>;
-  weight?: InputMaybe<Scalars['Float']>;
-  zipCode?: InputMaybe<Scalars['String']>;
-};
+  address1?: InputMaybe<Scalars['String']>
+  address2?: InputMaybe<Scalars['String']>
+  birthdate?: InputMaybe<Scalars['Date']>
+  city?: InputMaybe<Scalars['String']>
+  country?: InputMaybe<Scalars['String']>
+  emergencyContactName?: InputMaybe<Scalars['String']>
+  emergencyContactPhone?: InputMaybe<Scalars['String']>
+  emergencyContactRelationship?: InputMaybe<Scalars['String']>
+  firstName?: InputMaybe<Scalars['String']>
+  gender?: InputMaybe<GenderEnum>
+  hideMetrics?: InputMaybe<Scalars['Boolean']>
+  lastName?: InputMaybe<Scalars['String']>
+  leaderboardUsername?: InputMaybe<Scalars['String']>
+  phone?: InputMaybe<Scalars['String']>
+  profilePicture?: InputMaybe<Scalars['File']>
+  state?: InputMaybe<Scalars['String']>
+  weight?: InputMaybe<Scalars['Float']>
+  zipCode?: InputMaybe<Scalars['String']>
+}
 
 export type UserPasswordDoesNotMatchError = Error & {
-  __typename?: 'UserPasswordDoesNotMatchError';
-  code: Scalars['String'];
-};
+  __typename?: 'UserPasswordDoesNotMatchError'
+  code: Scalars['String']
+}
 
 export type UserPositionInRanking = {
-  __typename?: 'UserPositionInRanking';
-  positionInRanking: Scalars['Int'];
-  user: User;
-};
+  __typename?: 'UserPositionInRanking'
+  positionInRanking: Scalars['Int']
+  user: User
+}
 
 export type UserRanking = {
-  __typename?: 'UserRanking';
-  positionInRanking?: Maybe<Scalars['Int']>;
-  totalMembersInRanking?: Maybe<Scalars['Int']>;
-};
+  __typename?: 'UserRanking'
+  positionInRanking?: Maybe<Scalars['Int']>
+  totalMembersInRanking?: Maybe<Scalars['Int']>
+}
 
 export type UsernameAlreadyUsedError = Error & {
-  __typename?: 'UsernameAlreadyUsedError';
-  code: Scalars['String'];
-};
+  __typename?: 'UsernameAlreadyUsedError'
+  code: Scalars['String']
+}
 
 export type ValidateResetPasswordTokenInput = {
-  token: Scalars['String'];
-};
+  token: Scalars['String']
+}
 
 export type Variant = {
-  __typename?: 'Variant';
-  id: Scalars['String'];
-  name?: Maybe<Scalars['String']>;
-  position: Scalars['Int'];
-  price: Scalars['Float'];
-  product: SellableProductInterface;
-};
+  __typename?: 'Variant'
+  id: Scalars['String']
+  name?: Maybe<Scalars['String']>
+  position: Scalars['Int']
+  price: Scalars['Float']
+  product: SellableProductInterface
+}
 
 export type WaitlistBookingConfirmedNotification = Notification & {
-  __typename?: 'WaitlistBookingConfirmedNotification';
-  body: Scalars['String'];
-  channel: Scalars['String'];
-  className?: Maybe<Scalars['String']>;
-  classStartsAt?: Maybe<Scalars['DateTime']>;
-  createdAt: Scalars['DateTime'];
-  id: Scalars['ID'];
-  readAt?: Maybe<Scalars['DateTime']>;
-  site?: Maybe<SiteEnum>;
-  title: Scalars['String'];
-  type: Scalars['String'];
-};
+  __typename?: 'WaitlistBookingConfirmedNotification'
+  body: Scalars['String']
+  channel: Scalars['String']
+  className?: Maybe<Scalars['String']>
+  classStartsAt?: Maybe<Scalars['DateTime']>
+  createdAt: Scalars['DateTime']
+  id: Scalars['ID']
+  readAt?: Maybe<Scalars['DateTime']>
+  site?: Maybe<SiteEnum>
+  title: Scalars['String']
+  type: Scalars['String']
+}
 
 export type WaitlistEntry = EnrollmentInfoInterface & {
-  __typename?: 'WaitlistEntry';
-  canBeTurnedIntoEnrollment: Scalars['Boolean'];
-  enrollmentDateTime: Scalars['DateTime'];
-  enrollmentDateTimeWithNoTimeZone: Scalars['DateTimeWithoutTimeZone'];
-  enrollmentStatus: EnrollmentStatusEnum;
-  id: Scalars['ID'];
-  identifiableSiteUser?: Maybe<IdentifiableSiteUser>;
-};
+  __typename?: 'WaitlistEntry'
+  canBeTurnedIntoEnrollment: Scalars['Boolean']
+  enrollmentDateTime: Scalars['DateTime']
+  enrollmentDateTimeWithNoTimeZone: Scalars['DateTimeWithoutTimeZone']
+  enrollmentStatus: EnrollmentStatusEnum
+  id: Scalars['ID']
+  identifiableSiteUser?: Maybe<IdentifiableSiteUser>
+}
 
 export type WaitlistEntryNotFoundError = Error & {
-  __typename?: 'WaitlistEntryNotFoundError';
-  code: Scalars['String'];
-};
+  __typename?: 'WaitlistEntryNotFoundError'
+  code: Scalars['String']
+}
 
 export type WaitlistFullError = Error & {
-  __typename?: 'WaitlistFullError';
-  code: Scalars['String'];
-};
+  __typename?: 'WaitlistFullError'
+  code: Scalars['String']
+}
 
 export type WaitlistLateCancellationOfferNotification = Notification & {
-  __typename?: 'WaitlistLateCancellationOfferNotification';
-  body: Scalars['String'];
-  channel: Scalars['String'];
-  className?: Maybe<Scalars['String']>;
-  classStartsAt?: Maybe<Scalars['DateTime']>;
-  createdAt: Scalars['DateTime'];
-  expiresAt?: Maybe<Scalars['DateTime']>;
-  id: Scalars['ID'];
-  instructorName?: Maybe<Scalars['String']>;
-  lifecycleStatus: NotificationLifecycleStatusEnum;
-  mindbodyClassId?: Maybe<Scalars['Int']>;
-  mindbodyWaitlistEntryId?: Maybe<Scalars['Int']>;
-  readAt?: Maybe<Scalars['DateTime']>;
-  site?: Maybe<SiteEnum>;
-  title: Scalars['String'];
-  type: Scalars['String'];
-};
+  __typename?: 'WaitlistLateCancellationOfferNotification'
+  body: Scalars['String']
+  channel: Scalars['String']
+  className?: Maybe<Scalars['String']>
+  classStartsAt?: Maybe<Scalars['DateTime']>
+  createdAt: Scalars['DateTime']
+  expiresAt?: Maybe<Scalars['DateTime']>
+  id: Scalars['ID']
+  instructorName?: Maybe<Scalars['String']>
+  lifecycleStatus: NotificationLifecycleStatusEnum
+  mindbodyClassId?: Maybe<Scalars['Int']>
+  mindbodyWaitlistEntryId?: Maybe<Scalars['Int']>
+  readAt?: Maybe<Scalars['DateTime']>
+  site?: Maybe<SiteEnum>
+  title: Scalars['String']
+  type: Scalars['String']
+}
 
 export type WebhookEvent = {
-  __typename?: 'WebhookEvent';
-  attempts: Scalars['Int'];
-  createdAt: Scalars['String'];
-  destinationUrl?: Maybe<Scalars['String']>;
-  eventType: Scalars['String'];
-  id: Scalars['ID'];
-  lastAttemptAt?: Maybe<Scalars['String']>;
-  lastError?: Maybe<Scalars['String']>;
-  nextRetryAt?: Maybe<Scalars['String']>;
-  parentEventId?: Maybe<Scalars['String']>;
-  payload: Scalars['String'];
-  resolvedByEventId?: Maybe<Scalars['String']>;
-  status: Scalars['String'];
-  subscriptionId?: Maybe<Scalars['String']>;
-  triggeredBy?: Maybe<Scalars['String']>;
-  updatedAt?: Maybe<Scalars['String']>;
-};
+  __typename?: 'WebhookEvent'
+  attempts: Scalars['Int']
+  createdAt: Scalars['String']
+  destinationUrl?: Maybe<Scalars['String']>
+  eventType: Scalars['String']
+  id: Scalars['ID']
+  lastAttemptAt?: Maybe<Scalars['String']>
+  lastError?: Maybe<Scalars['String']>
+  nextRetryAt?: Maybe<Scalars['String']>
+  parentEventId?: Maybe<Scalars['String']>
+  payload: Scalars['String']
+  resolvedByEventId?: Maybe<Scalars['String']>
+  status: Scalars['String']
+  subscriptionId?: Maybe<Scalars['String']>
+  triggeredBy?: Maybe<Scalars['String']>
+  updatedAt?: Maybe<Scalars['String']>
+}
 
 export type WebhookEventList = {
-  __typename?: 'WebhookEventList';
-  events: Array<WebhookEvent>;
-  hasMore: Scalars['Boolean'];
-  limit: Scalars['Int'];
-  nextCursor?: Maybe<Scalars['String']>;
-};
+  __typename?: 'WebhookEventList'
+  events: Array<WebhookEvent>
+  hasMore: Scalars['Boolean']
+  limit: Scalars['Int']
+  nextCursor?: Maybe<Scalars['String']>
+}
 
 export type WebhookEventNotFoundError = Error & {
-  __typename?: 'WebhookEventNotFoundError';
-  code: Scalars['String'];
-};
+  __typename?: 'WebhookEventNotFoundError'
+  code: Scalars['String']
+}
 
 export type WebhookEventNotRetryableError = Error & {
-  __typename?: 'WebhookEventNotRetryableError';
-  code: Scalars['String'];
-};
+  __typename?: 'WebhookEventNotRetryableError'
+  code: Scalars['String']
+}
 
-export type GetCurrentUserBasicInfoQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetCurrentUserBasicInfoQueryVariables = Exact<{ [key: string]: never }>
 
-
-export type GetCurrentUserBasicInfoQuery = { __typename: 'Query', currentUser?: { __typename: 'User', firstName: string, lastName: string, email: string, isMobilePhoneVerified: boolean } | null };
+export type GetCurrentUserBasicInfoQuery = {
+  __typename: 'Query'
+  currentUser?: {
+    __typename: 'User'
+    firstName: string
+    lastName: string
+    email: string
+    isMobilePhoneVerified: boolean
+  } | null
+}
 
 export type AddDiscountCodeToShoppingCartMutationVariables = Exact<{
-  site: SiteEnum;
-  discountCode: Scalars['String'];
-}>;
+  site: SiteEnum
+  discountCode: Scalars['String']
+}>
 
-
-export type AddDiscountCodeToShoppingCartMutation = { __typename: 'Mutation', addDiscountCodeToShoppingCart: { __typename: 'DiscountCodeIsEmpty' } | { __typename: 'DiscountCodeIsInvalid', code: string } | { __typename: 'DontNeedMoreGiftCards' } | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' } | { __typename: 'GiftCardIsNotUsable' } | { __typename: 'GiftCardNotRegisteredOnCurrentShoppingCart' } | { __typename: 'ProductNotFound' } | { __typename: 'ShoppingCart', id: string, currency: string, discountCode?: string | null, giftCardsCodes?: Array<string | null> | null, total?: { __typename: 'GiftCardIsNotUsable', code: string } | { __typename: 'ShoppingCartTotal', total?: number | null, subTotal?: number | null, giftCardAmount?: number | null, amountToPay?: number | null } | { __typename: 'UserAlreadyHaveFirstTimerPackage', code: string } | { __typename: 'UserCanNotBuyFirstTimerPackage', code: string } | null, items: Array<{ __typename: 'ShoppingCartItem', id: string, quantity: number, subtotal?: number | null, variant: { __typename: 'Variant', id: string, name?: string | null, position: number, price: number, product: { __typename: 'ClassPackageProduct', type?: ClassPackageTypeEnum | null, doesItRequireSmsAuth?: boolean | null, id: string, title: string, subtitle?: string | null, currency: string, alertBeforePurchasing?: { __typename: 'ProductAlertBeforePurchasing', title: string, description: string } | null } | { __typename: 'GiftCard', purchaseUrl: string, id: string, title: string, subtitle?: string | null, currency: string, alertBeforePurchasing?: { __typename: 'ProductAlertBeforePurchasing', title: string, description: string } | null } } }> } | { __typename: 'ShoppingCartIsEmpty', code: string } | { __typename: 'ShoppingCartItemNotFound' } | { __typename: 'ShoppingCartNotFound' } };
+export type AddDiscountCodeToShoppingCartMutation = {
+  __typename: 'Mutation'
+  addDiscountCodeToShoppingCart:
+    | { __typename: 'DiscountCodeIsEmpty' }
+    | { __typename: 'DiscountCodeIsInvalid'; code: string }
+    | { __typename: 'DontNeedMoreGiftCards' }
+    | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' }
+    | { __typename: 'GiftCardIsNotUsable' }
+    | { __typename: 'GiftCardNotRegisteredOnCurrentShoppingCart' }
+    | { __typename: 'ProductNotFound' }
+    | {
+        __typename: 'ShoppingCart'
+        id: string
+        currency: string
+        discountCode?: string | null
+        giftCardsCodes?: Array<string | null> | null
+        total?:
+          | { __typename: 'GiftCardIsNotUsable'; code: string }
+          | {
+              __typename: 'ShoppingCartTotal'
+              total?: number | null
+              subTotal?: number | null
+              giftCardAmount?: number | null
+              amountToPay?: number | null
+            }
+          | { __typename: 'UserAlreadyHaveFirstTimerPackage'; code: string }
+          | { __typename: 'UserCanNotBuyFirstTimerPackage'; code: string }
+          | null
+        items: Array<{
+          __typename: 'ShoppingCartItem'
+          id: string
+          quantity: number
+          subtotal?: number | null
+          variant: {
+            __typename: 'Variant'
+            id: string
+            name?: string | null
+            position: number
+            price: number
+            product:
+              | {
+                  __typename: 'ClassPackageProduct'
+                  type?: ClassPackageTypeEnum | null
+                  doesItRequireSmsAuth?: boolean | null
+                  id: string
+                  title: string
+                  subtitle?: string | null
+                  currency: string
+                  alertBeforePurchasing?: {
+                    __typename: 'ProductAlertBeforePurchasing'
+                    title: string
+                    description: string
+                  } | null
+                }
+              | {
+                  __typename: 'GiftCard'
+                  purchaseUrl: string
+                  id: string
+                  title: string
+                  subtitle?: string | null
+                  currency: string
+                  alertBeforePurchasing?: {
+                    __typename: 'ProductAlertBeforePurchasing'
+                    title: string
+                    description: string
+                  } | null
+                }
+          }
+        }>
+      }
+    | { __typename: 'ShoppingCartIsEmpty'; code: string }
+    | { __typename: 'ShoppingCartItemNotFound' }
+    | { __typename: 'ShoppingCartNotFound' }
+}
 
 export type AddGiftCardCodeToShoppingCartMutationVariables = Exact<{
-  giftcard: Scalars['ID'];
-  site: SiteEnum;
-}>;
+  giftcard: Scalars['ID']
+  site: SiteEnum
+}>
 
-
-export type AddGiftCardCodeToShoppingCartMutation = { __typename: 'Mutation', addGiftCardCodeToShoppingCart: { __typename: 'DiscountCodeIsEmpty', code: string } | { __typename: 'DiscountCodeIsInvalid', code: string } | { __typename: 'DontNeedMoreGiftCards', code: string } | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart', code: string } | { __typename: 'GiftCardIsNotUsable', code: string } | { __typename: 'GiftCardNotRegisteredOnCurrentShoppingCart', code: string } | { __typename: 'ProductNotFound', code: string } | { __typename: 'ShoppingCart', id: string, currency: string, discountCode?: string | null, giftCardsCodes?: Array<string | null> | null, total?: { __typename: 'GiftCardIsNotUsable', code: string } | { __typename: 'ShoppingCartTotal', total?: number | null, subTotal?: number | null, giftCardAmount?: number | null, amountToPay?: number | null } | { __typename: 'UserAlreadyHaveFirstTimerPackage', code: string } | { __typename: 'UserCanNotBuyFirstTimerPackage', code: string } | null, items: Array<{ __typename: 'ShoppingCartItem', id: string, quantity: number, subtotal?: number | null, variant: { __typename: 'Variant', id: string, name?: string | null, position: number, price: number, product: { __typename: 'ClassPackageProduct', type?: ClassPackageTypeEnum | null, doesItRequireSmsAuth?: boolean | null, id: string, title: string, subtitle?: string | null, currency: string, alertBeforePurchasing?: { __typename: 'ProductAlertBeforePurchasing', title: string, description: string } | null } | { __typename: 'GiftCard', purchaseUrl: string, id: string, title: string, subtitle?: string | null, currency: string, alertBeforePurchasing?: { __typename: 'ProductAlertBeforePurchasing', title: string, description: string } | null } } }> } | { __typename: 'ShoppingCartIsEmpty', code: string } | { __typename: 'ShoppingCartItemNotFound', code: string } | { __typename: 'ShoppingCartNotFound', code: string } };
+export type AddGiftCardCodeToShoppingCartMutation = {
+  __typename: 'Mutation'
+  addGiftCardCodeToShoppingCart:
+    | { __typename: 'DiscountCodeIsEmpty'; code: string }
+    | { __typename: 'DiscountCodeIsInvalid'; code: string }
+    | { __typename: 'DontNeedMoreGiftCards'; code: string }
+    | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart'; code: string }
+    | { __typename: 'GiftCardIsNotUsable'; code: string }
+    | { __typename: 'GiftCardNotRegisteredOnCurrentShoppingCart'; code: string }
+    | { __typename: 'ProductNotFound'; code: string }
+    | {
+        __typename: 'ShoppingCart'
+        id: string
+        currency: string
+        discountCode?: string | null
+        giftCardsCodes?: Array<string | null> | null
+        total?:
+          | { __typename: 'GiftCardIsNotUsable'; code: string }
+          | {
+              __typename: 'ShoppingCartTotal'
+              total?: number | null
+              subTotal?: number | null
+              giftCardAmount?: number | null
+              amountToPay?: number | null
+            }
+          | { __typename: 'UserAlreadyHaveFirstTimerPackage'; code: string }
+          | { __typename: 'UserCanNotBuyFirstTimerPackage'; code: string }
+          | null
+        items: Array<{
+          __typename: 'ShoppingCartItem'
+          id: string
+          quantity: number
+          subtotal?: number | null
+          variant: {
+            __typename: 'Variant'
+            id: string
+            name?: string | null
+            position: number
+            price: number
+            product:
+              | {
+                  __typename: 'ClassPackageProduct'
+                  type?: ClassPackageTypeEnum | null
+                  doesItRequireSmsAuth?: boolean | null
+                  id: string
+                  title: string
+                  subtitle?: string | null
+                  currency: string
+                  alertBeforePurchasing?: {
+                    __typename: 'ProductAlertBeforePurchasing'
+                    title: string
+                    description: string
+                  } | null
+                }
+              | {
+                  __typename: 'GiftCard'
+                  purchaseUrl: string
+                  id: string
+                  title: string
+                  subtitle?: string | null
+                  currency: string
+                  alertBeforePurchasing?: {
+                    __typename: 'ProductAlertBeforePurchasing'
+                    title: string
+                    description: string
+                  } | null
+                }
+          }
+        }>
+      }
+    | { __typename: 'ShoppingCartIsEmpty'; code: string }
+    | { __typename: 'ShoppingCartItemNotFound'; code: string }
+    | { __typename: 'ShoppingCartNotFound'; code: string }
+}
 
 export type AddItemToShoppingCartMutationVariables = Exact<{
-  site: SiteEnum;
-  input: ItemToShoppingCartInput;
-}>;
+  site: SiteEnum
+  input: ItemToShoppingCartInput
+}>
 
-
-export type AddItemToShoppingCartMutation = { __typename: 'Mutation', addItemToShoppingCart: { __typename: 'DiscountCodeIsEmpty' } | { __typename: 'DiscountCodeIsInvalid' } | { __typename: 'DontNeedMoreGiftCards' } | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' } | { __typename: 'GiftCardIsNotUsable' } | { __typename: 'GiftCardNotRegisteredOnCurrentShoppingCart' } | { __typename: 'ProductNotFound', code: string } | { __typename: 'ShoppingCart', id: string, currency: string, discountCode?: string | null, giftCardsCodes?: Array<string | null> | null, total?: { __typename: 'GiftCardIsNotUsable', code: string } | { __typename: 'ShoppingCartTotal', total?: number | null, subTotal?: number | null, giftCardAmount?: number | null, amountToPay?: number | null } | { __typename: 'UserAlreadyHaveFirstTimerPackage', code: string } | { __typename: 'UserCanNotBuyFirstTimerPackage', code: string } | null, items: Array<{ __typename: 'ShoppingCartItem', id: string, quantity: number, subtotal?: number | null, variant: { __typename: 'Variant', id: string, name?: string | null, position: number, price: number, product: { __typename: 'ClassPackageProduct', type?: ClassPackageTypeEnum | null, doesItRequireSmsAuth?: boolean | null, id: string, title: string, subtitle?: string | null, currency: string, alertBeforePurchasing?: { __typename: 'ProductAlertBeforePurchasing', title: string, description: string } | null } | { __typename: 'GiftCard', purchaseUrl: string, id: string, title: string, subtitle?: string | null, currency: string, alertBeforePurchasing?: { __typename: 'ProductAlertBeforePurchasing', title: string, description: string } | null } } }> } | { __typename: 'ShoppingCartIsEmpty' } | { __typename: 'ShoppingCartItemNotFound' } | { __typename: 'ShoppingCartNotFound', code: string } };
+export type AddItemToShoppingCartMutation = {
+  __typename: 'Mutation'
+  addItemToShoppingCart:
+    | { __typename: 'DiscountCodeIsEmpty' }
+    | { __typename: 'DiscountCodeIsInvalid' }
+    | { __typename: 'DontNeedMoreGiftCards' }
+    | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' }
+    | { __typename: 'GiftCardIsNotUsable' }
+    | { __typename: 'GiftCardNotRegisteredOnCurrentShoppingCart' }
+    | { __typename: 'ProductNotFound'; code: string }
+    | {
+        __typename: 'ShoppingCart'
+        id: string
+        currency: string
+        discountCode?: string | null
+        giftCardsCodes?: Array<string | null> | null
+        total?:
+          | { __typename: 'GiftCardIsNotUsable'; code: string }
+          | {
+              __typename: 'ShoppingCartTotal'
+              total?: number | null
+              subTotal?: number | null
+              giftCardAmount?: number | null
+              amountToPay?: number | null
+            }
+          | { __typename: 'UserAlreadyHaveFirstTimerPackage'; code: string }
+          | { __typename: 'UserCanNotBuyFirstTimerPackage'; code: string }
+          | null
+        items: Array<{
+          __typename: 'ShoppingCartItem'
+          id: string
+          quantity: number
+          subtotal?: number | null
+          variant: {
+            __typename: 'Variant'
+            id: string
+            name?: string | null
+            position: number
+            price: number
+            product:
+              | {
+                  __typename: 'ClassPackageProduct'
+                  type?: ClassPackageTypeEnum | null
+                  doesItRequireSmsAuth?: boolean | null
+                  id: string
+                  title: string
+                  subtitle?: string | null
+                  currency: string
+                  alertBeforePurchasing?: {
+                    __typename: 'ProductAlertBeforePurchasing'
+                    title: string
+                    description: string
+                  } | null
+                }
+              | {
+                  __typename: 'GiftCard'
+                  purchaseUrl: string
+                  id: string
+                  title: string
+                  subtitle?: string | null
+                  currency: string
+                  alertBeforePurchasing?: {
+                    __typename: 'ProductAlertBeforePurchasing'
+                    title: string
+                    description: string
+                  } | null
+                }
+          }
+        }>
+      }
+    | { __typename: 'ShoppingCartIsEmpty' }
+    | { __typename: 'ShoppingCartItemNotFound' }
+    | { __typename: 'ShoppingCartNotFound'; code: string }
+}
 
 export type AddItemToShoppingCartLightMutationVariables = Exact<{
-  site: SiteEnum;
-  input: ItemToShoppingCartInput;
-}>;
+  site: SiteEnum
+  input: ItemToShoppingCartInput
+}>
 
-
-export type AddItemToShoppingCartLightMutation = { __typename: 'Mutation', addItemToShoppingCart: { __typename: 'DiscountCodeIsEmpty' } | { __typename: 'DiscountCodeIsInvalid' } | { __typename: 'DontNeedMoreGiftCards' } | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' } | { __typename: 'GiftCardIsNotUsable' } | { __typename: 'GiftCardNotRegisteredOnCurrentShoppingCart' } | { __typename: 'ProductNotFound', code: string } | { __typename: 'ShoppingCart', id: string, items: Array<{ __typename: 'ShoppingCartItem', id: string, quantity: number, variant: { __typename: 'Variant', id: string } }> } | { __typename: 'ShoppingCartIsEmpty' } | { __typename: 'ShoppingCartItemNotFound' } | { __typename: 'ShoppingCartNotFound', code: string } };
+export type AddItemToShoppingCartLightMutation = {
+  __typename: 'Mutation'
+  addItemToShoppingCart:
+    | { __typename: 'DiscountCodeIsEmpty' }
+    | { __typename: 'DiscountCodeIsInvalid' }
+    | { __typename: 'DontNeedMoreGiftCards' }
+    | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' }
+    | { __typename: 'GiftCardIsNotUsable' }
+    | { __typename: 'GiftCardNotRegisteredOnCurrentShoppingCart' }
+    | { __typename: 'ProductNotFound'; code: string }
+    | {
+        __typename: 'ShoppingCart'
+        id: string
+        items: Array<{
+          __typename: 'ShoppingCartItem'
+          id: string
+          quantity: number
+          variant: { __typename: 'Variant'; id: string }
+        }>
+      }
+    | { __typename: 'ShoppingCartIsEmpty' }
+    | { __typename: 'ShoppingCartItemNotFound' }
+    | { __typename: 'ShoppingCartNotFound'; code: string }
+}
 
 export type EmptyShoppingCartMutationVariables = Exact<{
-  site: SiteEnum;
-}>;
+  site: SiteEnum
+}>
 
-
-export type EmptyShoppingCartMutation = { __typename: 'Mutation', emptyShoppingCart: { __typename: 'DiscountCodeIsEmpty' } | { __typename: 'DiscountCodeIsInvalid' } | { __typename: 'DontNeedMoreGiftCards' } | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' } | { __typename: 'GiftCardIsNotUsable' } | { __typename: 'GiftCardNotRegisteredOnCurrentShoppingCart' } | { __typename: 'ProductNotFound' } | { __typename: 'ShoppingCart', id: string, items: Array<{ __typename: 'ShoppingCartItem', id: string, quantity: number, variant: { __typename: 'Variant', id: string } }> } | { __typename: 'ShoppingCartIsEmpty' } | { __typename: 'ShoppingCartItemNotFound' } | { __typename: 'ShoppingCartNotFound', code: string } };
+export type EmptyShoppingCartMutation = {
+  __typename: 'Mutation'
+  emptyShoppingCart:
+    | { __typename: 'DiscountCodeIsEmpty' }
+    | { __typename: 'DiscountCodeIsInvalid' }
+    | { __typename: 'DontNeedMoreGiftCards' }
+    | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' }
+    | { __typename: 'GiftCardIsNotUsable' }
+    | { __typename: 'GiftCardNotRegisteredOnCurrentShoppingCart' }
+    | { __typename: 'ProductNotFound' }
+    | {
+        __typename: 'ShoppingCart'
+        id: string
+        items: Array<{
+          __typename: 'ShoppingCartItem'
+          id: string
+          quantity: number
+          variant: { __typename: 'Variant'; id: string }
+        }>
+      }
+    | { __typename: 'ShoppingCartIsEmpty' }
+    | { __typename: 'ShoppingCartItemNotFound' }
+    | { __typename: 'ShoppingCartNotFound'; code: string }
+}
 
 export type GeneratePayfortFormMutationVariables = Exact<{
-  site: SiteEnum;
-  input: PayfortFormInput;
-}>;
+  site: SiteEnum
+  input: PayfortFormInput
+}>
 
-
-export type GeneratePayfortFormMutation = { __typename: 'Mutation', payfortForm: { __typename: 'PayfortFormResult', htmlForm: string } };
+export type GeneratePayfortFormMutation = {
+  __typename: 'Mutation'
+  payfortForm: { __typename: 'PayfortFormResult'; htmlForm: string }
+}
 
 export type GetApplePayConfigQueryVariables = Exact<{
-  site: SiteEnum;
-}>;
+  site: SiteEnum
+}>
 
-
-export type GetApplePayConfigQuery = { __typename: 'Query', applePayConfig: { __typename: 'ApplePayConfig', currencyCode: string, countryCode: string, displayName: string } };
+export type GetApplePayConfigQuery = {
+  __typename: 'Query'
+  applePayConfig: {
+    __typename: 'ApplePayConfig'
+    currencyCode: string
+    countryCode: string
+    displayName: string
+  }
+}
 
 export type GetCartSummaryQueryVariables = Exact<{
-  site: SiteEnum;
-}>;
+  site: SiteEnum
+}>
 
-
-export type GetCartSummaryQuery = { __typename: 'Query', currentUser?: { __typename: 'User', shoppingCart: { __typename: 'ShoppingCart', id: string, items: Array<{ __typename: 'ShoppingCartItem', id: string, quantity: number, variant: { __typename: 'Variant', id: string } }> } } | null };
+export type GetCartSummaryQuery = {
+  __typename: 'Query'
+  currentUser?: {
+    __typename: 'User'
+    shoppingCart: {
+      __typename: 'ShoppingCart'
+      id: string
+      items: Array<{
+        __typename: 'ShoppingCartItem'
+        id: string
+        quantity: number
+        variant: { __typename: 'Variant'; id: string }
+      }>
+    }
+  } | null
+}
 
 export type GetProductsQueryVariables = Exact<{
-  site: SiteEnum;
-  input?: InputMaybe<ProductsInput>;
-}>;
+  site: SiteEnum
+  input?: InputMaybe<ProductsInput>
+}>
 
+export type GetProductsQuery = {
+  __typename: 'Query'
+  products: Array<
+    | {
+        __typename: 'ClassPackageProduct'
+        type?: ClassPackageTypeEnum | null
+        id: string
+        title: string
+        subtitle?: string | null
+        currency: string
+        buttonText?: string | null
+        isVisible: boolean
+        alertBeforePurchasing?: {
+          __typename: 'ProductAlertBeforePurchasing'
+          title: string
+          description: string
+        } | null
+        variants: Array<{
+          __typename: 'Variant'
+          id: string
+          name?: string | null
+          price: number
+          position: number
+        }>
+      }
+    | {
+        __typename: 'GiftCard'
+        purchaseUrl: string
+        id: string
+        title: string
+        subtitle?: string | null
+        currency: string
+        buttonText?: string | null
+        isVisible: boolean
+        alertBeforePurchasing?: {
+          __typename: 'ProductAlertBeforePurchasing'
+          title: string
+          description: string
+        } | null
+        variants: Array<{
+          __typename: 'Variant'
+          id: string
+          name?: string | null
+          price: number
+          position: number
+        }>
+      }
+  >
+}
 
-export type GetProductsQuery = { __typename: 'Query', products: Array<{ __typename: 'ClassPackageProduct', type?: ClassPackageTypeEnum | null, id: string, title: string, subtitle?: string | null, currency: string, buttonText?: string | null, isVisible: boolean, alertBeforePurchasing?: { __typename: 'ProductAlertBeforePurchasing', title: string, description: string } | null, variants: Array<{ __typename: 'Variant', id: string, name?: string | null, price: number, position: number }> } | { __typename: 'GiftCard', purchaseUrl: string, id: string, title: string, subtitle?: string | null, currency: string, buttonText?: string | null, isVisible: boolean, alertBeforePurchasing?: { __typename: 'ProductAlertBeforePurchasing', title: string, description: string } | null, variants: Array<{ __typename: 'Variant', id: string, name?: string | null, price: number, position: number }> }> };
+export type GetRemainingCreditsQueryVariables = Exact<{ [key: string]: never }>
 
-export type GetRemainingCreditsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetRemainingCreditsQuery = { __typename: 'Query', currentUser?: { __typename: 'User', remainingCredits: { __typename: 'ClientNotFoundInMindbody', code: string } | { __typename: 'RemainingCreditsSuccess', credits: number } } | null };
+export type GetRemainingCreditsQuery = {
+  __typename: 'Query'
+  currentUser?: {
+    __typename: 'User'
+    remainingCredits:
+      | { __typename: 'ClientNotFoundInMindbody'; code: string }
+      | { __typename: 'RemainingCreditsSuccess'; credits: number }
+  } | null
+}
 
 export type GetShoppingCartQueryVariables = Exact<{
-  site: SiteEnum;
-}>;
+  site: SiteEnum
+}>
 
-
-export type GetShoppingCartQuery = { __typename: 'Query', currentUser?: { __typename: 'User', shoppingCart: { __typename: 'ShoppingCart', id: string, currency: string, discountCode?: string | null, giftCardsCodes?: Array<string | null> | null, total?: { __typename: 'GiftCardIsNotUsable', code: string } | { __typename: 'ShoppingCartTotal', total?: number | null, subTotal?: number | null, giftCardAmount?: number | null, amountToPay?: number | null } | { __typename: 'UserAlreadyHaveFirstTimerPackage', code: string } | { __typename: 'UserCanNotBuyFirstTimerPackage', code: string } | null, items: Array<{ __typename: 'ShoppingCartItem', id: string, quantity: number, subtotal?: number | null, variant: { __typename: 'Variant', id: string, name?: string | null, position: number, price: number, product: { __typename: 'ClassPackageProduct', type?: ClassPackageTypeEnum | null, doesItRequireSmsAuth?: boolean | null, id: string, title: string, subtitle?: string | null, currency: string, alertBeforePurchasing?: { __typename: 'ProductAlertBeforePurchasing', title: string, description: string } | null } | { __typename: 'GiftCard', purchaseUrl: string, id: string, title: string, subtitle?: string | null, currency: string, alertBeforePurchasing?: { __typename: 'ProductAlertBeforePurchasing', title: string, description: string } | null } } }> } } | null };
+export type GetShoppingCartQuery = {
+  __typename: 'Query'
+  currentUser?: {
+    __typename: 'User'
+    shoppingCart: {
+      __typename: 'ShoppingCart'
+      id: string
+      currency: string
+      discountCode?: string | null
+      giftCardsCodes?: Array<string | null> | null
+      total?:
+        | { __typename: 'GiftCardIsNotUsable'; code: string }
+        | {
+            __typename: 'ShoppingCartTotal'
+            total?: number | null
+            subTotal?: number | null
+            giftCardAmount?: number | null
+            amountToPay?: number | null
+          }
+        | { __typename: 'UserAlreadyHaveFirstTimerPackage'; code: string }
+        | { __typename: 'UserCanNotBuyFirstTimerPackage'; code: string }
+        | null
+      items: Array<{
+        __typename: 'ShoppingCartItem'
+        id: string
+        quantity: number
+        subtotal?: number | null
+        variant: {
+          __typename: 'Variant'
+          id: string
+          name?: string | null
+          position: number
+          price: number
+          product:
+            | {
+                __typename: 'ClassPackageProduct'
+                type?: ClassPackageTypeEnum | null
+                doesItRequireSmsAuth?: boolean | null
+                id: string
+                title: string
+                subtitle?: string | null
+                currency: string
+                alertBeforePurchasing?: {
+                  __typename: 'ProductAlertBeforePurchasing'
+                  title: string
+                  description: string
+                } | null
+              }
+            | {
+                __typename: 'GiftCard'
+                purchaseUrl: string
+                id: string
+                title: string
+                subtitle?: string | null
+                currency: string
+                alertBeforePurchasing?: {
+                  __typename: 'ProductAlertBeforePurchasing'
+                  title: string
+                  description: string
+                } | null
+              }
+        }
+      }>
+    }
+  } | null
+}
 
 export type NewLockShoppingCartMutationVariables = Exact<{
-  site: SiteEnum;
-}>;
+  site: SiteEnum
+}>
 
-
-export type NewLockShoppingCartMutation = { __typename: 'Mutation', newLockShoppingCart?: { __typename: 'LockShoppingCartResponse', isLocked: boolean, merchantReference: string } | null };
+export type NewLockShoppingCartMutation = {
+  __typename: 'Mutation'
+  newLockShoppingCart?: {
+    __typename: 'LockShoppingCartResponse'
+    isLocked: boolean
+    merchantReference: string
+  } | null
+}
 
 export type PaymentLinkQueryVariables = Exact<{
-  id: Scalars['ID'];
-}>;
+  id: Scalars['ID']
+}>
 
-
-export type PaymentLinkQuery = { __typename: 'Query', paymentLink?: { __typename: 'PaymentLink', id: string, title: string, amount: number, currency: string, url: string, notificationEmailAddress: string, site: { __typename: 'Site', name: string, code: SiteEnum } } | null };
+export type PaymentLinkQuery = {
+  __typename: 'Query'
+  paymentLink?: {
+    __typename: 'PaymentLink'
+    id: string
+    title: string
+    amount: number
+    currency: string
+    url: string
+    notificationEmailAddress: string
+    site: { __typename: 'Site'; name: string; code: SiteEnum }
+  } | null
+}
 
 export type PaymentTransactionStatusQueryVariables = Exact<{
-  input: PaymentTransactionStatusInput;
-}>;
+  input: PaymentTransactionStatusInput
+}>
 
-
-export type PaymentTransactionStatusQuery = { __typename: 'Query', paymentTransactionStatus: { __typename: 'PaymentTransactionStatus', status: PaymentTransactionStatusEnum } | { __typename: 'TemporalTransactionNotFound', code: string } };
+export type PaymentTransactionStatusQuery = {
+  __typename: 'Query'
+  paymentTransactionStatus:
+    | { __typename: 'PaymentTransactionStatus'; status: PaymentTransactionStatusEnum }
+    | { __typename: 'TemporalTransactionNotFound'; code: string }
+}
 
 export type RemoveDiscountCodeMutationVariables = Exact<{
-  site: SiteEnum;
-}>;
+  site: SiteEnum
+}>
 
-
-export type RemoveDiscountCodeMutation = { __typename: 'Mutation', removeDiscountCodeForCurrentShoppingCart: { __typename: 'DiscountCodeIsEmpty' } | { __typename: 'DiscountCodeIsInvalid' } | { __typename: 'DontNeedMoreGiftCards' } | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' } | { __typename: 'GiftCardIsNotUsable' } | { __typename: 'GiftCardNotRegisteredOnCurrentShoppingCart' } | { __typename: 'ProductNotFound' } | { __typename: 'ShoppingCart', id: string, currency: string, discountCode?: string | null, giftCardsCodes?: Array<string | null> | null, total?: { __typename: 'GiftCardIsNotUsable', code: string } | { __typename: 'ShoppingCartTotal', total?: number | null, subTotal?: number | null, giftCardAmount?: number | null, amountToPay?: number | null } | { __typename: 'UserAlreadyHaveFirstTimerPackage', code: string } | { __typename: 'UserCanNotBuyFirstTimerPackage', code: string } | null, items: Array<{ __typename: 'ShoppingCartItem', id: string, quantity: number, subtotal?: number | null, variant: { __typename: 'Variant', id: string, name?: string | null, position: number, price: number, product: { __typename: 'ClassPackageProduct', type?: ClassPackageTypeEnum | null, doesItRequireSmsAuth?: boolean | null, id: string, title: string, subtitle?: string | null, currency: string, alertBeforePurchasing?: { __typename: 'ProductAlertBeforePurchasing', title: string, description: string } | null } | { __typename: 'GiftCard', purchaseUrl: string, id: string, title: string, subtitle?: string | null, currency: string, alertBeforePurchasing?: { __typename: 'ProductAlertBeforePurchasing', title: string, description: string } | null } } }> } | { __typename: 'ShoppingCartIsEmpty', code: string } | { __typename: 'ShoppingCartItemNotFound' } | { __typename: 'ShoppingCartNotFound', code: string } };
+export type RemoveDiscountCodeMutation = {
+  __typename: 'Mutation'
+  removeDiscountCodeForCurrentShoppingCart:
+    | { __typename: 'DiscountCodeIsEmpty' }
+    | { __typename: 'DiscountCodeIsInvalid' }
+    | { __typename: 'DontNeedMoreGiftCards' }
+    | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' }
+    | { __typename: 'GiftCardIsNotUsable' }
+    | { __typename: 'GiftCardNotRegisteredOnCurrentShoppingCart' }
+    | { __typename: 'ProductNotFound' }
+    | {
+        __typename: 'ShoppingCart'
+        id: string
+        currency: string
+        discountCode?: string | null
+        giftCardsCodes?: Array<string | null> | null
+        total?:
+          | { __typename: 'GiftCardIsNotUsable'; code: string }
+          | {
+              __typename: 'ShoppingCartTotal'
+              total?: number | null
+              subTotal?: number | null
+              giftCardAmount?: number | null
+              amountToPay?: number | null
+            }
+          | { __typename: 'UserAlreadyHaveFirstTimerPackage'; code: string }
+          | { __typename: 'UserCanNotBuyFirstTimerPackage'; code: string }
+          | null
+        items: Array<{
+          __typename: 'ShoppingCartItem'
+          id: string
+          quantity: number
+          subtotal?: number | null
+          variant: {
+            __typename: 'Variant'
+            id: string
+            name?: string | null
+            position: number
+            price: number
+            product:
+              | {
+                  __typename: 'ClassPackageProduct'
+                  type?: ClassPackageTypeEnum | null
+                  doesItRequireSmsAuth?: boolean | null
+                  id: string
+                  title: string
+                  subtitle?: string | null
+                  currency: string
+                  alertBeforePurchasing?: {
+                    __typename: 'ProductAlertBeforePurchasing'
+                    title: string
+                    description: string
+                  } | null
+                }
+              | {
+                  __typename: 'GiftCard'
+                  purchaseUrl: string
+                  id: string
+                  title: string
+                  subtitle?: string | null
+                  currency: string
+                  alertBeforePurchasing?: {
+                    __typename: 'ProductAlertBeforePurchasing'
+                    title: string
+                    description: string
+                  } | null
+                }
+          }
+        }>
+      }
+    | { __typename: 'ShoppingCartIsEmpty'; code: string }
+    | { __typename: 'ShoppingCartItemNotFound' }
+    | { __typename: 'ShoppingCartNotFound'; code: string }
+}
 
 export type RemoveGiftCardFromCurrentShoppingCartMutationVariables = Exact<{
-  giftCardCode: Scalars['String'];
-  site: SiteEnum;
-}>;
+  giftCardCode: Scalars['String']
+  site: SiteEnum
+}>
 
-
-export type RemoveGiftCardFromCurrentShoppingCartMutation = { __typename: 'Mutation', removeGiftCardFromCurrentShoppingCart: { __typename: 'DiscountCodeIsEmpty', code: string } | { __typename: 'DiscountCodeIsInvalid', code: string } | { __typename: 'DontNeedMoreGiftCards', code: string } | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart', code: string } | { __typename: 'GiftCardIsNotUsable', code: string } | { __typename: 'GiftCardNotRegisteredOnCurrentShoppingCart', code: string } | { __typename: 'ProductNotFound', code: string } | { __typename: 'ShoppingCart', id: string, currency: string, discountCode?: string | null, giftCardsCodes?: Array<string | null> | null, total?: { __typename: 'GiftCardIsNotUsable', code: string } | { __typename: 'ShoppingCartTotal', total?: number | null, subTotal?: number | null, giftCardAmount?: number | null, amountToPay?: number | null } | { __typename: 'UserAlreadyHaveFirstTimerPackage', code: string } | { __typename: 'UserCanNotBuyFirstTimerPackage', code: string } | null, items: Array<{ __typename: 'ShoppingCartItem', id: string, quantity: number, subtotal?: number | null, variant: { __typename: 'Variant', id: string, name?: string | null, position: number, price: number, product: { __typename: 'ClassPackageProduct', type?: ClassPackageTypeEnum | null, doesItRequireSmsAuth?: boolean | null, id: string, title: string, subtitle?: string | null, currency: string, alertBeforePurchasing?: { __typename: 'ProductAlertBeforePurchasing', title: string, description: string } | null } | { __typename: 'GiftCard', purchaseUrl: string, id: string, title: string, subtitle?: string | null, currency: string, alertBeforePurchasing?: { __typename: 'ProductAlertBeforePurchasing', title: string, description: string } | null } } }> } | { __typename: 'ShoppingCartIsEmpty', code: string } | { __typename: 'ShoppingCartItemNotFound', code: string } | { __typename: 'ShoppingCartNotFound', code: string } };
+export type RemoveGiftCardFromCurrentShoppingCartMutation = {
+  __typename: 'Mutation'
+  removeGiftCardFromCurrentShoppingCart:
+    | { __typename: 'DiscountCodeIsEmpty'; code: string }
+    | { __typename: 'DiscountCodeIsInvalid'; code: string }
+    | { __typename: 'DontNeedMoreGiftCards'; code: string }
+    | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart'; code: string }
+    | { __typename: 'GiftCardIsNotUsable'; code: string }
+    | { __typename: 'GiftCardNotRegisteredOnCurrentShoppingCart'; code: string }
+    | { __typename: 'ProductNotFound'; code: string }
+    | {
+        __typename: 'ShoppingCart'
+        id: string
+        currency: string
+        discountCode?: string | null
+        giftCardsCodes?: Array<string | null> | null
+        total?:
+          | { __typename: 'GiftCardIsNotUsable'; code: string }
+          | {
+              __typename: 'ShoppingCartTotal'
+              total?: number | null
+              subTotal?: number | null
+              giftCardAmount?: number | null
+              amountToPay?: number | null
+            }
+          | { __typename: 'UserAlreadyHaveFirstTimerPackage'; code: string }
+          | { __typename: 'UserCanNotBuyFirstTimerPackage'; code: string }
+          | null
+        items: Array<{
+          __typename: 'ShoppingCartItem'
+          id: string
+          quantity: number
+          subtotal?: number | null
+          variant: {
+            __typename: 'Variant'
+            id: string
+            name?: string | null
+            position: number
+            price: number
+            product:
+              | {
+                  __typename: 'ClassPackageProduct'
+                  type?: ClassPackageTypeEnum | null
+                  doesItRequireSmsAuth?: boolean | null
+                  id: string
+                  title: string
+                  subtitle?: string | null
+                  currency: string
+                  alertBeforePurchasing?: {
+                    __typename: 'ProductAlertBeforePurchasing'
+                    title: string
+                    description: string
+                  } | null
+                }
+              | {
+                  __typename: 'GiftCard'
+                  purchaseUrl: string
+                  id: string
+                  title: string
+                  subtitle?: string | null
+                  currency: string
+                  alertBeforePurchasing?: {
+                    __typename: 'ProductAlertBeforePurchasing'
+                    title: string
+                    description: string
+                  } | null
+                }
+          }
+        }>
+      }
+    | { __typename: 'ShoppingCartIsEmpty'; code: string }
+    | { __typename: 'ShoppingCartItemNotFound'; code: string }
+    | { __typename: 'ShoppingCartNotFound'; code: string }
+}
 
 export type RemoveItemFromShoppingCartMutationVariables = Exact<{
-  site: SiteEnum;
-  shoppingCartItemId: Scalars['ID'];
-}>;
+  site: SiteEnum
+  shoppingCartItemId: Scalars['ID']
+}>
 
-
-export type RemoveItemFromShoppingCartMutation = { __typename: 'Mutation', removeItemFromShoppingCart: { __typename: 'DiscountCodeIsEmpty' } | { __typename: 'DiscountCodeIsInvalid' } | { __typename: 'DontNeedMoreGiftCards' } | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' } | { __typename: 'GiftCardIsNotUsable' } | { __typename: 'GiftCardNotRegisteredOnCurrentShoppingCart' } | { __typename: 'ProductNotFound' } | { __typename: 'ShoppingCart', id: string, currency: string, discountCode?: string | null, giftCardsCodes?: Array<string | null> | null, total?: { __typename: 'GiftCardIsNotUsable', code: string } | { __typename: 'ShoppingCartTotal', total?: number | null, subTotal?: number | null, giftCardAmount?: number | null, amountToPay?: number | null } | { __typename: 'UserAlreadyHaveFirstTimerPackage', code: string } | { __typename: 'UserCanNotBuyFirstTimerPackage', code: string } | null, items: Array<{ __typename: 'ShoppingCartItem', id: string, quantity: number, subtotal?: number | null, variant: { __typename: 'Variant', id: string, name?: string | null, position: number, price: number, product: { __typename: 'ClassPackageProduct', type?: ClassPackageTypeEnum | null, doesItRequireSmsAuth?: boolean | null, id: string, title: string, subtitle?: string | null, currency: string, alertBeforePurchasing?: { __typename: 'ProductAlertBeforePurchasing', title: string, description: string } | null } | { __typename: 'GiftCard', purchaseUrl: string, id: string, title: string, subtitle?: string | null, currency: string, alertBeforePurchasing?: { __typename: 'ProductAlertBeforePurchasing', title: string, description: string } | null } } }> } | { __typename: 'ShoppingCartIsEmpty', code: string } | { __typename: 'ShoppingCartItemNotFound', code: string } | { __typename: 'ShoppingCartNotFound', code: string } };
+export type RemoveItemFromShoppingCartMutation = {
+  __typename: 'Mutation'
+  removeItemFromShoppingCart:
+    | { __typename: 'DiscountCodeIsEmpty' }
+    | { __typename: 'DiscountCodeIsInvalid' }
+    | { __typename: 'DontNeedMoreGiftCards' }
+    | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' }
+    | { __typename: 'GiftCardIsNotUsable' }
+    | { __typename: 'GiftCardNotRegisteredOnCurrentShoppingCart' }
+    | { __typename: 'ProductNotFound' }
+    | {
+        __typename: 'ShoppingCart'
+        id: string
+        currency: string
+        discountCode?: string | null
+        giftCardsCodes?: Array<string | null> | null
+        total?:
+          | { __typename: 'GiftCardIsNotUsable'; code: string }
+          | {
+              __typename: 'ShoppingCartTotal'
+              total?: number | null
+              subTotal?: number | null
+              giftCardAmount?: number | null
+              amountToPay?: number | null
+            }
+          | { __typename: 'UserAlreadyHaveFirstTimerPackage'; code: string }
+          | { __typename: 'UserCanNotBuyFirstTimerPackage'; code: string }
+          | null
+        items: Array<{
+          __typename: 'ShoppingCartItem'
+          id: string
+          quantity: number
+          subtotal?: number | null
+          variant: {
+            __typename: 'Variant'
+            id: string
+            name?: string | null
+            position: number
+            price: number
+            product:
+              | {
+                  __typename: 'ClassPackageProduct'
+                  type?: ClassPackageTypeEnum | null
+                  doesItRequireSmsAuth?: boolean | null
+                  id: string
+                  title: string
+                  subtitle?: string | null
+                  currency: string
+                  alertBeforePurchasing?: {
+                    __typename: 'ProductAlertBeforePurchasing'
+                    title: string
+                    description: string
+                  } | null
+                }
+              | {
+                  __typename: 'GiftCard'
+                  purchaseUrl: string
+                  id: string
+                  title: string
+                  subtitle?: string | null
+                  currency: string
+                  alertBeforePurchasing?: {
+                    __typename: 'ProductAlertBeforePurchasing'
+                    title: string
+                    description: string
+                  } | null
+                }
+          }
+        }>
+      }
+    | { __typename: 'ShoppingCartIsEmpty'; code: string }
+    | { __typename: 'ShoppingCartItemNotFound'; code: string }
+    | { __typename: 'ShoppingCartNotFound'; code: string }
+}
 
 export type UpdateItemInShoppingCartMutationVariables = Exact<{
-  site: SiteEnum;
-  shoppingCartItemId: Scalars['ID'];
-  quantity: Scalars['Int'];
-}>;
+  site: SiteEnum
+  shoppingCartItemId: Scalars['ID']
+  quantity: Scalars['Int']
+}>
 
+export type UpdateItemInShoppingCartMutation = {
+  __typename: 'Mutation'
+  updateItemInShoppingCart:
+    | { __typename: 'DiscountCodeIsEmpty' }
+    | { __typename: 'DiscountCodeIsInvalid' }
+    | { __typename: 'DontNeedMoreGiftCards' }
+    | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' }
+    | { __typename: 'GiftCardIsNotUsable' }
+    | { __typename: 'GiftCardNotRegisteredOnCurrentShoppingCart' }
+    | { __typename: 'ProductNotFound' }
+    | {
+        __typename: 'ShoppingCart'
+        id: string
+        currency: string
+        discountCode?: string | null
+        giftCardsCodes?: Array<string | null> | null
+        total?:
+          | { __typename: 'GiftCardIsNotUsable'; code: string }
+          | {
+              __typename: 'ShoppingCartTotal'
+              total?: number | null
+              subTotal?: number | null
+              giftCardAmount?: number | null
+              amountToPay?: number | null
+            }
+          | { __typename: 'UserAlreadyHaveFirstTimerPackage'; code: string }
+          | { __typename: 'UserCanNotBuyFirstTimerPackage'; code: string }
+          | null
+        items: Array<{
+          __typename: 'ShoppingCartItem'
+          id: string
+          quantity: number
+          subtotal?: number | null
+          variant: {
+            __typename: 'Variant'
+            id: string
+            name?: string | null
+            position: number
+            price: number
+            product:
+              | {
+                  __typename: 'ClassPackageProduct'
+                  type?: ClassPackageTypeEnum | null
+                  doesItRequireSmsAuth?: boolean | null
+                  id: string
+                  title: string
+                  subtitle?: string | null
+                  currency: string
+                  alertBeforePurchasing?: {
+                    __typename: 'ProductAlertBeforePurchasing'
+                    title: string
+                    description: string
+                  } | null
+                }
+              | {
+                  __typename: 'GiftCard'
+                  purchaseUrl: string
+                  id: string
+                  title: string
+                  subtitle?: string | null
+                  currency: string
+                  alertBeforePurchasing?: {
+                    __typename: 'ProductAlertBeforePurchasing'
+                    title: string
+                    description: string
+                  } | null
+                }
+          }
+        }>
+      }
+    | { __typename: 'ShoppingCartIsEmpty' }
+    | { __typename: 'ShoppingCartItemNotFound'; code: string }
+    | { __typename: 'ShoppingCartNotFound'; code: string }
+}
 
-export type UpdateItemInShoppingCartMutation = { __typename: 'Mutation', updateItemInShoppingCart: { __typename: 'DiscountCodeIsEmpty' } | { __typename: 'DiscountCodeIsInvalid' } | { __typename: 'DontNeedMoreGiftCards' } | { __typename: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' } | { __typename: 'GiftCardIsNotUsable' } | { __typename: 'GiftCardNotRegisteredOnCurrentShoppingCart' } | { __typename: 'ProductNotFound' } | { __typename: 'ShoppingCart', id: string, currency: string, discountCode?: string | null, giftCardsCodes?: Array<string | null> | null, total?: { __typename: 'GiftCardIsNotUsable', code: string } | { __typename: 'ShoppingCartTotal', total?: number | null, subTotal?: number | null, giftCardAmount?: number | null, amountToPay?: number | null } | { __typename: 'UserAlreadyHaveFirstTimerPackage', code: string } | { __typename: 'UserCanNotBuyFirstTimerPackage', code: string } | null, items: Array<{ __typename: 'ShoppingCartItem', id: string, quantity: number, subtotal?: number | null, variant: { __typename: 'Variant', id: string, name?: string | null, position: number, price: number, product: { __typename: 'ClassPackageProduct', type?: ClassPackageTypeEnum | null, doesItRequireSmsAuth?: boolean | null, id: string, title: string, subtitle?: string | null, currency: string, alertBeforePurchasing?: { __typename: 'ProductAlertBeforePurchasing', title: string, description: string } | null } | { __typename: 'GiftCard', purchaseUrl: string, id: string, title: string, subtitle?: string | null, currency: string, alertBeforePurchasing?: { __typename: 'ProductAlertBeforePurchasing', title: string, description: string } | null } } }> } | { __typename: 'ShoppingCartIsEmpty' } | { __typename: 'ShoppingCartItemNotFound', code: string } | { __typename: 'ShoppingCartNotFound', code: string } };
+type ProductBasicFields_ClassPackageProduct_Fragment = {
+  __typename: 'ClassPackageProduct'
+  type?: ClassPackageTypeEnum | null
+  doesItRequireSmsAuth?: boolean | null
+  id: string
+  title: string
+  subtitle?: string | null
+  currency: string
+  alertBeforePurchasing?: {
+    __typename: 'ProductAlertBeforePurchasing'
+    title: string
+    description: string
+  } | null
+}
 
-type ProductBasicFields_ClassPackageProduct_Fragment = { __typename: 'ClassPackageProduct', type?: ClassPackageTypeEnum | null, doesItRequireSmsAuth?: boolean | null, id: string, title: string, subtitle?: string | null, currency: string, alertBeforePurchasing?: { __typename: 'ProductAlertBeforePurchasing', title: string, description: string } | null };
+type ProductBasicFields_GiftCard_Fragment = {
+  __typename: 'GiftCard'
+  purchaseUrl: string
+  id: string
+  title: string
+  subtitle?: string | null
+  currency: string
+  alertBeforePurchasing?: {
+    __typename: 'ProductAlertBeforePurchasing'
+    title: string
+    description: string
+  } | null
+}
 
-type ProductBasicFields_GiftCard_Fragment = { __typename: 'GiftCard', purchaseUrl: string, id: string, title: string, subtitle?: string | null, currency: string, alertBeforePurchasing?: { __typename: 'ProductAlertBeforePurchasing', title: string, description: string } | null };
+export type ProductBasicFieldsFragment =
+  | ProductBasicFields_ClassPackageProduct_Fragment
+  | ProductBasicFields_GiftCard_Fragment
 
-export type ProductBasicFieldsFragment = ProductBasicFields_ClassPackageProduct_Fragment | ProductBasicFields_GiftCard_Fragment;
+type ProductFields_ClassPackageProduct_Fragment = {
+  __typename: 'ClassPackageProduct'
+  type?: ClassPackageTypeEnum | null
+  id: string
+  title: string
+  subtitle?: string | null
+  currency: string
+  buttonText?: string | null
+  isVisible: boolean
+  alertBeforePurchasing?: {
+    __typename: 'ProductAlertBeforePurchasing'
+    title: string
+    description: string
+  } | null
+  variants: Array<{
+    __typename: 'Variant'
+    id: string
+    name?: string | null
+    price: number
+    position: number
+  }>
+}
 
-type ProductFields_ClassPackageProduct_Fragment = { __typename: 'ClassPackageProduct', type?: ClassPackageTypeEnum | null, id: string, title: string, subtitle?: string | null, currency: string, buttonText?: string | null, isVisible: boolean, alertBeforePurchasing?: { __typename: 'ProductAlertBeforePurchasing', title: string, description: string } | null, variants: Array<{ __typename: 'Variant', id: string, name?: string | null, price: number, position: number }> };
+type ProductFields_GiftCard_Fragment = {
+  __typename: 'GiftCard'
+  purchaseUrl: string
+  id: string
+  title: string
+  subtitle?: string | null
+  currency: string
+  buttonText?: string | null
+  isVisible: boolean
+  alertBeforePurchasing?: {
+    __typename: 'ProductAlertBeforePurchasing'
+    title: string
+    description: string
+  } | null
+  variants: Array<{
+    __typename: 'Variant'
+    id: string
+    name?: string | null
+    price: number
+    position: number
+  }>
+}
 
-type ProductFields_GiftCard_Fragment = { __typename: 'GiftCard', purchaseUrl: string, id: string, title: string, subtitle?: string | null, currency: string, buttonText?: string | null, isVisible: boolean, alertBeforePurchasing?: { __typename: 'ProductAlertBeforePurchasing', title: string, description: string } | null, variants: Array<{ __typename: 'Variant', id: string, name?: string | null, price: number, position: number }> };
+export type ProductFieldsFragment =
+  | ProductFields_ClassPackageProduct_Fragment
+  | ProductFields_GiftCard_Fragment
 
-export type ProductFieldsFragment = ProductFields_ClassPackageProduct_Fragment | ProductFields_GiftCard_Fragment;
+export type ShoppingCartFieldsFragment = {
+  __typename: 'ShoppingCart'
+  id: string
+  currency: string
+  discountCode?: string | null
+  giftCardsCodes?: Array<string | null> | null
+  total?:
+    | { __typename: 'GiftCardIsNotUsable'; code: string }
+    | {
+        __typename: 'ShoppingCartTotal'
+        total?: number | null
+        subTotal?: number | null
+        giftCardAmount?: number | null
+        amountToPay?: number | null
+      }
+    | { __typename: 'UserAlreadyHaveFirstTimerPackage'; code: string }
+    | { __typename: 'UserCanNotBuyFirstTimerPackage'; code: string }
+    | null
+  items: Array<{
+    __typename: 'ShoppingCartItem'
+    id: string
+    quantity: number
+    subtotal?: number | null
+    variant: {
+      __typename: 'Variant'
+      id: string
+      name?: string | null
+      position: number
+      price: number
+      product:
+        | {
+            __typename: 'ClassPackageProduct'
+            type?: ClassPackageTypeEnum | null
+            doesItRequireSmsAuth?: boolean | null
+            id: string
+            title: string
+            subtitle?: string | null
+            currency: string
+            alertBeforePurchasing?: {
+              __typename: 'ProductAlertBeforePurchasing'
+              title: string
+              description: string
+            } | null
+          }
+        | {
+            __typename: 'GiftCard'
+            purchaseUrl: string
+            id: string
+            title: string
+            subtitle?: string | null
+            currency: string
+            alertBeforePurchasing?: {
+              __typename: 'ProductAlertBeforePurchasing'
+              title: string
+              description: string
+            } | null
+          }
+    }
+  }>
+}
 
-export type ShoppingCartFieldsFragment = { __typename: 'ShoppingCart', id: string, currency: string, discountCode?: string | null, giftCardsCodes?: Array<string | null> | null, total?: { __typename: 'GiftCardIsNotUsable', code: string } | { __typename: 'ShoppingCartTotal', total?: number | null, subTotal?: number | null, giftCardAmount?: number | null, amountToPay?: number | null } | { __typename: 'UserAlreadyHaveFirstTimerPackage', code: string } | { __typename: 'UserCanNotBuyFirstTimerPackage', code: string } | null, items: Array<{ __typename: 'ShoppingCartItem', id: string, quantity: number, subtotal?: number | null, variant: { __typename: 'Variant', id: string, name?: string | null, position: number, price: number, product: { __typename: 'ClassPackageProduct', type?: ClassPackageTypeEnum | null, doesItRequireSmsAuth?: boolean | null, id: string, title: string, subtitle?: string | null, currency: string, alertBeforePurchasing?: { __typename: 'ProductAlertBeforePurchasing', title: string, description: string } | null } | { __typename: 'GiftCard', purchaseUrl: string, id: string, title: string, subtitle?: string | null, currency: string, alertBeforePurchasing?: { __typename: 'ProductAlertBeforePurchasing', title: string, description: string } | null } } }> };
-
-export type ShoppingCartSummaryFieldsFragment = { __typename: 'ShoppingCart', id: string, items: Array<{ __typename: 'ShoppingCartItem', id: string, quantity: number, variant: { __typename: 'Variant', id: string } }> };
+export type ShoppingCartSummaryFieldsFragment = {
+  __typename: 'ShoppingCart'
+  id: string
+  items: Array<{
+    __typename: 'ShoppingCartItem'
+    id: string
+    quantity: number
+    variant: { __typename: 'Variant'; id: string }
+  }>
+}
 
 export type CancelSubscriptionMutationVariables = Exact<{
-  input: CancelSubscriptionInput;
-}>;
+  input: CancelSubscriptionInput
+}>
 
+export type CancelSubscriptionMutation = {
+  __typename: 'Mutation'
+  cancelSubscription:
+    | { __typename: 'CancelSubscriptionSuccess'; success: boolean }
+    | { __typename: 'SubscriptionAlreadyCancelledError'; code: string }
+    | { __typename: 'SubscriptionDoesNotBelongToUserError'; code: string }
+    | { __typename: 'SubscriptionNotFoundError'; code: string }
+    | { __typename: 'UnknownError'; code: string }
+}
 
-export type CancelSubscriptionMutation = { __typename: 'Mutation', cancelSubscription: { __typename: 'CancelSubscriptionSuccess', success: boolean } | { __typename: 'SubscriptionAlreadyCancelledError', code: string } | { __typename: 'SubscriptionDoesNotBelongToUserError', code: string } | { __typename: 'SubscriptionNotFoundError', code: string } | { __typename: 'UnknownError', code: string } };
+export type GetCurrentUserSubscriptionsQueryVariables = Exact<{ [key: string]: never }>
 
-export type GetCurrentUserSubscriptionsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetCurrentUserSubscriptionsQuery = { __typename: 'Query', currentUser?: { __typename: 'User', subscriptions: Array<{ __typename: 'CustomerSubscription', id: string, amountCents: number, billingInterval: string, creditCardLastFourDigits?: string | null, createdAt: any, cancelledAt?: any | null, status: string, nextBillingAt?: any | null }> } | null };
+export type GetCurrentUserSubscriptionsQuery = {
+  __typename: 'Query'
+  currentUser?: {
+    __typename: 'User'
+    subscriptions: Array<{
+      __typename: 'CustomerSubscription'
+      id: string
+      amountCents: number
+      billingInterval: string
+      creditCardLastFourDigits?: string | null
+      createdAt: any
+      cancelledAt?: any | null
+      status: string
+      nextBillingAt?: any | null
+    }>
+  } | null
+}
 
 export type SiteSettingsQueryVariables = Exact<{
-  site: SiteEnum;
-}>;
+  site: SiteEnum
+}>
 
+export type SiteSettingsQuery = {
+  __typename: 'Query'
+  siteSettings: {
+    __typename: 'SiteSetting'
+    siteDateTimeNow?: any | null
+    siteTimezone?: string | null
+  }
+}
 
-export type SiteSettingsQuery = { __typename: 'Query', siteSettings: { __typename: 'SiteSetting', siteDateTimeNow?: any | null, siteTimezone?: string | null } };
+export type CurrentUserQueryVariables = Exact<{ [key: string]: never }>
 
-export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type CurrentUserQuery = { __typename: 'Query', currentUser?: { __typename: 'User', email: string, firstName: string, lastName: string, gender?: GenderEnum | null, birthdate?: any | null, city: string, address1: string, address2?: string | null, zipCode: string, phone: string, emergencyContactName: string, emergencyContactPhone: string, emergencyContactRelationship?: string | null, hideMetrics?: boolean | null, weight?: number | null, leaderboardUsername?: string | null, country?: { __typename: 'Country', name: string, code: string, states?: Array<{ __typename: 'State', name: string, code: string } | null> | null } | null, state?: { __typename: 'State', name: string, code: string } | null } | null };
+export type CurrentUserQuery = {
+  __typename: 'Query'
+  currentUser?: {
+    __typename: 'User'
+    email: string
+    firstName: string
+    lastName: string
+    gender?: GenderEnum | null
+    birthdate?: any | null
+    city: string
+    address1: string
+    address2?: string | null
+    zipCode: string
+    phone: string
+    emergencyContactName: string
+    emergencyContactPhone: string
+    emergencyContactRelationship?: string | null
+    hideMetrics?: boolean | null
+    weight?: number | null
+    leaderboardUsername?: string | null
+    profilePictureUrl?: string | null
+    country?: {
+      __typename: 'Country'
+      name: string
+      code: string
+      states?: Array<{ __typename: 'State'; name: string; code: string } | null> | null
+    } | null
+    state?: { __typename: 'State'; name: string; code: string } | null
+  } | null
+}
 
 export type CurrentUserSingleWorkoutStatQueryVariables = Exact<{
-  enrollmentId: Scalars['ID'];
-}>;
+  enrollmentId: Scalars['ID']
+}>
 
-
-export type CurrentUserSingleWorkoutStatQuery = { __typename: 'Query', currentUserSingleWorkoutStat?: { __typename: 'ClassStat', averagePower?: number | null, highPower?: number | null, averageRpm?: number | null, highRpm?: number | null, totalEnergy?: number | null, calories?: number | null, distance?: number | null, enrollment: { __typename: 'Enrollment', enrollmentInfo: { __typename: 'EnrollmentInfo', spotNumber?: number | null, id: string } | { __typename: 'WaitlistEntry', id: string }, class: { __typename: 'Class', id: string, name: string, start: any, duration: number, instructorName: string } }, adjustedChartPoints: Array<{ __typename: 'ChartPoint', time?: number | null, rpm?: number | null, power?: number | null }> } | null };
+export type CurrentUserSingleWorkoutStatQuery = {
+  __typename: 'Query'
+  currentUserSingleWorkoutStat?: {
+    __typename: 'ClassStat'
+    averagePower?: number | null
+    highPower?: number | null
+    averageRpm?: number | null
+    highRpm?: number | null
+    totalEnergy?: number | null
+    calories?: number | null
+    distance?: number | null
+    enrollment: {
+      __typename: 'Enrollment'
+      enrollmentInfo:
+        | { __typename: 'EnrollmentInfo'; spotNumber?: number | null; id: string }
+        | { __typename: 'WaitlistEntry'; id: string }
+      class: {
+        __typename: 'Class'
+        id: string
+        name: string
+        start: any
+        duration: number
+        instructorName: string
+      }
+    }
+    adjustedChartPoints: Array<{
+      __typename: 'ChartPoint'
+      time?: number | null
+      rpm?: number | null
+      power?: number | null
+    }>
+  } | null
+}
 
 export type CurrentUserEnrollmentInClassQueryVariables = Exact<{
-  classId: Scalars['ID'];
-}>;
+  classId: Scalars['ID']
+}>
 
+export type CurrentUserEnrollmentInClassQuery = {
+  __typename: 'Query'
+  currentUser?: {
+    __typename: 'User'
+    enrollmentInClass?:
+      | {
+          __typename: 'EnrollmentInfo'
+          spotNumber?: number | null
+          id: string
+          enrollmentStatus: EnrollmentStatusEnum
+          enrollmentDateTime: any
+        }
+      | {
+          __typename: 'WaitlistEntry'
+          id: string
+          enrollmentStatus: EnrollmentStatusEnum
+          enrollmentDateTime: any
+        }
+      | null
+  } | null
+}
 
-export type CurrentUserEnrollmentInClassQuery = { __typename: 'Query', currentUser?: { __typename: 'User', enrollmentInClass?: { __typename: 'EnrollmentInfo', spotNumber?: number | null, id: string, enrollmentStatus: EnrollmentStatusEnum, enrollmentDateTime: any } | { __typename: 'WaitlistEntry', id: string, enrollmentStatus: EnrollmentStatusEnum, enrollmentDateTime: any } | null } | null };
+export type CountriesQueryVariables = Exact<{ [key: string]: never }>
 
-export type CountriesQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type CountriesQuery = { __typename: 'Query', countries?: Array<{ __typename: 'Country', name: string, code: string } | null> | null };
+export type CountriesQuery = {
+  __typename: 'Query'
+  countries?: Array<{ __typename: 'Country'; name: string; code: string } | null> | null
+}
 
 export type CountryQueryVariables = Exact<{
-  countryCode: Scalars['String'];
-}>;
+  countryCode: Scalars['String']
+}>
 
-
-export type CountryQuery = { __typename: 'Query', country?: { __typename: 'Country', name: string, code: string, states?: Array<{ __typename: 'State', name: string, code: string } | null> | null } | null };
+export type CountryQuery = {
+  __typename: 'Query'
+  country?: {
+    __typename: 'Country'
+    name: string
+    code: string
+    states?: Array<{ __typename: 'State'; name: string; code: string } | null> | null
+  } | null
+}
 
 export type CalendarClassesQueryVariables = Exact<{
-  site: SiteEnum;
-  params?: InputMaybe<CalendarClassesParams>;
-}>;
+  site: SiteEnum
+  params?: InputMaybe<CalendarClassesParams>
+}>
 
-
-export type CalendarClassesQuery = { __typename: 'Query', calendarClasses: Array<{ __typename: 'Class', id: string, name: string, description: string, instructorName: string, isSubstitute: boolean, start: any, startWithNoTimeZone: any, duration: number, waitListAvailable: boolean, showAsDisabled: boolean, bookingWindow: { __typename: 'BookingWindow', startDateTime: any, endDateTime: any } }> };
+export type CalendarClassesQuery = {
+  __typename: 'Query'
+  calendarClasses: Array<{
+    __typename: 'Class'
+    id: string
+    name: string
+    description: string
+    instructorName: string
+    isSubstitute: boolean
+    start: any
+    startWithNoTimeZone: any
+    duration: number
+    waitListAvailable: boolean
+    showAsDisabled: boolean
+    bookingWindow: { __typename: 'BookingWindow'; startDateTime: any; endDateTime: any }
+  }>
+}
 
 export type CustomCalendarClassesQueryVariables = Exact<{
-  site: SiteEnum;
-  params?: InputMaybe<CalendarClassesParams>;
-  enrollmentsWaitlistParams?: InputMaybe<CurrentUserEnrollmentsParams>;
-  enrollmentsUpcomingParams?: InputMaybe<CurrentUserEnrollmentsParams>;
-}>;
+  site: SiteEnum
+  params?: InputMaybe<CalendarClassesParams>
+  enrollmentsWaitlistParams?: InputMaybe<CurrentUserEnrollmentsParams>
+  enrollmentsUpcomingParams?: InputMaybe<CurrentUserEnrollmentsParams>
+}>
 
-
-export type CustomCalendarClassesQuery = { __typename: 'Query', siteSettings: { __typename: 'SiteSetting', siteDateTimeNow?: any | null, siteTimezone?: string | null }, calendarClasses: Array<{ __typename: 'Class', id: string, name: string, description: string, instructorName: string, start: any, startWithNoTimeZone: any, duration: number, waitListAvailable: boolean, isSubstitute: boolean, showAsDisabled: boolean, bookingWindow: { __typename: 'BookingWindow', startDateTime: any, endDateTime: any } }>, enrollmentsWaitlist: Array<{ __typename: 'Enrollment', enrollmentInfo: { __typename: 'EnrollmentInfo', id: string, enrollmentStatus: EnrollmentStatusEnum, enrollmentDateTime: any } | { __typename: 'WaitlistEntry', id: string, enrollmentStatus: EnrollmentStatusEnum, enrollmentDateTime: any }, class: { __typename: 'Class', id: string, name: string, description: string, instructorName: string, isSubstitute: boolean, start: any, startWithNoTimeZone: any, duration: number, waitListAvailable: boolean } }>, enrollmentsUpcoming: Array<{ __typename: 'Enrollment', enrollmentInfo: { __typename: 'EnrollmentInfo', id: string, enrollmentStatus: EnrollmentStatusEnum, enrollmentDateTime: any } | { __typename: 'WaitlistEntry', id: string, enrollmentStatus: EnrollmentStatusEnum, enrollmentDateTime: any }, class: { __typename: 'Class', id: string, name: string, description: string, instructorName: string, isSubstitute: boolean, start: any, startWithNoTimeZone: any, duration: number, waitListAvailable: boolean } }> };
+export type CustomCalendarClassesQuery = {
+  __typename: 'Query'
+  siteSettings: {
+    __typename: 'SiteSetting'
+    siteDateTimeNow?: any | null
+    siteTimezone?: string | null
+  }
+  calendarClasses: Array<{
+    __typename: 'Class'
+    id: string
+    name: string
+    description: string
+    instructorName: string
+    start: any
+    startWithNoTimeZone: any
+    duration: number
+    waitListAvailable: boolean
+    isSubstitute: boolean
+    showAsDisabled: boolean
+    bookingWindow: { __typename: 'BookingWindow'; startDateTime: any; endDateTime: any }
+  }>
+  enrollmentsWaitlist: Array<{
+    __typename: 'Enrollment'
+    enrollmentInfo:
+      | {
+          __typename: 'EnrollmentInfo'
+          id: string
+          enrollmentStatus: EnrollmentStatusEnum
+          enrollmentDateTime: any
+        }
+      | {
+          __typename: 'WaitlistEntry'
+          id: string
+          enrollmentStatus: EnrollmentStatusEnum
+          enrollmentDateTime: any
+        }
+    class: {
+      __typename: 'Class'
+      id: string
+      name: string
+      description: string
+      instructorName: string
+      isSubstitute: boolean
+      start: any
+      startWithNoTimeZone: any
+      duration: number
+      waitListAvailable: boolean
+    }
+  }>
+  enrollmentsUpcoming: Array<{
+    __typename: 'Enrollment'
+    enrollmentInfo:
+      | {
+          __typename: 'EnrollmentInfo'
+          id: string
+          enrollmentStatus: EnrollmentStatusEnum
+          enrollmentDateTime: any
+        }
+      | {
+          __typename: 'WaitlistEntry'
+          id: string
+          enrollmentStatus: EnrollmentStatusEnum
+          enrollmentDateTime: any
+        }
+    class: {
+      __typename: 'Class'
+      id: string
+      name: string
+      description: string
+      instructorName: string
+      isSubstitute: boolean
+      start: any
+      startWithNoTimeZone: any
+      duration: number
+      waitListAvailable: boolean
+    }
+  }>
+}
 
 export type ClassInfoQueryVariables = Exact<{
-  site: SiteEnum;
-  id: Scalars['ID'];
-}>;
+  site: SiteEnum
+  id: Scalars['ID']
+}>
 
-
-export type ClassInfoQuery = { __typename: 'Query', classInfo?: { __typename: 'ClassInfo', usedSpots?: Array<number> | null, class: { __typename: 'Class', id: string, name: string, description: string, instructorName: string, start: any, startWithNoTimeZone: any, duration: number, waitListAvailable: boolean }, roomLayout?: { __typename: 'RoomLayout', id: string, name: string, matrix?: Array<{ __typename: 'BookableSpot', spotNumber: number, x: number, y: number, icon: PositionIconEnum } | { __typename: 'IconPosition', x: number, y: number, icon: PositionIconEnum }> | null } | null } | null };
+export type ClassInfoQuery = {
+  __typename: 'Query'
+  classInfo?: {
+    __typename: 'ClassInfo'
+    usedSpots?: Array<number> | null
+    class: {
+      __typename: 'Class'
+      id: string
+      name: string
+      description: string
+      instructorName: string
+      start: any
+      startWithNoTimeZone: any
+      duration: number
+      waitListAvailable: boolean
+    }
+    roomLayout?: {
+      __typename: 'RoomLayout'
+      id: string
+      name: string
+      matrix?: Array<
+        | {
+            __typename: 'BookableSpot'
+            spotNumber: number
+            x: number
+            y: number
+            icon: PositionIconEnum
+          }
+        | { __typename: 'IconPosition'; x: number; y: number; icon: PositionIconEnum }
+      > | null
+    } | null
+  } | null
+}
 
 export type RegisterUserMutationVariables = Exact<{
-  site: SiteEnum;
-  input: RegisterUserInput;
-}>;
+  site: SiteEnum
+  input: RegisterUserInput
+}>
 
-
-export type RegisterUserMutation = { __typename: 'Mutation', registerUser?: { __typename: 'User', email: string } | null };
+export type RegisterUserMutation = {
+  __typename: 'Mutation'
+  registerUser?: { __typename: 'User'; email: string } | null
+}
 
 export type UpdateCurrentUserMutationVariables = Exact<{
-  input: UserInput;
-}>;
+  input: UserInput
+}>
 
+export type UpdateCurrentUserMutation = {
+  __typename: 'Mutation'
+  updateCurrentUser?:
+    | { __typename: 'UploadedFileIsNotAnImage'; code: string }
+    | { __typename: 'User'; email: string }
+    | null
+}
 
-export type UpdateCurrentUserMutation = { __typename: 'Mutation', updateCurrentUser?: { __typename: 'UploadedFileIsNotAnImage', code: string } | { __typename: 'User', email: string } | null };
+export type UpdateProfilePictureMutationVariables = Exact<{
+  input: UserInput
+}>
+
+export type UpdateProfilePictureMutation = {
+  __typename: 'Mutation'
+  updateCurrentUser?:
+    | { __typename: 'UploadedFileIsNotAnImage'; code: string }
+    | { __typename: 'User'; profilePictureUrl?: string | null }
+    | null
+}
 
 export type BookClassMutationVariables = Exact<{
-  site: SiteEnum;
-  input: BookClassInput;
-}>;
+  site: SiteEnum
+  input: BookClassInput
+}>
 
-
-export type BookClassMutation = { __typename: 'Mutation', bookClass: { __typename: 'AddedToWaitlistSuccess' } | { __typename: 'BookClassSuccess' } | { __typename: 'BookedButInOtherSpotError' } | { __typename: 'BookingOverlapsAnotherOneError' } | { __typename: 'ClassIsFullError' } | { __typename: 'ClientIsAlreadyBookedError' } | { __typename: 'ClientIsAlreadyOnWaitlistError' } | { __typename: 'ClientIsOutsideSchedulingWindowError' } | { __typename: 'PaymentRequiredError' } | { __typename: 'SpotAlreadyReservedError' } | { __typename: 'SpotIsDisabledError' } | { __typename: 'UnknownError' } | { __typename: 'WaitlistFullError' } };
+export type BookClassMutation = {
+  __typename: 'Mutation'
+  bookClass:
+    | { __typename: 'AddedToWaitlistSuccess' }
+    | { __typename: 'BookClassSuccess' }
+    | { __typename: 'BookedButInOtherSpotError' }
+    | { __typename: 'BookingOverlapsAnotherOneError' }
+    | { __typename: 'ClassIsFullError' }
+    | { __typename: 'ClientIsAlreadyBookedError' }
+    | { __typename: 'ClientIsAlreadyOnWaitlistError' }
+    | { __typename: 'ClientIsOutsideSchedulingWindowError' }
+    | { __typename: 'PaymentRequiredError' }
+    | { __typename: 'SpotAlreadyReservedError' }
+    | { __typename: 'SpotIsDisabledError' }
+    | { __typename: 'UnknownError' }
+    | { __typename: 'WaitlistFullError' }
+}
 
 export type CancelCurrentUserEnrollmentMutationVariables = Exact<{
-  site: SiteEnum;
-  input: CancelEnrollmentInput;
-}>;
+  site: SiteEnum
+  input: CancelEnrollmentInput
+}>
 
-
-export type CancelCurrentUserEnrollmentMutation = { __typename: 'Mutation', cancelCurrentUserEnrollment?: { __typename: 'CancelUserEnrollmentSuccess' } | { __typename: 'LateCancellationRequiredError' } | { __typename: 'UnknownError' } | null };
+export type CancelCurrentUserEnrollmentMutation = {
+  __typename: 'Mutation'
+  cancelCurrentUserEnrollment?:
+    | { __typename: 'CancelUserEnrollmentSuccess' }
+    | { __typename: 'LateCancellationRequiredError' }
+    | { __typename: 'UnknownError' }
+    | null
+}
 
 export type RemoveCurrentUserFromWaitlistMutationVariables = Exact<{
-  site: SiteEnum;
-  input: RemoveCurrentUserFromWaitlistInput;
-}>;
+  site: SiteEnum
+  input: RemoveCurrentUserFromWaitlistInput
+}>
 
-
-export type RemoveCurrentUserFromWaitlistMutation = { __typename: 'Mutation', removeCurrentUserFromWaitlist?: { __typename: 'RemoveFromWaitlistResult', success: boolean } | { __typename: 'WaitlistEntryNotFoundError', code: string } | null };
+export type RemoveCurrentUserFromWaitlistMutation = {
+  __typename: 'Mutation'
+  removeCurrentUserFromWaitlist?:
+    | { __typename: 'RemoveFromWaitlistResult'; success: boolean }
+    | { __typename: 'WaitlistEntryNotFoundError'; code: string }
+    | null
+}
 
 export type RemoveUserFromClassMutationVariables = Exact<{
-  input: CancelEnrollmentInput;
-}>;
+  input: CancelEnrollmentInput
+}>
 
-
-export type RemoveUserFromClassMutation = { __typename: 'Mutation', removeUserFromClass: { __typename: 'CancelUserEnrollmentSuccess' } | { __typename: 'LateCancellationRequiredError' } | { __typename: 'UnknownError' } };
+export type RemoveUserFromClassMutation = {
+  __typename: 'Mutation'
+  removeUserFromClass:
+    | { __typename: 'CancelUserEnrollmentSuccess' }
+    | { __typename: 'LateCancellationRequiredError' }
+    | { __typename: 'UnknownError' }
+}
 
 export type EditClassMutationVariables = Exact<{
-  input: EditClassInput;
-}>;
+  input: EditClassInput
+}>
 
-
-export type EditClassMutation = { __typename: 'Mutation', editClass: { __typename: 'EditClassSuccessResult', updated: boolean } };
+export type EditClassMutation = {
+  __typename: 'Mutation'
+  editClass: { __typename: 'EditClassSuccessResult'; updated: boolean }
+}
 
 export type UpdateCurrentUserPasswordMutationVariables = Exact<{
-  site: SiteEnum;
-  input: UpdateCurrentUserPasswordInput;
-}>;
+  site: SiteEnum
+  input: UpdateCurrentUserPasswordInput
+}>
 
-
-export type UpdateCurrentUserPasswordMutation = { __typename: 'Mutation', updateCurrentUserPassword?: boolean | null };
+export type UpdateCurrentUserPasswordMutation = {
+  __typename: 'Mutation'
+  updateCurrentUserPassword?: boolean | null
+}
 
 export type EditCurrentUserEnrollmentMutationVariables = Exact<{
-  site: SiteEnum;
-  input: EditEnrollmentInput;
-}>;
+  site: SiteEnum
+  input: EditEnrollmentInput
+}>
 
-
-export type EditCurrentUserEnrollmentMutation = { __typename: 'Mutation', editCurrentUserEnrollment?: { __typename: 'ClientIsOutsideSchedulingWindowError', code: string } | { __typename: 'Enrollment' } | { __typename: 'SpotAlreadyReservedError', code: string } | { __typename: 'TryToSwitchToSameSpotError', code: string } | null };
+export type EditCurrentUserEnrollmentMutation = {
+  __typename: 'Mutation'
+  editCurrentUserEnrollment?:
+    | { __typename: 'ClientIsOutsideSchedulingWindowError'; code: string }
+    | { __typename: 'Enrollment' }
+    | { __typename: 'SpotAlreadyReservedError'; code: string }
+    | { __typename: 'TryToSwitchToSameSpotError'; code: string }
+    | null
+}
 
 export type RequestPasswordLinkMutationVariables = Exact<{
-  input?: InputMaybe<RequestPasswordLinkInput>;
-}>;
+  input?: InputMaybe<RequestPasswordLinkInput>
+}>
 
-
-export type RequestPasswordLinkMutation = { __typename: 'Mutation', requestPasswordLink?: { __typename: 'ResetPasswordLinkSentSuccessfully', status: boolean } | { __typename: 'TooManyResetPasswordLinkRequestsError', availableAgainAt?: any | null } | null };
+export type RequestPasswordLinkMutation = {
+  __typename: 'Mutation'
+  requestPasswordLink?:
+    | { __typename: 'ResetPasswordLinkSentSuccessfully'; status: boolean }
+    | { __typename: 'TooManyResetPasswordLinkRequestsError'; availableAgainAt?: any | null }
+    | null
+}
 
 export type ResetPasswordForCurrentUserMutationVariables = Exact<{
-  input?: InputMaybe<ResetPasswordForCurrentUserInput>;
-}>;
+  input?: InputMaybe<ResetPasswordForCurrentUserInput>
+}>
 
-
-export type ResetPasswordForCurrentUserMutation = { __typename: 'Mutation', resetPasswordForCurrentUser?: { __typename: 'PasswordsDontMatchError', code: string } | { __typename: 'ResetPasswordSuccess', status: boolean } | null };
+export type ResetPasswordForCurrentUserMutation = {
+  __typename: 'Mutation'
+  resetPasswordForCurrentUser?:
+    | { __typename: 'PasswordsDontMatchError'; code: string }
+    | { __typename: 'ResetPasswordSuccess'; status: boolean }
+    | null
+}
 
 export type CurrentUserDoesExistInSiteQueryVariables = Exact<{
-  site: SiteEnum;
-}>;
+  site: SiteEnum
+}>
 
-
-export type CurrentUserDoesExistInSiteQuery = { __typename: 'Query', currentUser?: { __typename: 'User', doesExistInSite: boolean } | null };
+export type CurrentUserDoesExistInSiteQuery = {
+  __typename: 'Query'
+  currentUser?: { __typename: 'User'; doesExistInSite: boolean } | null
+}
 
 export type CreateCurrentUserInSiteMutationVariables = Exact<{
-  fromSite: SiteEnum;
-  toSite: SiteEnum;
-}>;
+  fromSite: SiteEnum
+  toSite: SiteEnum
+}>
 
-
-export type CreateCurrentUserInSiteMutation = { __typename: 'Mutation', createCurrentUserInSite?: { __typename: 'CreateCurrentUserInSiteSuccess', result: boolean } | { __typename: 'UserAlreadyExistsError', code: string } | null };
+export type CreateCurrentUserInSiteMutation = {
+  __typename: 'Mutation'
+  createCurrentUserInSite?:
+    | { __typename: 'CreateCurrentUserInSiteSuccess'; result: boolean }
+    | { __typename: 'UserAlreadyExistsError'; code: string }
+    | null
+}
 
 export type RemoveUserFromWaitlistMutationVariables = Exact<{
-  input: RemoveUserFromWaitlistInput;
-}>;
+  input: RemoveUserFromWaitlistInput
+}>
 
-
-export type RemoveUserFromWaitlistMutation = { __typename: 'Mutation', removeUserFromWaitlist: { __typename: 'RemoveFromWaitlistResult', success: boolean } | { __typename: 'WaitlistEntryNotFoundError', code: string } };
+export type RemoveUserFromWaitlistMutation = {
+  __typename: 'Mutation'
+  removeUserFromWaitlist:
+    | { __typename: 'RemoveFromWaitlistResult'; success: boolean }
+    | { __typename: 'WaitlistEntryNotFoundError'; code: string }
+}
 
 export type EditEnrollmentMutationVariables = Exact<{
-  site: SiteEnum;
-  input: EditEnrollmentInput;
-}>;
+  site: SiteEnum
+  input: EditEnrollmentInput
+}>
 
+export type EditEnrollmentMutation = {
+  __typename: 'Mutation'
+  editEnrollment?:
+    | { __typename: 'ClientIsOutsideSchedulingWindowError'; code: string }
+    | { __typename: 'Enrollment' }
+    | { __typename: 'SpotAlreadyReservedError'; code: string }
+    | { __typename: 'TryToSwitchToSameSpotError'; code: string }
+    | null
+}
 
-export type EditEnrollmentMutation = { __typename: 'Mutation', editEnrollment?: { __typename: 'ClientIsOutsideSchedulingWindowError', code: string } | { __typename: 'Enrollment' } | { __typename: 'SpotAlreadyReservedError', code: string } | { __typename: 'TryToSwitchToSameSpotError', code: string } | null };
+export type CurrentUserSitesQueryVariables = Exact<{ [key: string]: never }>
 
-export type CurrentUserSitesQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type CurrentUserSitesQuery = { __typename: 'Query', currentUser?: { __typename: 'User', siteUsers: Array<{ __typename: 'SimpleSiteUser', site: SiteEnum }> } | null };
+export type CurrentUserSitesQuery = {
+  __typename: 'Query'
+  currentUser?: {
+    __typename: 'User'
+    siteUsers: Array<{ __typename: 'SimpleSiteUser'; site: SiteEnum }>
+  } | null
+}
 
 export type CurrentUserRankingInClassQueryVariables = Exact<{
-  site: SiteEnum;
-  params?: InputMaybe<UserInRankingParams>;
-}>;
+  site: SiteEnum
+  params?: InputMaybe<UserInRankingParams>
+}>
 
-
-export type CurrentUserRankingInClassQuery = { __typename: 'Query', currentUserRankingInClass: { __typename: 'UserInClassRanking', totalRanking?: { __typename: 'UserRanking', positionInRanking?: number | null, totalMembersInRanking?: number | null } | null, genderRanking?: { __typename: 'GenderRanking', gender?: GenderEnum | null, ranking?: { __typename: 'UserRanking', positionInRanking?: number | null, totalMembersInRanking?: number | null } | null } | null } };
+export type CurrentUserRankingInClassQuery = {
+  __typename: 'Query'
+  currentUserRankingInClass: {
+    __typename: 'UserInClassRanking'
+    totalRanking?: {
+      __typename: 'UserRanking'
+      positionInRanking?: number | null
+      totalMembersInRanking?: number | null
+    } | null
+    genderRanking?: {
+      __typename: 'GenderRanking'
+      gender?: GenderEnum | null
+      ranking?: {
+        __typename: 'UserRanking'
+        positionInRanking?: number | null
+        totalMembersInRanking?: number | null
+      } | null
+    } | null
+  }
+}
 
 export type AcceptLateCancelledSpotInClassMutationVariables = Exact<{
-  site: SiteEnum;
-  input: AcceptLateCancelledSpotInClassInput;
-}>;
+  site: SiteEnum
+  input: AcceptLateCancelledSpotInClassInput
+}>
 
-
-export type AcceptLateCancelledSpotInClassMutation = { __typename: 'Mutation', acceptLateCancelledSpotInClass?: { __typename: 'AcceptLateCancelledSpotInClassSuccess', success: boolean } | { __typename: 'ClassIsFullError' } | { __typename: 'ClientIsAlreadyBookedError' } | { __typename: 'ClientIsOutsideSchedulingWindowError' } | { __typename: 'PaymentRequiredError' } | { __typename: 'UnknownError' } | null };
+export type AcceptLateCancelledSpotInClassMutation = {
+  __typename: 'Mutation'
+  acceptLateCancelledSpotInClass?:
+    | { __typename: 'AcceptLateCancelledSpotInClassSuccess'; success: boolean }
+    | { __typename: 'ClassIsFullError' }
+    | { __typename: 'ClientIsAlreadyBookedError' }
+    | { __typename: 'ClientIsOutsideSchedulingWindowError' }
+    | { __typename: 'PaymentRequiredError' }
+    | { __typename: 'UnknownError' }
+    | null
+}
 
 export type RejectLateCancelledSpotInClassMutationVariables = Exact<{
-  site: SiteEnum;
-  input: RejectLateCancelledSpotInClassInput;
-}>;
+  site: SiteEnum
+  input: RejectLateCancelledSpotInClassInput
+}>
 
-
-export type RejectLateCancelledSpotInClassMutation = { __typename: 'Mutation', rejectLateCancelledSpotInClass?: { __typename: 'RejectLateCancelledSpotInClassSuccess', success: boolean } | null };
+export type RejectLateCancelledSpotInClassMutation = {
+  __typename: 'Mutation'
+  rejectLateCancelledSpotInClass?: {
+    __typename: 'RejectLateCancelledSpotInClassSuccess'
+    success: boolean
+  } | null
+}
 
 export type CurrentUserEnrollmentsPaginatedQueryVariables = Exact<{
-  site: SiteEnum;
-  params?: InputMaybe<CurrentUserEnrollmentsParams>;
-  pagination?: InputMaybe<PaginationInput>;
-}>;
+  site: SiteEnum
+  params?: InputMaybe<CurrentUserEnrollmentsParams>
+  pagination?: InputMaybe<PaginationInput>
+}>
 
-
-export type CurrentUserEnrollmentsPaginatedQuery = { __typename: 'Query', currentUserEnrollmentsPaginated: { __typename: 'PaginatedEnrollments', total: number, enrollments: Array<{ __typename: 'Enrollment', enrollmentInfo: { __typename: 'EnrollmentInfo', spotNumber?: number | null, id: string, enrollmentStatus: EnrollmentStatusEnum, enrollmentDateTime: any, enrollmentDateTimeWithNoTimeZone: any } | { __typename: 'WaitlistEntry', canBeTurnedIntoEnrollment: boolean, id: string, enrollmentStatus: EnrollmentStatusEnum, enrollmentDateTime: any, enrollmentDateTimeWithNoTimeZone: any }, class: { __typename: 'Class', id: string, name: string, description: string, instructorName: string, start: any, startWithNoTimeZone: any, duration: number, waitListAvailable: boolean, showAsDisabled: boolean } }> } };
+export type CurrentUserEnrollmentsPaginatedQuery = {
+  __typename: 'Query'
+  currentUserEnrollmentsPaginated: {
+    __typename: 'PaginatedEnrollments'
+    total: number
+    enrollments: Array<{
+      __typename: 'Enrollment'
+      enrollmentInfo:
+        | {
+            __typename: 'EnrollmentInfo'
+            spotNumber?: number | null
+            id: string
+            enrollmentStatus: EnrollmentStatusEnum
+            enrollmentDateTime: any
+            enrollmentDateTimeWithNoTimeZone: any
+          }
+        | {
+            __typename: 'WaitlistEntry'
+            canBeTurnedIntoEnrollment: boolean
+            id: string
+            enrollmentStatus: EnrollmentStatusEnum
+            enrollmentDateTime: any
+            enrollmentDateTimeWithNoTimeZone: any
+          }
+      class: {
+        __typename: 'Class'
+        id: string
+        name: string
+        description: string
+        instructorName: string
+        start: any
+        startWithNoTimeZone: any
+        duration: number
+        waitListAvailable: boolean
+        showAsDisabled: boolean
+      }
+    }>
+  }
+}
 
 export type CurrentUserWorkoutStatsPaginatedQueryVariables = Exact<{
-  site: SiteEnum;
-  pagination?: InputMaybe<PaginationInput>;
-}>;
+  site: SiteEnum
+  pagination?: InputMaybe<PaginationInput>
+}>
 
-
-export type CurrentUserWorkoutStatsPaginatedQuery = { __typename: 'Query', currentUserWorkoutStatsPaginated: { __typename: 'PaginatedClassStats', total: number, classStats: Array<{ __typename: 'ClassStat', totalEnergy?: number | null, enrollment: { __typename: 'Enrollment', enrollmentInfo: { __typename: 'EnrollmentInfo', spotNumber?: number | null, id: string } | { __typename: 'WaitlistEntry', id: string }, class: { __typename: 'Class', name: string, start: any, duration: number } } }> } };
+export type CurrentUserWorkoutStatsPaginatedQuery = {
+  __typename: 'Query'
+  currentUserWorkoutStatsPaginated: {
+    __typename: 'PaginatedClassStats'
+    total: number
+    classStats: Array<{
+      __typename: 'ClassStat'
+      totalEnergy?: number | null
+      enrollment: {
+        __typename: 'Enrollment'
+        enrollmentInfo:
+          | { __typename: 'EnrollmentInfo'; spotNumber?: number | null; id: string }
+          | { __typename: 'WaitlistEntry'; id: string }
+        class: { __typename: 'Class'; name: string; start: any; duration: number }
+      }
+    }>
+  }
+}
 
 export type CurrentUserPurchasesPaginatedQueryVariables = Exact<{
-  site: SiteEnum;
-  pagination?: InputMaybe<PaginationInput>;
-  params: CurrentUserPurchasesPaginatedParams;
-}>;
+  site: SiteEnum
+  pagination?: InputMaybe<PaginationInput>
+  params: CurrentUserPurchasesPaginatedParams
+}>
 
+export type CurrentUserPurchasesPaginatedQuery = {
+  __typename: 'Query'
+  currentUserPurchasesPaginated: {
+    __typename: 'PaginatedPurchases'
+    total: number
+    purchases: Array<{
+      __typename: 'Purchase'
+      packageName: string
+      allowanceObtained: number
+      allowanceRemaining: number
+      paymentDateTime: any
+      activationDateTime: any
+      expirationDateTime: any
+      current: boolean
+    }>
+  }
+}
 
-export type CurrentUserPurchasesPaginatedQuery = { __typename: 'Query', currentUserPurchasesPaginated: { __typename: 'PaginatedPurchases', total: number, purchases: Array<{ __typename: 'Purchase', packageName: string, allowanceObtained: number, allowanceRemaining: number, paymentDateTime: any, activationDateTime: any, expirationDateTime: any, current: boolean }> } };
+export type CurrentUserPhoneNumberQueryVariables = Exact<{ [key: string]: never }>
 
-export type CurrentUserPhoneNumberQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type CurrentUserPhoneNumberQuery = { __typename: 'Query', currentUser?: { __typename: 'User', phone: string } | null };
+export type CurrentUserPhoneNumberQuery = {
+  __typename: 'Query'
+  currentUser?: { __typename: 'User'; phone: string } | null
+}
 
 export type RequestSmsValidationMutationVariables = Exact<{
-  input: RequestSmsValidationInput;
-}>;
+  input: RequestSmsValidationInput
+}>
 
-
-export type RequestSmsValidationMutation = { __typename: 'Mutation', requestSMSValidation?: { __typename: 'MobilePhoneAlreadyVerifiedError', code: string } | { __typename: 'MobilePhoneNotValidError', code: string } | { __typename: 'SuccessfulRequestSMSValidation', success: boolean } | null };
+export type RequestSmsValidationMutation = {
+  __typename: 'Mutation'
+  requestSMSValidation?:
+    | { __typename: 'MobilePhoneAlreadyVerifiedError'; code: string }
+    | { __typename: 'MobilePhoneNotValidError'; code: string }
+    | { __typename: 'SuccessfulRequestSMSValidation'; success: boolean }
+    | null
+}
 
 export type IsSmsValidationCodeValidQueryVariables = Exact<{
-  smsCode: Scalars['String'];
-}>;
+  smsCode: Scalars['String']
+}>
 
+export type IsSmsValidationCodeValidQuery = {
+  __typename: 'Query'
+  isSMSValidationCodeValid?:
+    | { __typename: 'MobilePhoneAlreadyVerifiedError'; code: string }
+    | { __typename: 'RequestSMSValidationNeededError'; code: string }
+    | { __typename: 'SMSCodeValidatedSuccessfully'; success: boolean }
+    | { __typename: 'SMSValidationCodeError'; code: string }
+    | null
+}
 
-export type IsSmsValidationCodeValidQuery = { __typename: 'Query', isSMSValidationCodeValid?: { __typename: 'MobilePhoneAlreadyVerifiedError', code: string } | { __typename: 'RequestSMSValidationNeededError', code: string } | { __typename: 'SMSCodeValidatedSuccessfully', success: boolean } | { __typename: 'SMSValidationCodeError', code: string } | null };
+export type AvailableSitesQueryVariables = Exact<{ [key: string]: never }>
 
-export type AvailableSitesQueryVariables = Exact<{ [key: string]: never; }>;
+export type AvailableSitesQuery = {
+  __typename: 'Query'
+  availableSites?: Array<{ __typename: 'Site'; name: string; code: SiteEnum }> | null
+}
 
+export type CurrentUserSitesWithNamesQueryVariables = Exact<{ [key: string]: never }>
 
-export type AvailableSitesQuery = { __typename: 'Query', availableSites?: Array<{ __typename: 'Site', name: string, code: SiteEnum }> | null };
+export type CurrentUserSitesWithNamesQuery = {
+  __typename: 'Query'
+  currentUser?: {
+    __typename: 'User'
+    siteUsers: Array<{ __typename: 'SimpleSiteUser'; site: SiteEnum }>
+  } | null
+  availableSites?: Array<{ __typename: 'Site'; name: string; code: SiteEnum }> | null
+}
 
-export type CurrentUserSitesWithNamesQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type CurrentUserSitesWithNamesQuery = { __typename: 'Query', currentUser?: { __typename: 'User', siteUsers: Array<{ __typename: 'SimpleSiteUser', site: SiteEnum }> } | null, availableSites?: Array<{ __typename: 'Site', name: string, code: SiteEnum }> | null };
-
-export const ProductFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProductFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"SellableProductInterface"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"subtitle"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"buttonText"}},{"kind":"Field","name":{"kind":"Name","value":"isVisible"}},{"kind":"Field","name":{"kind":"Name","value":"alertBeforePurchasing"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}},{"kind":"Field","name":{"kind":"Name","value":"variants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"price"}},{"kind":"Field","name":{"kind":"Name","value":"position"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ClassPackageProduct"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"GiftCard"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"purchaseUrl"}}]}}]}}]} as unknown as DocumentNode<ProductFieldsFragment, unknown>;
-export const ProductBasicFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProductBasicFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"SellableProductInterface"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"subtitle"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"alertBeforePurchasing"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ClassPackageProduct"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"doesItRequireSmsAuth"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"GiftCard"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"purchaseUrl"}}]}}]}}]} as unknown as DocumentNode<ProductBasicFieldsFragment, unknown>;
-export const ShoppingCartFieldsFragmentDoc = {"kind":"Document", "definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ShoppingCartFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCart"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"discountCode"}},{"kind":"Field","name":{"kind":"Name","value":"giftCardsCodes"}},{"kind":"Field","name":{"kind":"Name","value":"total"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCartTotal"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"subTotal"}},{"kind":"Field","name":{"kind":"Name","value":"giftCardAmount"}},{"kind":"Field","name":{"kind":"Name","value":"amountToPay"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"GiftCardIsNotUsable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UserCanNotBuyFirstTimerPackage"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UserAlreadyHaveFirstTimerPackage"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"subtotal"}},{"kind":"Field","name":{"kind":"Name","value":"variant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"price"}},{"kind":"Field","name":{"kind":"Name","value":"product"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProductBasicFields"}}]}}]}}]}}]}},...ProductBasicFieldsFragmentDoc.definitions]} as unknown as DocumentNode<ShoppingCartFieldsFragment, unknown>;
-export const ShoppingCartSummaryFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ShoppingCartSummaryFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCart"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"variant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<ShoppingCartSummaryFieldsFragment, unknown>;
-export const GetCurrentUserBasicInfoDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCurrentUserBasicInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isMobilePhoneVerified"}}]}}]}}]} as unknown as DocumentNode<GetCurrentUserBasicInfoQuery, GetCurrentUserBasicInfoQueryVariables>;
-export const AddDiscountCodeToShoppingCartDocument = {"kind":"Document", "definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AddDiscountCodeToShoppingCart"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"discountCode"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"addDiscountCodeToShoppingCart"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"discountCode"},"value":{"kind":"Variable","name":{"kind":"Name","value":"discountCode"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCart"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ShoppingCartFields"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DiscountCodeIsInvalid"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCartIsEmpty"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}},...ShoppingCartFieldsFragmentDoc.definitions]} as unknown as DocumentNode<AddDiscountCodeToShoppingCartMutation, AddDiscountCodeToShoppingCartMutationVariables>;
-export const AddGiftCardCodeToShoppingCartDocument = {"kind":"Document", "definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AddGiftCardCodeToShoppingCart"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"giftcard"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"addGiftCardCodeToShoppingCart"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"giftcard"},"value":{"kind":"Variable","name":{"kind":"Name","value":"giftcard"}}},{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCart"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ShoppingCartFields"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"GiftCardNotRegisteredOnCurrentShoppingCart"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DontNeedMoreGiftCards"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"GiftCardAlreadyRegisteredForCurrentShoppingCart"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"GiftCardIsNotUsable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DiscountCodeIsInvalid"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DiscountCodeIsEmpty"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ProductNotFound"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCartNotFound"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCartItemNotFound"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCartIsEmpty"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}},...ShoppingCartFieldsFragmentDoc.definitions]} as unknown as DocumentNode<AddGiftCardCodeToShoppingCartMutation, AddGiftCardCodeToShoppingCartMutationVariables>;
-export const AddItemToShoppingCartDocument = {"kind":"Document", "definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AddItemToShoppingCart"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ItemToShoppingCartInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"addItemToShoppingCart"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCart"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ShoppingCartFields"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ProductNotFound"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCartNotFound"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}},...ShoppingCartFieldsFragmentDoc.definitions]} as unknown as DocumentNode<AddItemToShoppingCartMutation, AddItemToShoppingCartMutationVariables>;
-export const AddItemToShoppingCartLightDocument = {"kind":"Document", "definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AddItemToShoppingCartLight"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ItemToShoppingCartInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"addItemToShoppingCart"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCart"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ShoppingCartSummaryFields"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ProductNotFound"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCartNotFound"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}},...ShoppingCartSummaryFieldsFragmentDoc.definitions]} as unknown as DocumentNode<AddItemToShoppingCartLightMutation, AddItemToShoppingCartLightMutationVariables>;
-export const EmptyShoppingCartDocument = {"kind":"Document", "definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"EmptyShoppingCart"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"emptyShoppingCart"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCart"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ShoppingCartSummaryFields"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCartNotFound"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}},...ShoppingCartSummaryFieldsFragmentDoc.definitions]} as unknown as DocumentNode<EmptyShoppingCartMutation, EmptyShoppingCartMutationVariables>;
-export const GeneratePayfortFormDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"GeneratePayfortForm"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PayfortFormInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payfortForm"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"htmlForm"}}]}}]}}]} as unknown as DocumentNode<GeneratePayfortFormMutation, GeneratePayfortFormMutationVariables>;
-export const GetApplePayConfigDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetApplePayConfig"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"applePayConfig"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}},{"kind":"Field","name":{"kind":"Name","value":"countryCode"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}}]}}]} as unknown as DocumentNode<GetApplePayConfigQuery, GetApplePayConfigQueryVariables>;
-export const GetCartSummaryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCartSummary"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"shoppingCart"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"variant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetCartSummaryQuery, GetCartSummaryQueryVariables>;
-export const GetProductsDocument = {"kind":"Document", "definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetProducts"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"ProductsInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"products"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProductFields"}}]}}]}},...ProductFieldsFragmentDoc.definitions]} as unknown as DocumentNode<GetProductsQuery, GetProductsQueryVariables>;
-export const GetRemainingCreditsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetRemainingCredits"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"remainingCredits"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RemainingCreditsSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"credits"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ClientNotFoundInMindbody"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetRemainingCreditsQuery, GetRemainingCreditsQueryVariables>;
-export const GetShoppingCartDocument = {"kind":"Document", "definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetShoppingCart"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"shoppingCart"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ShoppingCartFields"}}]}}]}}]}},...ShoppingCartFieldsFragmentDoc.definitions]} as unknown as DocumentNode<GetShoppingCartQuery, GetShoppingCartQueryVariables>;
-export const NewLockShoppingCartDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"NewLockShoppingCart"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"newLockShoppingCart"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"isLocked"}},{"kind":"Field","name":{"kind":"Name","value":"merchantReference"}}]}}]}}]} as unknown as DocumentNode<NewLockShoppingCartMutation, NewLockShoppingCartMutationVariables>;
-export const PaymentLinkDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"PaymentLink"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"paymentLink"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"notificationEmailAddress"}},{"kind":"Field","name":{"kind":"Name","value":"site"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}}]} as unknown as DocumentNode<PaymentLinkQuery, PaymentLinkQueryVariables>;
-export const PaymentTransactionStatusDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"PaymentTransactionStatus"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PaymentTransactionStatusInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"paymentTransactionStatus"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PaymentTransactionStatus"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"status"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TemporalTransactionNotFound"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}}]} as unknown as DocumentNode<PaymentTransactionStatusQuery, PaymentTransactionStatusQueryVariables>;
-export const RemoveDiscountCodeDocument = {"kind":"Document", "definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RemoveDiscountCode"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"removeDiscountCodeForCurrentShoppingCart"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCart"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ShoppingCartFields"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCartNotFound"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCartIsEmpty"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}},...ShoppingCartFieldsFragmentDoc.definitions]} as unknown as DocumentNode<RemoveDiscountCodeMutation, RemoveDiscountCodeMutationVariables>;
-export const RemoveGiftCardFromCurrentShoppingCartDocument = {"kind":"Document", "definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RemoveGiftCardFromCurrentShoppingCart"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"giftCardCode"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"removeGiftCardFromCurrentShoppingCart"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"giftCardCode"},"value":{"kind":"Variable","name":{"kind":"Name","value":"giftCardCode"}}},{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCart"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ShoppingCartFields"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"GiftCardNotRegisteredOnCurrentShoppingCart"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DontNeedMoreGiftCards"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"GiftCardAlreadyRegisteredForCurrentShoppingCart"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"GiftCardIsNotUsable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DiscountCodeIsInvalid"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DiscountCodeIsEmpty"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ProductNotFound"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCartNotFound"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCartItemNotFound"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCartIsEmpty"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}},...ShoppingCartFieldsFragmentDoc.definitions]} as unknown as DocumentNode<RemoveGiftCardFromCurrentShoppingCartMutation, RemoveGiftCardFromCurrentShoppingCartMutationVariables>;
-export const RemoveItemFromShoppingCartDocument = {"kind":"Document", "definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RemoveItemFromShoppingCart"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"shoppingCartItemId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"removeItemFromShoppingCart"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"shoppingCartItemId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"shoppingCartItemId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCart"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ShoppingCartFields"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCartItemNotFound"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCartNotFound"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCartIsEmpty"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}},...ShoppingCartFieldsFragmentDoc.definitions]} as unknown as DocumentNode<RemoveItemFromShoppingCartMutation, RemoveItemFromShoppingCartMutationVariables>;
-export const UpdateItemInShoppingCartDocument = {"kind":"Document", "definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateItemInShoppingCart"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"shoppingCartItemId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"quantity"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateItemInShoppingCart"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"shoppingCartItemId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"shoppingCartItemId"}}},{"kind":"Argument","name":{"kind":"Name","value":"quantity"},"value":{"kind":"Variable","name":{"kind":"Name","value":"quantity"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCart"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ShoppingCartFields"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCartItemNotFound"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShoppingCartNotFound"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}},...ShoppingCartFieldsFragmentDoc.definitions]} as unknown as DocumentNode<UpdateItemInShoppingCartMutation, UpdateItemInShoppingCartMutationVariables>;
-export const CancelSubscriptionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CancelSubscription"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CancelSubscriptionInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cancelSubscription"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"CancelSubscriptionSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"SubscriptionNotFoundError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"SubscriptionDoesNotBelongToUserError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"SubscriptionAlreadyCancelledError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UnknownError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}}]} as unknown as DocumentNode<CancelSubscriptionMutation, CancelSubscriptionMutationVariables>;
-export const GetCurrentUserSubscriptionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCurrentUserSubscriptions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"subscriptions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amountCents"}},{"kind":"Field","name":{"kind":"Name","value":"billingInterval"}},{"kind":"Field","name":{"kind":"Name","value":"creditCardLastFourDigits"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"cancelledAt"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"nextBillingAt"}}]}}]}}]}}]} as unknown as DocumentNode<GetCurrentUserSubscriptionsQuery, GetCurrentUserSubscriptionsQueryVariables>;
-export const SiteSettingsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"siteSettings"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"siteSettings"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"siteDateTimeNow"}},{"kind":"Field","name":{"kind":"Name","value":"siteTimezone"}}]}}]}}]} as unknown as DocumentNode<SiteSettingsQuery, SiteSettingsQueryVariables>;
-export const CurrentUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"currentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"gender"}},{"kind":"Field","name":{"kind":"Name","value":"birthdate"}},{"kind":"Field","name":{"kind":"Name","value":"country"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"states"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"state"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"address1"}},{"kind":"Field","name":{"kind":"Name","value":"address2"}},{"kind":"Field","name":{"kind":"Name","value":"zipCode"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"emergencyContactName"}},{"kind":"Field","name":{"kind":"Name","value":"emergencyContactPhone"}},{"kind":"Field","name":{"kind":"Name","value":"emergencyContactRelationship"}},{"kind":"Field","name":{"kind":"Name","value":"hideMetrics"}},{"kind":"Field","name":{"kind":"Name","value":"weight"}},{"kind":"Field","name":{"kind":"Name","value":"leaderboardUsername"}}]}}]}}]} as unknown as DocumentNode<CurrentUserQuery, CurrentUserQueryVariables>;
-export const CurrentUserSingleWorkoutStatDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"currentUserSingleWorkoutStat"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"enrollmentId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUserSingleWorkoutStat"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"enrollmentId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"enrollmentId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"enrollment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"enrollmentInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EnrollmentInfo"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"spotNumber"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"class"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"start"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"instructorName"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"averagePower"}},{"kind":"Field","name":{"kind":"Name","value":"highPower"}},{"kind":"Field","name":{"kind":"Name","value":"averageRpm"}},{"kind":"Field","name":{"kind":"Name","value":"highRpm"}},{"kind":"Field","name":{"kind":"Name","value":"totalEnergy"}},{"kind":"Field","name":{"kind":"Name","value":"calories"}},{"kind":"Field","name":{"kind":"Name","value":"distance"}},{"kind":"Field","name":{"kind":"Name","value":"adjustedChartPoints"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"amountOfPoints"},"value":{"kind":"IntValue","value":"62"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"time"}},{"kind":"Field","name":{"kind":"Name","value":"rpm"}},{"kind":"Field","name":{"kind":"Name","value":"power"}}]}}]}}]}}]} as unknown as DocumentNode<CurrentUserSingleWorkoutStatQuery, CurrentUserSingleWorkoutStatQueryVariables>;
-export const CurrentUserEnrollmentInClassDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"currentUserEnrollmentInClass"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"classId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"enrollmentInClass"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"classId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"classId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"enrollmentStatus"}},{"kind":"Field","name":{"kind":"Name","value":"enrollmentDateTime"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EnrollmentInfo"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"spotNumber"}}]}}]}}]}}]}}]} as unknown as DocumentNode<CurrentUserEnrollmentInClassQuery, CurrentUserEnrollmentInClassQueryVariables>;
-export const CountriesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Countries"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"countries"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]} as unknown as DocumentNode<CountriesQuery, CountriesQueryVariables>;
-export const CountryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"country"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"countryCode"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"country"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"countryCode"},"value":{"kind":"Variable","name":{"kind":"Name","value":"countryCode"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"states"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}}]} as unknown as DocumentNode<CountryQuery, CountryQueryVariables>;
-export const CalendarClassesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"calendarClasses"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"params"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CalendarClassesParams"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"calendarClasses"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"params"},"value":{"kind":"Variable","name":{"kind":"Name","value":"params"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"instructorName"}},{"kind":"Field","name":{"kind":"Name","value":"isSubstitute"}},{"kind":"Field","name":{"kind":"Name","value":"start"}},{"kind":"Field","name":{"kind":"Name","value":"startWithNoTimeZone"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"waitListAvailable"}},{"kind":"Field","name":{"kind":"Name","value":"bookingWindow"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"endDateTime"}}]}},{"kind":"Field","name":{"kind":"Name","value":"showAsDisabled"}}]}}]}}]} as unknown as DocumentNode<CalendarClassesQuery, CalendarClassesQueryVariables>;
-export const CustomCalendarClassesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"customCalendarClasses"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"params"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CalendarClassesParams"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"enrollmentsWaitlistParams"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CurrentUserEnrollmentsParams"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"enrollmentsUpcomingParams"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CurrentUserEnrollmentsParams"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"siteSettings"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"siteDateTimeNow"}},{"kind":"Field","name":{"kind":"Name","value":"siteTimezone"}}]}},{"kind":"Field","name":{"kind":"Name","value":"calendarClasses"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"params"},"value":{"kind":"Variable","name":{"kind":"Name","value":"params"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"instructorName"}},{"kind":"Field","name":{"kind":"Name","value":"start"}},{"kind":"Field","name":{"kind":"Name","value":"startWithNoTimeZone"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"waitListAvailable"}},{"kind":"Field","name":{"kind":"Name","value":"isSubstitute"}},{"kind":"Field","name":{"kind":"Name","value":"bookingWindow"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"endDateTime"}}]}},{"kind":"Field","name":{"kind":"Name","value":"showAsDisabled"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"enrollmentsWaitlist"},"name":{"kind":"Name","value":"currentUserEnrollments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"params"},"value":{"kind":"Variable","name":{"kind":"Name","value":"enrollmentsWaitlistParams"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"enrollmentInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"enrollmentStatus"}},{"kind":"Field","name":{"kind":"Name","value":"enrollmentDateTime"}}]}},{"kind":"Field","name":{"kind":"Name","value":"class"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"instructorName"}},{"kind":"Field","name":{"kind":"Name","value":"isSubstitute"}},{"kind":"Field","name":{"kind":"Name","value":"start"}},{"kind":"Field","name":{"kind":"Name","value":"startWithNoTimeZone"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"waitListAvailable"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"enrollmentsUpcoming"},"name":{"kind":"Name","value":"currentUserEnrollments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"params"},"value":{"kind":"Variable","name":{"kind":"Name","value":"enrollmentsUpcomingParams"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"enrollmentInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"enrollmentStatus"}},{"kind":"Field","name":{"kind":"Name","value":"enrollmentDateTime"}}]}},{"kind":"Field","name":{"kind":"Name","value":"class"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"instructorName"}},{"kind":"Field","name":{"kind":"Name","value":"isSubstitute"}},{"kind":"Field","name":{"kind":"Name","value":"start"}},{"kind":"Field","name":{"kind":"Name","value":"startWithNoTimeZone"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"waitListAvailable"}}]}}]}}]}}]} as unknown as DocumentNode<CustomCalendarClassesQuery, CustomCalendarClassesQueryVariables>;
-export const ClassInfoDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"classInfo"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"classInfo"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"class"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"instructorName"}},{"kind":"Field","name":{"kind":"Name","value":"start"}},{"kind":"Field","name":{"kind":"Name","value":"startWithNoTimeZone"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"waitListAvailable"}}]}},{"kind":"Field","name":{"kind":"Name","value":"usedSpots"}},{"kind":"Field","name":{"kind":"Name","value":"roomLayout"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"matrix"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"x"}},{"kind":"Field","name":{"kind":"Name","value":"y"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BookableSpot"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"spotNumber"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<ClassInfoQuery, ClassInfoQueryVariables>;
-export const RegisterUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"registerUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RegisterUserInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerUser"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]} as unknown as DocumentNode<RegisterUserMutation, RegisterUserMutationVariables>;
-export const UpdateCurrentUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateCurrentUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UserInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateCurrentUser"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UploadedFileIsNotAnImage"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateCurrentUserMutation, UpdateCurrentUserMutationVariables>;
-export const BookClassDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"bookClass"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BookClassInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bookClass"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}}]}}]} as unknown as DocumentNode<BookClassMutation, BookClassMutationVariables>;
-export const CancelCurrentUserEnrollmentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"cancelCurrentUserEnrollment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CancelEnrollmentInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cancelCurrentUserEnrollment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}}]}}]} as unknown as DocumentNode<CancelCurrentUserEnrollmentMutation, CancelCurrentUserEnrollmentMutationVariables>;
-export const RemoveCurrentUserFromWaitlistDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"removeCurrentUserFromWaitlist"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RemoveCurrentUserFromWaitlistInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"removeCurrentUserFromWaitlist"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RemoveFromWaitlistResult"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"WaitlistEntryNotFoundError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}}]} as unknown as DocumentNode<RemoveCurrentUserFromWaitlistMutation, RemoveCurrentUserFromWaitlistMutationVariables>;
-export const RemoveUserFromClassDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"removeUserFromClass"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CancelEnrollmentInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"removeUserFromClass"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}}]}}]} as unknown as DocumentNode<RemoveUserFromClassMutation, RemoveUserFromClassMutationVariables>;
-export const EditClassDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"editClass"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EditClassInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"editClass"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EditClassSuccessResult"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"updated"}}]}}]}}]}}]} as unknown as DocumentNode<EditClassMutation, EditClassMutationVariables>;
-export const UpdateCurrentUserPasswordDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateCurrentUserPassword"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateCurrentUserPasswordInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateCurrentUserPassword"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<UpdateCurrentUserPasswordMutation, UpdateCurrentUserPasswordMutationVariables>;
-export const EditCurrentUserEnrollmentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"editCurrentUserEnrollment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EditEnrollmentInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"editCurrentUserEnrollment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"SpotAlreadyReservedError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TryToSwitchToSameSpotError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ClientIsOutsideSchedulingWindowError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}}]} as unknown as DocumentNode<EditCurrentUserEnrollmentMutation, EditCurrentUserEnrollmentMutationVariables>;
-export const RequestPasswordLinkDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"requestPasswordLink"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"RequestPasswordLinkInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"requestPasswordLink"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TooManyResetPasswordLinkRequestsError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"availableAgainAt"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ResetPasswordLinkSentSuccessfully"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}}]}}]} as unknown as DocumentNode<RequestPasswordLinkMutation, RequestPasswordLinkMutationVariables>;
-export const ResetPasswordForCurrentUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"resetPasswordForCurrentUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"ResetPasswordForCurrentUserInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"resetPasswordForCurrentUser"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PasswordsDontMatchError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ResetPasswordSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}}]}}]} as unknown as DocumentNode<ResetPasswordForCurrentUserMutation, ResetPasswordForCurrentUserMutationVariables>;
-export const CurrentUserDoesExistInSiteDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"currentUserDoesExistInSite"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"doesExistInSite"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}}]}]}}]}}]} as unknown as DocumentNode<CurrentUserDoesExistInSiteQuery, CurrentUserDoesExistInSiteQueryVariables>;
-export const CreateCurrentUserInSiteDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createCurrentUserInSite"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"fromSite"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"toSite"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createCurrentUserInSite"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"fromSite"},"value":{"kind":"Variable","name":{"kind":"Name","value":"fromSite"}}},{"kind":"Argument","name":{"kind":"Name","value":"toSite"},"value":{"kind":"Variable","name":{"kind":"Name","value":"toSite"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"CreateCurrentUserInSiteSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"result"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UserAlreadyExistsError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}}]} as unknown as DocumentNode<CreateCurrentUserInSiteMutation, CreateCurrentUserInSiteMutationVariables>;
-export const RemoveUserFromWaitlistDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"removeUserFromWaitlist"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RemoveUserFromWaitlistInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"removeUserFromWaitlist"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RemoveFromWaitlistResult"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"WaitlistEntryNotFoundError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}}]} as unknown as DocumentNode<RemoveUserFromWaitlistMutation, RemoveUserFromWaitlistMutationVariables>;
-export const EditEnrollmentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"editEnrollment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EditEnrollmentInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"editEnrollment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Enrollment"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"SpotAlreadyReservedError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TryToSwitchToSameSpotError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ClientIsOutsideSchedulingWindowError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}}]} as unknown as DocumentNode<EditEnrollmentMutation, EditEnrollmentMutationVariables>;
-export const CurrentUserSitesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"currentUserSites"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"siteUsers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"site"}}]}}]}}]}}]} as unknown as DocumentNode<CurrentUserSitesQuery, CurrentUserSitesQueryVariables>;
-export const CurrentUserRankingInClassDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"currentUserRankingInClass"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"params"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"UserInRankingParams"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUserRankingInClass"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"params"},"value":{"kind":"Variable","name":{"kind":"Name","value":"params"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalRanking"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"positionInRanking"}},{"kind":"Field","name":{"kind":"Name","value":"totalMembersInRanking"}}]}},{"kind":"Field","name":{"kind":"Name","value":"genderRanking"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"gender"}},{"kind":"Field","name":{"kind":"Name","value":"ranking"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"positionInRanking"}},{"kind":"Field","name":{"kind":"Name","value":"totalMembersInRanking"}}]}}]}}]}}]}}]} as unknown as DocumentNode<CurrentUserRankingInClassQuery, CurrentUserRankingInClassQueryVariables>;
-export const AcceptLateCancelledSpotInClassDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"acceptLateCancelledSpotInClass"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"AcceptLateCancelledSpotInClassInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"acceptLateCancelledSpotInClass"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"AcceptLateCancelledSpotInClassSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]}}]} as unknown as DocumentNode<AcceptLateCancelledSpotInClassMutation, AcceptLateCancelledSpotInClassMutationVariables>;
-export const RejectLateCancelledSpotInClassDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"rejectLateCancelledSpotInClass"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RejectLateCancelledSpotInClassInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"rejectLateCancelledSpotInClass"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<RejectLateCancelledSpotInClassMutation, RejectLateCancelledSpotInClassMutationVariables>;
-export const CurrentUserEnrollmentsPaginatedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"currentUserEnrollmentsPaginated"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"params"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CurrentUserEnrollmentsParams"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"PaginationInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUserEnrollmentsPaginated"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"params"},"value":{"kind":"Variable","name":{"kind":"Name","value":"params"}}},{"kind":"Argument","name":{"kind":"Name","value":"pagination"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"enrollments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"enrollmentInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"enrollmentStatus"}},{"kind":"Field","name":{"kind":"Name","value":"enrollmentDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"enrollmentDateTimeWithNoTimeZone"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EnrollmentInfo"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"spotNumber"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"WaitlistEntry"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"canBeTurnedIntoEnrollment"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"class"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"instructorName"}},{"kind":"Field","name":{"kind":"Name","value":"start"}},{"kind":"Field","name":{"kind":"Name","value":"startWithNoTimeZone"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"waitListAvailable"}},{"kind":"Field","name":{"kind":"Name","value":"showAsDisabled"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"total"}}]}}]}}]} as unknown as DocumentNode<CurrentUserEnrollmentsPaginatedQuery, CurrentUserEnrollmentsPaginatedQueryVariables>;
-export const CurrentUserWorkoutStatsPaginatedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"currentUserWorkoutStatsPaginated"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"PaginationInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUserWorkoutStatsPaginated"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"pagination"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"classStats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"enrollment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"enrollmentInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EnrollmentInfo"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"spotNumber"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"class"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"start"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalEnergy"}}]}},{"kind":"Field","name":{"kind":"Name","value":"total"}}]}}]}}]} as unknown as DocumentNode<CurrentUserWorkoutStatsPaginatedQuery, CurrentUserWorkoutStatsPaginatedQueryVariables>;
-export const CurrentUserPurchasesPaginatedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"currentUserPurchasesPaginated"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"site"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteEnum"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"PaginationInput"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"params"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CurrentUserPurchasesPaginatedParams"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUserPurchasesPaginated"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"site"},"value":{"kind":"Variable","name":{"kind":"Name","value":"site"}}},{"kind":"Argument","name":{"kind":"Name","value":"params"},"value":{"kind":"Variable","name":{"kind":"Name","value":"params"}}},{"kind":"Argument","name":{"kind":"Name","value":"pagination"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"purchases"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"packageName"}},{"kind":"Field","name":{"kind":"Name","value":"allowanceObtained"}},{"kind":"Field","name":{"kind":"Name","value":"allowanceRemaining"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"activationDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"expirationDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"current"}}]}},{"kind":"Field","name":{"kind":"Name","value":"total"}}]}}]}}]} as unknown as DocumentNode<CurrentUserPurchasesPaginatedQuery, CurrentUserPurchasesPaginatedQueryVariables>;
-export const CurrentUserPhoneNumberDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"currentUserPhoneNumber"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"phone"}}]}}]}}]} as unknown as DocumentNode<CurrentUserPhoneNumberQuery, CurrentUserPhoneNumberQueryVariables>;
-export const RequestSmsValidationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"requestSMSValidation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RequestSMSValidationInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"requestSMSValidation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MobilePhoneAlreadyVerifiedError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"SuccessfulRequestSMSValidation"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MobilePhoneNotValidError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}}]} as unknown as DocumentNode<RequestSmsValidationMutation, RequestSmsValidationMutationVariables>;
-export const IsSmsValidationCodeValidDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"isSMSValidationCodeValid"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"smsCode"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"isSMSValidationCodeValid"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"smsCode"},"value":{"kind":"Variable","name":{"kind":"Name","value":"smsCode"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"SMSCodeValidatedSuccessfully"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RequestSMSValidationNeededError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"SMSValidationCodeError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MobilePhoneAlreadyVerifiedError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}}]} as unknown as DocumentNode<IsSmsValidationCodeValidQuery, IsSmsValidationCodeValidQueryVariables>;
-export const AvailableSitesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"availableSites"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"availableSites"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]} as unknown as DocumentNode<AvailableSitesQuery, AvailableSitesQueryVariables>;
-export const CurrentUserSitesWithNamesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CurrentUserSitesWithNames"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"siteUsers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"site"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"availableSites"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]} as unknown as DocumentNode<CurrentUserSitesWithNamesQuery, CurrentUserSitesWithNamesQueryVariables>;
+export const ProductFieldsFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'ProductFields' },
+      typeCondition: {
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'SellableProductInterface' }
+      },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'subtitle' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'currency' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'buttonText' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'isVisible' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'alertBeforePurchasing' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'description' } }
+              ]
+            }
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'variants' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'price' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'position' } }
+              ]
+            }
+          },
+          {
+            kind: 'InlineFragment',
+            typeCondition: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'ClassPackageProduct' }
+            },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'Field', name: { kind: 'Name', value: 'type' } }]
+            }
+          },
+          {
+            kind: 'InlineFragment',
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'GiftCard' } },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'Field', name: { kind: 'Name', value: 'purchaseUrl' } }]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<ProductFieldsFragment, unknown>
+export const ProductBasicFieldsFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'ProductBasicFields' },
+      typeCondition: {
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'SellableProductInterface' }
+      },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'subtitle' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'currency' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'alertBeforePurchasing' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'description' } }
+              ]
+            }
+          },
+          {
+            kind: 'InlineFragment',
+            typeCondition: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'ClassPackageProduct' }
+            },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'doesItRequireSmsAuth' } }
+              ]
+            }
+          },
+          {
+            kind: 'InlineFragment',
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'GiftCard' } },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'Field', name: { kind: 'Name', value: 'purchaseUrl' } }]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<ProductBasicFieldsFragment, unknown>
+export const ShoppingCartFieldsFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'ShoppingCartFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'ShoppingCart' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'currency' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'discountCode' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'giftCardsCodes' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'total' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartTotal' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'total' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'subTotal' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'giftCardAmount' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'amountToPay' } }
+                    ]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'GiftCardIsNotUsable' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'UserCanNotBuyFirstTimerPackage' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'UserAlreadyHaveFirstTimerPackage' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'items' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'quantity' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'subtotal' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'variant' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'position' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'price' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'product' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'FragmentSpread',
+                              name: { kind: 'Name', value: 'ProductBasicFields' }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    ...ProductBasicFieldsFragmentDoc.definitions
+  ]
+} as unknown as DocumentNode<ShoppingCartFieldsFragment, unknown>
+export const ShoppingCartSummaryFieldsFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'ShoppingCartSummaryFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'ShoppingCart' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'items' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'quantity' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'variant' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<ShoppingCartSummaryFieldsFragment, unknown>
+export const GetCurrentUserBasicInfoDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetCurrentUserBasicInfo' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentUser' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'firstName' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'lastName' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'email' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'isMobilePhoneVerified' } }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<GetCurrentUserBasicInfoQuery, GetCurrentUserBasicInfoQueryVariables>
+export const AddDiscountCodeToShoppingCartDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'AddDiscountCodeToShoppingCart' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'discountCode' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'addDiscountCodeToShoppingCart' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'discountCode' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'discountCode' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCart' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'FragmentSpread',
+                        name: { kind: 'Name', value: 'ShoppingCartFields' }
+                      }
+                    ]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'DiscountCodeIsInvalid' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartIsEmpty' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    ...ShoppingCartFieldsFragmentDoc.definitions
+  ]
+} as unknown as DocumentNode<
+  AddDiscountCodeToShoppingCartMutation,
+  AddDiscountCodeToShoppingCartMutationVariables
+>
+export const AddGiftCardCodeToShoppingCartDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'AddGiftCardCodeToShoppingCart' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'giftcard' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'addGiftCardCodeToShoppingCart' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'giftcard' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'giftcard' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCart' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'FragmentSpread',
+                        name: { kind: 'Name', value: 'ShoppingCartFields' }
+                      }
+                    ]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'GiftCardNotRegisteredOnCurrentShoppingCart' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'DontNeedMoreGiftCards' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'GiftCardIsNotUsable' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'DiscountCodeIsInvalid' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'DiscountCodeIsEmpty' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ProductNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartItemNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartIsEmpty' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    ...ShoppingCartFieldsFragmentDoc.definitions
+  ]
+} as unknown as DocumentNode<
+  AddGiftCardCodeToShoppingCartMutation,
+  AddGiftCardCodeToShoppingCartMutationVariables
+>
+export const AddItemToShoppingCartDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'AddItemToShoppingCart' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ItemToShoppingCartInput' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'addItemToShoppingCart' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCart' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'FragmentSpread',
+                        name: { kind: 'Name', value: 'ShoppingCartFields' }
+                      }
+                    ]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ProductNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    ...ShoppingCartFieldsFragmentDoc.definitions
+  ]
+} as unknown as DocumentNode<AddItemToShoppingCartMutation, AddItemToShoppingCartMutationVariables>
+export const AddItemToShoppingCartLightDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'AddItemToShoppingCartLight' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ItemToShoppingCartInput' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'addItemToShoppingCart' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCart' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'FragmentSpread',
+                        name: { kind: 'Name', value: 'ShoppingCartSummaryFields' }
+                      }
+                    ]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ProductNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    ...ShoppingCartSummaryFieldsFragmentDoc.definitions
+  ]
+} as unknown as DocumentNode<
+  AddItemToShoppingCartLightMutation,
+  AddItemToShoppingCartLightMutationVariables
+>
+export const EmptyShoppingCartDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'EmptyShoppingCart' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'emptyShoppingCart' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCart' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'FragmentSpread',
+                        name: { kind: 'Name', value: 'ShoppingCartSummaryFields' }
+                      }
+                    ]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    ...ShoppingCartSummaryFieldsFragmentDoc.definitions
+  ]
+} as unknown as DocumentNode<EmptyShoppingCartMutation, EmptyShoppingCartMutationVariables>
+export const GeneratePayfortFormDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'GeneratePayfortForm' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'PayfortFormInput' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'payfortForm' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'Field', name: { kind: 'Name', value: 'htmlForm' } }]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<GeneratePayfortFormMutation, GeneratePayfortFormMutationVariables>
+export const GetApplePayConfigDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetApplePayConfig' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'applePayConfig' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'currencyCode' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'countryCode' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'displayName' } }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<GetApplePayConfigQuery, GetApplePayConfigQueryVariables>
+export const GetCartSummaryDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetCartSummary' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentUser' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'shoppingCart' },
+                  arguments: [
+                    {
+                      kind: 'Argument',
+                      name: { kind: 'Name', value: 'site' },
+                      value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+                    }
+                  ],
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'items' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'quantity' } },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'variant' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<GetCartSummaryQuery, GetCartSummaryQueryVariables>
+export const GetProductsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetProducts' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'ProductsInput' } }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'products' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'FragmentSpread', name: { kind: 'Name', value: 'ProductFields' } }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    ...ProductFieldsFragmentDoc.definitions
+  ]
+} as unknown as DocumentNode<GetProductsQuery, GetProductsQueryVariables>
+export const GetRemainingCreditsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetRemainingCredits' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentUser' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'remainingCredits' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'InlineFragment',
+                        typeCondition: {
+                          kind: 'NamedType',
+                          name: { kind: 'Name', value: 'RemainingCreditsSuccess' }
+                        },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [{ kind: 'Field', name: { kind: 'Name', value: 'credits' } }]
+                        }
+                      },
+                      {
+                        kind: 'InlineFragment',
+                        typeCondition: {
+                          kind: 'NamedType',
+                          name: { kind: 'Name', value: 'ClientNotFoundInMindbody' }
+                        },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<GetRemainingCreditsQuery, GetRemainingCreditsQueryVariables>
+export const GetShoppingCartDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetShoppingCart' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentUser' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'shoppingCart' },
+                  arguments: [
+                    {
+                      kind: 'Argument',
+                      name: { kind: 'Name', value: 'site' },
+                      value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+                    }
+                  ],
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'FragmentSpread',
+                        name: { kind: 'Name', value: 'ShoppingCartFields' }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    ...ShoppingCartFieldsFragmentDoc.definitions
+  ]
+} as unknown as DocumentNode<GetShoppingCartQuery, GetShoppingCartQueryVariables>
+export const NewLockShoppingCartDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'NewLockShoppingCart' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'newLockShoppingCart' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'isLocked' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'merchantReference' } }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<NewLockShoppingCartMutation, NewLockShoppingCartMutationVariables>
+export const PaymentLinkDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'PaymentLink' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'paymentLink' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'id' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'currency' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'url' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'notificationEmailAddress' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'site' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'code' } }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<PaymentLinkQuery, PaymentLinkQueryVariables>
+export const PaymentTransactionStatusDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'PaymentTransactionStatus' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'PaymentTransactionStatusInput' }
+            }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'paymentTransactionStatus' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'PaymentTransactionStatus' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'status' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'TemporalTransactionNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<PaymentTransactionStatusQuery, PaymentTransactionStatusQueryVariables>
+export const RemoveDiscountCodeDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'RemoveDiscountCode' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'removeDiscountCodeForCurrentShoppingCart' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCart' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'FragmentSpread',
+                        name: { kind: 'Name', value: 'ShoppingCartFields' }
+                      }
+                    ]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartIsEmpty' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    ...ShoppingCartFieldsFragmentDoc.definitions
+  ]
+} as unknown as DocumentNode<RemoveDiscountCodeMutation, RemoveDiscountCodeMutationVariables>
+export const RemoveGiftCardFromCurrentShoppingCartDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'RemoveGiftCardFromCurrentShoppingCart' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'giftCardCode' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'removeGiftCardFromCurrentShoppingCart' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'giftCardCode' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'giftCardCode' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCart' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'FragmentSpread',
+                        name: { kind: 'Name', value: 'ShoppingCartFields' }
+                      }
+                    ]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'GiftCardNotRegisteredOnCurrentShoppingCart' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'DontNeedMoreGiftCards' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'GiftCardAlreadyRegisteredForCurrentShoppingCart' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'GiftCardIsNotUsable' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'DiscountCodeIsInvalid' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'DiscountCodeIsEmpty' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ProductNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartItemNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartIsEmpty' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    ...ShoppingCartFieldsFragmentDoc.definitions
+  ]
+} as unknown as DocumentNode<
+  RemoveGiftCardFromCurrentShoppingCartMutation,
+  RemoveGiftCardFromCurrentShoppingCartMutationVariables
+>
+export const RemoveItemFromShoppingCartDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'RemoveItemFromShoppingCart' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'shoppingCartItemId' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'removeItemFromShoppingCart' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'shoppingCartItemId' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'shoppingCartItemId' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCart' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'FragmentSpread',
+                        name: { kind: 'Name', value: 'ShoppingCartFields' }
+                      }
+                    ]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartItemNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartIsEmpty' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    ...ShoppingCartFieldsFragmentDoc.definitions
+  ]
+} as unknown as DocumentNode<
+  RemoveItemFromShoppingCartMutation,
+  RemoveItemFromShoppingCartMutationVariables
+>
+export const UpdateItemInShoppingCartDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'UpdateItemInShoppingCart' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'shoppingCartItemId' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'quantity' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'updateItemInShoppingCart' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'shoppingCartItemId' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'shoppingCartItemId' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'quantity' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'quantity' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCart' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'FragmentSpread',
+                        name: { kind: 'Name', value: 'ShoppingCartFields' }
+                      }
+                    ]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartItemNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ShoppingCartNotFound' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    ...ShoppingCartFieldsFragmentDoc.definitions
+  ]
+} as unknown as DocumentNode<
+  UpdateItemInShoppingCartMutation,
+  UpdateItemInShoppingCartMutationVariables
+>
+export const CancelSubscriptionDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'CancelSubscription' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'CancelSubscriptionInput' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'cancelSubscription' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'CancelSubscriptionSuccess' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'success' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'SubscriptionNotFoundError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'SubscriptionDoesNotBelongToUserError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'SubscriptionAlreadyCancelledError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'UnknownError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<CancelSubscriptionMutation, CancelSubscriptionMutationVariables>
+export const GetCurrentUserSubscriptionsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetCurrentUserSubscriptions' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentUser' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'subscriptions' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'amountCents' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'billingInterval' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'creditCardLastFourDigits' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'cancelledAt' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'nextBillingAt' } }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  GetCurrentUserSubscriptionsQuery,
+  GetCurrentUserSubscriptionsQueryVariables
+>
+export const SiteSettingsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'siteSettings' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'siteSettings' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'siteDateTimeNow' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'siteTimezone' } }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<SiteSettingsQuery, SiteSettingsQueryVariables>
+export const CurrentUserDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'currentUser' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentUser' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'email' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'firstName' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'lastName' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'gender' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'birthdate' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'country' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'states' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'code' } }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'state' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'code' } }
+                    ]
+                  }
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'address1' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'address2' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'zipCode' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'phone' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'emergencyContactName' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'emergencyContactPhone' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'emergencyContactRelationship' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'hideMetrics' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'weight' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'leaderboardUsername' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'profilePictureUrl' } }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<CurrentUserQuery, CurrentUserQueryVariables>
+export const CurrentUserSingleWorkoutStatDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'currentUserSingleWorkoutStat' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'enrollmentId' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentUserSingleWorkoutStat' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'enrollmentId' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'enrollmentId' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'enrollment' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'enrollmentInfo' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                            {
+                              kind: 'InlineFragment',
+                              typeCondition: {
+                                kind: 'NamedType',
+                                name: { kind: 'Name', value: 'EnrollmentInfo' }
+                              },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'class' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'start' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'duration' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'instructorName' } }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'averagePower' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'highPower' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'averageRpm' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'highRpm' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'totalEnergy' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'calories' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'distance' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'adjustedChartPoints' },
+                  arguments: [
+                    {
+                      kind: 'Argument',
+                      name: { kind: 'Name', value: 'amountOfPoints' },
+                      value: { kind: 'IntValue', value: '62' }
+                    }
+                  ],
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'time' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'rpm' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'power' } }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  CurrentUserSingleWorkoutStatQuery,
+  CurrentUserSingleWorkoutStatQueryVariables
+>
+export const CurrentUserEnrollmentInClassDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'currentUserEnrollmentInClass' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'classId' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentUser' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'enrollmentInClass' },
+                  arguments: [
+                    {
+                      kind: 'Argument',
+                      name: { kind: 'Name', value: 'classId' },
+                      value: { kind: 'Variable', name: { kind: 'Name', value: 'classId' } }
+                    }
+                  ],
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'enrollmentStatus' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'enrollmentDateTime' } },
+                      {
+                        kind: 'InlineFragment',
+                        typeCondition: {
+                          kind: 'NamedType',
+                          name: { kind: 'Name', value: 'EnrollmentInfo' }
+                        },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  CurrentUserEnrollmentInClassQuery,
+  CurrentUserEnrollmentInClassQueryVariables
+>
+export const CountriesDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'Countries' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'countries' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'code' } }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<CountriesQuery, CountriesQueryVariables>
+export const CountryDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'country' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'countryCode' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'country' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'countryCode' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'countryCode' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'states' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'code' } }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<CountryQuery, CountryQueryVariables>
+export const CalendarClassesDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'calendarClasses' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'params' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'CalendarClassesParams' } }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'calendarClasses' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'params' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'params' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'instructorName' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'isSubstitute' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'start' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'startWithNoTimeZone' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'duration' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'waitListAvailable' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'bookingWindow' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'startDateTime' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'endDateTime' } }
+                    ]
+                  }
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'showAsDisabled' } }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<CalendarClassesQuery, CalendarClassesQueryVariables>
+export const CustomCalendarClassesDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'customCalendarClasses' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'params' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'CalendarClassesParams' } }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'enrollmentsWaitlistParams' }
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'CurrentUserEnrollmentsParams' } }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'enrollmentsUpcomingParams' }
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'CurrentUserEnrollmentsParams' } }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'siteSettings' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'siteDateTimeNow' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'siteTimezone' } }
+              ]
+            }
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'calendarClasses' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'params' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'params' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'instructorName' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'start' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'startWithNoTimeZone' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'duration' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'waitListAvailable' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'isSubstitute' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'bookingWindow' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'startDateTime' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'endDateTime' } }
+                    ]
+                  }
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'showAsDisabled' } }
+              ]
+            }
+          },
+          {
+            kind: 'Field',
+            alias: { kind: 'Name', value: 'enrollmentsWaitlist' },
+            name: { kind: 'Name', value: 'currentUserEnrollments' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'params' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'enrollmentsWaitlistParams' }
+                }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'enrollmentInfo' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'enrollmentStatus' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'enrollmentDateTime' } }
+                    ]
+                  }
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'class' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'instructorName' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'isSubstitute' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'start' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'startWithNoTimeZone' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'duration' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'waitListAvailable' } }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            kind: 'Field',
+            alias: { kind: 'Name', value: 'enrollmentsUpcoming' },
+            name: { kind: 'Name', value: 'currentUserEnrollments' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'params' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'enrollmentsUpcomingParams' }
+                }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'enrollmentInfo' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'enrollmentStatus' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'enrollmentDateTime' } }
+                    ]
+                  }
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'class' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'instructorName' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'isSubstitute' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'start' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'startWithNoTimeZone' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'duration' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'waitListAvailable' } }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<CustomCalendarClassesQuery, CustomCalendarClassesQueryVariables>
+export const ClassInfoDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'classInfo' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'classInfo' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'id' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'class' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'instructorName' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'start' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'startWithNoTimeZone' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'duration' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'waitListAvailable' } }
+                    ]
+                  }
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'usedSpots' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'roomLayout' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'matrix' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'x' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'y' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'icon' } },
+                            {
+                              kind: 'InlineFragment',
+                              typeCondition: {
+                                kind: 'NamedType',
+                                name: { kind: 'Name', value: 'BookableSpot' }
+                              },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<ClassInfoQuery, ClassInfoQueryVariables>
+export const RegisterUserDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'registerUser' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'RegisterUserInput' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'registerUser' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'Field', name: { kind: 'Name', value: 'email' } }]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<RegisterUserMutation, RegisterUserMutationVariables>
+export const UpdateCurrentUserDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'updateCurrentUser' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'UserInput' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'updateCurrentUser' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'User' } },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'email' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'UploadedFileIsNotAnImage' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<UpdateCurrentUserMutation, UpdateCurrentUserMutationVariables>
+export const UpdateProfilePictureDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'updateProfilePicture' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'UserInput' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'updateCurrentUser' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'User' } },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'profilePictureUrl' } }
+                    ]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'UploadedFileIsNotAnImage' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<UpdateProfilePictureMutation, UpdateProfilePictureMutationVariables>
+export const BookClassDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'bookClass' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'BookClassInput' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'bookClass' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'Field', name: { kind: 'Name', value: '__typename' } }]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<BookClassMutation, BookClassMutationVariables>
+export const CancelCurrentUserEnrollmentDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'cancelCurrentUserEnrollment' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'CancelEnrollmentInput' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'cancelCurrentUserEnrollment' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'Field', name: { kind: 'Name', value: '__typename' } }]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  CancelCurrentUserEnrollmentMutation,
+  CancelCurrentUserEnrollmentMutationVariables
+>
+export const RemoveCurrentUserFromWaitlistDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'removeCurrentUserFromWaitlist' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'RemoveCurrentUserFromWaitlistInput' }
+            }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'removeCurrentUserFromWaitlist' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'RemoveFromWaitlistResult' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'success' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'WaitlistEntryNotFoundError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  RemoveCurrentUserFromWaitlistMutation,
+  RemoveCurrentUserFromWaitlistMutationVariables
+>
+export const RemoveUserFromClassDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'removeUserFromClass' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'CancelEnrollmentInput' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'removeUserFromClass' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'Field', name: { kind: 'Name', value: '__typename' } }]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<RemoveUserFromClassMutation, RemoveUserFromClassMutationVariables>
+export const EditClassDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'editClass' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'EditClassInput' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'editClass' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'EditClassSuccessResult' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'updated' } }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<EditClassMutation, EditClassMutationVariables>
+export const UpdateCurrentUserPasswordDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'updateCurrentUserPassword' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'UpdateCurrentUserPasswordInput' }
+            }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'updateCurrentUserPassword' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  UpdateCurrentUserPasswordMutation,
+  UpdateCurrentUserPasswordMutationVariables
+>
+export const EditCurrentUserEnrollmentDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'editCurrentUserEnrollment' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'EditEnrollmentInput' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'editCurrentUserEnrollment' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'SpotAlreadyReservedError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'TryToSwitchToSameSpotError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ClientIsOutsideSchedulingWindowError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  EditCurrentUserEnrollmentMutation,
+  EditCurrentUserEnrollmentMutationVariables
+>
+export const RequestPasswordLinkDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'requestPasswordLink' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'RequestPasswordLinkInput' } }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'requestPasswordLink' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'TooManyResetPasswordLinkRequestsError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'availableAgainAt' } }
+                    ]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ResetPasswordLinkSentSuccessfully' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'status' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<RequestPasswordLinkMutation, RequestPasswordLinkMutationVariables>
+export const ResetPasswordForCurrentUserDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'resetPasswordForCurrentUser' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NamedType',
+            name: { kind: 'Name', value: 'ResetPasswordForCurrentUserInput' }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'resetPasswordForCurrentUser' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'PasswordsDontMatchError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'code' } }
+                    ]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ResetPasswordSuccess' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'status' } }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  ResetPasswordForCurrentUserMutation,
+  ResetPasswordForCurrentUserMutationVariables
+>
+export const CurrentUserDoesExistInSiteDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'currentUserDoesExistInSite' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentUser' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'doesExistInSite' },
+                  arguments: [
+                    {
+                      kind: 'Argument',
+                      name: { kind: 'Name', value: 'site' },
+                      value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  CurrentUserDoesExistInSiteQuery,
+  CurrentUserDoesExistInSiteQueryVariables
+>
+export const CreateCurrentUserInSiteDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'createCurrentUserInSite' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'fromSite' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'toSite' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'createCurrentUserInSite' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'fromSite' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'fromSite' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'toSite' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'toSite' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'CreateCurrentUserInSiteSuccess' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'result' } }
+                    ]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'UserAlreadyExistsError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'code' } }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  CreateCurrentUserInSiteMutation,
+  CreateCurrentUserInSiteMutationVariables
+>
+export const RemoveUserFromWaitlistDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'removeUserFromWaitlist' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'RemoveUserFromWaitlistInput' }
+            }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'removeUserFromWaitlist' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'RemoveFromWaitlistResult' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'success' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'WaitlistEntryNotFoundError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  RemoveUserFromWaitlistMutation,
+  RemoveUserFromWaitlistMutationVariables
+>
+export const EditEnrollmentDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'editEnrollment' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'EditEnrollmentInput' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'editEnrollment' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Enrollment' } },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: '__typename' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'SpotAlreadyReservedError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'TryToSwitchToSameSpotError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'ClientIsOutsideSchedulingWindowError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<EditEnrollmentMutation, EditEnrollmentMutationVariables>
+export const CurrentUserSitesDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'currentUserSites' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentUser' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'siteUsers' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'site' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<CurrentUserSitesQuery, CurrentUserSitesQueryVariables>
+export const CurrentUserRankingInClassDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'currentUserRankingInClass' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'params' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'UserInRankingParams' } }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentUserRankingInClass' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'params' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'params' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'totalRanking' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'positionInRanking' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'totalMembersInRanking' } }
+                    ]
+                  }
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'genderRanking' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'gender' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'ranking' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'positionInRanking' } },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'totalMembersInRanking' }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  CurrentUserRankingInClassQuery,
+  CurrentUserRankingInClassQueryVariables
+>
+export const AcceptLateCancelledSpotInClassDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'acceptLateCancelledSpotInClass' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'AcceptLateCancelledSpotInClassInput' }
+            }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'acceptLateCancelledSpotInClass' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'AcceptLateCancelledSpotInClassSuccess' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'success' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  AcceptLateCancelledSpotInClassMutation,
+  AcceptLateCancelledSpotInClassMutationVariables
+>
+export const RejectLateCancelledSpotInClassDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'rejectLateCancelledSpotInClass' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'RejectLateCancelledSpotInClassInput' }
+            }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'rejectLateCancelledSpotInClass' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'Field', name: { kind: 'Name', value: 'success' } }]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  RejectLateCancelledSpotInClassMutation,
+  RejectLateCancelledSpotInClassMutationVariables
+>
+export const CurrentUserEnrollmentsPaginatedDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'currentUserEnrollmentsPaginated' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'params' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'CurrentUserEnrollmentsParams' } }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'pagination' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'PaginationInput' } }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentUserEnrollmentsPaginated' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'params' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'params' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'pagination' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'pagination' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'enrollments' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'enrollmentInfo' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'enrollmentStatus' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'enrollmentDateTime' } },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'enrollmentDateTimeWithNoTimeZone' }
+                            },
+                            {
+                              kind: 'InlineFragment',
+                              typeCondition: {
+                                kind: 'NamedType',
+                                name: { kind: 'Name', value: 'EnrollmentInfo' }
+                              },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: 'spotNumber' } }
+                                ]
+                              }
+                            },
+                            {
+                              kind: 'InlineFragment',
+                              typeCondition: {
+                                kind: 'NamedType',
+                                name: { kind: 'Name', value: 'WaitlistEntry' }
+                              },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'canBeTurnedIntoEnrollment' }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'class' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'instructorName' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'start' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'startWithNoTimeZone' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'duration' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'waitListAvailable' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'showAsDisabled' } }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'total' } }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  CurrentUserEnrollmentsPaginatedQuery,
+  CurrentUserEnrollmentsPaginatedQueryVariables
+>
+export const CurrentUserWorkoutStatsPaginatedDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'currentUserWorkoutStatsPaginated' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'pagination' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'PaginationInput' } }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentUserWorkoutStatsPaginated' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'pagination' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'pagination' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'classStats' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'enrollment' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'enrollmentInfo' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                  {
+                                    kind: 'InlineFragment',
+                                    typeCondition: {
+                                      kind: 'NamedType',
+                                      name: { kind: 'Name', value: 'EnrollmentInfo' }
+                                    },
+                                    selectionSet: {
+                                      kind: 'SelectionSet',
+                                      selections: [
+                                        {
+                                          kind: 'Field',
+                                          name: { kind: 'Name', value: 'spotNumber' }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'class' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'start' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'duration' } }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'totalEnergy' } }
+                    ]
+                  }
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'total' } }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  CurrentUserWorkoutStatsPaginatedQuery,
+  CurrentUserWorkoutStatsPaginatedQueryVariables
+>
+export const CurrentUserPurchasesPaginatedDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'currentUserPurchasesPaginated' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'site' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'SiteEnum' } }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'pagination' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'PaginationInput' } }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'params' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'CurrentUserPurchasesPaginatedParams' }
+            }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentUserPurchasesPaginated' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'site' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'site' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'params' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'params' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'pagination' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'pagination' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'purchases' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'packageName' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'allowanceObtained' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'allowanceRemaining' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'paymentDateTime' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'activationDateTime' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'expirationDateTime' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'current' } }
+                    ]
+                  }
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'total' } }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  CurrentUserPurchasesPaginatedQuery,
+  CurrentUserPurchasesPaginatedQueryVariables
+>
+export const CurrentUserPhoneNumberDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'currentUserPhoneNumber' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentUser' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'Field', name: { kind: 'Name', value: 'phone' } }]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<CurrentUserPhoneNumberQuery, CurrentUserPhoneNumberQueryVariables>
+export const RequestSmsValidationDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'requestSMSValidation' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'RequestSMSValidationInput' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'requestSMSValidation' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'MobilePhoneAlreadyVerifiedError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'SuccessfulRequestSMSValidation' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'success' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'MobilePhoneNotValidError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<RequestSmsValidationMutation, RequestSmsValidationMutationVariables>
+export const IsSmsValidationCodeValidDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'isSMSValidationCodeValid' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'smsCode' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'isSMSValidationCodeValid' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'smsCode' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'smsCode' } }
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'SMSCodeValidatedSuccessfully' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'success' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'RequestSMSValidationNeededError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'SMSValidationCodeError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                },
+                {
+                  kind: 'InlineFragment',
+                  typeCondition: {
+                    kind: 'NamedType',
+                    name: { kind: 'Name', value: 'MobilePhoneAlreadyVerifiedError' }
+                  },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'code' } }]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<IsSmsValidationCodeValidQuery, IsSmsValidationCodeValidQueryVariables>
+export const AvailableSitesDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'availableSites' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'availableSites' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'code' } }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<AvailableSitesQuery, AvailableSitesQueryVariables>
+export const CurrentUserSitesWithNamesDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'CurrentUserSitesWithNames' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentUser' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'siteUsers' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'site' } }]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'availableSites' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'code' } }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  CurrentUserSitesWithNamesQuery,
+  CurrentUserSitesWithNamesQueryVariables
+>

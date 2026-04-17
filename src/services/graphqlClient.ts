@@ -1,5 +1,6 @@
-import { createHttpLink, Observable } from '@apollo/client'
+import { Observable } from '@apollo/client'
 import { ApolloClient, InMemoryCache } from '@apollo/client/core'
+import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 import { setContext } from '@apollo/client/link/context'
 import { useAuthenticationStore } from '@/stores/authToken'
 import { onError } from '@apollo/client/link/error'
@@ -8,7 +9,7 @@ import { AxiosError } from 'axios'
 import introspectionResult from '@/gql/fragment-types.json'
 
 function newAnonymousClient(gqlUrl: string): ApolloClient<any> {
-  const httpLink2 = createHttpLink({
+  const httpLink2 = createUploadLink({
     uri: gqlUrl
   })
 
@@ -70,7 +71,7 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
 })
 
 function newAuthenticatedApolloClient(gqlUrl: string): ApolloClient<any> {
-  const httpLink2 = createHttpLink({
+  const httpLink2 = createUploadLink({
     uri: gqlUrl
   })
 
