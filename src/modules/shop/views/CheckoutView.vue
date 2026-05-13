@@ -290,6 +290,8 @@ const handleSubmit = async () => {
           name: 'after-checkout',
           query: { merchantReference: success.merchantReference }
         })
+      } else if (success.errorMessage) {
+        showErrorModal('Payment Error', success.errorMessage)
       }
     } catch (e: any) {
       if (isInWebview.value) sendFailure()
