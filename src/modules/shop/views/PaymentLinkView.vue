@@ -39,6 +39,10 @@ const {
 
 const applePay = usePaymentLinkApplePay()
 
+// The card form is collapsed behind a "Credit card" button when Apple Pay is available; when Apple
+// Pay isn't offered (e.g. non-Safari) the card form is shown directly.
+const showCardForm = ref(!applePay.isApplePayAvailable.value)
+
 const FINGERPRINT_INPUT_ID = 'payment_link_io_blackbox'
 const fingerprintSessionId = ref('')
 function onFingerprintReady(sessionId: string) {
@@ -288,12 +292,27 @@ async function handleApplePay() {
               @click="handleApplePay"
               aria-label="Pay with Apple Pay"
             ></button>
-            <div class="divider"><span>or pay with card</span></div>
           </div>
 
-          <!-- Card details -->
-          <div class="form-group">
-            <label for="pl_cardholder" class="input-label">Cardholder Name *</label>
+          <!-- Toggle: reveal the credit card form -->
+          <button
+            v-if="!showCardForm"
+            type="button"
+            class="credit-card-toggle"
+            @click="showCardForm = true"
+          >
+            <i class="bi bi-credit-card"></i>
+            Credit card
+          </button>
+
+          <!-- Card details (expandable) -->
+          <div v-if="showCardForm" class="card-section">
+            <div v-if="applePay.isApplePayAvailable.value" class="divider">
+              <span>or pay with card</span>
+            </div>
+
+            <div class="form-group">
+              <label for="pl_cardholder" class="input-label">Cardholder Name *</label>
             <input
               id="pl_cardholder"
               class="form-control"
@@ -378,22 +397,23 @@ async function handleApplePay() {
             </div>
           </div>
 
+            <DefaultButtonComponent
+              :text="`Pay ${formattedAmount}`"
+              type="submit"
+              block
+              :isLoading="isSubmittingCard"
+              @on-click="handleCardSubmit"
+            ></DefaultButtonComponent>
+          </div>
+
           <DeviceFingerprint
             :session-id-input-id="FINGERPRINT_INPUT_ID"
             @ready="onFingerprintReady"
           />
 
-          <small v-if="submitError" class="form-text text-danger d-block mb-2">
+          <small v-if="submitError" class="form-text text-danger d-block mt-2">
             {{ submitError }}
           </small>
-
-          <DefaultButtonComponent
-            :text="`Pay ${formattedAmount}`"
-            type="submit"
-            block
-            :isLoading="isSubmittingCard"
-            @on-click="handleCardSubmit"
-          ></DefaultButtonComponent>
         </form>
       </template>
     </div>
@@ -461,7 +481,30 @@ async function handleApplePay() {
 }
 
 .apple-pay-section {
-  margin: 1.25rem 0;
+  margin: 1.25rem 0 0.75rem;
+}
+
+.credit-card-toggle {
+  width: 100%;
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid #ff8c69;
+  background-color: #fff;
+  color: #ff8c69;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.credit-card-toggle:hover {
+  background-color: #fff3ee;
+}
+
+.card-section {
+  margin-top: 0.5rem;
 }
 
 .apple-pay-button {
