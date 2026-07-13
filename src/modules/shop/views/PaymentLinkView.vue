@@ -302,7 +302,7 @@ async function handleApplePay() {
             @click="showCardForm = true"
           >
             <i class="bi bi-credit-card"></i>
-            Credit card
+            Or Credit Card
           </button>
 
           <!-- Card details (expandable) -->
@@ -459,6 +459,7 @@ async function handleApplePay() {
 }
 
 .amount {
+  font-family: 'BigJohn', sans-serif;
   font-size: 1.75rem;
   font-weight: 700;
   color: #ff8c69;
