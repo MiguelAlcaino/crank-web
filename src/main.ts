@@ -46,7 +46,7 @@ async function startApp() {
   const anonClient = newAnonymousClient(import.meta.env.VITE_CRANK_GRAPHQL_SERVER_URL)
 
   const apiService = new ApiService(authClient, anonClient)
-  const shopApiService = new ShopApiService(authClient)
+  const shopApiService = new ShopApiService(authClient, anonClient)
   const subscriptionsApiService = new SubscriptionsApiService(authClient)
 
   const app = createApp({

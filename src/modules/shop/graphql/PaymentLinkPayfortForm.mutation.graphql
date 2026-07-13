@@ -1,0 +1,5 @@
+mutation PaymentLinkPayfortForm($input: PaymentLinkPayfortFormInput!) {
+  paymentLinkPayfortForm(input: $input) {
+    htmlForm
+  }
+}

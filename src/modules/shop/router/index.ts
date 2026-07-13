@@ -36,7 +36,8 @@ export const shopRoute: RouteRecordRaw = {
       path: `/payment-link/:id`,
       name: 'payment-link',
       component: () => import('@/modules/shop/views/PaymentLinkView.vue'),
-      meta: { requiresAuth: true }
+      // Anonymous buyer checkout — no login required
+      meta: { requiresAuth: false }
     }
   ]
 }

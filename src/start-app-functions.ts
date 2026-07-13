@@ -40,7 +40,7 @@ const createBaseApp = (gqlUrl: string) => {
   const anonClient = newAnonymousClient(gqlUrl)
 
   const apiService = new ApiService(authClient, anonClient)
-  const shopApiService = new ShopApiService(authClient)
+  const shopApiService = new ShopApiService(authClient, anonClient)
   const subscriptionsApiService = new SubscriptionsApiService(authClient)
 
   const app = createApp({

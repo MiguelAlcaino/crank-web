@@ -24,6 +24,17 @@ import {
   GeneratePayfortFormDocument,
   type GeneratePayfortFormMutation,
   type GeneratePayfortFormMutationVariables,
+  type CreatePaymentLinkTransactionInput,
+  CreatePaymentLinkTransactionDocument,
+  type CreatePaymentLinkTransactionMutation,
+  type CreatePaymentLinkTransactionMutationVariables,
+  type PaymentLinkPayfortFormInput,
+  PaymentLinkPayfortFormDocument,
+  type PaymentLinkPayfortFormMutation,
+  type PaymentLinkPayfortFormMutationVariables,
+  PaymentLinkForCheckoutDocument,
+  type PaymentLinkForCheckoutQuery,
+  type PaymentLinkForCheckoutQueryVariables,
   GetCartSummaryDocument,
   GetProductsDocument,
   type GetProductsQuery,
@@ -72,7 +83,136 @@ import type { ServiceResult } from '@/modules/shop/interfaces/service-result'
 import { handleInfrastructureErrors } from '@/modules/shop/services/utils/handleInfrastructureErrors'
 
 export class ShopApiService implements IShopApiService {
-  constructor(private authApiClient: ApolloClient<any>) {}
+  constructor(
+    private authApiClient: ApolloClient<any>,
+    private anonApiClient: ApolloClient<any>
+  ) {}
+
+  async getPaymentLinkForCheckout(
+    id: string
+  ): Promise<PaymentLinkForCheckoutQuery['paymentLink']> {
+    try {
+      const { data, errors } = await this.anonApiClient.query<
+        PaymentLinkForCheckoutQuery,
+        PaymentLinkForCheckoutQueryVariables
+      >({
+        query: PaymentLinkForCheckoutDocument,
+        variables: { id },
+        fetchPolicy: 'network-only'
+      })
+
+      if (errors && errors.length > 0) {
+        throw new ApiError(
+          `GraphQL error fetching payment link: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      return data?.paymentLink ?? null
+    } catch (error) {
+      console.error('ShopApiService.getPaymentLinkForCheckout failed:', error)
+      throw error
+    }
+  }
+
+  async createPaymentLinkTransaction(
+    input: CreatePaymentLinkTransactionInput
+  ): Promise<{ merchantReference: string; site: SiteEnum }> {
+    try {
+      const { data, errors } = await this.anonApiClient.mutate<
+        CreatePaymentLinkTransactionMutation,
+        CreatePaymentLinkTransactionMutationVariables
+      >({
+        mutation: CreatePaymentLinkTransactionDocument,
+        variables: { input },
+        fetchPolicy: 'network-only'
+      })
+
+      if (errors && errors.length > 0) {
+        throw new ApiError(
+          `GraphQL error creating payment link transaction: ${errors
+            .map((e) => e.message)
+            .join(', ')}`
+        )
+      }
+
+      const result = data?.createPaymentLinkTransaction
+      if (!result) {
+        throw new Error('Did not receive a valid response when creating the payment link transaction.')
+      }
+
+      return {
+        merchantReference: result.merchantReference,
+        site: result.site as unknown as SiteEnum
+      }
+    } catch (error) {
+      console.error('ShopApiService.createPaymentLinkTransaction failed:', error)
+      throw error
+    }
+  }
+
+  async generatePaymentLinkPayfortForm(input: PaymentLinkPayfortFormInput): Promise<string> {
+    try {
+      const { data, errors } = await this.anonApiClient.mutate<
+        PaymentLinkPayfortFormMutation,
+        PaymentLinkPayfortFormMutationVariables
+      >({
+        mutation: PaymentLinkPayfortFormDocument,
+        variables: { input },
+        fetchPolicy: 'network-only'
+      })
+
+      if (errors && errors.length > 0) {
+        throw new ApiError(
+          `GraphQL error generating Payfort form: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      const htmlForm = data?.paymentLinkPayfortForm?.htmlForm
+      if (!htmlForm) {
+        throw new Error('Did not receive a valid HTML form from the server.')
+      }
+
+      return htmlForm
+    } catch (error) {
+      console.error('ShopApiService.generatePaymentLinkPayfortForm failed:', error)
+      throw error
+    }
+  }
+
+  async getPublicApplePayConfig(
+    site: SiteEnum
+  ): Promise<{ currencyCode: string; countryCode: string; displayName: string }> {
+    try {
+      const { data, errors } = await this.anonApiClient.query<
+        GetApplePayConfigQuery,
+        GetApplePayConfigQueryVariables
+      >({
+        query: GetApplePayConfigDocument,
+        variables: { site },
+        fetchPolicy: 'network-only'
+      })
+
+      if (errors && errors.length > 0) {
+        throw new ApiError(
+          `GraphQL error fetching Apple Pay config: ${errors.map((e) => e.message).join(', ')}`
+        )
+      }
+
+      const config = data?.applePayConfig
+      if (!config) {
+        throw new Error('Did not receive Apple Pay configuration from the server.')
+      }
+
+      return {
+        currencyCode: config.currencyCode,
+        countryCode: config.countryCode,
+        displayName: config.displayName
+      }
+    } catch (error) {
+      console.error('ShopApiService.getPublicApplePayConfig failed:', error)
+      throw error
+    }
+  }
 
   async addGiftCardCodeToShoppingCart(
     giftCard: string,
