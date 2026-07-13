@@ -1,0 +1,12 @@
+query PaymentLinkForCheckout($id: ID!) {
+  paymentLink(id: $id) {
+    id
+    title
+    amount
+    currency
+    site {
+      name
+      code
+    }
+  }
+}

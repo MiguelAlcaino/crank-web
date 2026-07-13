@@ -1,0 +1,6 @@
+mutation CreatePaymentLinkTransaction($input: CreatePaymentLinkTransactionInput!) {
+  createPaymentLinkTransaction(input: $input) {
+    merchantReference
+    site
+  }
+}

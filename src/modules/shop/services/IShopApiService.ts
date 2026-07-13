@@ -2,7 +2,13 @@ import type { SiteEnum } from '@/modules/shared/interfaces/site.enum'
 import type { ProductModel } from '../models/ProductModel'
 import type { ShoppingCartModel as ShoppingCartModel } from '../models/ShoppingCartModel'
 import type { CartSummary } from '@/modules/shop/interfaces/cart-summary'
-import type { PayfortFormInput, PaymentTransactionStatusEnum } from '@/gql/graphql'
+import type {
+  PayfortFormInput,
+  PaymentTransactionStatusEnum,
+  CreatePaymentLinkTransactionInput,
+  PaymentLinkPayfortFormInput,
+  PaymentLinkForCheckoutQuery
+} from '@/gql/graphql'
 import type { AppProductType } from '@/modules/shop/models/types'
 import type { ServiceResult } from '@/modules/shop/interfaces/service-result'
 import type { ShoppingCartBusinessError } from '@/modules/shop/interfaces/shopping-cart-errors'
@@ -188,6 +194,37 @@ export interface IShopApiService {
    * @returns A promise that resolves with the Apple Pay config.
    */
   getApplePayConfig(site: SiteEnum): Promise<{
+    currencyCode: string
+    countryCode: string
+    displayName: string
+  }>
+
+  /**
+   * Fetches the public (buyer-facing) details of a payment link by id. Anonymous.
+   * @param id The payment link id.
+   */
+  getPaymentLinkForCheckout(id: string): Promise<PaymentLinkForCheckoutQuery['paymentLink']>
+
+  /**
+   * Prepares an anonymous payment-link purchase: creates the transaction and persists the buyer's
+   * name/email/mobile phone. Returns the merchant reference and site.
+   * @param input The buyer details and payment link id.
+   */
+  createPaymentLinkTransaction(
+    input: CreatePaymentLinkTransactionInput
+  ): Promise<{ merchantReference: string; site: SiteEnum }>
+
+  /**
+   * Generates the Payfort card payment form for a previously created payment-link transaction.
+   * @param input The merchant reference and device fingerprint.
+   */
+  generatePaymentLinkPayfortForm(input: PaymentLinkPayfortFormInput): Promise<string>
+
+  /**
+   * Fetches the Apple Pay configuration for a given site anonymously (payment-link flow).
+   * @param site The site to fetch the config for.
+   */
+  getPublicApplePayConfig(site: SiteEnum): Promise<{
     currencyCode: string
     countryCode: string
     displayName: string

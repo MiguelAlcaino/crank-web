@@ -980,6 +980,32 @@ export type MobilePhoneNotValidError = Error & {
   code: Scalars['String']
 }
 
+export type CreatePaymentLinkTransactionInput = {
+  email: Scalars['String']
+  fullName: Scalars['String']
+  mobilePhone: Scalars['String']
+  paymentLinkId: Scalars['ID']
+}
+
+export type CreatePaymentLinkTransactionResult = {
+  __typename?: 'CreatePaymentLinkTransactionResult'
+  merchantReference: Scalars['ID']
+  site: SiteEnum
+}
+
+export type PaymentLinkPayfortFormInput = {
+  deviceFingerprint: Scalars['String']
+  merchantReference: Scalars['ID']
+}
+
+export type MutationCreatePaymentLinkTransactionArgs = {
+  input: CreatePaymentLinkTransactionInput
+}
+
+export type MutationPaymentLinkPayfortFormArgs = {
+  input: PaymentLinkPayfortFormInput
+}
+
 export type Mutation = {
   __typename?: 'Mutation'
   /** Accepts a late-cancelled spot in a class */
@@ -1082,6 +1108,10 @@ export type Mutation = {
   newLockShoppingCart?: Maybe<LockShoppingCartResponse>
   /** Returns the html of a payment form to be used to pay */
   payfortForm: PayfortFormResult
+  /** Prepares an anonymous payment link purchase and returns the merchant reference and site */
+  createPaymentLinkTransaction: CreatePaymentLinkTransactionResult
+  /** Returns the html of the card payment form for an anonymous payment link transaction */
+  paymentLinkPayfortForm: PayfortFormResult
   /** Reactivates a cancelled subscription for the current user */
   reactivateSubscription: ReactivateSubscriptionResultUnion
   /** Refunds a transaction via Payfort */
@@ -9295,3 +9325,25 @@ export const CurrentUserSitesWithNamesDocument = {
   CurrentUserSitesWithNamesQuery,
   CurrentUserSitesWithNamesQueryVariables
 >
+
+export type CreatePaymentLinkTransactionMutationVariables = Exact<{
+  input: CreatePaymentLinkTransactionInput
+}>
+
+export type CreatePaymentLinkTransactionMutation = { __typename: 'Mutation', createPaymentLinkTransaction: { __typename: 'CreatePaymentLinkTransactionResult', merchantReference: string, site: SiteEnum } }
+
+export type PaymentLinkPayfortFormMutationVariables = Exact<{
+  input: PaymentLinkPayfortFormInput
+}>
+
+export type PaymentLinkPayfortFormMutation = { __typename: 'Mutation', paymentLinkPayfortForm: { __typename: 'PayfortFormResult', htmlForm: string } }
+
+export type PaymentLinkForCheckoutQueryVariables = Exact<{
+  id: Scalars['ID']
+}>
+
+export type PaymentLinkForCheckoutQuery = { __typename: 'Query', paymentLink?: { __typename: 'PaymentLink', id: string, title: string, amount: number, currency: string, site: { __typename: 'Site', name: string, code: SiteEnum } } | null }
+
+export const CreatePaymentLinkTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreatePaymentLinkTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreatePaymentLinkTransactionInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createPaymentLinkTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"merchantReference"}},{"kind":"Field","name":{"kind":"Name","value":"site"}}]}}]}}]} as unknown as DocumentNode<CreatePaymentLinkTransactionMutation, CreatePaymentLinkTransactionMutationVariables>;
+export const PaymentLinkPayfortFormDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"PaymentLinkPayfortForm"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PaymentLinkPayfortFormInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"paymentLinkPayfortForm"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"htmlForm"}}]}}]}}]} as unknown as DocumentNode<PaymentLinkPayfortFormMutation, PaymentLinkPayfortFormMutationVariables>;
+export const PaymentLinkForCheckoutDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"PaymentLinkForCheckout"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"paymentLink"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"site"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}}]} as unknown as DocumentNode<PaymentLinkForCheckoutQuery, PaymentLinkForCheckoutQueryVariables>;

@@ -144,7 +144,11 @@ router.beforeEach(async (to, from, next) => {
     '/login-redirect',
     '/shop/checkout' // Public to allow access from webview with token
   ]
-  const authRequired = !publicPages.includes(to.path)
+  // The anonymous payment-link checkout uses a dynamic path (/payment-link/:id), so it can't be
+  // listed in the exact-match publicPages array — allow it by prefix.
+  const isPublicPath =
+    publicPages.includes(to.path) || to.path.startsWith('/payment-link/')
+  const authRequired = !isPublicPath
 
   if (authRequired && !authService.isLoggedId()) {
     next({ name: 'login', query: { redirect: to.path } })
