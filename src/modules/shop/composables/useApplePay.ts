@@ -6,6 +6,7 @@ import { useAuthenticationStore } from '@/stores/authToken'
 type ApplePayResult = {
   result: boolean
   merchantReference: string
+  errorMessage?: string
 }
 
 type ApplePayConfigData = {
@@ -159,16 +160,18 @@ export const useApplePay = () => {
           } else {
             console.error('Payment processing failed:', data)
             session.completePayment(ApplePaySession.STATUS_FAILURE)
-            error.value = 'Payment processing failed.'
+            const errorMessage = data?.message ?? 'Payment processing failed.'
+            error.value = errorMessage
             isProcessing.value = false
-            resolve({ result: false, merchantReference })
+            resolve({ result: false, merchantReference, errorMessage })
           }
         } catch (e) {
           console.error('Error sending payment token:', e)
           session.completePayment(ApplePaySession.STATUS_FAILURE)
-          error.value = 'An error occurred while processing the payment.'
+          const errorMessage = 'An error occurred while processing the payment.'
+          error.value = errorMessage
           isProcessing.value = false
-          resolve({ result: false, merchantReference })
+          resolve({ result: false, merchantReference, errorMessage })
         }
       }
 
